@@ -50,7 +50,7 @@ def download_pdf(url, filename):
 
     response = requests.get(url)
     if response.status_code == 200:
-        with open(filename, 'wb', encoding='utf-8') as f:
+        with open(filename, 'wb') as f:
             f.write(response.content)
         print(f"{filename} downloaded successfully.")
     else:
