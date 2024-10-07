@@ -1,7 +1,12 @@
+"""This module use for get the course data from the university website."""
+
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 
-url = 'https://registrar.ku.ac.th/class#2567'
+# link change each year to make it uptodate
+cur_year = datetime.now().year
+url = f'https://registrar.ku.ac.th/class#{cur_year + 543}'
 
 # Send a GET request
 response = requests.get(url)
