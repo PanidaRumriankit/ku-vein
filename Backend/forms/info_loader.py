@@ -88,21 +88,20 @@ def extract_text_from_pdf(pdf_path):
 
                         split_for_filter = line.split()
                         for i in range(len(split_for_filter)):
-                            if split_for_filter[i].isnumeric() and i not in [0, 1]:
-                                print("".join(split_for_filter[:2]) + "\n")  # Debug: print the filtered line
-                                print(" ".join(split_for_filter[2:i]) + "\n")
+                            if split_for_filter[i][0].isnumeric() and i not in [0, 1] and len(split_for_filter[0]) >= 3:
 
                                 course_id.append("".join(split_for_filter[:2])) # Add the filtered line to the final text
                                 course_name.append(" ".join(split_for_filter[2:i]))
-
-                                # filtered_text += "".join(split_for_filter[:i]) + "\n"
                                 break
 
         # Turn list into dict
         for combine in range(len(course_id)):
-            result_data[course_id[combine]] = course_name[combine]
 
-        print(result_data)
+            # Filter Unwanted Value
+            if course_name[combine] and course_name[combine][0] != "(" and course_name[combine][-1] != ")":
+                result_data[course_id[combine]] = course_name[combine]
+
+        print("Successfully Combined Data")
         return result_data  # Return the filtered text
 
 
