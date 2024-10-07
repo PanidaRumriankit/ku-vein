@@ -3,3 +3,4 @@ python-decouple
 django-debug-toolbar
 requests
 beautifulsoup4
+pdfplumber
