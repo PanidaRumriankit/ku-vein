@@ -67,16 +67,17 @@ def extract_text_from_pdf(pdf_path):
             text += page.extract_text() + "\n"  # Extract text from each page
         return text
 
-def save_to_json(data, filename):
+def save_to_json(data, filename, dir_name):
     """Function to save data as JSON."""
 
-    with open(filename, 'w', encoding='utf-8') as json_file:
+    with open(f'{dir_name}/{filename}', 'w', encoding='utf-8') as json_file:
         json.dump(data, json_file, ensure_ascii=False, indent=4)
-    print(f"Data saved to {filename}")
+    print(f"Data saved to {dir_name}/{filename}")
 
 def create_data():
     """Function to combine all function in this module."""
     pdf_urls = get_url()
+    directory_path = "./database"
 
     # Loop through each PDF URL, download, and extract text
     pdf_data = {}
@@ -101,5 +102,6 @@ def create_data():
         os.remove(name_of_the_file)
 
     # Save all extracted PDF data to a JSON file
-    save_to_json(pdf_data, 'course_data.json')
+    save_to_json(pdf_data, 'course_data.json', directory_path)
 
+create_data()
