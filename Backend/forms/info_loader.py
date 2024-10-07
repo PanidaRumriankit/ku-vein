@@ -36,7 +36,7 @@ def get_url():
                 href = link.get('href')  # Get the URL
                 url_container.append(href)
 
-            print(f"URL: {url_container}")
+            print(f"List of URL: {url_container}")
             return url_container
 
         else:
@@ -61,11 +61,26 @@ def extract_text_from_pdf(pdf_path):
     """Function to extract text from the PDF using pdfplumber."""
 
     with pdfplumber.open(pdf_path) as pdf:
-        text = ""
+        group_id = ""  # for filtering the data
+        filtered_text = ""  # To store the filtered lines
         for page in pdf.pages:
-            print(text)
-            text += page.extract_text() + "\n"  # Extract text from each page
-        return text
+            page_text = page.extract_text()  # Extract text from the page
+
+            if page_text:  # Check if the page contains text
+                lines = page_text.split('\n')  # Split the page text into individual lines
+
+                for line in lines:
+                    cur_line = line.split()
+
+                    if "รหัสวิชา" in line:
+                        group_id = line.split()[1]
+
+                    elif cur_line[0][:5] in group_id:
+                        # Filtering criteria for each line
+                        print(line)  # Debug: print the filtered line
+                        filtered_text += line + "\n"  # Add the filtered line to the final text
+
+        return filtered_text  # Return the filtered text
 
 def save_to_json(data, filename, dir_name):
     """Function to save data as JSON."""
