@@ -62,25 +62,49 @@ def extract_text_from_pdf(pdf_path):
 
     with pdfplumber.open(pdf_path) as pdf:
         group_id = ""  # for filtering the data
+        course_id = []
+        course_name = []
+
+        result_data = {}
         filtered_text = ""  # To store the filtered lines
+
+        # Loop PDF pages
         for page in pdf.pages:
             page_text = page.extract_text()  # Extract text from the page
 
             if page_text:  # Check if the page contains text
                 lines = page_text.split('\n')  # Split the page text into individual lines
 
+                # Inner loop. Loop each line of the page.
                 for line in lines:
                     cur_line = line.split()
 
+                    # This might be the problem in the future if they change the structure of the pdf.
                     if "รหัสวิชา" in line:
                         group_id = line.split()[1]
 
                     elif cur_line[0][:5] in group_id:
                         # Filtering criteria for each line
-                        print(line)  # Debug: print the filtered line
-                        filtered_text += line + "\n"  # Add the filtered line to the final text
 
-        return filtered_text  # Return the filtered text
+                        split_for_filter = line.split()
+                        for i in range(len(split_for_filter)):
+                            if split_for_filter[i].isnumeric() and i not in [0, 1]:
+                                print("".join(split_for_filter[:2]) + "\n")  # Debug: print the filtered line
+                                print(" ".join(split_for_filter[2:i]) + "\n")
+
+                                course_id.append("".join(split_for_filter[:2])) # Add the filtered line to the final text
+                                course_name.append(" ".join(split_for_filter[2:i]))
+
+                                # filtered_text += "".join(split_for_filter[:i]) + "\n"
+                                break
+
+        # Turn list into dict
+        for combine in range(len(course_id)):
+            result_data[course_id[combine]] = course_name[combine]
+
+        print(result_data)
+        return result_data  # Return the filtered text
+
 
 def save_to_json(data, filename, dir_name):
     """Function to save data as JSON."""
