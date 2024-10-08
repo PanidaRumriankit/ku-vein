@@ -83,10 +83,11 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'defaultdb',
         'USER': config('MYSQLUSER', cast=str,
-                       default='oranutansunbathinginthebananapool'),
+                       default='noppomummumnoppogoodboy'),
         'PASSWORD': config('MYSQLPASS', cast=str,
-                           default='oranutansunbathinginthebananapool'),
-        'HOST': 'ku-vein-mysql-db-ku-vein.b.aivencloud.com',
+                           default='moodengmoodengdengdeng'),
+        'HOST': config('MYSQLHOST', cast=str,
+                           default='funfactredpandawillstandupiffeelingthreatenedtomakethemselvesappearbigger'),
         'PORT': '22924',
     }
 }
