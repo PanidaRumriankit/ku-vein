@@ -52,21 +52,17 @@ def download_pdf(url, filename):
     if response.status_code == 200:
         with open(filename, 'wb') as f:
             f.write(response.content)
-        print(f"{filename} downloaded successfully.")
+        print(f"{filename} downloaded successfully\n")
     else:
-        print(f"Failed to download {filename}")
+        print(f"Failed to download {filename}\n")
 
 
-def extract_text_from_pdf(pdf_path):
+def extract_text_from_pdf(pdf_path, filename):
     """Function to extract text from the PDF using pdfplumber."""
-
+    print(f"Start Extract Text From {filename}\n")
     with pdfplumber.open(pdf_path) as pdf:
-        group_id = ""  # for filtering the data
-        course_id = []
-        course_name = []
-
+        faculty = ""
         result_data = {}
-        filtered_text = ""  # To store the filtered lines
 
         # Loop PDF pages
         for page in pdf.pages:
@@ -79,29 +75,35 @@ def extract_text_from_pdf(pdf_path):
                 for line in lines:
                     cur_line = line.split()
 
-                    # This might be the problem in the future if they change the structure of the pdf.
-                    if "รหัสวิชา" in line:
-                        group_id = line.split()[1]
+                    if "คณะ" == cur_line[0][:3]:
+                        faculty = cur_line[0]
+                        try:
+                            if result_data[faculty]:
+                                print(f"Continue Extract Data From {filename}...\n")
 
-                    elif cur_line[0][:5] in group_id:
+                        except KeyError:
+                            result_data[faculty] = {}
+
+                    # This code might need to update to 02 in the future.
+                    # However, I hope the teacher will change data from pdf into html
+
+                    elif cur_line[0][:2] == "01" and faculty:
                         # Filtering criteria for each line
+                        for i in range(len(cur_line)):
+                            # In line element loop
+                            if cur_line[i][0].isnumeric() and i not in [0, 1] and len(cur_line[0]) >= 3:
+                                # Check when the name of the course end
 
-                        split_for_filter = line.split()
-                        for i in range(len(split_for_filter)):
-                            if split_for_filter[i][0].isnumeric() and i not in [0, 1] and len(split_for_filter[0]) >= 3:
+                                course_id = cur_line[:1][0] # Add the filtered line to the final text
+                                course_name = " ".join(cur_line[2:i])
 
-                                course_id.append("".join(split_for_filter[:2])) # Add the filtered line to the final text
-                                course_name.append(" ".join(split_for_filter[2:i]))
+                                if not "Thesis" in course_name.split() and "Seminar" != course_name \
+                                        and "(ต่อ)" != course_name:
+                                    result_data[faculty][course_id] = course_name
+
                                 break
 
-        # Turn list into dict
-        for combine in range(len(course_id)):
-
-            # Filter Unwanted Value
-            if course_name[combine] and course_name[combine][0] != "(" and course_name[combine][-1] != ")":
-                result_data[course_id[combine]] = course_name[combine]
-
-        print("Successfully Combined Data")
+        print("Successfully Combined Data\n")
         return result_data  # Return the filtered text
 
 
@@ -118,8 +120,14 @@ def create_data():
     directory_path = "./database"
 
     # Loop through each PDF URL, download, and extract text
-    pdf_data = {}
-    set_filename = ["normal2", "special2", "inter2", "normal1", "special1", "inter1"]
+    set_filename1 = ["normal2", "special2", "inter2", "normal1", "special1", "inter1"]
+    set_filename2 = ["normal1", "special1", "inter1"]
+
+    if len(pdf_urls) == 6:
+        set_filename = set_filename1
+    else:
+        set_filename = set_filename2
+
     index = 0
 
     for url in pdf_urls:
@@ -130,16 +138,17 @@ def create_data():
         download_pdf(url, name_of_the_file)
 
         # Extract text from the PDF
-        extracted_text = extract_text_from_pdf(name_of_the_file)
+        extracted_text = extract_text_from_pdf(name_of_the_file, set_filename[index])
+
+        # Save all extracted PDF data to a JSON file
+        save_to_json(extracted_text, f'{set_filename[index]}.json', directory_path)
 
         # Store the extracted text in a dictionary
-        pdf_data[set_filename[index]] = extracted_text
         index += 1
 
         # Cleanup: Remove the downloaded PDF after processing
         os.remove(name_of_the_file)
 
-    # Save all extracted PDF data to a JSON file
-    save_to_json(pdf_data, 'course_data.json', directory_path)
+
 
 create_data()
