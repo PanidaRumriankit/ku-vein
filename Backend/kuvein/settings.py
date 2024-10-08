@@ -81,10 +81,13 @@ WSGI_APPLICATION = 'kuvein.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Course',
-        'USER': 'root',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': 'defaultdb',
+        'USER': config('MYSQLUSER', cast=str,
+                       default='oranutansunbathinginthebananapool'),
+        'PASSWORD': config('MYSQLPASS', cast=str,
+                           default='oranutansunbathinginthebananapool'),
+        'HOST': 'ku-vein-mysql-db-ku-vein.b.aivencloud.com',
+        'PORT': '22924',
     }
 }
 
