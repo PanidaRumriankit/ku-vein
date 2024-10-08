@@ -26,7 +26,8 @@ connection = pymysql.connect(
                   default='oranutansunbathinginthebananapool'),
   read_timeout=timeout,
   port=22924,
-  user="avnadmin",
+  user=config('MYSQLUSER', cast=str,
+                  default='harambe'),
   write_timeout=timeout,
 )
 
