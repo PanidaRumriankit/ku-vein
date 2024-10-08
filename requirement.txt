@@ -1,3 +1,5 @@
 Django
 python-decouple
 django-debug-toolbar
+pymysql
+cryptography
