@@ -80,8 +80,15 @@ WSGI_APPLICATION = 'kuvein.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'defaultdb',
+        'USER': config('MYSQLUSER', cast=str,
+                       default='noppomummumnoppogoodboy'),
+        'PASSWORD': config('MYSQLPASS', cast=str,
+                           default='moodengmoodengdengdeng'),
+        'HOST': config('MYSQLHOST', cast=str,
+                           default='funfactredpandawillstandupiffeelingthreatenedtomakethemselvesappearbigger'),
+        'PORT': '22924',
     }
 }
 
