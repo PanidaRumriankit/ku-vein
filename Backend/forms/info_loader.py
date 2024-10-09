@@ -61,8 +61,9 @@ def extract_text_from_pdf(pdf_path: str,
     """Extract text from the PDF using pdfplumber."""
     print(f"Start Extract Text From {filename}\n")
     with pdfplumber.open(pdf_path) as pdf:
-        faculty = ""
-        result_data = {}
+        group_id = ""
+        faculty = "undefined"
+        result_data = {faculty: {}}
 
         # Loop PDF pages
         for page in pdf.pages:
@@ -75,7 +76,10 @@ def extract_text_from_pdf(pdf_path: str,
                 for line in lines:
                     cur_line = line.split()
 
-                    if "คณะ" == cur_line[0][:3]:
+                    if "รหัสวิชา" in line:
+                        group_id = line.split()[1]
+
+                    elif "คณะ" == cur_line[0][:3]:
                         faculty = cur_line[0]
                         try:
                             if result_data[faculty]:
@@ -89,7 +93,9 @@ def extract_text_from_pdf(pdf_path: str,
                     # However, I hope the teacher will
                     # change data from pdf into html
 
-                    elif cur_line[0][:2] == "01" and faculty:
+                    elif (cur_line[0][:2] == "01" or
+                            cur_line[0][:2] in group_id):
+
                         # Filtering criteria for each line
                         for i in range(len(cur_line)):
                             # In line element loop
@@ -102,7 +108,8 @@ def extract_text_from_pdf(pdf_path: str,
 
                                 if "Thesis" not in course_name.split() \
                                         and "Seminar" != course_name \
-                                        and "(ต่อ)" != course_name:
+                                        and "(ต่อ)" != course_name \
+                                        and course_name:
 
                                     # Seriously
                                     # Flake8?
@@ -155,4 +162,6 @@ def create_data():
             # Cleanup: Remove the downloaded PDF after processing
             if os.path.exists(pdf_filename):
                 os.remove(pdf_filename)
-            print(f"Cleaned up: {pdf_filename}")
+            print(f"Cleaned up: {pdf_filename}\n")
+
+create_data()
