@@ -14,11 +14,11 @@ export default function RootLayout({ children }) {
       >
         <nav className="bg-[#4ECDC4] p-4">
           <div className="container mx-auto flex justify-between items-center">
-            <a href="/" className="text-white text-xl font-bold">KU Vein</a>
+            <a href="/" className="text-white text-xl font-bold hover:text-gray-200">KU Vein</a>
             <ul className="flex space-x-6">
-              <li><ContrastIcon className="w-7 h-7 text-gray-200 hover:text-black" /></li>
-              <li><NotificationsIcon className="w-7 h-7 text-gray-200 hover:text-black" /></li>
-              <li><PersonIcon className="w-7 h-7 text-gray-200 hover:text-black" /></li>
+              <li><ContrastIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" /></li>
+              <li><NotificationsIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" /></li>
+              <li><PersonIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" /></li>
             </ul>
           </div>
         </nav>
