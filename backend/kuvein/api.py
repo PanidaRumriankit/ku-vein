@@ -1,18 +1,17 @@
-import pymysql
-from decouple import config
+"""This module use for send the data from Django to Next.js."""
 
-from ninja import NinjaAPI, Schema
+import pymysql
+
+from ninja import NinjaAPI
 from decouple import config
 
 api = NinjaAPI()
 
-class UserSchema(Schema):
-    username: str
-    is_authenticated: bool
-    email: str = None
 
-@api.get(config('DJANGO_API_ENDPOINT', cast=str, default='for_the_dark_souls.ptt'))
+@api.get(config('DJANGO_API_ENDPOINT',
+                cast=str, default='for_the_dark_souls.ptt'))
 def database(request):
+    """Use for send the data to frontend."""
     print(request)
 
     timeout = 10
@@ -37,14 +36,8 @@ def database(request):
         cursor.execute("CREATE TABLE mytest (id INTEGER PRIMARY KEY)")
         cursor.execute("INSERT INTO mytest (id) VALUES (1), (2)")
         cursor.execute("SELECT * FROM mytest")
-        
         send_data = cursor.fetchall()
         return send_data
 
     finally:
         connection.close()
-
-# Implement incase doing the account feature in the future
-@api.get('/me', response=UserSchema)
-def me(request):
-    return request.user
