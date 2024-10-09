@@ -4,3 +4,5 @@ django-debug-toolbar
 mysqlclient
 pymysql
 cryptography
+django-ninja
+django-cors-headers

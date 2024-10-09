@@ -1,6 +1,17 @@
+"use client"
+
 import Image from "next/image";
 
 export default function Home() {
+  async function getDjangoAPIData() {
+    const response = await fetch("http://127.0.0.1:8000/api/hello");
+    const data = await response.json();
+    console.log(data);
+  }
+
+  async function handleClick() {
+    await getDjangoAPIData();
+  }
   return (
     <div className="flex flex-col items-center min-h-screen bg-white">
       <main className="flex flex-col items-center pt-20">
@@ -15,6 +26,11 @@ export default function Home() {
         <p className="mt-4 text-xl text-black">รีวิว แบ่งปัน Q&A</p>
       </main>
       <div className="mt-8 w-full max-w-6xl">
+
+        <button onClick={handleClick}>
+          test button
+        </button>
+
         <input
           type="text"
           placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
