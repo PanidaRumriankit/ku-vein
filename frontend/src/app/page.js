@@ -1,17 +1,24 @@
 "use client"
 
+import {useState} from 'react';
 import Image from "next/image";
 
 export default function Home() {
-  async function getDjangoAPIData() {
-    const response = await fetch("http://127.0.0.1:8000/api/hello");
-    const data = await response.json();
+  const [data, setData] = useState({});
+
+  async function GetDjangoApiData() {
+    const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_ENDPOINT;
+    const response = await fetch(apiUrl);
+    const responseData = await response.json();
     console.log(data);
+    setData(responseData);
+  }
+  
+  // for testing you can delete this when you want
+  async function HandleClick() {
+    await GetDjangoApiData();
   }
 
-  async function handleClick() {
-    await getDjangoAPIData();
-  }
   return (
     <div className="flex flex-col items-center min-h-screen bg-white">
       <main className="flex flex-col items-center pt-20">
@@ -27,9 +34,15 @@ export default function Home() {
       </main>
       <div className="mt-8 w-full max-w-6xl">
 
-        <button onClick={handleClick}>
+        {/* for testing you can delete this when you want */}
+        <button onClick={HandleClick}>
           test button
         </button>
+
+        {/* for testing you can delete this when you want */}
+        <div>
+          {JSON.stringify(data)}
+        </div>
 
         <input
           type="text"
