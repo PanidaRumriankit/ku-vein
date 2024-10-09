@@ -3,7 +3,7 @@ Sample file to test connection to mysql hosting service.
 Run this file by using this command
 
 ```
-python3 Backend/sample_mysql_conn.py
+python3 backend/sample_mysql_conn.py
 ```
 
 Expected output
