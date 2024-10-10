@@ -1,6 +1,24 @@
+"use client"
+
+import {useState} from 'react';
 import Image from "next/image";
 
 export default function Home() {
+  const [data, setData] = useState([]);
+
+  async function GetDjangoApiData() {
+    const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_ENDPOINT;
+    const response = await fetch(apiUrl);
+    const responseData = await response.json();
+    console.log("Received data from Django:", responseData);
+    setData(responseData);
+  }
+  
+  // for testing you can delete this when you want
+  async function HandleClick() {
+    await GetDjangoApiData();
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-white">
       <main className="flex flex-col items-center pt-20">
@@ -15,6 +33,17 @@ export default function Home() {
         <p className="mt-4 text-xl text-black">รีวิว แบ่งปัน Q&A</p>
       </main>
       <div className="mt-8 w-full max-w-6xl">
+
+        {/* for testing you can delete this when you want */}
+        <button onClick={HandleClick}>
+          test button
+        </button>
+
+        {/* for testing you can delete this when you want */}
+        <div>
+          {JSON.stringify(data)}
+        </div>
+
         <input
           type="text"
           placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
