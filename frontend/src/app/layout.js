@@ -2,10 +2,9 @@ import { inter } from "./fonts/fonts";
 import "./globals.css";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import PersonIcon from '@mui/icons-material/Person';
 import { ThemeSwitcher } from "./components/theme";
 import { ThemeProvider } from 'next-themes'
-
+import UserDropdown from "./components/userdropdown";
 
 export default function RootLayout({ children }) {
   return (
@@ -13,12 +12,12 @@ export default function RootLayout({ children }) {
       <body className={`${inter.className} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light">
           <nav className="bg-[#4ECDC4] p-4">
-            <div className="container mx-auto flex justify-between items-center">
+            <div className="container mx-auto flex justify-between items-center px-10">
               <a href="/" className="text-white text-xl font-bold hover:text-gray-200">KU Vein</a>
-              <ul className="flex space-x-6">
+              <ul className="flex space-x-8">
                 <li><ThemeSwitcher /></li>
                 <li><NotificationsIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" /></li>
-                <li><PersonIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" /></li>
+                <li><UserDropdown /></li>
               </ul>
             </div>
           </nav>
