@@ -9,9 +9,7 @@ import PersonIcon from '@mui/icons-material/Person';
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.className} antialiased`}
-      >
+      <body className={`${inter.className} antialiased`}>
         <nav className="bg-[#4ECDC4] p-4">
           <div className="container mx-auto flex justify-between items-center">
             <a href="/" className="text-white text-xl font-bold">KU Vein</a>

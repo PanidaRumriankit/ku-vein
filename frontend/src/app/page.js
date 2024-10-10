@@ -1,6 +1,18 @@
+"use client";
+
 import Image from "next/image";
+import TuneTwoToneIcon from '@mui/icons-material/TuneTwoTone';
+import { useState, useRef } from "react";
+import Popup from './components/popup';
 
 export default function Home() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const buttonRef = useRef(null);
+
+  const handleClick = () => {
+    setIsPopupOpen(true);
+  };
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-white">
       <main className="flex flex-col items-center pt-20">
@@ -20,6 +32,13 @@ export default function Home() {
           placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
           className="w-full h-12 px-4 py-2 text-gray-700 rounded-md border border-gray-300 focus:outline-none focus:border-2"
         />
+      </div>
+      <div className="w-full max-w-6xl flex justify-end my-4 text-black">
+        <p className="font-bold">Sorting</p>
+        <button className="mx-4 focus:outline-none" onClick={handleClick} ref={buttonRef}>
+          <TuneTwoToneIcon className="w-7 h-7" />
+        </button>
+        {isPopupOpen && <Popup setIsPopupOpen={setIsPopupOpen} buttonRef={buttonRef.current} />}
       </div>
     </div>
   );
