@@ -9,8 +9,12 @@ export default function Home() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const buttonRef = useRef(null);
 
-  const handleClick = () => {
+  const handleFocus = () => {
     setIsPopupOpen(true);
+  };
+
+  const handleBlur = () => {
+    setIsPopupOpen(false);
   };
 
   return (
@@ -35,7 +39,7 @@ export default function Home() {
       </div>
       <div className="w-full max-w-6xl flex justify-end my-4 text-black">
         <p className="font-bold">Sorting</p>
-        <button className="mx-4 focus:outline-none" onClick={handleClick} ref={buttonRef}>
+        <button className="mx-4 focus:outline-none" onFocus={handleFocus} ref={buttonRef} onBlur={handleBlur}>
           <TuneTwoToneIcon className="w-7 h-7" />
         </button>
         {isPopupOpen && <Popup setIsPopupOpen={setIsPopupOpen} buttonRef={buttonRef.current} />}
