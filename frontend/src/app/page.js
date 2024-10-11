@@ -1,23 +1,19 @@
 "use client";
 
 import Image from "next/image";
-import TuneTwoToneIcon from '@mui/icons-material/TuneTwoTone';
-import { useState, useRef } from "react";
-import Popup from './components/popup';
+import {useState, useMemo} from "react";
+import {Button} from "@nextui-org/button";
+import Sorting from "./components/sorting";
 
 export default function Home() {
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const buttonRef = useRef(null);
-
-  const handleFocus = () => {
-    setIsPopupOpen(true);
-  };
-
-  const handleBlur = () => {
-    setIsPopupOpen(false);
-  };
-
   const [data, setData] = useState([]);
+
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["earliest"]));
+
+  const selectedValue = useMemo(
+    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+    [selectedKeys]
+  );
 
   async function GetDjangoApiData() {
     const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_ENDPOINT;
@@ -27,7 +23,7 @@ export default function Home() {
     setData(responseData);
   }
 
-  // for testing you can delete this when you want
+  // for testing, you can delete this when you want
   async function HandleClick() {
     await GetDjangoApiData();
   }
@@ -46,14 +42,15 @@ export default function Home() {
         <p className="mt-4 text-xl text-black">รีวิว แบ่งปัน Q&A</p>
       </main>
       <div className="mt-8 w-full max-w-6xl">
+        <div className="inline-flex items-center justify-end text-black">
 
-        {/* for testing you can delete this when you want */}
-        <button onClick={HandleClick}>
-          test button
-        </button>
+          {/* for testing you can delete this when you want */}
+          <Button onClick={HandleClick} variant="contained"
+                  className="text-blue-500">
+            test button
+          </Button>
 
-        {/* for testing you can delete this when you want */}
-        <div>
+          {/* for testing you can delete this when you want */}
           {JSON.stringify(data)}
         </div>
 
@@ -63,13 +60,7 @@ export default function Home() {
           className="w-full h-12 px-4 py-2 text-gray-700 rounded-md border border-gray-300 focus:outline-none focus:border-2"
         />
       </div>
-      <div className="w-full max-w-6xl flex justify-end my-4 text-black">
-        <p className="font-bold">Sorting</p>
-        <button className="mx-4 focus:outline-none" onFocus={handleFocus} ref={buttonRef} onBlur={handleBlur}>
-          <TuneTwoToneIcon className="w-7 h-7" />
-        </button>
-        {isPopupOpen && <Popup setIsPopupOpen={setIsPopupOpen} buttonRef={buttonRef.current} />}
-      </div>
+      <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} />
     </div>
   );
 }
