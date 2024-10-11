@@ -13,6 +13,10 @@
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.2",
     "@mui/material": "^6.1.2",
+    "@nextui-org/button": "^2.0.38",
+    "@nextui-org/dropdown": "^2.1.31",
+    "@nextui-org/react": "^2.4.8",
+    "framer-motion": "^11.11.7",
     "next": "14.2.14",
     "react": "^18",
     "react-dom": "^18"
