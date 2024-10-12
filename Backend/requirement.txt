@@ -4,3 +4,8 @@ django-debug-toolbar
 requests
 beautifulsoup4
 pdfplumber
+mysqlclient
+pymysql
+cryptography
+os
+re
