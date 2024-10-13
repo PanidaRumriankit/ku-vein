@@ -10,10 +10,10 @@ import TuneTwoToneIcon from "@mui/icons-material/TuneTwoTone";
 
 export default function Sorting({selectedKeys, setSelectedKeys}) {
   return (
-    <div className="w-full max-w-6xl flex justify-end my-4 text-black">
+    <div className="w-full max-w-6xl flex justify-end my-4 text-black dark:text-white">
       <Dropdown>
         <DropdownTrigger>
-          <Button className="mx-4 focus:outline-none inline-flex text-black"
+          <Button className="mx-4 focus:outline-none inline-flex"
                   variant="light">
             <p className="font-bold">{selectedKeys}</p>
             <TuneTwoToneIcon className="w-7 h-7"/>
@@ -27,7 +27,7 @@ export default function Sorting({selectedKeys, setSelectedKeys}) {
           selectedKeys={selectedKeys}
           onSelectionChange={setSelectedKeys}
         >
-          <DropdownSection title="Sort by" className="text-black">
+          <DropdownSection title="Sort by" className="text-black dark:text-white">
             <DropdownItem key="earliest">Earliest</DropdownItem>
             <DropdownItem key="latest">Latest</DropdownItem>
             <DropdownItem key="upvote">Upvote</DropdownItem>
