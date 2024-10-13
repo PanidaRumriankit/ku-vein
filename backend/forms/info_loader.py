@@ -9,8 +9,9 @@ import re
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-
-FORBIDDEN_WORD = ['Pre']
+DAYS = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
+NOT_COURSE_NAME = ['Pre']
+FORBIDDEN_WORD = NOT_COURSE_NAME + DAYS
 ROMAN_NUMBER = ['I', 'II', 'III']
 
 
