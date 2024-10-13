@@ -114,25 +114,33 @@ def get_last_subject_id(fac: str):
     global RESULT_DATA
     return list(RESULT_DATA[fac].keys())[-1]
 
-
 def handle_line(text: list[str], fac: str):
     """
     Handle each line and will either create a new subject in result_data or
     add to the previous subject's name
     """
     global RESULT_DATA
+    print(text)
+    # print(RESULT_DATA)
     if all(t.isalpha() and not is_thai(t) for t in text[0]):
         subject_name = get_subject_name(text, 0)
         RESULT_DATA[fac][get_last_subject_id(fac)] += subject_name
+        print('approve')
         return
     if not is_valid_line(text):
+        reject.append(text)
         return
     subject_id = text[0]
     if len(subject_id) != 8:
+        reject.append(text)
+        print('reject by id')
         return
     subject_name = get_subject_name(text, 2)
     if len(subject_name) == 0:
+        print('reject by name')
+        reject.append(text)
         return
+    print('approve')
     RESULT_DATA[fac][subject_id] = subject_name
 
 
@@ -142,6 +150,8 @@ def get_subject_name(text: list[str], index: int = 0):
     until the string fails is_subject_name() function
     """
     subject_name = ''
+    if len(text) <= index:
+        return ''
     while is_subject_name(text[index]):
         subject_name += ' '+text[index]
         index += 1
@@ -160,7 +170,7 @@ def extract_text_from_pdf(pdf_path: str,
         global RESULT_DATA
         RESULT_DATA[faculty] = {}
         # Loop PDF pages
-        for page in pdf.pages[:5]:
+        for page in pdf.pages:
             page_text = page.extract_text()  # Extract text from the page
 
             if not page_text:  # Check if the page contains text
@@ -234,5 +244,7 @@ def create_data():
             print(f"Cleaned up: {pdf_filename}\n")
 
 
+reject = []
 RESULT_DATA = {}
 create_data()
+# print(*reject, sep='\n\n')
