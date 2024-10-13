@@ -11,6 +11,7 @@ from datetime import datetime
 
 
 FORBIDDEN_WORD = ['Pre']
+ROMAN_NUMBER = ['I', 'II', 'III']
 
 
 def get_url() -> list[str]:
@@ -71,14 +72,16 @@ def is_subject_name(text: str):
     1. Each character is not in thai and not a number
     2. string is not in upper case
     3. string is not in FORBIDDEN_WORD
+    Remarks:
+    If it is a roman number it passes.
     """
+    if text in ROMAN_NUMBER:
+        return True
     if any(is_thai(t) or t.isnumeric() for t in text):
         return False
     if text.isupper():
         return False
     if len(text) <= 1:
-        return False
-    if text in FORBIDDEN_WORD:
         return False
     return True
 
@@ -96,15 +99,19 @@ def is_valid_line(lines: list[str]):
     """
     first = lines[0]
     if is_thai(first):
+        print('reject by thai')
         return False
     if len(first) < 2:
+        print('reject by len')
         return False
     if has_num_and_alpha(first):
+        print('reject by num and alpha')
         return False
     if first.isnumeric():
         if len(first) == 8:
             return True
         else:
+            print('reject by not subject id')
             return False
     return True
 
@@ -114,6 +121,7 @@ def get_last_subject_id(fac: str):
     global RESULT_DATA
     return list(RESULT_DATA[fac].keys())[-1]
 
+
 def handle_line(text: list[str], fac: str):
     """
     Handle each line and will either create a new subject in result_data or
@@ -121,27 +129,36 @@ def handle_line(text: list[str], fac: str):
     """
     global RESULT_DATA
     print(text)
+    first = text[0]
     # print(RESULT_DATA)
-    if all(t.isalpha() and not is_thai(t) for t in text[0]):
+    if first in FORBIDDEN_WORD:
+        print("reject by FORBIDDEN WORD")
+        return
+    if is_left_over_subject(first):
         subject_name = get_subject_name(text, 0)
-        RESULT_DATA[fac][get_last_subject_id(fac)] += subject_name
+        RESULT_DATA[fac][get_last_subject_id(fac)] += ' ' + subject_name
         print('approve')
         return
     if not is_valid_line(text):
         reject.append(text)
         return
-    subject_id = text[0]
-    if len(subject_id) != 8:
-        reject.append(text)
-        print('reject by id')
-        return
+    subject_id = first
+    # if len(subject_id) != 8:
+    #     reject.append(text)
+    #     print('reject by id')
+    #     return
     subject_name = get_subject_name(text, 2)
     if len(subject_name) == 0:
-        print('reject by name')
+        print('reject by name len')
         reject.append(text)
         return
     print('approve')
     RESULT_DATA[fac][subject_id] = subject_name
+
+
+def is_left_over_subject(text: str):
+    """Determine if the line is a leftover from subject name"""
+    return all(t.isalpha() and not is_thai(t) and not t.isnumeric() for t in text)
 
 
 def get_subject_name(text: list[str], index: int = 0):
@@ -149,15 +166,15 @@ def get_subject_name(text: list[str], index: int = 0):
     Loop through the list of string 
     until the string fails is_subject_name() function
     """
-    subject_name = ''
+    subject_name = []
     if len(text) <= index:
         return ''
     while is_subject_name(text[index]):
-        subject_name += ' '+text[index]
+        subject_name += [text[index]]
         index += 1
         if index >= len(text):
             break
-    return subject_name
+    return " ".join(subject_name)
 
 
 def extract_text_from_pdf(pdf_path: str,
