@@ -13,7 +13,7 @@ const bacon = "Bacon ipsum dolor amet prosciutto buffalo corned beef beef ham " 
   "tongue shankle tenderloin porchetta picanha frankfurter short" +
   "ribs andouille ham hock bresaola alcatra."
 
-const demo_review = {
+const demoReview = {
   "course": {
     "course_id": "1346012",
     "course_name": "Bacon Ipsum 101",
@@ -80,7 +80,7 @@ export default function Home() {
         />
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
-      <ReviewCard course={demo_review.course} reviews={demo_review.reviews} reviewer={demo_review.reviewer}/>
+      <ReviewCard course={demoReview.course} reviews={demoReview.reviews} reviewer={demoReview.reviewer}/>
     </div>
   );
 }
