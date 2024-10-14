@@ -4,7 +4,7 @@ import pymysql
 
 from ninja import NinjaAPI
 from decouple import config
-
+from backend.forms.db_management import DatabaseManagement, MySQLConnection
 api = NinjaAPI()
 
 
@@ -14,32 +14,4 @@ def database(request):
     """Use for send the data to frontend."""
     print(request)
 
-    timeout = 10
-    connection = pymysql.connect(
-        charset="utf8mb4",
-        connect_timeout=timeout,
-        cursorclass=pymysql.cursors.DictCursor,
-        db=config('MYSQLDATABASE', cast=str,
-                            default='Nergigante'),
-        host=config('MYSQLHOST', cast=str,
-                            default='Yes Indeed'),
-        password=config('MYSQLPASS', cast=str,
-                        default='do_not_give_up_skeleton'),
-        read_timeout=timeout,
-        port=22924,
-        user=config('MYSQLUSER', cast=str,
-                    default='praise_the_sun'),
-        write_timeout=timeout,
-    )
-
-    try:
-        cursor = connection.cursor()
-        cursor.execute("DROP TABLE IF EXISTS mytest")
-        cursor.execute("CREATE TABLE mytest (id INTEGER PRIMARY KEY)")
-        cursor.execute("INSERT INTO mytest (id) VALUES (1), (2)")
-        cursor.execute("SELECT * FROM mytest")
-        send_data = cursor.fetchall()
-        return send_data
-
-    finally:
-        connection.close()
+    return DatabaseManagement(MySQLConnection()).send_all_course_data()

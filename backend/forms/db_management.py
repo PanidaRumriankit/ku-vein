@@ -42,13 +42,27 @@ class DatabaseManagement:
     """Main class for handle the request from frontend"""
     def __init__(self, connection: MySQLConnection):
         self.data = None
-        self.connection = connection
+        self.con = connection
         self.cursor = connection.cursor
 
         self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
 
+    def connect(self):
+        """Connect to MySQL server and initialize cursor."""
+        self.con.connect()
+        self.cursor = self.con.cursor
+
     def send_all_course_data(self):
-        pass
+        """Send the course_id, course_name, and faculty to frontend."""
+        self.connect()
+
+        try:
+            self.cursor.execute("SELECT * FROM CourseData")
+            return self.cursor.fetchall()
+
+        finally:
+            self.con.close()
+
 
 class TableManagement:
     """Class for managing tables in MySQL server."""
