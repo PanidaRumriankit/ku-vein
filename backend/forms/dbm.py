@@ -125,7 +125,8 @@ class DatabaseBackup:
         self.con.connect()
         self.cursor = self.con.cursor
 
-    def json_converter(self, data_from_server):
+    @staticmethod
+    def json_converter(data_from_server):
         """Convert data from MySQL server to JSON."""
         result_data = {}
 
@@ -142,6 +143,8 @@ class DatabaseBackup:
 
     def local_backup(self):
         """Used for pull all data from MySQL server to local every sunday."""
+
+        self.connect()
 
         try:
             for table in self.table_name:
@@ -190,18 +193,7 @@ class DatabaseBackup:
                     print(faculty, course_id, course_name)
                 print("Inserting...")
 
-            self.cursor.execute("SELECT * FROM CourseData")
-            print(f"Result: {self.cursor.fetchall()}")
-
             self.con.connection.commit()
         finally:
 
             self.con.close()
-
-
-t = TableManagement(MySQLConnection())
-t.table_initialize()
-d = DatabaseBackup(MySQLConnection())
-d.exist_data_loader()
-d.insert_data_to_remote()
-d.local_backup()
