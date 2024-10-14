@@ -101,12 +101,31 @@ class DatabaseManagement:
 
         self.data = all_faculty
 
-    def insert_to_db_server(self):
+
+    def insert_course_data(self):
         """Used for insert database to the database server."""
-        pass
+
+        self.table_initialize()
+        self.connect_mysql_server()
+
+        try:
+
+            for faculty, course_data in self.data.items():
+                for course_id, course_name in course_data.items():
+                    self.cursor.execute(
+                        "INSERT INTO CourseData (course_id, faculty, course_name) "
+                        "VALUES (%s, %s, %s)", (course_id, faculty, course_name)
+                    )
+                    print(faculty, course_id, course_name)
+                print("Inserting...")
+
+            self.cursor.execute("SELECT * FROM CourseData")
+            print(f"Result: {self.cursor.fetchall()}")
+        finally:
+            self.connection.close()
 
 
 
 d = DatabaseManagement()
 
-d.table_initialize()
+d.insert_course_data()
