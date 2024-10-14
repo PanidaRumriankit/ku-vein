@@ -3,9 +3,24 @@
 import Image from "next/image";
 import {useState, useMemo} from "react";
 import {Button} from "@nextui-org/button";
-import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUpTwoTone';
 import Sorting from "./components/sorting.jsx";
-import ReportButton from "./components/reportbutton.jsx";
+import ReviewCard from "./components/review_card.jsx";
+
+const bacon = "Bacon ipsum dolor amet prosciutto buffalo corned beef beef ham " +
+  "hock. Landjaeger sausage boudin bresaola andouille bacon turkey" +
+  "pastrami buffalo short loin swine. Short ribs sirloin pork beef" +
+  "cow pork chop bresaola swine. Swine sausage turducken hamburger" +
+  "tongue shankle tenderloin porchetta picanha frankfurter short" +
+  "ribs andouille ham hock bresaola alcatra."
+
+const demo_review = {
+  "course": {
+    "course_id": "1346012",
+    "course_name": "Bacon Ipsum 101",
+  },
+  "reviews": bacon,
+  "reviewer": "Ichi"
+}
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -65,33 +80,7 @@ export default function Home() {
         />
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
-      <div
-        className="w-full max-w-5xl text-black dark:text-white">
-        <fieldset className="border border-gray-300 rounded-md p-4">
-          <legend
-            className="p-2 border-solid border rounded text-black font-bold border-gray-300 dark:text-white">
-            1346012 | Bacon Ipsum 101
-          </legend>
-          <div className="text-black dark:text-white">
-            <p>Bacon ipsum dolor amet prosciutto buffalo corned beef beef ham
-              hock. Landjaeger sausage boudin bresaola andouille bacon turkey
-              pastrami buffalo short loin swine. Short ribs sirloin pork beef
-              cow pork chop bresaola swine. Swine sausage turducken hamburger
-              tongue shankle tenderloin porchetta picanha frankfurter short
-              ribs andouille ham hock bresaola alcatra.</p>
-            <br/>
-            <p className="text-gray-300 text-right">Ichi</p>
-            <hr/>
-            <div className="text-gray-300 flex justify-between">
-              <p className="text-left"><ThumbUpTwoToneIcon/></p>
-              <div className="text-right">
-                <ReportButton/>
-                <Button>Share</Button>
-              </div>
-            </div>
-          </div>
-        </fieldset>
-      </div>
+      <ReviewCard course={demo_review.course} reviews={demo_review.reviews} reviewer={demo_review.reviewer}/>
     </div>
   );
 }
