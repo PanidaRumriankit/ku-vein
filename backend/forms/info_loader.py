@@ -10,9 +10,10 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 DAYS = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
-NOT_COURSE_NAME = ['Pre']
+NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or']
 FORBIDDEN_WORD = NOT_COURSE_NAME + DAYS
-ROMAN_NUMBER = ['I', 'II', 'III']
+ROMAN_NUMBER = ['I', 'II', 'III', 'IV', 'V', 'VI']
+RESULT_DATA = {}
 
 
 def get_url() -> list[str]:
@@ -137,24 +138,33 @@ def handle_line(text: list[str], fac: str):
         return
     if is_left_over_subject(first):
         subject_name = get_subject_name(text, 0)
-        RESULT_DATA[fac][get_last_subject_id(fac)] += ' ' + subject_name
+        subject_id = get_last_subject_id(fac)
+        RESULT_DATA[fac][subject_id] += ' ' + subject_name
+        RESULT_DATA[fac][subject_id] = RESULT_DATA[fac][subject_id].strip()
         print('approve')
         return
     if not is_valid_line(text):
         reject.append(text)
         return
     subject_id = first
-    # if len(subject_id) != 8:
-    #     reject.append(text)
-    #     print('reject by id')
-    #     return
+    if not is_subject_id(subject_id):
+        return False
     subject_name = get_subject_name(text, 2)
+    if subject_name in FORBIDDEN_WORD:
+        print("reject by FORBIDDEN WORD")
+        return
     if len(subject_name) == 0:
         print('reject by name len')
         reject.append(text)
         return
     print('approve')
-    RESULT_DATA[fac][subject_id] = subject_name
+    RESULT_DATA[fac][subject_id] = subject_name.strip()
+
+
+def is_subject_id(text: str):
+    if text.isnumeric() and len(text) == 8:
+        return True
+    return False
 
 
 def is_left_over_subject(text: str):
@@ -182,10 +192,11 @@ def extract_text_from_pdf(pdf_path: str,
                           filename: str) -> dict[str, dict[str, str]]:
     """Extract text from the PDF using pdfplumber."""
     print(f"Start Extract Text From {filename}\n")
+    global RESULT_DATA
+    RESULT_DATA = {}
     with pdfplumber.open(pdf_path) as pdf:
         group_id = ""
         faculty = "undefined"
-        global RESULT_DATA
         RESULT_DATA[faculty] = {}
         # Loop PDF pages
         for page in pdf.pages:
@@ -263,6 +274,5 @@ def create_data():
 
 
 reject = []
-RESULT_DATA = {}
 create_data()
 # print(*reject, sep='\n\n')
