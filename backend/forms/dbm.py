@@ -3,16 +3,14 @@ import pymysql
 
 from decouple import config
 
-class DatabaseManagement:
+class MySQLConnection:
+    """Class for connect to the MySQL server."""
+
     def __init__(self):
-        self.data = None
         self.connection = None
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
-        self.exist_data_loader()
-
-    def connect_mysql_server(self):
+    def connect(self):
         """Connect to MySQL server."""
         timeout = 10
         self.connection = pymysql.connect(
@@ -34,29 +32,47 @@ class DatabaseManagement:
 
         self.cursor = self.connection.cursor()
 
+    def close(self):
+        """Close MySQL connection."""
+        if self.connection:
+            self.connection.close()
+
+class TableManagement:
+    """Class for managing tables in MySQL server."""
+
+    def __init__(self, connection: MySQLConnection):
+        self.connection = connection
+        self.cursor = None
+        self.table_names = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
+
+    def connect(self):
+        """Connect to MySQL server and initialize cursor."""
+        self.connection.connect()
+        self.cursor = self.connection.cursor
+
     def table_initialize(self):
         """Create table in MySQL server."""
 
-        self.connect_mysql_server()
+        self.connection.connect()
 
         try:
 
-            self.drop_all_table()
+            self.drop_all_tables()
             self.cursor.execute("CREATE TABLE CourseData(course_id INT, faculty VARCHAR(100),"
-                           " course_name LONGTEXT, PRIMARY KEY (course_id, faculty))")
+                                " course_name LONGTEXT, PRIMARY KEY (course_id, faculty))")
 
             self.cursor.execute("CREATE TABLE ReviewStat(review_id INT, course_id INT, "
-                           "date_data DATE, grade CHAR(1), upvotes INT, "
-                           "PRIMARY KEY (review_id), "
-                           "FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
+                                "date_data DATE, grade CHAR(1), upvotes INT, "
+                                "PRIMARY KEY (review_id), "
+                                "FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
 
             self.cursor.execute("CREATE TABLE UserData(user_id INT UNIQUE, user_name VARCHAR(30) UNIQUE, "
-                           "user_type VARCHAR(20), email LONGTEXT, PRIMARY KEY (user_id))")
+                                "user_type VARCHAR(20), email LONGTEXT, PRIMARY KEY (user_id))")
 
             self.cursor.execute("CREATE TABLE CourseReview(review_id INT UNIQUE, user_id INT, course_id INT,"
-                           " reviews LONGTEXT, PRIMARY KEY (user_id, course_id),"
-                           " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
-                           " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
+                                " reviews LONGTEXT, PRIMARY KEY (user_id, course_id),"
+                                " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
+                                " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
 
             self.cursor.execute("CREATE TABLE Summary(course_id INT, user_id INT, sum_text LONGTEXT,"
                                 " PRIMARY KEY (user_id, course_id),"
@@ -72,18 +88,56 @@ class DatabaseManagement:
                                 " FOREIGN KEY (review_id) REFERENCES CourseReview(review_id) ON DELETE CASCADE,"
                                 " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE NO ACTION)")
 
+        finally:
+            self.connection.close()
+
+    def drop_all_tables(self):
+        """Drop all tables."""
+        for table_name in self.table_names:
+            self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+
+class DatabaseManagement:
+    """Main class for handle the request from frontend"""
+    def __init__(self, connection: MySQLConnection):
+        self.data = None
+        self.connection = connection
+        self.cursor = connection.cursor
+
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
+
+    def send_all_course_data(self):
+        pass
+
+class DatabaseBackup:
+    """Class for database backup."""
+
+    def __init__(self, connection: MySQLConnection):
+        self.data = None
+        self.connection = connection
+        self.cursor = None
+
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
+
+    def connect(self):
+        """Connect to MySQL server and initialize cursor."""
+        self.connection.connect()
+        self.cursor = self.connection.cursor
+
+    def local_backup(self):
+        """Used for pull all data from MySQL server to local every sunday."""
+
+        self.connect()
+
+        try:
+            for table in self.table_name:
+                self.cursor.execute(f"SELECT * FROM {table}")
+                print(self.cursor.fetchall())
 
         finally:
             self.connection.close()
 
-    def drop_all_table(self):
-        """Drop every table in the database."""
-        for drop in self.table_name:
-            self.cursor.execute(f"DROP TABLE IF EXISTS {drop}")
-
-
     def exist_data_loader(self):
-        """Combined all the data and separate by course programs."""
+        """Combined all the data in the folder and separate by course programs."""
         with open("./database/inter2.json", "r", encoding="UTF-8") as file:
             inter2 = json.load(file)
         with open("./database/inter1.json", "r", encoding="UTF-8") as file:
@@ -102,11 +156,10 @@ class DatabaseManagement:
         self.data = all_faculty
 
 
-    def insert_course_data(self):
-        """Used for insert database to the database server."""
+    def insert_data_to_remote(self):
+        """Used for insert the backup database to the database server."""
 
-        self.table_initialize()
-        self.connect_mysql_server()
+        self.connect()
 
         try:
 
@@ -126,6 +179,8 @@ class DatabaseManagement:
 
 
 
-d = DatabaseManagement()
 
-d.insert_course_data()
+d = DatabaseBackup(MySQLConnection())
+d.exist_data_loader()
+d.insert_data_to_remote()
+d.local_backup()
