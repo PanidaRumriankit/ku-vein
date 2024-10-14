@@ -3,6 +3,7 @@ import pymysql
 
 from decouple import config
 
+
 class MySQLConnection:
     """Class for connect to the MySQL server."""
 
@@ -37,6 +38,18 @@ class MySQLConnection:
         if self.connection:
             self.connection.close()
 
+class DatabaseManagement:
+    """Main class for handle the request from frontend"""
+    def __init__(self, connection: MySQLConnection):
+        self.data = None
+        self.connection = connection
+        self.cursor = connection.cursor
+
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
+
+    def send_all_course_data(self):
+        pass
+
 class TableManagement:
     """Class for managing tables in MySQL server."""
 
@@ -53,15 +66,15 @@ class TableManagement:
     def table_initialize(self):
         """Create table in MySQL server."""
 
-        self.connection.connect()
+        self.connect()
 
         try:
 
             self.drop_all_tables()
-            self.cursor.execute("CREATE TABLE CourseData(course_id INT, faculty VARCHAR(100),"
+            self.cursor.execute("CREATE TABLE CourseData(course_id VARCHAR(20), faculty VARCHAR(100),"
                                 " course_name LONGTEXT, PRIMARY KEY (course_id, faculty))")
 
-            self.cursor.execute("CREATE TABLE ReviewStat(review_id INT, course_id INT, "
+            self.cursor.execute("CREATE TABLE ReviewStat(review_id INT, course_id VARCHAR(20), "
                                 "date_data DATE, grade CHAR(1), upvotes INT, "
                                 "PRIMARY KEY (review_id), "
                                 "FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
@@ -69,12 +82,12 @@ class TableManagement:
             self.cursor.execute("CREATE TABLE UserData(user_id INT UNIQUE, user_name VARCHAR(30) UNIQUE, "
                                 "user_type VARCHAR(20), email LONGTEXT, PRIMARY KEY (user_id))")
 
-            self.cursor.execute("CREATE TABLE CourseReview(review_id INT UNIQUE, user_id INT, course_id INT,"
+            self.cursor.execute("CREATE TABLE CourseReview(review_id INT UNIQUE, user_id INT, course_id VARCHAR(20),"
                                 " reviews LONGTEXT, PRIMARY KEY (user_id, course_id),"
                                 " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
                                 " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
 
-            self.cursor.execute("CREATE TABLE Summary(course_id INT, user_id INT, sum_text LONGTEXT,"
+            self.cursor.execute("CREATE TABLE Summary(course_id VARCHAR(20), user_id INT, sum_text LONGTEXT,"
                                 " PRIMARY KEY (user_id, course_id),"
                                 " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
                                 " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
@@ -96,45 +109,51 @@ class TableManagement:
         for table_name in self.table_names:
             self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
-class DatabaseManagement:
-    """Main class for handle the request from frontend"""
-    def __init__(self, connection: MySQLConnection):
-        self.data = None
-        self.connection = connection
-        self.cursor = connection.cursor
-
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
-
-    def send_all_course_data(self):
-        pass
 
 class DatabaseBackup:
     """Class for database backup."""
 
     def __init__(self, connection: MySQLConnection):
         self.data = None
-        self.connection = connection
+        self.con = connection
         self.cursor = None
 
         self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
-        self.connection.connect()
-        self.cursor = self.connection.cursor
+        self.con.connect()
+        self.cursor = self.con.cursor
+
+    def json_converter(self, data_from_server):
+        """Convert data from MySQL server to JSON."""
+        result_data = {}
+
+        for data in data_from_server:
+
+            try:
+                result_data[data['faculty']][data['course_id']] = data['course_name']
+
+            except KeyError:
+                result_data[data['faculty']] = {}
+                result_data[data['faculty']][data['course_id']] = data['course_name']
+
+        return result_data
 
     def local_backup(self):
         """Used for pull all data from MySQL server to local every sunday."""
 
-        self.connect()
-
         try:
             for table in self.table_name:
                 self.cursor.execute(f"SELECT * FROM {table}")
-                print(self.cursor.fetchall())
+
+                # write JSON file in backup folder
+                with open(f"./database/backup/{table.lower()}_data", "w", encoding='utf-8') as overwrite_file:
+                    json.dump(self.json_converter(self.cursor.fetchall()), overwrite_file, ensure_ascii=False, indent=4)
+                print(f"Data saved to database/backup/{table.lower()}_data.json")
 
         finally:
-            self.connection.close()
+            self.con.close()
 
     def exist_data_loader(self):
         """Combined all the data in the folder and separate by course programs."""
@@ -155,7 +174,6 @@ class DatabaseBackup:
 
         self.data = all_faculty
 
-
     def insert_data_to_remote(self):
         """Used for insert the backup database to the database server."""
 
@@ -174,12 +192,15 @@ class DatabaseBackup:
 
             self.cursor.execute("SELECT * FROM CourseData")
             print(f"Result: {self.cursor.fetchall()}")
+
+            self.con.connection.commit()
         finally:
-            self.connection.close()
+
+            self.con.close()
 
 
-
-
+t = TableManagement(MySQLConnection())
+t.table_initialize()
 d = DatabaseBackup(MySQLConnection())
 d.exist_data_loader()
 d.insert_data_to_remote()
