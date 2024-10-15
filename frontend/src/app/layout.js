@@ -1,13 +1,28 @@
+"use client";
+
 import { inter } from "./fonts/fonts";
 import "./globals.css";
 import GitHubIcon from '@mui/icons-material/GitHub';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { ThemeSwitcher } from "./components/theme";
 import { ThemeProvider } from 'next-themes'
 import UserDropdown from "./components/userdropdown";
 import NotificationDropdown from "./components/notidropdown";
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import PersonIcon from '@mui/icons-material/Person';
 
 export default function RootLayout({ children }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem('authToken');
+      setIsLoggedIn(!!token);
+    };
+
+    checkLoginStatus();
+  }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
@@ -17,8 +32,19 @@ export default function RootLayout({ children }) {
               <a href="/" className="text-white text-xl font-bold hover:text-gray-200">KU Vein</a>
               <ul className="flex space-x-8">
                 <li><ThemeSwitcher /></li>
-                <li><NotificationDropdown /></li>
-                <li><UserDropdown /></li>
+                {isLoggedIn ? (
+                  <>
+                    <li><NotificationDropdown /></li>
+                    <li><UserDropdown /></li>
+                  </>
+                ) : (
+                  <li>
+                    <Link href="/login" className="flex items-center text-white hover:text-gray-200">
+                      <PersonIcon className="mr-2" />
+                      <span>Log in / Sign up</span>
+                    </Link>
+                  </li>
+                )}
               </ul>
             </div>
           </nav>
