@@ -7,22 +7,9 @@ import {
 } from "@nextui-org/dropdown";
 import {Button} from "@nextui-org/button";
 import TuneTwoToneIcon from "@mui/icons-material/TuneTwoTone";
+import {sortOption} from "../constants";
 
 export default function Sorting({selectedKeys, setSelectedKeys}) {
-  const list = [
-    {
-      key: "earliest",
-      value: "Earliest"
-    },
-    {
-      key: "latest",
-      value: "Latest"
-    },
-    {
-      key: "upvote",
-      value: "Upvote"
-    }
-  ]
   return (
     <div
       className="w-full max-w-6xl flex justify-end my-4 text-black dark:text-white">
@@ -44,7 +31,7 @@ export default function Sorting({selectedKeys, setSelectedKeys}) {
         >
           <DropdownSection title="Sort by"
                            className="text-black dark:text-white">
-            {list.map((item) => (
+            {sortOption.map((item) => (
               <DropdownItem key={item.key}>{item.value}</DropdownItem>
             ))}
         </DropdownSection>

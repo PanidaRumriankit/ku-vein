@@ -5,22 +5,8 @@ import {useState, useMemo} from "react";
 import {Button} from "@nextui-org/button";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/review_card.jsx";
+import {demoReview} from "./constants";
 
-const bacon = "Bacon ipsum dolor amet prosciutto buffalo corned beef beef ham " +
-  "hock. Landjaeger sausage boudin bresaola andouille bacon turkey" +
-  "pastrami buffalo short loin swine. Short ribs sirloin pork beef" +
-  "cow pork chop bresaola swine. Swine sausage turducken hamburger" +
-  "tongue shankle tenderloin porchetta picanha frankfurter short" +
-  "ribs andouille ham hock bresaola alcatra."
-
-const demoReview = {
-  "course": {
-    "course_id": "1346012",
-    "course_name": "Bacon Ipsum 101",
-  },
-  "reviews": bacon,
-  "reviewer": "Ichi"
-}
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -80,7 +66,8 @@ export default function Home() {
         />
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews} reviewer={demoReview.reviewer}/>
+      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
+                  reviewer={demoReview.reviewer}/>
     </div>
   );
 }
