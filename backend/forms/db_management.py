@@ -185,7 +185,7 @@ class DatabaseBackup:
                 self.con.close()
 
             with open('database/backup/logs.json', 'w', encoding='UTF-8') as log_file:
-                json.dump(datetime.now().date(), log_file, ensure_ascii=False, indent=4)
+                json.dump(str(datetime.now().date()), log_file, ensure_ascii=False, indent=4)
             print(f"Data saved to database/backup/logs.json")
 
     def exist_data_loader(self):
