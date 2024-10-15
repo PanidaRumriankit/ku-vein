@@ -1,6 +1,7 @@
 import json
 import pymysql
 
+from datetime import datetime
 from decouple import config
 
 
@@ -155,22 +156,37 @@ class DatabaseBackup:
 
         return result_data
 
+    @staticmethod
+    def check_date():
+        """Check is it time to back up?"""
+        with open('database/backup/logs.json', 'r', encoding='UTF-8') as log_file:
+            last_updated = datetime.strptime(json.load(log_file)['last-updated'], "%Y-%m-%d").date()
+
+        if (datetime.now().date() - last_updated).days >= 7:
+            return True
+        return False
+
     def local_backup(self):
-        """Used for pull all data from MySQL server to local every sunday."""
+        """Used for pull all data from MySQL server to local every week."""
 
-        self.connect()
+        if self.check_date():
+            self.connect()
 
-        try:
-            for table in self.table_name:
-                self.cursor.execute(f"SELECT * FROM {table}")
+            try:
+                for table in self.table_name:
+                    self.cursor.execute(f"SELECT * FROM {table}")
 
-                # write JSON file in backup folder
-                with open(f"./database/backup/{table.lower()}_data", "w", encoding='utf-8') as overwrite_file:
-                    json.dump(self.json_converter(self.cursor.fetchall()), overwrite_file, ensure_ascii=False, indent=4)
-                print(f"Data saved to database/backup/{table.lower()}_data.json")
+                    # write JSON file in backup folder
+                    with open(f"./database/backup/{table.lower()}_data.่json", "w", encoding='UTF-8') as overwrite_file:
+                        json.dump(self.json_converter(self.cursor.fetchall()), overwrite_file, ensure_ascii=False, indent=4)
+                    print(f"Data saved to database/backup/{table.lower()}_data.json")
 
-        finally:
-            self.con.close()
+            finally:
+                self.con.close()
+
+            with open('database/backup/logs.json', 'w', encoding='UTF-8') as log_file:
+                json.dump(datetime.now().date(), log_file, ensure_ascii=False, indent=4)
+            print(f"Data saved to database/backup/logs.json")
 
     def exist_data_loader(self):
         """Combined all the data in the folder and separate by course programs."""

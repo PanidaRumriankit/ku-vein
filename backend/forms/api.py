@@ -1,12 +1,12 @@
 """This module use for send the data from Django to Next.js."""
 
-import pymysql
-
 from ninja import NinjaAPI
 from decouple import config
-from .db_management import DatabaseManagement, MySQLConnection
+from .db_management import DatabaseManagement, MySQLConnection, DatabaseBackup
+from datetime import datetime
 
 api = NinjaAPI()
+connect = MySQLConnection()
 
 
 @api.get(config('DJANGO_API_ENDPOINT',
@@ -15,4 +15,10 @@ def database(request):
     """Use for send the data to frontend."""
     print(request)
 
-    return DatabaseManagement(MySQLConnection()).send_all_course_data()
+    return DatabaseManagement(connect).send_all_course_data()
+
+def backup(request):
+    """Use for download data from MySQL server to local"""
+    print(request)
+
+    DatabaseBackup(connect).local_backup()
