@@ -4,7 +4,7 @@ import pymysql
 
 from ninja import NinjaAPI
 from decouple import config
-from backend.forms.db_management import DatabaseManagement, MySQLConnection
+from .db_management import DatabaseManagement, MySQLConnection
 
 api = NinjaAPI()
 
