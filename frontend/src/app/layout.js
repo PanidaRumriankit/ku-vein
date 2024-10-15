@@ -5,6 +5,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { ThemeSwitcher } from "./components/theme";
 import { ThemeProvider } from 'next-themes'
 import UserDropdown from "./components/userdropdown";
+import NotificationDropdown from "./components/notidropdown";
 
 export default function RootLayout({ children }) {
   return (
@@ -16,7 +17,7 @@ export default function RootLayout({ children }) {
               <a href="/" className="text-white text-xl font-bold hover:text-gray-200">KU Vein</a>
               <ul className="flex space-x-8">
                 <li><ThemeSwitcher /></li>
-                <li><NotificationsIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" /></li>
+                <li><NotificationDropdown /></li>
                 <li><UserDropdown /></li>
               </ul>
             </div>
