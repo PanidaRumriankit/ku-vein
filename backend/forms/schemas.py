@@ -4,4 +4,4 @@ from .models import CourseData
 class CourseDataSchema(ModelSchema):
     class Meta:
         model = CourseData
-        fields = ('course_id', 'faculty', 'course_name')
+        fields = ('course_id', 'faculty', 'course_type', 'course_name')

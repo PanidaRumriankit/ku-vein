@@ -5,6 +5,7 @@ from django.db import models
 class CourseData(models.Model):
     course_id = models.CharField(max_length=20)
     faculty = models.CharField(max_length=100)
+    course_type = models.CharField(max_length=20)
     course_name = models.TextField()
 
     class Meta:

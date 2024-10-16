@@ -5,8 +5,7 @@ import pymysql
 
 from datetime import datetime
 from decouple import config
-from backend.forms.models import CourseData
-from backend.forms.schemas import CourseDataSchema
+from .models import CourseData
 
 
 class MySQLConnection:
@@ -57,7 +56,7 @@ class DatabaseManagement:
         self.cursor = self.con.cursor
 
     @staticmethod
-    def send_all_course_data(self):
+    def send_all_course_data():
         """Send the course_id, course_name, and faculty to frontend."""
         return CourseData.objects.all()
 
@@ -68,13 +67,17 @@ class TableManagement:
     def __init__(self, connection: MySQLConnection):
         self.connection = connection
         self.cursor = None
+        self.table_name = ["auth_group_permissions", "auth_user_user_permissions",
+                           "auth_user_groups", "auth_group", "auth_permission",
+                           "django_admin_log", "auth_user", "django_content_type", "BookMark",
+                           "QA", "Summary", "ReviewStat", "CourseReview", "UserData", "CourseData"]
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.connection.connect()
         self.cursor = self.connection.cursor
 
-    def get_table_name(self):
+    def get_table_name(self) -> list:
         """GET all the tables name in MySQL server."""
         self.cursor.execute("SHOW TABLES")
 
@@ -90,10 +93,9 @@ class TableManagement:
 
         try:
 
-            for table_name in self.get_table_name():
+            for table_name in self.table_name:
                 self.cursor.execute(f"DROP TABLE IF EXISTS "
-                                    f"{table_name[f'Tables_in_{config('MYSQLDATABASE',
-                                                                      cast=str, default='Nergigante')}']}")
+                                    f"{table_name}")
 
             print("Successfully Dropped tables\n")
 
@@ -193,10 +195,10 @@ class DatabaseBackup:
             for faculty, course_data in self.data.items():
                 for course_id, course_name in course_data.items():
                     self.cursor.execute(
-                        "INSERT INTO CourseData (course_id, faculty, course_name) "
-                        "VALUES (%s, %s, %s)", (course_id, faculty, course_name)
+                        "INSERT INTO CourseData (course_id, faculty, course_type, course_name) "
+                        "VALUES (%s, %s, %s)", (course_id, faculty, "inter", course_name)
                     )
-                    print(faculty, course_id, course_name)
+                    print(faculty, course_id, "inter", course_name)
                 print("Inserting...\n")
 
             self.con.connection.commit()
