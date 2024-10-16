@@ -1,8 +1,12 @@
+"""This module focus on contact with MySQL server."""
+
 import json
 import pymysql
 
 from datetime import datetime
 from decouple import config
+from backend.forms.models import CourseData
+from backend.forms.schemas import CourseDataSchema
 
 
 class MySQLConnection:
@@ -39,6 +43,7 @@ class MySQLConnection:
         if self.connection:
             self.connection.close()
 
+
 class DatabaseManagement:
     """Main class for handle the request from frontend"""
     def __init__(self, connection: MySQLConnection):
@@ -46,23 +51,16 @@ class DatabaseManagement:
         self.con = connection
         self.cursor = connection.cursor
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
-
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.con.connect()
         self.cursor = self.con.cursor
 
+    @staticmethod
     def send_all_course_data(self):
         """Send the course_id, course_name, and faculty to frontend."""
-        self.connect()
+        return CourseData.objects.all()
 
-        try:
-            self.cursor.execute("SELECT * FROM CourseData")
-            return self.cursor.fetchall()
-
-        finally:
-            self.con.close()
 
 class TableManagement:
     """Class for managing tables in MySQL server."""
@@ -70,20 +68,32 @@ class TableManagement:
     def __init__(self, connection: MySQLConnection):
         self.connection = connection
         self.cursor = None
-        self.table_names = ['BookMark', 'QA', 'Summary', 'ReviewStat','CourseReview', 'UserData', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.connection.connect()
         self.cursor = self.connection.cursor
 
+    def get_table_name(self):
+        """GET all the tables name in MySQL server."""
+        self.cursor.execute("SHOW TABLES")
+
+        return self.cursor.fetchall()
+
     def drop_all_tables(self):
-        """Drop all tables. In the MySQL server."""
+        """
+        Drop all tables. In the MySQL server.
+
+        Don't forget to run migrate again after drop_all_table!
+        """
         self.connect()
 
         try:
-            for table_name in self.table_names:
-                self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
+
+            for table_name in self.get_table_name():
+                self.cursor.execute(f"DROP TABLE IF EXISTS "
+                                    f"{table_name[f'Tables_in_{config('MYSQLDATABASE',
+                                                                      cast=str, default='Nergigante')}']}")
 
             print("Successfully Dropped tables\n")
 
