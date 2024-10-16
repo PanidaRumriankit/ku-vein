@@ -5,8 +5,7 @@ import pymysql
 
 from datetime import datetime
 from decouple import config
-from .models import CourseData
-
+from backend.forms.models import CourseData
 
 class MySQLConnection:
     """Class for connect to the MySQL server."""
@@ -196,7 +195,7 @@ class DatabaseBackup:
                 for course_id, course_name in course_data.items():
                     self.cursor.execute(
                         "INSERT INTO CourseData (course_id, faculty, course_type, course_name) "
-                        "VALUES (%s, %s, %s)", (course_id, faculty, "inter", course_name)
+                        "VALUES (%s, %s, %s, %s)", (course_id, faculty, "inter", course_name)
                     )
                     print(faculty, course_id, "inter", course_name)
                 print("Inserting...\n")
