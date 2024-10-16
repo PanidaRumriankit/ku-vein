@@ -9,7 +9,7 @@ class CourseData(models.Model):
 
     class Meta:
         db_table = 'CourseData'  # Specify the exact table name in MySQL
-        unique_together = ('course_id', 'faculty')  # Enforce uniqueness
+        unique_together = ('course_id', 'faculty')
 
 class UserData(models.Model):
     user_id = models.AutoField(primary_key=True, unique=True)
@@ -21,18 +21,17 @@ class UserData(models.Model):
         db_table = 'UserData'
 
 class CourseReview(models.Model):
-    review_id = models.AutoField(unique=True)
+    review_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE)
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='reviews')
+    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='faculty_reviews')
     reviews = models.TextField()
 
     class Meta:
         db_table = 'CourseReview'
-        unique_together = ('user_id', 'course_id')  # Enforce uniqueness
 
 class ReviewStat(models.Model):
-    review_id = models.ForeignKey(CourseReview, on_delete=models.CASCADE, primary_key=True)  # Set review_id as FK
+    review_id = models.OneToOneField(CourseReview, on_delete=models.CASCADE, primary_key=True)
     date_data = models.DateField()
     grade = models.CharField(max_length=2)
     upvotes = models.IntegerField()
@@ -41,23 +40,22 @@ class ReviewStat(models.Model):
         db_table = 'ReviewStat'
 
 class Summary(models.Model):
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE)
+    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='summaries')
     user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
     sum_text = models.TextField()
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE)
+    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='faculty_summaries')
 
     class Meta:
         db_table = 'Summary'
-        unique_together = ('course_id', 'user_id')  # Enforce uniqueness
+        unique_together = ('course_id', 'user_id')
 
 class QA(models.Model):
-    question_id = models.AutoField(unique=True)
+    question_id = models.AutoField(unique=True, primary_key=True)
     user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
     comment = models.TextField()
 
     class Meta:
         db_table = 'QA'
-        unique_together = ('question_id', 'user_id')  # Enforce uniqueness
 
 class BookMark(models.Model):
     review_id = models.ForeignKey(CourseReview, on_delete=models.CASCADE)
@@ -65,4 +63,4 @@ class BookMark(models.Model):
 
     class Meta:
         db_table = 'BookMark'
-        unique_together = ('review_id', 'user_id')  # Enforce uniqueness
+        unique_together = ('review_id', 'user_id')
