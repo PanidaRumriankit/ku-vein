@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'backend',
-    'backend.forms',
     'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',

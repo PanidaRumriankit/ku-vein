@@ -55,17 +55,14 @@ class DatabaseManagement:
 
     def send_all_course_data(self):
         """Send the course_id, course_name, and faculty to frontend."""
-        # self.connect()
-        #
-        # try:
-        #     self.cursor.execute("SELECT * FROM CourseData")
-        #     return self.cursor.fetchall()
-        #
-        # finally:
-        #     self.con.close()
+        self.connect()
 
+        try:
+            self.cursor.execute("SELECT * FROM CourseData")
+            return self.cursor.fetchall()
 
-
+        finally:
+            self.con.close()
 
 class TableManagement:
     """Class for managing tables in MySQL server."""
@@ -80,54 +77,18 @@ class TableManagement:
         self.connection.connect()
         self.cursor = self.connection.cursor
 
-    def table_initialize(self):
-        """Create tables in MySQL server."""
-
+    def drop_all_tables(self):
+        """Drop all tables. In the MySQL server."""
         self.connect()
 
         try:
+            for table_name in self.table_names:
+                self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
-            self.drop_all_tables()
-            # self.cursor.execute("CREATE TABLE CourseData(course_id VARCHAR(20), faculty VARCHAR(100),"
-            #                     " course_name LONGTEXT, PRIMARY KEY (course_id, faculty))")
-            #
-            # self.cursor.execute("CREATE TABLE UserData(user_id INT UNIQUE, user_name VARCHAR(30) UNIQUE, "
-            #                     "user_type VARCHAR(20), email LONGTEXT, PRIMARY KEY (user_id))")
-            #
-            # self.cursor.execute("CREATE TABLE CourseReview(review_id INT UNIQUE, user_id INT, course_id VARCHAR(20),"
-            #                     " faculty VARCHAR(100), reviews LONGTEXT, PRIMARY KEY (user_id, course_id),"
-            #                     " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
-            #                     " FOREIGN KEY (course_id, faculty) REFERENCES CourseData(course_id, faculty) ON DELETE CASCADE)")
-            #
-            # self.cursor.execute("CREATE TABLE ReviewStat(review_id INT, "
-            #                     "date_data DATE, grade CHAR(2), upvotes INT, "
-            #                     "PRIMARY KEY (review_id), "
-            #                     "FOREIGN KEY (review_id) REFERENCES CourseReview(review_id) ON DELETE CASCADE)")
-            #
-            # self.cursor.execute("CREATE TABLE Summary(course_id VARCHAR(20), user_id INT,"
-            #                     " sum_text LONGTEXT, faculty VARCHAR(100),"
-            #                     " PRIMARY KEY (user_id, course_id),"
-            #                     " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
-            #                     " FOREIGN KEY (course_id, faculty) REFERENCES CourseData(course_id, faculty) ON DELETE CASCADE)")
-            #
-            # self.cursor.execute("CREATE TABLE QA(question_id INT UNIQUE, user_id INT, comment LONGTEXT,"
-            #                     " PRIMARY KEY (question_id),"
-            #                     " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE)")
-            #
-            # self.cursor.execute("CREATE TABLE BookMark(review_id INT, user_id INT,"
-            #                     " PRIMARY KEY (review_id, user_id),"
-            #                     " FOREIGN KEY (review_id) REFERENCES CourseReview(review_id) ON DELETE CASCADE,"
-            #                     " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE NO ACTION)")
-
-            print("Successfully Created tables\n")
+            print("Successfully Dropped tables\n")
 
         finally:
             self.connection.close()
-
-    def drop_all_tables(self):
-        """Drop all tables."""
-        for table_name in self.table_names:
-            self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
 
 class DatabaseBackup:
@@ -231,11 +192,8 @@ class DatabaseBackup:
             self.con.connection.commit()
 
             print("Successfully Saved in MySQL server\n")
+
         finally:
 
             self.con.close()
 
-# c = MySQLConnection()
-# da = DatabaseManagement(c)
-#
-# print(da.send_all_course_data())
