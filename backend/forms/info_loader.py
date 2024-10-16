@@ -242,7 +242,7 @@ def create_data():
     pdf_urls = get_url()
     BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
-    directory_path = BASE_PATH + "/database"
+    directory_path = BASE_PATH + "/database/scraped_data"
 
     # Loop through each PDF URL, download, and extract text
     set_filenames = ["normal2", "special2",

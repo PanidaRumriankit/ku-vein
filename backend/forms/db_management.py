@@ -117,6 +117,8 @@ class TableManagement:
                                 " FOREIGN KEY (review_id) REFERENCES CourseReview(review_id) ON DELETE CASCADE,"
                                 " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE NO ACTION)")
 
+            print("Successfully Created tables\n")
+
         finally:
             self.connection.close()
 
@@ -191,9 +193,9 @@ class DatabaseBackup:
 
     def exist_data_loader(self):
         """Combined all the data in the folder and separate by course programs."""
-        with open("./database/inter2.json", "r", encoding="UTF-8") as file:
+        with open("./database/scraped_data/inter2.json", "r", encoding="UTF-8") as file:
             inter2 = json.load(file)
-        with open("./database/inter1.json", "r", encoding="UTF-8") as file:
+        with open("./database/scraped_data/inter1.json", "r", encoding="UTF-8") as file:
             inter1 = json.load(file)
 
         all_faculty = {second: {} for second in inter2.keys()}
@@ -222,9 +224,11 @@ class DatabaseBackup:
                         "VALUES (%s, %s, %s)", (course_id, faculty, course_name)
                     )
                     print(faculty, course_id, course_name)
-                print("Inserting...")
+                print("Inserting...\n")
 
             self.con.connection.commit()
+
+            print("Successfully Saved in MySQL server\n")
         finally:
 
             self.con.close()
