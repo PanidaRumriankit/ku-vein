@@ -71,7 +71,7 @@ class TableManagement:
     def __init__(self, connection: MySQLConnection):
         self.connection = connection
         self.cursor = None
-        self.table_names = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
+        self.table_names = ['BookMark', 'QA', 'Summary', 'ReviewStat','CourseReview', 'UserData', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -79,7 +79,7 @@ class TableManagement:
         self.cursor = self.connection.cursor
 
     def table_initialize(self):
-        """Create table in MySQL server."""
+        """Create tables in MySQL server."""
 
         self.connect()
 
@@ -89,23 +89,24 @@ class TableManagement:
             self.cursor.execute("CREATE TABLE CourseData(course_id VARCHAR(20), faculty VARCHAR(100),"
                                 " course_name LONGTEXT, PRIMARY KEY (course_id, faculty))")
 
-            self.cursor.execute("CREATE TABLE ReviewStat(review_id INT, course_id VARCHAR(20), "
-                                "date_data DATE, grade CHAR(1), upvotes INT, "
-                                "PRIMARY KEY (review_id), "
-                                "FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
-
             self.cursor.execute("CREATE TABLE UserData(user_id INT UNIQUE, user_name VARCHAR(30) UNIQUE, "
                                 "user_type VARCHAR(20), email LONGTEXT, PRIMARY KEY (user_id))")
 
             self.cursor.execute("CREATE TABLE CourseReview(review_id INT UNIQUE, user_id INT, course_id VARCHAR(20),"
-                                " reviews LONGTEXT, PRIMARY KEY (user_id, course_id),"
+                                " faculty VARCHAR(100), reviews LONGTEXT, PRIMARY KEY (user_id, course_id),"
                                 " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
-                                " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
+                                " FOREIGN KEY (course_id, faculty) REFERENCES CourseData(course_id, faculty) ON DELETE CASCADE)")
 
-            self.cursor.execute("CREATE TABLE Summary(course_id VARCHAR(20), user_id INT, sum_text LONGTEXT,"
+            self.cursor.execute("CREATE TABLE ReviewStat(review_id INT, "
+                                "date_data DATE, grade CHAR(2), upvotes INT, "
+                                "PRIMARY KEY (review_id), "
+                                "FOREIGN KEY (review_id) REFERENCES CourseReview(review_id) ON DELETE CASCADE)")
+
+            self.cursor.execute("CREATE TABLE Summary(course_id VARCHAR(20), user_id INT,"
+                                " sum_text LONGTEXT, faculty VARCHAR(100),"
                                 " PRIMARY KEY (user_id, course_id),"
                                 " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
-                                " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
+                                " FOREIGN KEY (course_id, faculty) REFERENCES CourseData(course_id, faculty) ON DELETE CASCADE)")
 
             self.cursor.execute("CREATE TABLE QA(question_id INT UNIQUE, user_id INT, comment LONGTEXT,"
                                 " PRIMARY KEY (question_id, user_id),"
