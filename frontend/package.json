@@ -16,6 +16,7 @@
     "@nextui-org/dropdown": "^2.1.31",
     "@nextui-org/react": "^2.4.8",
     "next": "14.2.14",
+    "next-auth": "^4.24.8",
     "next-themes": "^0.3.0",
     "react": "^18",
     "react-dom": "^18"

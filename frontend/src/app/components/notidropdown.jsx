@@ -23,7 +23,7 @@ export default function NotificationDropdown() {
           <DropdownItem
             key={item.id}
             className={`
-              ${item.isRead ? "bg-white hover:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-600" : "bg-gray-100 hover:bg-white dark:bg-zinc-600 dark:hover:bg-zinc-800"}
+              ${item.isRead ? "bg-white hover:bg-gray-100 dark:bg-zinc-800 dark:hover:bg-zinc-700" : "bg-gray-100 hover:bg-white dark:bg-zinc-700 dark:hover:bg-zinc-800"}
               dark:text-white rounded-md transition-colors hover:cursor-pointer px-2 py-1
             `}
           >
