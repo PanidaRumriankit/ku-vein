@@ -4,24 +4,23 @@ import { inter } from "./fonts/fonts";
 import "./globals.css";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { ThemeSwitcher } from "./components/theme";
-import { ThemeProvider } from 'next-themes'
+import { ThemeProvider } from 'next-themes';
 import UserDropdown from "./components/userdropdown";
 import NotificationDropdown from "./components/notidropdown";
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import PersonIcon from '@mui/icons-material/Person';
+import { SessionProvider, useSession, signIn } from "next-auth/react";
 
 export default function RootLayout({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  return (
+    <SessionProvider>
+      <RootLayoutContent>{children}</RootLayoutContent>
+    </SessionProvider>
+  );
+}
 
-  useEffect(() => {
-    const checkLoginStatus = () => {
-      const token = localStorage.getItem('authToken');
-      setIsLoggedIn(!!token);
-    };
-
-    checkLoginStatus();
-  }, []);
+function RootLayoutContent({ children }) {
+  const { data: session } = useSession();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -32,17 +31,17 @@ export default function RootLayout({ children }) {
               <a href="/" className="text-white text-xl font-bold hover:text-gray-200">KU Vein</a>
               <ul className="flex space-x-8">
                 <li><ThemeSwitcher /></li>
-                {isLoggedIn ? (
+                {session ? (
                   <>
                     <li><NotificationDropdown /></li>
                     <li><UserDropdown /></li>
                   </>
                 ) : (
                   <li>
-                    <Link href="/login" className="flex items-center text-white hover:text-gray-200">
+                    <button onClick={() => signIn('google')} className="flex items-center text-white hover:text-gray-200">
                       <PersonIcon className="mr-2" />
                       <span>Log in / Sign up</span>
-                    </Link>
+                    </button>
                   </li>
                 )}
               </ul>
