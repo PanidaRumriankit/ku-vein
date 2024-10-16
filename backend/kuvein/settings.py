@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'backend',
+    'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
@@ -52,9 +54,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # corsheader middle ware
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'kuvein.urls'
+
+CORS_URLS_REGEX = r"^/api/.*$"
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000", # default Next.js
+    "http://127.0.0.1:3000", # Next.js
+]
 
 TEMPLATES = [
     {
@@ -80,8 +91,16 @@ WSGI_APPLICATION = 'kuvein.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': config('MYSQLDATABASE', cast=str,
+                      default='Nergigante'),
+        'USER': config('MYSQLUSER', cast=str,
+                       default='noppomummumnoppogoodboy'),
+        'PASSWORD': config('MYSQLPASS', cast=str,
+                           default='moodengmoodengdengdeng'),
+        'HOST': config('MYSQLHOST', cast=str,
+                           default='funfactredpandawillstandupiffeelingthreatenedtomakethemselvesappearbigger'),
+        'PORT': '22924',
     }
 }
 
