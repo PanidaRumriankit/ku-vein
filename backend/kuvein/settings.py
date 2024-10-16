@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    # third party
+    'backend',
     'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -92,7 +92,8 @@ WSGI_APPLICATION = 'kuvein.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'defaultdb',
+        'NAME': config('MYSQLDATABASE', cast=str,
+                      default='Nergigante'),
         'USER': config('MYSQLUSER', cast=str,
                        default='noppomummumnoppogoodboy'),
         'PASSWORD': config('MYSQLPASS', cast=str,

@@ -1,8 +1,12 @@
+"""This module focus on contact with MySQL server."""
+
 import json
 import pymysql
 
 from datetime import datetime
 from decouple import config
+from backend.forms.models import CourseData
+from backend.forms.schemas import CourseDataSchema
 
 
 class MySQLConnection:
@@ -39,6 +43,7 @@ class MySQLConnection:
         if self.connection:
             self.connection.close()
 
+
 class DatabaseManagement:
     """Main class for handle the request from frontend"""
     def __init__(self, connection: MySQLConnection):
@@ -46,23 +51,15 @@ class DatabaseManagement:
         self.con = connection
         self.cursor = connection.cursor
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
-
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.con.connect()
         self.cursor = self.con.cursor
 
+    @staticmethod
     def send_all_course_data(self):
         """Send the course_id, course_name, and faculty to frontend."""
-        self.connect()
-
-        try:
-            self.cursor.execute("SELECT * FROM CourseData")
-            return self.cursor.fetchall()
-
-        finally:
-            self.con.close()
+        return CourseData.objects.all()
 
 
 class TableManagement:
@@ -71,58 +68,37 @@ class TableManagement:
     def __init__(self, connection: MySQLConnection):
         self.connection = connection
         self.cursor = None
-        self.table_names = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.connection.connect()
         self.cursor = self.connection.cursor
 
-    def table_initialize(self):
-        """Create table in MySQL server."""
+    def get_table_name(self):
+        """GET all the tables name in MySQL server."""
+        self.cursor.execute("SHOW TABLES")
 
+        return self.cursor.fetchall()
+
+    def drop_all_tables(self):
+        """
+        Drop all tables. In the MySQL server.
+
+        Don't forget to run migrate again after drop_all_table!
+        """
         self.connect()
 
         try:
 
-            self.drop_all_tables()
-            self.cursor.execute("CREATE TABLE CourseData(course_id VARCHAR(20), faculty VARCHAR(100),"
-                                " course_name LONGTEXT, PRIMARY KEY (course_id, faculty))")
+            for table_name in self.get_table_name():
+                self.cursor.execute(f"DROP TABLE IF EXISTS "
+                                    f"{table_name[f'Tables_in_{config('MYSQLDATABASE',
+                                                                      cast=str, default='Nergigante')}']}")
 
-            self.cursor.execute("CREATE TABLE ReviewStat(review_id INT, course_id VARCHAR(20), "
-                                "date_data DATE, grade CHAR(1), upvotes INT, "
-                                "PRIMARY KEY (review_id), "
-                                "FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
-
-            self.cursor.execute("CREATE TABLE UserData(user_id INT UNIQUE, user_name VARCHAR(30) UNIQUE, "
-                                "user_type VARCHAR(20), email LONGTEXT, PRIMARY KEY (user_id))")
-
-            self.cursor.execute("CREATE TABLE CourseReview(review_id INT UNIQUE, user_id INT, course_id VARCHAR(20),"
-                                " reviews LONGTEXT, PRIMARY KEY (user_id, course_id),"
-                                " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
-                                " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
-
-            self.cursor.execute("CREATE TABLE Summary(course_id VARCHAR(20), user_id INT, sum_text LONGTEXT,"
-                                " PRIMARY KEY (user_id, course_id),"
-                                " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE,"
-                                " FOREIGN KEY (course_id) REFERENCES CourseData(course_id) ON DELETE CASCADE)")
-
-            self.cursor.execute("CREATE TABLE QA(question_id INT UNIQUE, user_id INT, comment LONGTEXT,"
-                                " PRIMARY KEY (question_id, user_id),"
-                                " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE CASCADE)")
-
-            self.cursor.execute("CREATE TABLE BookMark(review_id INT, user_id INT,"
-                                " PRIMARY KEY (review_id, user_id),"
-                                " FOREIGN KEY (review_id) REFERENCES CourseReview(review_id) ON DELETE CASCADE,"
-                                " FOREIGN KEY (user_id) REFERENCES UserData(user_id) ON DELETE NO ACTION)")
+            print("Successfully Dropped tables\n")
 
         finally:
             self.connection.close()
-
-    def drop_all_tables(self):
-        """Drop all tables."""
-        for table_name in self.table_names:
-            self.cursor.execute(f"DROP TABLE IF EXISTS {table_name}")
 
 
 class DatabaseBackup:
@@ -190,9 +166,9 @@ class DatabaseBackup:
 
     def exist_data_loader(self):
         """Combined all the data in the folder and separate by course programs."""
-        with open("./database/inter2.json", "r", encoding="UTF-8") as file:
+        with open("./database/scraped_data/inter2.json", "r", encoding="UTF-8") as file:
             inter2 = json.load(file)
-        with open("./database/inter1.json", "r", encoding="UTF-8") as file:
+        with open("./database/scraped_data/inter1.json", "r", encoding="UTF-8") as file:
             inter1 = json.load(file)
 
         all_faculty = {second: {} for second in inter2.keys()}
@@ -221,9 +197,13 @@ class DatabaseBackup:
                         "VALUES (%s, %s, %s)", (course_id, faculty, course_name)
                     )
                     print(faculty, course_id, course_name)
-                print("Inserting...")
+                print("Inserting...\n")
 
             self.con.connection.commit()
+
+            print("Successfully Saved in MySQL server\n")
+
         finally:
 
             self.con.close()
+

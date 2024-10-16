@@ -132,7 +132,6 @@ def handle_line(text: list[str], fac: str):
     global RESULT_DATA
     print(text)
     first = text[0]
-    # print(RESULT_DATA)
     if first in FORBIDDEN_WORD:
         print("reject by FORBIDDEN WORD")
         return
@@ -189,13 +188,12 @@ def get_subject_name(text: list[str], index: int = 0):
 
 
 def extract_text_from_pdf(pdf_path: str,
-                          filename: str) -> dict[str, dict[str, str]]:
+                          filename: str) -> None:
     """Extract text from the PDF using pdfplumber."""
     print(f"Start Extract Text From {filename}\n")
     global RESULT_DATA
     RESULT_DATA = {}
     with pdfplumber.open(pdf_path) as pdf:
-        group_id = ""
         faculty = "undefined"
         RESULT_DATA[faculty] = {}
         # Loop PDF pages
@@ -210,10 +208,7 @@ def extract_text_from_pdf(pdf_path: str,
             for line in lines:
                 cur_line = line.split()
 
-                if "รหัสวิชา" in line:
-                    group_id = line.split()[1]
-
-                elif "คณะ" == cur_line[0][:3]:
+                if "คณะ" == cur_line[0][:3]:
                     faculty = cur_line[0]
                     try:
                         if RESULT_DATA[faculty]:
@@ -242,7 +237,7 @@ def create_data():
     pdf_urls = get_url()
     BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 
-    directory_path = BASE_PATH + "/database"
+    directory_path = BASE_PATH + "/database/scraped_data"
 
     # Loop through each PDF URL, download, and extract text
     set_filenames = ["normal2", "special2",
@@ -275,4 +270,3 @@ def create_data():
 
 reject = []
 create_data()
-# print(*reject, sep='\n\n')
