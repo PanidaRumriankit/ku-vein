@@ -2,6 +2,7 @@
 
 from django.db import models
 
+
 class CourseData(models.Model):
     course_id = models.CharField(max_length=20)
     faculty = models.CharField(max_length=100)
@@ -12,6 +13,7 @@ class CourseData(models.Model):
         db_table = 'CourseData'  # Specify the exact table name in MySQL
         unique_together = ('course_id', 'faculty')
 
+
 class UserData(models.Model):
     user_id = models.AutoField(primary_key=True, unique=True)
     user_name = models.CharField(max_length=30, unique=True)
@@ -21,18 +23,23 @@ class UserData(models.Model):
     class Meta:
         db_table = 'UserData'
 
+
 class CourseReview(models.Model):
     review_id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='reviews')
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='faculty_reviews')
+    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE,
+                                  related_name='reviews')
+    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE,
+                                related_name='faculty_reviews')
     reviews = models.TextField()
 
     class Meta:
         db_table = 'CourseReview'
 
+
 class ReviewStat(models.Model):
-    review_id = models.OneToOneField(CourseReview, on_delete=models.CASCADE, primary_key=True)
+    review_id = models.OneToOneField(CourseReview, on_delete=models.CASCADE,
+                                     primary_key=True)
     date_data = models.DateField()
     grade = models.CharField(max_length=2)
     upvotes = models.IntegerField()
@@ -40,15 +47,19 @@ class ReviewStat(models.Model):
     class Meta:
         db_table = 'ReviewStat'
 
+
 class Summary(models.Model):
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='summaries')
+    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE,
+                                  related_name='summaries')
     user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
     sum_text = models.TextField()
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='faculty_summaries')
+    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE,
+                                related_name='faculty_summaries')
 
     class Meta:
         db_table = 'Summary'
         unique_together = ('course_id', 'user_id')
+
 
 class QA(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
@@ -57,6 +68,7 @@ class QA(models.Model):
 
     class Meta:
         db_table = 'QA'
+
 
 class BookMark(models.Model):
     review_id = models.ForeignKey(CourseReview, on_delete=models.CASCADE)

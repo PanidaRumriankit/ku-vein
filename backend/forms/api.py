@@ -10,7 +10,8 @@ connect = MySQLConnection()
 
 
 @app.get(config('DJANGO_API_ENDPOINT',
-                cast=str, default='for_the_dark_souls.ptt'), response=list[CourseDataSchema])
+         cast=str, default='for_the_dark_souls.ptt'),
+         response=list[CourseDataSchema])
 def database(request):
     """Use for send the data to frontend."""
     print(request)
