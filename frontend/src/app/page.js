@@ -2,9 +2,12 @@
 
 import {useState} from 'react';
 import Image from "next/image";
+import Search from './components/search';
 
-export default function Home() {
+export default function Home({ searchParams }) {
   const [data, setData] = useState([]);
+  const query = searchParams?.query || '';
+  console.log("Query:", query);
 
   async function GetDjangoApiData() {
     const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_ENDPOINT;
@@ -35,20 +38,22 @@ export default function Home() {
       <div className="mt-8 w-full max-w-6xl">
 
         {/* for testing you can delete this when you want */}
-        <button onClick={HandleClick}>
+        {/* <button onClick={HandleClick}>
           test button
-        </button>
+        </button> */}
 
         {/* for testing you can delete this when you want */}
-        <div>
+        {/* <div>
           {JSON.stringify(data)}
-        </div>
+        </div> */}
 
-        <input
+        <Search />
+
+        {/* <input
           type="text"
           placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
           className="w-full h-12 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-none focus:border-2"
-        />
+        /> */}
       </div>
     </div>
   );
