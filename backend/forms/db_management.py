@@ -1,10 +1,22 @@
 """This module focus on contact with MySQL server."""
 
+import os
+import sys
+import django
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
+
+django.setup()  # Initialize Django
+
 import json
 import pymysql
 
 from datetime import datetime
 from decouple import config
+from backend.forms.models import *
 
 class MySQLConnection:
     """Class for connect to the MySQL server."""
@@ -88,6 +100,8 @@ class TableManagement:
             self.connection.close()
 
     def show_data(self, table_name: str):
+        """Return all data from the specific table."""
+
         self.connect()
 
         try:
@@ -102,6 +116,8 @@ class TableManagement:
             self.connection.close()
 
     def show_attr(self, table_name: str):
+        """Show all attribute of the table."""
+
         self.connect()
 
         try:
@@ -114,6 +130,32 @@ class TableManagement:
 
         finally:
             self.connection.close()
+
+class DatabaseManagement:
+    """Class for add or delete value in MySQL server."""
+
+    def __init__(self):
+        self.data = None
+        self.con = MySQLConnection()
+        self.cursor = None
+
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
+
+    def connect(self):
+        """Connect to MySQL server and initialize cursor."""
+        self.con.connect()
+        self.cursor = self.con.cursor
+
+    @staticmethod
+    def add_course_data_to_sub(course_type: str):
+        """Add datas to the Inter, Special, Normal tables."""
+
+        filtered_data = CourseData.objects.filter(course_type=course_type)
+
+        for course in filtered_data:
+            Inter.objects.create(course_id=course.id, faculty=course.faculty)
+            print(f"Inserted: {course}")
+        print("Successfully Saved in MySQL server\n")
 
 
 class DatabaseBackup:
@@ -222,3 +264,6 @@ class DatabaseBackup:
 
             self.con.close()
 
+if __name__ == "__main__":
+    d = DatabaseManagement()
+    d.add_course_data_to_sub("inter")

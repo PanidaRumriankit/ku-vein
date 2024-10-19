@@ -1,4 +1,16 @@
+import os
+import sys
+import django
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
+
+django.setup()  # Initialize Django
+
 from backend.forms.models import CourseData
+
 
 
 class DatabaseQuery:
@@ -12,5 +24,7 @@ class DatabaseQuery:
         return CourseData.objects.all()
 
 
-d = DatabaseQuery()
-print(d.send_all_course_data())
+if __name__ == "__main__":
+    d = DatabaseQuery()
+    print(d.send_all_course_data())
+
