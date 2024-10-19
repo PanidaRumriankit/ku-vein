@@ -5,7 +5,7 @@ import pymysql
 
 from datetime import datetime
 from decouple import config
-# from .models import CourseData
+from .models import CourseData
 
 class MySQLConnection:
     """Class for connect to the MySQL server."""
@@ -54,10 +54,10 @@ class DatabaseManagement:
         self.con.connect()
         self.cursor = self.con.cursor
 
-    # @staticmethod
-    # def send_all_course_data():
-    #     """Send the course_id, course_name, and faculty to frontend."""
-    #     return CourseData.objects.all()
+    @staticmethod
+    def send_all_course_data():
+        """Send the course_id, course_name, and faculty to frontend."""
+        return CourseData.objects.all()
 
 
 class TableManagement:
