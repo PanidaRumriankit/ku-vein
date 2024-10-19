@@ -12,6 +12,33 @@ class CourseData(models.Model):
         db_table = 'CourseData'  # Specify the exact table name in MySQL
         unique_together = ('course_id', 'faculty')
 
+class Inter(models.Model):
+    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='inter_courses')
+    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='inter_faculties')
+
+    class Meta:
+        db_table = 'Inter'
+        unique_together = ('course_id', 'faculty')
+
+
+class Special(models.Model):
+    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='special_courses')
+    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='special_faculties')
+
+    class Meta:
+        db_table = 'Special'
+        unique_together = ('course_id', 'faculty')
+
+
+class Normal(models.Model):
+    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='normal_courses')
+    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='normal_faculties')
+
+    class Meta:
+        db_table = 'Normal'
+        unique_together = ('course_id', 'faculty')
+
+
 class UserData(models.Model):
     user_id = models.AutoField(primary_key=True, unique=True)
     user_name = models.CharField(max_length=30, unique=True)

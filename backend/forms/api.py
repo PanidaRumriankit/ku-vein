@@ -3,7 +3,7 @@
 from ninja import NinjaAPI
 from decouple import config
 from .db_management import DatabaseManagement, MySQLConnection, DatabaseBackup
-from backend.forms.schemas import CourseDataSchema
+from .schemas import CourseDataSchema
 
 app = NinjaAPI()
 connect = MySQLConnection()
