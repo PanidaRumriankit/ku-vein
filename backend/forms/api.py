@@ -2,11 +2,11 @@
 
 from ninja import NinjaAPI
 from decouple import config
-from .db_management import DatabaseManagement, MySQLConnection, DatabaseBackup
+from .db_management import DatabaseBackup
+from .db_query import DatabaseQuery
 from .schemas import CourseDataSchema
 
 app = NinjaAPI()
-connect = MySQLConnection()
 
 
 @app.get(config('DJANGO_API_ENDPOINT',
@@ -15,11 +15,11 @@ def database(request):
     """Use for send the data to frontend."""
     print(request)
 
-    return DatabaseManagement(connect).send_all_course_data()
+    return DatabaseQuery().send_all_course_data()
 
 
 def backup(request):
     """Use for download data from MySQL server to local"""
     print(request)
 
-    DatabaseBackup(connect).local_backup()
+    DatabaseBackup().local_backup()

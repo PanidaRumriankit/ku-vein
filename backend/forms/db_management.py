@@ -5,7 +5,6 @@ import pymysql
 
 from datetime import datetime
 from decouple import config
-from .models import CourseData
 
 class MySQLConnection:
     """Class for connect to the MySQL server."""
@@ -42,34 +41,17 @@ class MySQLConnection:
             self.connection.close()
 
 
-class DatabaseManagement:
-    """Main class for handle the request from frontend"""
-    def __init__(self, connection: MySQLConnection):
-        self.data = None
-        self.con = connection
-        self.cursor = connection.cursor
-
-    def connect(self):
-        """Connect to MySQL server and initialize cursor."""
-        self.con.connect()
-        self.cursor = self.con.cursor
-
-    @staticmethod
-    def send_all_course_data():
-        """Send the course_id, course_name, and faculty to frontend."""
-        return CourseData.objects.all()
-
-
 class TableManagement:
     """Class for managing tables in MySQL server."""
 
-    def __init__(self, connection: MySQLConnection):
-        self.connection = connection
+    def __init__(self):
+        self.connection = MySQLConnection()
         self.cursor = None
         self.table_name = ["auth_group_permissions", "auth_user_user_permissions",
                            "auth_user_groups", "auth_group", "auth_permission",
-                           "django_admin_log", "auth_user", "django_content_type", "BookMark",
-                           "QA", "Summary", "ReviewStat", "CourseReview", "UserData", "CourseData"]
+                           "django_admin_log", "auth_user", "django_content_type", "django_migrations",
+                           "django_session", "BookMark", "QA", "Summary", "ReviewStat",
+                           "CourseReview", "UserData", "Inter", "Normal", "Special", "CourseData"]
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -78,7 +60,11 @@ class TableManagement:
 
     def get_table_name(self) -> list:
         """GET all the tables name in MySQL server."""
+        self.connect()
+
         self.cursor.execute("SHOW TABLES")
+
+        self.connection.close()
 
         return self.cursor.fetchall()
 
@@ -101,16 +87,44 @@ class TableManagement:
         finally:
             self.connection.close()
 
+    def show_data(self, table_name: str):
+        self.connect()
+
+        try:
+            self.cursor.execute(
+                f"SELECT * FROM {table_name}"
+            )
+
+            for table_data in self.cursor.fetchall():
+                print(table_data)
+
+        finally:
+            self.connection.close()
+
+    def show_attr(self, table_name: str):
+        self.connect()
+
+        try:
+            self.cursor.execute(
+                f"SHOW COLUMNS FROM {table_name}"
+            )
+
+            for table_data in self.cursor.fetchall():
+                print(table_data)
+
+        finally:
+            self.connection.close()
+
 
 class DatabaseBackup:
     """Class for database backup."""
 
-    def __init__(self, connection: MySQLConnection):
+    def __init__(self):
         self.data = None
-        self.con = connection
+        self.con = MySQLConnection()
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
