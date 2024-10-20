@@ -99,3 +99,7 @@ export const sortOption = [
       value: "Upvote"
     }
   ]
+
+export const colorPallet = [
+    "#FF6B6B", "#4ECDC4", "#45B7D1", "#FFBE0C"
+]

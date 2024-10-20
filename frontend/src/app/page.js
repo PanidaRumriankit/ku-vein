@@ -68,6 +68,12 @@ export default function Home() {
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
       <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
                   reviewer={demoReview.reviewer}/>
+      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
+                  reviewer={demoReview.reviewer}/>
+      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
+                  reviewer={demoReview.reviewer}/>
+      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
+                  reviewer={demoReview.reviewer}/>
     </div>
   );
 }
