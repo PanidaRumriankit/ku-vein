@@ -13,30 +13,30 @@ class CourseData(models.Model):
         unique_together = ('course_id', 'faculty')
 
 class Inter(models.Model):
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='inter_courses')
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='inter_faculties')
+    course = models.OneToOneField(CourseData, on_delete=models.CASCADE,
+                                  related_name='inter_courses',
+                                  default=None)
 
     class Meta:
         db_table = 'Inter'
-        unique_together = ('course_id', 'faculty')
 
 
 class Special(models.Model):
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='special_courses')
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='special_faculties')
+    course = models.OneToOneField(CourseData, on_delete=models.CASCADE,
+                                  related_name='special_courses',
+                                  default=None)
 
     class Meta:
         db_table = 'Special'
-        unique_together = ('course_id', 'faculty')
 
 
 class Normal(models.Model):
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='normal_courses')
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='normal_faculties')
+    course = models.OneToOneField(CourseData, on_delete=models.CASCADE,
+                                  related_name='normal_courses',
+                                  default=None)
 
     class Meta:
         db_table = 'Normal'
-        unique_together = ('course_id', 'faculty')
 
 
 class UserData(models.Model):
@@ -50,16 +50,15 @@ class UserData(models.Model):
 
 class CourseReview(models.Model):
     review_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='reviews')
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='faculty_reviews')
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    course = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='reviews')
     reviews = models.TextField()
 
     class Meta:
         db_table = 'CourseReview'
 
 class ReviewStat(models.Model):
-    review_id = models.OneToOneField(CourseReview, on_delete=models.CASCADE, primary_key=True)
+    review = models.OneToOneField(CourseReview, on_delete=models.CASCADE, primary_key=True)
     date_data = models.DateField()
     grade = models.CharField(max_length=2)
     upvotes = models.IntegerField()
@@ -68,27 +67,28 @@ class ReviewStat(models.Model):
         db_table = 'ReviewStat'
 
 class Summary(models.Model):
-    course_id = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='summaries')
-    user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
+                               related_name='summaries')
+
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     sum_text = models.TextField()
-    faculty = models.ForeignKey(CourseData, on_delete=models.CASCADE, related_name='faculty_summaries')
 
     class Meta:
         db_table = 'Summary'
-        unique_together = ('course_id', 'user_id')
+        unique_together = ('course', 'user')
 
 class QA(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
-    user_id = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     comment = models.TextField()
 
     class Meta:
         db_table = 'QA'
 
 class BookMark(models.Model):
-    review_id = models.ForeignKey(CourseReview, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(UserData, on_delete=models.PROTECT)
+    review = models.ForeignKey(CourseReview, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.PROTECT)
 
     class Meta:
         db_table = 'BookMark'
-        unique_together = ('review_id', 'user_id')
+        unique_together = ('review', 'user')

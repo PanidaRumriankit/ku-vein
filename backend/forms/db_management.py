@@ -265,5 +265,6 @@ class DatabaseBackup:
             self.con.close()
 
 if __name__ == "__main__":
-    d = DatabaseManagement()
-    d.add_course_data_to_sub("inter")
+    t = TableManagement()
+    t.drop_all_tables()
+
