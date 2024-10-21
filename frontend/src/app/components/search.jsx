@@ -1,13 +1,13 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import GetDjangoApiData from "../constants/getcourses";
 import AsyncSelect from 'react-select/async';
+import { useTheme } from "next-themes";
 
 export default function Search() {
-  const [data, setData] = useState([]);
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
+  const { theme } = useTheme();
 
   async function HandleSearch(term) {
     const params = new URLSearchParams(searchParams);
@@ -21,9 +21,10 @@ export default function Search() {
     }
     replace(`${pathname}?${params.toString()}`);
   }
+  
   const query = searchParams.get('query') || '';
 
-   const loadOptions = async (inputValue) => {
+  const loadOptions = async (inputValue) => {
     const apiData = await GetDjangoApiData();
 
     const filteredData = apiData.filter((course) =>
@@ -37,23 +38,37 @@ export default function Search() {
     }));
   };
 
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const apiData = await GetDjangoApiData();
-  //     if (query)
-  //     {
-  //       const filteredData = apiData.filter((course) => {
-  //         return course.course_name.toLowerCase().includes(query.toLowerCase()) || course.course_id.toLowerCase().startsWith(query.toLowerCase());
-  //       });
-  //       setData(filteredData);
-  //     }
-  //     else
-  //     {
-  //       setData(apiData);
-  //     }
-  //   }
-  //   fetchData();
-  // }, [query]);
+  const customStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: theme === 'dark' ? (state.isFocused ? "#2C2C2C" : "#1E1E1E") : "#FFFFFF",
+      borderColor: state.isFocused ? (theme === 'dark' ? "#565656" : "#CCCCCC") : (theme === 'dark' ? "#333" : "#E0E0E0"),
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
+    }),
+    menu: (provided) => ({
+      ...provided,
+      backgroundColor: theme.menuBackground,
+      color: theme.menuColor,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused ? (theme === 'dark' ? "#3E3E3E" : "#F0F0F0") : (theme === 'dark' ? "#2C2C2C" : "#FFFFFF"),
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
+      cursor: 'pointer',
+    }),
+    singleValue: (provided) => ({
+      ...provided,
+      color: theme.controlColor,
+    }),
+    placeholder: (provided) => ({
+      ...provided,
+      color: theme === 'dark' ? "#AAAAAA" : "#777777",
+    }),
+    input: (provided) => ({
+      ...provided,
+      color: theme.controlColor,
+    }),
+  };
 
   return (
     <div className="mt-8 w-full max-w-6xl">
@@ -69,36 +84,8 @@ export default function Search() {
         }}
         defaultOptions
         placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
+        styles={customStyles}
       />
-      {/* <input
-      type="text"
-      placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
-      className="w-full h-12 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-none focus:border-2"
-      onChange={(e) => {
-        HandleSearch(e.target.value);
-      }}
-      defaultValue={searchParams.get('query')?.toString()}
-      /> */}
-      {/* <Select
-        options={data.map((course) => ({
-          value: course.course_id,
-          label: `${course.course_id} ${course.course_name}`
-        }))}
-        onChange={(values) => {
-          const selectedValue = values[0]?.value || '';
-          HandleSearch(selectedValue);
-        }}
-        placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
-        searchable
-        noDataLabel="ไม่พบข้อมูล"
-        defaultValue={searchParams.get('query')?.toString()}
-      /> */}
-      {/* <div>
-        {data.map((course) => (
-          <pre style={{ tabSize: 2 }}>{course.course_id}    {course.course_name}</pre>
-        ))}
-      </div> */}
     </div>
-    
   );
 }
