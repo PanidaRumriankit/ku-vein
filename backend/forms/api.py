@@ -1,15 +1,15 @@
 """This module use for send the data from Django to Next.js."""
 
-from ninja import NinjaAPI
-from decouple import config
+from ninja_extra import NinjaExtraAPI
+from ninja_jwt.controller import NinjaJWTDefaultController
 from .db_management import DatabaseBackup
 from .db_query import DatabaseQuery
 
-app = NinjaAPI()
+app = NinjaExtraAPI()
+app.register_controllers(NinjaJWTDefaultController)
 
 
-@app.get(config('DJANGO_API_ENDPOINT',
-                cast=str, default='for_the_dark_souls.ptt'))
+@app.get("/database/course_data")
 def database(request):
     """Use for send the data to frontend."""
     print(request)
