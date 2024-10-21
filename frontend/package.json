@@ -21,7 +21,8 @@
     "next-auth": "^4.24.8",
     "next-themes": "^0.3.0",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-select": "^5.8.1"
   },
   "devDependencies": {
     "@types/node": "22.7.5",
