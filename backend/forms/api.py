@@ -4,13 +4,12 @@ from ninja import NinjaAPI
 from decouple import config
 from .db_management import DatabaseBackup
 from .db_query import DatabaseQuery
-from .schemas import CourseDataSchema
 
 app = NinjaAPI()
 
 
 @app.get(config('DJANGO_API_ENDPOINT',
-                cast=str, default='for_the_dark_souls.ptt'), response=list[CourseDataSchema])
+                cast=str, default='for_the_dark_souls.ptt'))
 def database(request):
     """Use for send the data to frontend."""
     print(request)

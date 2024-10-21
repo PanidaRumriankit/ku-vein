@@ -153,8 +153,9 @@ class DatabaseManagement:
         filtered_data = CourseData.objects.filter(course_type=course_type)
 
         for course in filtered_data:
-            Inter.objects.create(course_id=course.id, faculty=course.faculty)
-            print(f"Inserted: {course}")
+            course_instance = CourseData.objects.get(id=course.id)
+            Inter.objects.create(course=course_instance)
+            print(f"Inserted: {course_instance}")
         print("Successfully Saved in MySQL server\n")
 
 
@@ -263,6 +264,7 @@ class DatabaseBackup:
         finally:
 
             self.con.close()
+
 
 if __name__ == "__main__":
     t = TableManagement()

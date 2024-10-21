@@ -9,7 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()  # Initialize Django
 
-from backend.forms.models import CourseData
+from backend.forms.models import Inter
 
 
 
@@ -21,7 +21,10 @@ class DatabaseQuery:
     @staticmethod
     def send_all_course_data():
         """Send the course_id, course_name, and faculty to frontend."""
-        return CourseData.objects.all()
+        course_data = Inter.objects.select_related('course').values(
+            'course__course_id', 'course__course_name', 'course__faculty'
+        )
+        return list(course_data)
 
 
 if __name__ == "__main__":
