@@ -4,7 +4,7 @@ import Image from "next/image";
 import {useState, useMemo} from "react";
 import {Button} from "@nextui-org/button";
 import Sorting from "./components/sorting.jsx";
-import ReviewCard from "./components/review_card.jsx";
+import ReviewCard from "./components/reviewcard.jsx";
 import {demoReview} from "./constants";
 
 

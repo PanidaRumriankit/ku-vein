@@ -1,6 +1,7 @@
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import ShareTwoToneIcon from '@mui/icons-material/ShareTwoTone';
 import ReportButton from "./reportbutton.jsx";
+import ShareButton from "./sharebutton.jsx";
 import {Button} from "@nextui-org/button";
 import {colorPallet} from "../constants";
 
@@ -32,9 +33,7 @@ export default function ReviewCard({course, reviews, reviewer}) {
             </div>
             <div className="text-right">
               <ReportButton/>
-              <Button>
-                <ShareTwoToneIcon/>
-              </Button>
+              <ShareButton reviews={reviews} />
             </div>
           </div>
         </div>
