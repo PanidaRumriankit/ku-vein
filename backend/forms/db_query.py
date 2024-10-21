@@ -9,6 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()  # Initialize Django
 
+from django.db.models import F
 from backend.forms.models import Inter
 
 
@@ -22,8 +23,11 @@ class DatabaseQuery:
     def send_all_course_data():
         """Send the course_id, course_name, and faculty to frontend."""
         course_data = Inter.objects.select_related('course').values(
-            'course__course_id', 'course__course_name', 'course__faculty'
+            courseID=F('course__course_id'),
+            course_name=F('course__course_name'),
+            faculty=F('course__faculty')
         )
+
         return list(course_data)
 
 
