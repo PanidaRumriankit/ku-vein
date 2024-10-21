@@ -1,11 +1,22 @@
 """This module focus on contact with MySQL server."""
 
+import os
+import sys
+import django
+
+# Add the parent directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
+
+django.setup()  # Initialize Django
+
 import json
 import pymysql
 
 from datetime import datetime
 from decouple import config
-from backend.forms.models import CourseData
+from backend.forms.models import *
 
 class MySQLConnection:
     """Class for connect to the MySQL server."""
@@ -42,34 +53,17 @@ class MySQLConnection:
             self.connection.close()
 
 
-class DatabaseManagement:
-    """Main class for handle the request from frontend"""
-    def __init__(self, connection: MySQLConnection):
-        self.data = None
-        self.con = connection
-        self.cursor = connection.cursor
-
-    def connect(self):
-        """Connect to MySQL server and initialize cursor."""
-        self.con.connect()
-        self.cursor = self.con.cursor
-
-    @staticmethod
-    def send_all_course_data():
-        """Send the course_id, course_name, and faculty to frontend."""
-        return CourseData.objects.all()
-
-
 class TableManagement:
     """Class for managing tables in MySQL server."""
 
-    def __init__(self, connection: MySQLConnection):
-        self.connection = connection
+    def __init__(self):
+        self.connection = MySQLConnection()
         self.cursor = None
         self.table_name = ["auth_group_permissions", "auth_user_user_permissions",
                            "auth_user_groups", "auth_group", "auth_permission",
-                           "django_admin_log", "auth_user", "django_content_type", "BookMark",
-                           "QA", "Summary", "ReviewStat", "CourseReview", "UserData", "CourseData"]
+                           "django_admin_log", "auth_user", "django_content_type", "django_migrations",
+                           "django_session", "BookMark", "QA", "Summary", "ReviewStat",
+                           "CourseReview", "UserData", "Inter", "Normal", "Special", "CourseData"]
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -78,7 +72,11 @@ class TableManagement:
 
     def get_table_name(self) -> list:
         """GET all the tables name in MySQL server."""
+        self.connect()
+
         self.cursor.execute("SHOW TABLES")
+
+        self.connection.close()
 
         return self.cursor.fetchall()
 
@@ -101,16 +99,75 @@ class TableManagement:
         finally:
             self.connection.close()
 
+    def show_data(self, table_name: str):
+        """Return all data from the specific table."""
+
+        self.connect()
+
+        try:
+            self.cursor.execute(
+                f"SELECT * FROM {table_name}"
+            )
+
+            for table_data in self.cursor.fetchall():
+                print(table_data)
+
+        finally:
+            self.connection.close()
+
+    def show_attr(self, table_name: str):
+        """Show all attribute of the table."""
+
+        self.connect()
+
+        try:
+            self.cursor.execute(
+                f"SHOW COLUMNS FROM {table_name}"
+            )
+
+            for table_data in self.cursor.fetchall():
+                print(table_data)
+
+        finally:
+            self.connection.close()
+
+class DatabaseManagement:
+    """Class for add or delete value in MySQL server."""
+
+    def __init__(self):
+        self.data = None
+        self.con = MySQLConnection()
+        self.cursor = None
+
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
+
+    def connect(self):
+        """Connect to MySQL server and initialize cursor."""
+        self.con.connect()
+        self.cursor = self.con.cursor
+
+    @staticmethod
+    def add_course_data_to_sub(course_type: str):
+        """Add datas to the Inter, Special, Normal tables."""
+
+        filtered_data = CourseData.objects.filter(course_type=course_type)
+
+        for course in filtered_data:
+            course_instance = CourseData.objects.get(id=course.id)
+            Inter.objects.create(course=course_instance)
+            print(f"Inserted: {course_instance}")
+        print("Successfully Saved in MySQL server\n")
+
 
 class DatabaseBackup:
     """Class for database backup."""
 
-    def __init__(self, connection: MySQLConnection):
+    def __init__(self):
         self.data = None
-        self.con = connection
+        self.con = MySQLConnection()
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'CourseData']
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -207,4 +264,9 @@ class DatabaseBackup:
         finally:
 
             self.con.close()
+
+
+if __name__ == "__main__":
+    t = TableManagement()
+    t.drop_all_tables()
 
