@@ -6,6 +6,7 @@ import {useState, useMemo} from "react";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
 import {demoReview} from "./constants";
+import AddReviews from "./components/addreviews";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -45,6 +46,9 @@ export default function Home() {
                   reviewer={demoReview.reviewer}/>
       <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
                   reviewer={demoReview.reviewer}/>
+      <div className="fixed bottom-4 right-4">
+        <AddReviews />
+      </div>
     </div>
   );
 }
