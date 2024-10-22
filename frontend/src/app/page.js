@@ -31,10 +31,12 @@ export default function Home() {
         <p className="mt-4 text-xl text-black dark:text-white">รีวิว แบ่งปัน
           Q&A</p>
       </main>
+
       <div className="mt-8 w-full max-w-6xl">
         <Search />
       </div>
-      <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
+
+      <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} className="z-index-negative"/>
       <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
                   reviewer={demoReview.reviewer}/>
       <ReviewCard course={demoReview.course} reviews={demoReview.reviews}

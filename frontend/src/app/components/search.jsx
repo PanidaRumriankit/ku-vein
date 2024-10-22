@@ -29,12 +29,12 @@ export default function Search() {
 
     const filteredData = apiData.filter((course) =>
       course.course_name.toLowerCase().includes(inputValue.toLowerCase()) || 
-      course.course_id.toLowerCase().startsWith(inputValue.toLowerCase())
+      course.courseID.toLowerCase().startsWith(inputValue.toLowerCase())
     );
 
     return filteredData.map((course) => ({
-      value: course.course_id,
-      label: `${course.course_id}\t-\t${course.course_name}`
+      value: course.courseID,
+      label: `${course.courseID}\t-\t${course.course_name}`
     }));
   };
 
