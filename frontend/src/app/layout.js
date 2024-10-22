@@ -25,6 +25,7 @@ export default function RootLayout({ children }) {
   );
 }
 
+
 function RootLayoutContent({ children }) {
   const { data: session, status } = useSession();
   const [error, setError] = useState(null);
@@ -44,6 +45,25 @@ function RootLayoutContent({ children }) {
     return <div>Error: {error}</div>;
   }
 
+  function getUser() {
+    const { data: session, status } = useSession()
+  
+    if (status === "authenticated") {
+      return session.user
+    }
+  }
+
+  async function signInWithGoogle() {
+    await signIn('google');
+    user = getUser();
+    fetch("http://127.0.0.1:8000/api/login", {
+      method: 'post',
+      body: {'name': user.name,
+             'email': user.email},
+      credentials: 'same-origin',
+  });
+}
+
   return (
     <>
       <nav className="bg-[#4ECDC4] p-4">
@@ -58,7 +78,7 @@ function RootLayoutContent({ children }) {
               </>
             ) : (
               <li>
-                <button onClick={() => signIn('google')} className="flex items-center text-white hover:text-gray-200">
+                <button onClick={() => signInWithGoogle()} className="flex items-center text-white hover:text-gray-200">
                   <PersonIcon className="mr-2" />
                   <span>Log in / Sign up</span>
                 </button>
