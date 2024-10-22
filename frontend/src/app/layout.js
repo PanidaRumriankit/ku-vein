@@ -36,10 +36,6 @@ function RootLayoutContent({ children }) {
     }
   }, [status, session]);
 
-  if (status === 'loading') {
-    return <div>Loading...</div>;
-  }
-
   if (error) {
     return <div>Error: {error}</div>;
   }
