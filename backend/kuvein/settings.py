@@ -68,6 +68,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:3000", # Next.js
 ]
 
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'email',
+]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

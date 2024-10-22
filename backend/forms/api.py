@@ -1,5 +1,6 @@
 """This module use for send the data from Django to Next.js."""
 
+from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -19,26 +20,46 @@ def verify_google_token(token: str):
         return is_valid
 
     except ValueError:
-        print(f"Status_code: 401 Invalid token")
+        return Response({"error": "Invalid token"}, status=401)
 
 @app.get("/database/course_data")
 def database(request):
     """Use for send the data to frontend."""
     print(request)
 
-    return DatabaseQuery().send_all_course_data()
+    return Response(DatabaseQuery().send_all_course_data())
+
 
 @app.get("/database/cou")
 def test_auth(request):
     """For test API authentication only."""
-    token = request.headers.get("Authorization").split(" ")[1]
-    email = request.json().get("email")
 
-    check_token = verify_google_token(token)
+    auth_header = request.headers.get("Authorization")
 
-    if check_token['email'] == email:
-        return DatabaseQuery().send_all_course_data()
-    return []
+    if auth_header is None:
+        return Response({"error": "Authorization header missing"}, status=401)
+
+    try:
+        token = auth_header.split(" ")[1]
+        email = request.headers.get("email")
+
+        print(request.headers)
+        print(f"This is email {email}\n")
+
+        print(f"TokenID: {token}\n")
+
+
+        check_token = verify_google_token(token)
+
+        print(f"This is check_token {check_token}")
+
+        if check_token['email'] == email:
+            return Response(DatabaseQuery().send_all_course_data())
+        else:
+            return Response({"error": "Invalid token"}, status=403)
+
+    except (IndexError, KeyError):
+        return Response({"error": "Malformed or invalid token"}, status=401)
 
 
 def backup(request):

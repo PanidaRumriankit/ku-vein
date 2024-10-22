@@ -13,11 +13,17 @@ export const authOptions = {
         async jwt({ token, account }) {
             if (account?.provider === "google") {
                 token.accessToken = account.access_token;
+                token.email = account?.profile?.email;
+                token.idToken = account.id_token;
+
             }
             return token;
         },
         async session({ session, token }) {
             session.accessToken = token.accessToken;
+            session.email = token.email;
+            session.idToken = token.idToken
+
             return session;
         },
     },

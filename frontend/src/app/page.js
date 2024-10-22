@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import {useState, useMemo} from "react";
+import {useState, useMemo, useEffect} from "react";
+import {useSession} from "next-auth/react";
 import {Button} from "@nextui-org/button";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
@@ -9,6 +10,7 @@ import {demoReview} from "./constants";
 
 
 export default function Home() {
+  const { data: session } = useSession();
   const [data, setData] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState(new Set(["earliest"]));
 
@@ -18,16 +20,54 @@ export default function Home() {
   );
 
   async function GetDjangoApiData() {
-    const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_ENDPOINT;
+    const apiUrl = "http://127.0.0.1:8000/api/database/course_data";
     const response = await fetch(apiUrl);
     const responseData = await response.json();
     console.log("Received data from Django:", responseData);
     setData(responseData);
   }
 
+  const makeApiRequest = async () => {
+        if (session) {
+            const token = session.accessToken;
+            const idToken = session.idToken;
+            const email = session.email;
+
+            const response = await fetch("http://127.0.0.1:8000/api/database/cou", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${idToken}`,
+                    "Content-Type": "application/json",
+                    "email": email,
+                },
+            });
+
+            if (response.status === 401) {
+                // Token has expired, handle re-login or token refresh
+                console.log("Session expired, please log in again.");
+                // Redirect to login if you want Apple
+            } else {
+                const data = await response.json();
+                console.log(data);
+            }
+        }
+
+        else {
+            console.log("No Session")
+        }
+    };
+
+    useEffect(() => {
+        makeApiRequest();
+    }, [session]);
+
   // for testing, you can delete this when you want
   async function HandleClick() {
     await GetDjangoApiData();
+  }
+
+  async function HandleClickToken() {
+    await makeApiRequest();
   }
 
   return (
@@ -57,6 +97,22 @@ export default function Home() {
 
           {/* for testing you can delete this when you want */}
           {JSON.stringify(data)}
+        </div>
+
+        <div className="inline-flex items-center justify-end text-black">
+          {/* Test button to trigger API request */}
+          <Button onClick={HandleClickToken} variant="contained" className="text-blue-500">
+            Test API Request
+          </Button>
+
+          {/* Display the JSON response data */}
+          <div className="mt-4">
+            {data.length > 0 ? (
+              <pre className="bg-gray-100 p-4 rounded">{JSON.stringify(data, null, 2)}</pre>
+            ) : (
+              <p>No data received yet.</p>
+            )}
+          </div>
         </div>
 
         <input
