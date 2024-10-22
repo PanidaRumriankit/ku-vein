@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from decouple import config
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -85,6 +86,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kuvein.wsgi.application'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    "loggers": {
+        "user_logger": {
+            "level": "DEBUG",
+            "handlers": ["file"],
+        },
+    },
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "user.log",
+            "formatter": "verbose"
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        },
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -104,6 +128,8 @@ DATABASES = {
     }
 }
 
+if 'ca.pem' in os.listdir('kuvein'):
+    DATABASES['default']['OPTIONS'] = {'ssl': {'ca': os.path.join(os.path.dirname(__file__), 'ca.pem')}}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
