@@ -45,24 +45,15 @@ function RootLayoutContent({ children }) {
     return <div>Error: {error}</div>;
   }
 
-  function getUser() {
-    const { data: session, status } = useSession()
-  
-    if (status === "authenticated") {
-      return session.user
-    }
-  }
-
-  async function signInWithGoogle() {
-    await signIn('google');
-    user = getUser();
-    fetch("http://127.0.0.1:8000/api/login", {
+  if (status === "authenticated") {
+    let user = session.user;
+    fetch("http://127.0.0.1:8000/api/create_user/", {
       method: 'post',
-      body: {'name': user.name,
-             'email': user.email},
+      body: JSON.stringify({ 'name': user.name, 'email': user.email }),
       credentials: 'same-origin',
   });
-}
+  }
+
 
   return (
     <>
@@ -78,7 +69,7 @@ function RootLayoutContent({ children }) {
               </>
             ) : (
               <li>
-                <button onClick={() => signInWithGoogle()} className="flex items-center text-white hover:text-gray-200">
+                <button onClick={() => signIn('google')} className="flex items-center text-white hover:text-gray-200">
                   <PersonIcon className="mr-2" />
                   <span>Log in / Sign up</span>
                 </button>
