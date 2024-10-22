@@ -4,15 +4,15 @@ import Image from "next/image";
 import {useState, useMemo, useEffect} from "react";
 import {useSession} from "next-auth/react";
 import {Button} from "@nextui-org/button";
+import Search from './components/search';
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
 import {demoReview} from "./constants";
 
-
 export default function Home() {
   const { data: session } = useSession();
   const [data, setData] = useState([]);
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["earliest"]));
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
 
   const selectedValue = useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
@@ -66,6 +66,7 @@ export default function Home() {
     await makeApiRequest();
   }
 
+
   return (
     <div
       className="flex flex-col items-center min-h-screen bg-white dark:bg-black">
@@ -112,6 +113,8 @@ export default function Home() {
           placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
           className="w-full h-12 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-none focus:border-2"
         />
+
+        <Search />
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
       <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
