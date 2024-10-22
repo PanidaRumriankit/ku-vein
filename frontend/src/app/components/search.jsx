@@ -71,7 +71,7 @@ export default function Search() {
   };
 
   return (
-    <div className="mt-8 w-full max-w-6xl">
+    <div className="my-2 w-full max-w-5xl mx-auto">
       <AsyncSelect
         cacheOptions
         loadOptions={loadOptions}
