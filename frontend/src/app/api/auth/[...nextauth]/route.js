@@ -6,21 +6,25 @@ export const authOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            authorization: {
+                params: {
+                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid'
+                }
+            }
         })
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        async jwt({ token, account }) {
+        async jwt({ token, account, profile }) {
             if (account?.provider === "google") {
                 token.accessToken = account.access_token;
-                token.email = account?.profile?.email;
+                token.email = profile?.email;
                 token.idToken = account.id_token;
-
             }
+
             return token;
         },
         async session({ session, token }) {
-            session.accessToken = token.accessToken;
             session.email = token.email;
             session.idToken = token.idToken
 

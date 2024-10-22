@@ -43,15 +43,7 @@ def test_auth(request):
         token = auth_header.split(" ")[1]
         email = request.headers.get("email")
 
-        print(request.headers)
-        print(f"This is email {email}\n")
-
-        print(f"TokenID: {token}\n")
-
-
         check_token = verify_google_token(token)
-
-        print(f"This is check_token {check_token}")
 
         if check_token['email'] == email:
             return Response(DatabaseQuery().send_all_course_data())

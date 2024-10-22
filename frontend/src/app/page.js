@@ -29,7 +29,6 @@ export default function Home() {
 
   const makeApiRequest = async () => {
         if (session) {
-            const token = session.accessToken;
             const idToken = session.idToken;
             const email = session.email;
 
@@ -49,6 +48,7 @@ export default function Home() {
             } else {
                 const data = await response.json();
                 console.log(data);
+                setData(data);
             }
         }
 
@@ -56,10 +56,6 @@ export default function Home() {
             console.log("No Session")
         }
     };
-
-    useEffect(() => {
-        makeApiRequest();
-    }, [session]);
 
   // for testing, you can delete this when you want
   async function HandleClick() {
@@ -99,20 +95,16 @@ export default function Home() {
           {JSON.stringify(data)}
         </div>
 
-        <div className="inline-flex items-center justify-end text-black">
-          {/* Test button to trigger API request */}
-          <Button onClick={HandleClickToken} variant="contained" className="text-blue-500">
-            Test API Request
+         <div className="inline-flex items-center justify-end text-black">
+
+          {/* for testing you can delete this when you want */}
+          <Button onClick={HandleClickToken} variant="contained"
+                  className="text-blue-500">
+            test token button
           </Button>
 
-          {/* Display the JSON response data */}
-          <div className="mt-4">
-            {data.length > 0 ? (
-              <pre className="bg-gray-100 p-4 rounded">{JSON.stringify(data, null, 2)}</pre>
-            ) : (
-              <p>No data received yet.</p>
-            )}
-          </div>
+          {/* for testing you can delete this when you want */}
+          {JSON.stringify(data)}
         </div>
 
         <input
