@@ -71,7 +71,7 @@ function RootLayoutContent({ children }) {
       {children}
 
       <footer className="bg-[#4ECDC4] p-4">
-        <div className="container mx-auto text-white flex justify-between items-center">
+        <div className="container w-1/2 ml-0 text-white flex justify-between items-center">
           <p>&copy; {new Date().getFullYear()} KU Vein. All rights reserved.</p>
           <a href="https://github.com/PanidaRumriankit/ku-vein" target="_blank" rel="noopener noreferrer">
             <GitHubIcon className="w-7 h-7 hover:text-black hover:scale-110 transition-colors duration-200" />
