@@ -32,11 +32,11 @@ export default function Home() {
           Q&A</p>
       </main>
 
-      <div className="mt-8 w-full max-w-6xl">
+      <div className="mt-8 w-full max-w-6xl z-40">
         <Search />
       </div>
 
-      <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} className="z-index-negative"/>
+      <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
       <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
                   reviewer={demoReview.reviewer}/>
       <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
