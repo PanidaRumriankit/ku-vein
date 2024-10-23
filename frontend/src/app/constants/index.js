@@ -69,22 +69,6 @@ export {
   usersDropdown,
 };
 
-const bacon = "Bacon ipsum dolor amet prosciutto buffalo corned beef beef ham " +
-  "hock. Landjaeger sausage boudin bresaola andouille bacon turkey" +
-  "pastrami buffalo short loin swine. Short ribs sirloin pork beef" +
-  "cow pork chop bresaola swine. Swine sausage turducken hamburger" +
-  "tongue shankle tenderloin porchetta picanha frankfurter short" +
-  "ribs andouille ham hock bresaola alcatra."
-
-export const demoReview = {
-  "course": {
-    "course_id": "1346012",
-    "course_name": "Bacon Ipsum 101",
-  },
-  "reviews": bacon,
-  "reviewer": "Ichi"
-}
-
 export const sortOption = [
     {
       key: "earliest",
