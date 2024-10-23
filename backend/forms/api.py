@@ -10,7 +10,7 @@ from decouple import config
 
 from .models import UserData
 from .db_management import DatabaseBackup
-from .db_query import DatabaseQuery, EarliestReview, LatestReview, UpvoteReview
+from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
 
@@ -36,10 +36,20 @@ def database(request):
 
 @app.get("/database/sorted_data")
 def get_sorted_data(request):
-    table = {"earliest": EarliestReview, "latest": LatestReview, "upvote": UpvoteReview}
     query = request.GET.get("query")
 
-    return Response(table[query.lower()].get_data())
+    if not query:
+        return Response({"error": "Query parameter missing"}, status=400)
+
+    elif query not in ["earliest", "latest", "upvote"]:
+        return Response({"error": "Invalid Query parameter"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy(query)
+        return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
 
 @app.get("/database/cou")
 def test_auth(request):

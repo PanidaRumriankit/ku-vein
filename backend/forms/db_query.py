@@ -107,6 +107,36 @@ class DatabaseQuery:
         return list(course_data)
 
 
+class QueryFactory:
+    """Factory class to handle query strategy selection."""
+
+    strategy_map = {
+        "earliest": EarliestReview,
+        "latest": LatestReview,
+        "upvote": UpvoteReview
+    }
+
+    @classmethod
+    def get_query_strategy(cls, query: str) -> QueryStrategy:
+        """
+        Return the query strategy based on the query string.
+
+        Args:
+            query (str): The query parameter to choose the strategy.
+
+        Returns:
+            QueryStrategy: The corresponding query strategy class.
+
+        Raises:
+            ValueError: If the query string doesn't match any available strategies.
+        """
+        query_lower = query.lower()
+        if query_lower in cls.strategy_map:
+            return cls.strategy_map[query_lower]()
+        else:
+            raise ValueError(f"Invalid query parameter: {query}")
+
+
 if __name__ == "__main__":
     d = DatabaseQuery()
     print(d.send_all_course_data())
