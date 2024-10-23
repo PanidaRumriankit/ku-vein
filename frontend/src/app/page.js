@@ -38,7 +38,7 @@ export default function Home() {
           Q&A</p>
       </main>
       <div className="mt-8 w-full max-w-6xl">
-        <Search/>
+        <Search />
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
       {reviews.map((item, index) => (
