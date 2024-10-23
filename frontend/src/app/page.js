@@ -2,13 +2,19 @@
 
 import Image from "next/image";
 import Search from './components/search';
-import {useState, useMemo} from "react";
+import {useState, useMemo, useEffect} from "react";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
-import {demoReview} from "./constants/demoreview";
+import MakeApiRequest from "./constants/getreview"
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
+  const reviews = MakeApiRequest(selectedKeys)
+  useEffect(() => {
+    if (selectedKeys) {
+      const reviews = MakeApiRequest(selectedKeys);
+    }
+  }, [selectedKeys]);
 
   const selectedValue = useMemo(
     () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
@@ -35,7 +41,7 @@ export default function Home() {
         <Search/>
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
-      {demoReview.map((item, index) => (
+      {reviews.map((item, index) => (
         <ReviewCard course={item.course_id} reviews={item.reviews} reviewer={item.user_id} faculty={item.faculty} key={index} />
       ))}
     </div>

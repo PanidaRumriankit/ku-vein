@@ -8,26 +8,8 @@ import {
 import {Button} from "@nextui-org/button";
 import TuneTwoToneIcon from "@mui/icons-material/TuneTwoTone";
 import {sortOption} from "../constants";
-import {useEffect} from "react";
-
-const makeApiRequest = async (param) => {
-  // Construct the URL with the query parameter
-  const response = await fetch(`http://127.0.0.1:8000/api/database/sorted_data?query=${encodeURIComponent(param)}`);
-
-  if (response.ok) {
-    const data = await response.json();
-    console.log("Response from backend:", data);
-  } else {
-    console.error("Failed to fetch:", response.status);
-  }
-};
 
 export default function Sorting({selectedKeys, setSelectedKeys}) {
-  useEffect(() => {
-    if (selectedKeys) {
-      makeApiRequest(selectedKeys);
-    }
-  }, [selectedKeys]);
   return (
     <div
       className="w-full max-w-6xl flex justify-end my-4 text-black dark:text-white">
