@@ -7,6 +7,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from ninja import Schema
 from decouple import config
+from backend.forms.schemas import UserDataSchema
 
 from .models import UserData
 from .db_management import DatabaseBackup
@@ -76,17 +77,12 @@ def test_auth(request):
     except (IndexError, KeyError):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
-
-class UserCreateSchema(Schema):
-    name: str
-    email: str
-
 @app.post('/create_user/')
-def create_user(request, data: UserCreateSchema):
+def create_user(request, data: UserDataSchema):
     if not UserData.objects.filter(email=data.email):
-        UserData.objects.create(user_name=data.name, user_type='student', email=data.email)
-        logger.debug(f'created user: {data.name} {data.email}')
-    logger.debug(f'user: {data.name} {data.email}')
+        UserData.objects.create(user_name=data.user_name, user_type=data.user_type, email=data.email)
+        logger.debug(f'created user: {data.user_name} {data.email}')
+    logger.debug(f'user: {data.user_name} {data.email}')
 
 def backup(request):
     """Use for download data from MySQL server to local"""
