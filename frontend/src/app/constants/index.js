@@ -72,15 +72,15 @@ export {
 export const sortOption = [
     {
       key: "earliest",
-      value: "Earliest"
+      value: "earliest"
     },
     {
       key: "latest",
-      value: "Latest"
+      value: "latest"
     },
     {
       key: "upvote",
-      value: "Upvote"
+      value: "upvote"
     }
   ]
 
