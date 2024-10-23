@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'ninja_extra',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +67,12 @@ CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # default Next.js
     "http://127.0.0.1:3000", # Next.js
+]
+
+CORS_ALLOW_HEADERS = [
+    'authorization',
+    'content-type',
+    'email',
 ]
 
 TEMPLATES = [
