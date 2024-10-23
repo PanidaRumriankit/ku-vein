@@ -36,6 +36,8 @@ def database(request):
 
 @app.get("/database/sorted_data")
 def get_sorted_data(request):
+    """Use for send sorted data to frontend."""
+
     query = request.GET.get("query")
 
     if not query:
