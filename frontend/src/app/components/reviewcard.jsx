@@ -10,7 +10,7 @@ function RandomColor() {
   return colorPallet[index];
 }
 
-export default function ReviewCard({course, reviews, reviewer}) {
+export default function ReviewCard({course, reviews, reviewer, faculty}) {
   const color = RandomColor()
   return (
     <div className="my-2 w-full max-w-5xl text-black dark:text-white">
@@ -18,7 +18,7 @@ export default function ReviewCard({course, reviews, reviewer}) {
         <legend
           style={{ backgroundColor: color, borderColor: color}}
           className="p-2 border-solid border rounded text-black font-bold dark:text-white">
-          {course.course_id} | {course.course_name}
+          {course} | {faculty}
         </legend>
         <div className="text-black dark:text-white">
           <p>{reviews}</p>

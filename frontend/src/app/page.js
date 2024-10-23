@@ -5,7 +5,7 @@ import Search from './components/search';
 import {useState, useMemo} from "react";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
-import {demoReview} from "./constants";
+import {demoReview} from "./constants/demoreview";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -32,17 +32,12 @@ export default function Home() {
           Q&A</p>
       </main>
       <div className="mt-8 w-full max-w-6xl">
-        <Search />
+        <Search/>
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
+      {demoReview.map((item, index) => (
+        <ReviewCard course={item.course_id} reviews={item.reviews} reviewer={item.user_id} faculty={item.faculty} key={index} />
+      ))}
     </div>
   );
 }
