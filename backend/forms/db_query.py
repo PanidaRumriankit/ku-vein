@@ -23,8 +23,8 @@ class DatabaseQuery:
     def send_all_course_data():
         """Send the course_id, course_name, and faculty to frontend."""
         course_data = Inter.objects.select_related('course').values(
-            courseID=F('course__course_id'),
-            course_name=F('course__course_name'),
+            courses_id=F('course__course_id'),
+            courses_name=F('course__course_name'),
             faculty=F('course__faculty')
         )
 
