@@ -3,7 +3,7 @@
 from ninja import NinjaAPI, Schema
 from decouple import config
 from .db_management import DatabaseManagement, MySQLConnection, DatabaseBackup
-from backend.forms.schemas import CourseDataSchema
+from backend.forms.schemas import CourseDataSchema, UserDataSchema
 from .models import UserData
 from django.contrib.auth import authenticate, login
 import logging
@@ -22,17 +22,12 @@ def database(request):
 
     return DatabaseManagement(connect).send_all_course_data()
 
-
-class UserCreateSchema(Schema):
-    name: str
-    email: str
-
 @app.post('/create_user/')
-def create_user(request, data: UserCreateSchema):
+def create_user(request, data: UserDataSchema):
     if not UserData.objects.filter(email=data.email):
-        UserData.objects.create(user_name=data.name, user_type='student', email=data.email)
-        logger.debug(f'created user: {data.name} {data.email}')
-    logger.debug(f'user: {data.name} {data.email}')
+        UserData.objects.create(user_name=data.user_name, user_type=data.user_type, email=data.email)
+        logger.debug(f'created user: {data.user_name} {data.email}')
+    logger.debug(f'user: {data.user_name} {data.email}')
 
 def backup(request):
     """Use for download data from MySQL server to local"""

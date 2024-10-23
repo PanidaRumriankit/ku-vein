@@ -49,11 +49,12 @@ function RootLayoutContent({ children }) {
     let user = session.user;
     fetch("http://127.0.0.1:8000/api/create_user/", {
       method: 'post',
-      body: JSON.stringify({ 'name': user.name, 'email': user.email }),
+      body: JSON.stringify({ 'user_name': user.name,
+                             'user_type': 'student',
+                             'email'    : user.email }),
       credentials: 'same-origin',
   });
   }
-
 
   return (
     <>
