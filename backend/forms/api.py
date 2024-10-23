@@ -5,15 +5,12 @@ from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from ninja import NinjaAPI, Schema
+from ninja import Schema
 from decouple import config
-from django.contrib.auth import authenticate, login
 
-from .db_management import DatabaseManagement, MySQLConnection, DatabaseBackup
-from backend.forms.schemas import CourseDataSchema
 from .models import UserData
 from .db_management import DatabaseBackup
-from .db_query import DatabaseQuery
+from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
 
@@ -37,6 +34,24 @@ def database(request):
 
     return Response(DatabaseQuery().send_all_course_data())
 
+@app.get("/database/sorted_data")
+def get_sorted_data(request):
+    """Use for send sorted data to frontend."""
+
+    query = request.GET.get("query")
+
+    if not query:
+        return Response({"error": "Query parameter missing"}, status=400)
+
+    elif query not in ["earliest", "latest", "upvote"]:
+        return Response({"error": "Invalid Query parameter"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy(query)
+        return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
 
 @app.get("/database/cou")
 def test_auth(request):
