@@ -1,6 +1,8 @@
 """This module use for send the data from Django to Next.js."""
 
 import logging
+from webbrowser import Error
+
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
@@ -9,7 +11,9 @@ from ninja import Schema
 from decouple import config
 
 from .models import UserData
+from .schemas import CourseReviewSchema
 from .db_management import DatabaseBackup
+from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
@@ -81,12 +85,20 @@ class UserCreateSchema(Schema):
     name: str
     email: str
 
-@app.post('/create_user/')
+@app.post("/create/user")
 def create_user(request, data: UserCreateSchema):
+    """Use for create new user."""
+
     if not UserData.objects.filter(email=data.email):
         UserData.objects.create(user_name=data.name, user_type='student', email=data.email)
         logger.debug(f'created user: {data.name} {data.email}')
     logger.debug(f'user: {data.name} {data.email}')
+
+@app.post("/create/review", response={200: CourseReviewSchema, 404:Error})
+def create_review(request, data: CourseReviewSchema):
+    """Use for create new review."""
+    strategy = PostFactory.get_post_strategy("review")
+    strategy.post_data(data.model_dump())
 
 def backup(request):
     """Use for download data from MySQL server to local"""
