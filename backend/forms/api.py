@@ -7,20 +7,20 @@ from backend.forms.schemas import CourseDataSchema
 from .models import UserData
 from django.contrib.auth import authenticate, login
 import logging
+from .db_management import DatabaseBackup
+from .db_query import DatabaseQuery
 
 app = NinjaAPI()
-connect = MySQLConnection()
 
 logger = logging.getLogger("user_logger")
 
 @app.get(config('DJANGO_API_ENDPOINT',
-         cast=str, default='for_the_dark_souls.ptt'),
-         response=list[CourseDataSchema])
+                cast=str, default='for_the_dark_souls.ptt'))
 def database(request):
     """Use for send the data to frontend."""
     print(request)
 
-    return DatabaseManagement(connect).send_all_course_data()
+    return DatabaseQuery().send_all_course_data()
 
 
 class UserCreateSchema(Schema):
@@ -37,4 +37,5 @@ def create_user(request, data: UserCreateSchema):
 def backup(request):
     """Use for download data from MySQL server to local"""
     print(request)
-    DatabaseBackup(connect).local_backup()
+
+    DatabaseBackup().local_backup()
