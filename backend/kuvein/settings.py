@@ -37,14 +37,15 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS',
 # Application definition
 
 INSTALLED_APPS = [
+    'forms.apps.FormsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'backend',
     'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
 ]
 
 MIDDLEWARE = [

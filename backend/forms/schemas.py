@@ -6,40 +6,55 @@ from .models import ReviewStat, Summary, QA, BookMark
 class CourseDataSchema(ModelSchema):
     class Meta:
         model = CourseData
-        fields = ('course_id', 'faculty', 'course_type', 'course_name')
+        fields = '__all__'
+
+class NormalSchema(ModelSchema):
+    class Meta:
+        model = Normal
+        fields = '__all__'
+
+class InterSchema(ModelSchema):
+    class Meta:
+        model = Inter
+        fields = '__all__'
+
+class SpecialSchema(ModelSchema):
+    class Meta:
+        model = Special
+        fields = '__all__'
 
 
 class UserDataSchema(ModelSchema):
     class Meta:
         model = UserData
-        fields = ('user_id', 'user_name', 'user_type', 'email')
+        fields = '__all__'
 
 
 class CourseReviewSchema(ModelSchema):
     class Meta:
         model = CourseReview
-        fields = ('review_id', 'user_id', 'course_id', 'faculty', 'reviews')
+        fields = '__all__'
 
 
 class ReviewStatSchema(ModelSchema):
     class Meta:
         model = ReviewStat
-        fields = ('review_id', 'date_data', 'grade', 'upvotes')
+        fields = '__all__'
 
 
 class SummarySchema(ModelSchema):
     class Meta:
         model = Summary
-        fields = ('course_id', 'user_id', 'sum_text', 'faculty')
+        fields = '__all__'
 
 
 class QASchema(ModelSchema):
     class Meta:
         model = QA
-        fields = ('question_id', 'user_id', 'comment')
+        fields = '__all__'
 
 
 class BookMarkSchema(ModelSchema):
     class Meta:
         model = BookMark
-        fields = ('review_id', 'user_id')
+        fields = '__all__'
