@@ -1,11 +1,17 @@
 """This module use for send the data from Django to Next.js."""
 
+import logging
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
+from ninja import NinjaAPI, Schema
 from decouple import config
+from django.contrib.auth import authenticate, login
 
+from .db_management import DatabaseManagement, MySQLConnection, DatabaseBackup
+from backend.forms.schemas import CourseDataSchema
+from .models import UserData
 from .db_management import DatabaseBackup
 from .db_query import DatabaseQuery
 
@@ -21,6 +27,8 @@ def verify_google_token(token: str):
 
     except ValueError:
         return Response({"error": "Invalid token"}, status=401)
+
+logger = logging.getLogger("user_logger")
 
 @app.get("/database/course_data")
 def database(request):
@@ -53,6 +61,17 @@ def test_auth(request):
     except (IndexError, KeyError):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
+
+class UserCreateSchema(Schema):
+    name: str
+    email: str
+
+@app.post('/create_user/')
+def create_user(request, data: UserCreateSchema):
+    if not UserData.objects.filter(email=data.email):
+        UserData.objects.create(user_name=data.name, user_type='student', email=data.email)
+        logger.debug(f'created user: {data.name} {data.email}')
+    logger.debug(f'user: {data.name} {data.email}')
 
 def backup(request):
     """Use for download data from MySQL server to local"""

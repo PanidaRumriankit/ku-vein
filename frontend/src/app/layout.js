@@ -25,6 +25,7 @@ export default function RootLayout({ children }) {
   );
 }
 
+
 function RootLayoutContent({ children }) {
   const { data: session, status } = useSession();
   const [error, setError] = useState(null);
@@ -43,6 +44,16 @@ function RootLayoutContent({ children }) {
   if (error) {
     return <div>Error: {error}</div>;
   }
+
+  if (status === "authenticated") {
+    let user = session.user;
+    fetch("http://127.0.0.1:8000/api/create_user/", {
+      method: 'post',
+      body: JSON.stringify({ 'name': user.name, 'email': user.email }),
+      credentials: 'same-origin',
+  });
+  }
+
 
   return (
     <>
