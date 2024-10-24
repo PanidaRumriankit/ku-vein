@@ -53,7 +53,7 @@ def get_sorted_data(request):
         return Response(strategy.get_data())
 
     except ValueError as e:
-        logger.error("Value boom boom")
+        logger.error(e)
         return Response({"error": str(e)}, status=400)
 
 @app.get("/database/cou")
