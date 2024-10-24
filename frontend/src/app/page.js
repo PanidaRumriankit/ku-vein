@@ -9,17 +9,18 @@ import MakeApiRequest from "./constants/getreview"
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
-  const reviews = MakeApiRequest(selectedKeys)
-  useEffect(() => {
-    if (selectedKeys) {
-      const reviews = MakeApiRequest(selectedKeys);
-    }
-  }, [selectedKeys]);
+  const [reviews, setReviews] = useState([]);
 
-  const selectedValue = useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const key = selectedKeys.values().next().value
+      const data = await MakeApiRequest(key);
+      console.log(typeof key, key);
+      setReviews(data);
+    };
+
+    fetchReviews();
+  }, [selectedKeys]);
 
   return (
     <div
@@ -38,7 +39,7 @@ export default function Home() {
           Q&A</p>
       </main>
       <div className="mt-8 w-full max-w-6xl">
-        <Search />
+        <Search/>
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
       {reviews.map((item, index) => (
