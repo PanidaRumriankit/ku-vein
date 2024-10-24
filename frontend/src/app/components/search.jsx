@@ -1,13 +1,21 @@
+"use-client"
+
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import GetDjangoApiData from "../constants/getcourses";
 import AsyncSelect from 'react-select/async';
 import { useTheme } from "next-themes";
+import { useEffect, useState } from 'react';
 
 export default function Search() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function HandleSearch(term) {
     const params = new URLSearchParams(searchParams);
@@ -42,13 +50,18 @@ export default function Search() {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: theme === 'dark' ? (state.isFocused ? "#2C2C2C" : "#1E1E1E") : "#FFFFFF",
-      borderColor: state.isFocused ? (theme === 'dark' ? "#565656" : "#CCCCCC") : (theme === 'dark' ? "#333" : "#E0E0E0"),
+      borderColor: state.isFocused ? (theme === 'dark' ? '#888888' : 'rgb(209 213 219)') : (theme === 'dark' ? '#555555' : '#CCCCCC'),
       color: theme === 'dark' ? "#FFFFFF" : "#000000",
+      height: '3rem',
+      boxShadow: state.isFocused ? '0 0 0 1px #888888' : null,
+      '&:hover': {
+        borderColor: state.isFocused ? (theme === 'dark' ? '#888888' : 'rgb(209 213 219)') : '#999999',
+      },
     }),
     menu: (provided) => ({
       ...provided,
-      backgroundColor: theme.menuBackground,
-      color: theme.menuColor,
+      backgroundColor: theme === 'dark' ? "#2C2C2C" : "#FFFFFF",
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
     }),
     option: (provided, state) => ({
       ...provided,
@@ -58,7 +71,7 @@ export default function Search() {
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: theme.controlColor,
+      color: theme === 'dark' ? "#FFFFFF" : "#000000"
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -66,9 +79,11 @@ export default function Search() {
     }),
     input: (provided) => ({
       ...provided,
-      color: theme.controlColor,
+      color: theme === 'dark' ? "#FFFFFF" : "#000000"
     }),
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="my-2 w-full max-w-5xl mx-auto">
