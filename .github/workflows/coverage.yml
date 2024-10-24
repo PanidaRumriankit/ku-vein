@@ -22,12 +22,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install coverage
-    - name: Set Environments
-      run: |
-        echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
-        echo DEBUG=${{ secrets.DEBUG }} >> .env
-        echo TIME_ZONE=${{ secrets.TIME_ZONE }} >> .env
-        echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
     - name: Test with coverage
       run: |
         cd backend
