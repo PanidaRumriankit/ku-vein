@@ -9,35 +9,35 @@ const demoReview = [
   {
     "review_id": 1,
     "user_id": 1,
-    "course_id": "123132",
+    "courses_id": "123132",
     "faculty": "engineering",
     "reviews": "banana"
   },
   {
     "review_id": 2,
     "user_id": 2,
-    "course_id": "456789",
+    "courses_id": "456789",
     "faculty": "science",
     "reviews": "potato"
   },
   {
     "review_id": 3,
     "user_id": 3,
-    "course_id": "789101",
+    "courses_id": "789101",
     "faculty": "arts",
     "reviews": "Noppo mham mham"
   },
   {
     "review_id": 4,
     "user_id": 4,
-    "course_id": "234567",
+    "courses_id": "234567",
     "faculty": "business",
     "reviews": "pizza stole Pete"
   },
   {
     "review_id": 5,
     "user_id": 5,
-    "course_id": "345678",
+    "courses_id": "345678",
     "faculty": "law",
     "reviews": "Ichi"
   }
@@ -46,8 +46,8 @@ const demoReview = [
 const oldDemoReview = {
   "id": Math.floor(Math.random() * 100),
   "course": {
-    "course_id": "1346012",
-    "course_name": "Bacon Ipsum 101",
+    "courses_id": "1346012",
+    "courses_name": "Bacon Ipsum 101",
   },
   "reviews": bacon,
   "reviewer": "Ichi"
