@@ -19,15 +19,20 @@ from .db_query import DatabaseQuery, QueryFactory
 app = NinjaExtraAPI()
 
 
-def verify_google_token(token: str):
+def verify_google_token(auth: str, email: str) -> bool:
     """Verify the Google OAuth token from the frontend."""
     try:
-        is_valid = id_token.verify_oauth2_token(token, requests.Request(), config('GOOGLE_CLIENT_ID', cast=str,
+        token = auth.split(" ")[1]
+        check_token = id_token.verify_oauth2_token(token, requests.Request(), config('GOOGLE_CLIENT_ID', cast=str,
                         default='sif'))
-        return is_valid
+
+        if check_token['email'] == email:
+            return True
+        else:
+            return False
 
     except ValueError:
-        return Response({"error": "Invalid token"}, status=401)
+        return False
 
 logger = logging.getLogger("user_logger")
 
@@ -67,12 +72,9 @@ def test_auth(request):
         return Response({"error": "Authorization header missing"}, status=401)
 
     try:
-        token = auth_header.split(" ")[1]
         email = request.headers.get("email")
 
-        check_token = verify_google_token(token)
-
-        if check_token['email'] == email:
+        if verify_google_token(auth_header, email):
             return Response(DatabaseQuery().send_all_course_data())
         else:
             return Response({"error": "Invalid token"}, status=403)
@@ -94,7 +96,7 @@ def create_user(request, data: UserCreateSchema):
         logger.debug(f'created user: {data.name} {data.email}')
     logger.debug(f'user: {data.name} {data.email}')
 
-@app.post("/create/review", response={200: CourseReviewSchema, 404:Error})
+@app.post("/create/review", response={200: CourseReviewSchema})
 def create_review(request, data: CourseReviewSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")

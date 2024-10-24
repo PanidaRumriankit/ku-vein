@@ -1,6 +1,7 @@
 from ninja import ModelSchema
 from .models import CourseData, UserData, CourseReview
 from .models import ReviewStat, Summary, QA, BookMark
+from .models import Inter, Normal, Special
 
 
 class CourseDataSchema(ModelSchema):
