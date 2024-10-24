@@ -17,5 +17,5 @@ jobs:
         pip install pylint
     - name: Analysing the code with pylint
       run: |
-        cd backend
+        cd backend/forms
         pylint *.py

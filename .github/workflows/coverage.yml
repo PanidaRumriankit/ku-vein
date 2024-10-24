@@ -22,6 +22,7 @@ jobs:
         pip install coverage
     - name: Test with coverage
       run: |
+        cd backend
         coverage run manage.py test
     - name: Generate Coverage Report
       run: |
