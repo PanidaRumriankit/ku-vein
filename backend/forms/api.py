@@ -63,6 +63,23 @@ def get_sorted_data(request):
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
+@app.get("/database/review")
+def get_specific_review(request):
+    """Use for sent a course_review to frontend."""
+
+    query = request.GET.get("query")
+
+    if not query:
+        return Response({"error": "Query parameter missing"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy(query)
+        return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
 @app.get("/database/cou")
 def test_auth(request):
     """For test API authentication only."""

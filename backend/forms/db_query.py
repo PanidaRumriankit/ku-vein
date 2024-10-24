@@ -23,8 +23,17 @@ class QueryStrategy(ABC):
         """Get the data from the database."""
         pass
 
+class QueryFilterStrategy(ABC):
+    """Abstract base class for make the query with condition."""
+
+    @abstractmethod
+    def get_data(self, filter_key: dict):
+        """Get the data from the database."""
+        pass
+
+
 class EarliestReview(QueryStrategy):
-    """Table for sent CourseReview sorted by earliest."""
+    """Class for sent CourseReview sorted by earliest."""
 
     def get_data(self):
         """
@@ -45,8 +54,9 @@ class EarliestReview(QueryStrategy):
 
         return list(review_data)
 
+
 class LatestReview(QueryStrategy):
-    """Table for sent CourseReview sorted by latest."""
+    """Class for sent CourseReview sorted by latest."""
 
     def get_data(self):
         """
@@ -67,8 +77,9 @@ class LatestReview(QueryStrategy):
 
         return list(review_data)
 
+
 class UpvoteReview(QueryStrategy):
-    """Table for sent CourseReview sorted by upvote."""
+    """Class for sent CourseReview sorted by upvote."""
 
     def get_data(self):
         """
@@ -90,6 +101,12 @@ class UpvoteReview(QueryStrategy):
         return list(review_data)
 
 
+class ReviewQuery(QueryFilterStrategy):
+    """Class for sent specific review."""
+
+    def get_data(self, filter_key: dict):
+        """Get the review data from the database."""
+        pass
 
 class DatabaseQuery:
     """Main class for handle the request from frontend"""
