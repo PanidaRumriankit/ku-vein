@@ -2,16 +2,17 @@ import os
 import sys
 import django
 
-from django.db.models import F
-from backend.forms.models import Inter, ReviewStat
-from abc import ABC, abstractmethod
-
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
+
+from django.db.models import F
+from backend.forms.models import Inter, ReviewStat
+from abc import ABC, abstractmethod
+
 
 
 class QueryStrategy(ABC):
@@ -37,9 +38,9 @@ class EarliestReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
-            date_data=F('date_data'),
-            grade=F('grade'),
-            upvotes=F('upvotes'),
+            date=F('date_data'),
+            grades=F('grade'),
+            upvote=F('upvotes'),
         ).order_by('date_data')
 
         return list(review_data)
@@ -59,9 +60,9 @@ class LatestReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
-            date_data=F('date_data'),
-            grade=F('grade'),
-            upvotes=F('upvotes'),
+            date=F('date_data'),
+            grades=F('grade'),
+            upvote=F('upvotes'),
         ).order_by('-date_data')
 
         return list(review_data)
@@ -81,10 +82,10 @@ class UpvoteReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
-            date_data=F('date_data'),
-            grade=F('grade'),
-            upvotes=F('upvotes'),
-        ).order_by('-upvotes')
+            date=F('date_data'),
+            grades=F('grade'),
+            upvote=F('upvotes'),
+        ).order_by('upvotes')
 
         return list(review_data)
 
