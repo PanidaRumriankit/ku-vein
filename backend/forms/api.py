@@ -1,7 +1,6 @@
 """This module use for send the data from Django to Next.js."""
 
 import logging
-from webbrowser import Error
 
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
@@ -9,10 +8,9 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from ninja import Schema
 from decouple import config
-from backend.forms.schemas import UserDataSchema
+from backend.forms.schemas import ReviewRequestSchema
 
 from .models import UserData
-from .schemas import CourseReviewSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
@@ -63,23 +61,6 @@ def get_sorted_data(request):
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
-@app.get("/database/review")
-def get_specific_review(request):
-    """Use for sent a course_review to frontend."""
-
-    query = request.GET.get("query")
-
-    if not query:
-        return Response({"error": "Query parameter missing"}, status=400)
-
-    try:
-        strategy = QueryFactory.get_query_strategy(query)
-        return Response(strategy.get_data())
-
-    except ValueError as e:
-        return Response({"error": str(e)}, status=400)
-
-
 @app.get("/database/cou")
 def test_auth(request):
     """For test API authentication only."""
@@ -112,11 +93,11 @@ def create_user(request, data: UserCreateSchema):
         logger.debug(f'created user: {data.user_name} {data.email}')
     logger.debug(f'user: {data.user_name} {data.email}')
 
-@app.post("/create/review", response={200: CourseReviewSchema})
-def create_review(request, data: CourseReviewSchema):
+@app.post("/create/review", response={200: ReviewRequestSchema})
+def create_review(request, data: ReviewRequestSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
-    strategy.post_data(data.model_dump())
+    return strategy.post_data(data.model_dump())
 
 def backup(request):
     """Use for download data from MySQL server to local"""
