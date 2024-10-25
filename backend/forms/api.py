@@ -88,7 +88,7 @@ class UserCreateSchema(Schema):
     email: str
 
 @app.post("/create/user")
-def create_user(request, data: UserCreateSchema):
+def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     if not UserData.objects.filter(email=data.email):
         UserData.objects.create(user_name=data.user_name, user_type=data.user_type, email=data.email)

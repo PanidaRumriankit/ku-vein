@@ -43,7 +43,8 @@ function RootLayoutContent({ children }) {
 
   if (status === "authenticated") {
     let user = session.user;
-    fetch("http://127.0.0.1:8000/api/create_user/", {
+    fetch("http://127.0.0.1:8000/api/create/user", {
+      headers: { 'Content-Type': 'application/json' },
       method: 'post',
       body: JSON.stringify({ 'user_name': user.name,
                              'user_type': 'student',
