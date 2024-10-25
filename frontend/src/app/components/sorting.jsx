@@ -34,9 +34,9 @@ export default function Sorting({selectedKeys, setSelectedKeys}) {
             {sortOption.map((item) => (
               <DropdownItem key={item.key}>{item.value}</DropdownItem>
             ))}
-        </DropdownSection>
-      </DropdownMenu>
-    </Dropdown>
-</div>
-)
+          </DropdownSection>
+        </DropdownMenu>
+      </Dropdown>
+    </div>
+  )
 }
