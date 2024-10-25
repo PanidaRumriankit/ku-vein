@@ -7,41 +7,58 @@ const bacon = "Bacon ipsum dolor amet prosciutto buffalo corned beef beef ham " 
 
 const demoReview = [
   {
-    "review_id": 1,
-    "user_id": 1,
     "courses_id": "123132",
+    "courses_name": "Bacon 101",
     "faculty": "engineering",
-    "reviews": "banana"
+    "user_name": "John Doe",
+    "reviews": "banana",
+    "date": "2023-09-10",
+    "grades": "A",
+    "upvote": 15
   },
   {
-    "review_id": 2,
-    "user_id": 2,
     "courses_id": "456789",
+    "courses_name": "Demo 101",
     "faculty": "science",
-    "reviews": "potato"
+    "user_name": "Jane Smith",
+    "reviews": "potato",
+    "date": "2023-09-12",
+    "grades": "B",
+    "upvote": 20
   },
   {
-    "review_id": 3,
-    "user_id": 3,
     "courses_id": "789101",
+    "courses_name": "Intro to Anything",
     "faculty": "arts",
-    "reviews": "Noppo mham mham"
+    "user_name": "Alice Johnson",
+    "reviews": "Noppo mham mham",
+    "date": "2023-09-15",
+    "grades": "C",
+    "upvote": 5
   },
   {
-    "review_id": 4,
-    "user_id": 4,
     "courses_id": "234567",
+    "courses_name": "Basics 101",
     "faculty": "business",
-    "reviews": "pizza stole Pete"
+    "user_name": "Peter Pan",
+    "reviews": "pizza stole Pete",
+    "date": "2023-09-18",
+    "grades": "B+",
+    "upvote": 8
   },
   {
-    "review_id": 5,
-    "user_id": 5,
     "courses_id": "345678",
+    "courses_name": "Fun Studies",
     "faculty": "law",
-    "reviews": "Ichi"
+    "user_name": "Ichiro Suzuki",
+    "reviews": "Ichi",
+    "date": "2023-09-20",
+    "grades": "A-",
+    "upvote": 12
   }
 ]
+
+
 
 const oldDemoReview = {
   "id": Math.floor(Math.random() * 100),
