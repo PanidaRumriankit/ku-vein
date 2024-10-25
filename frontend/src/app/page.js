@@ -2,19 +2,28 @@
 
 import Image from "next/image";
 import Search from './components/search';
+import {useState, useEffect} from "react";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
-import {demoReview} from "./constants";
+import MakeApiRequest from "./constants/getreview"
+import {demoReview} from "./constants/demoreview";
 import AddReviews from "./components/addreviews";
 import {useState, useMemo} from "react";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
+  const [reviews, setReviews] = useState([]);
 
-  const selectedValue = useMemo(
-    () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
-    [selectedKeys]
-  );
+  useEffect(() => {
+    const fetchReviews = async () => {
+      const key = Array.from(selectedKeys)[0]
+      const data = await MakeApiRequest(key);
+      console.log(typeof key, key);
+      setReviews(data);
+    };
+
+    fetchReviews();
+  }, [selectedKeys]);
 
   return (
     <div
@@ -38,14 +47,12 @@ export default function Home() {
       </div>
 
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
-      <ReviewCard course={demoReview.course} reviews={demoReview.reviews}
-                  reviewer={demoReview.reviewer}/>
+      {demoReview.map((item, index) => (
+        <ReviewCard item={item} key={index} />
+      ))}
+      {reviews.map((item, index) => (
+        <ReviewCard item={item} key={index} />
+      ))}
       <div className="fixed bottom-4 right-4">
         <AddReviews />
       </div>

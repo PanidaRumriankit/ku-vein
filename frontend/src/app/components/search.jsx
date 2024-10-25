@@ -38,7 +38,7 @@ export default function Search({ onCourseSelect, page }) {
     const apiData = await GetDjangoApiData();
 
     const filteredData = apiData.filter((course) =>
-      course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) || 
+      course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
       course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
     );
 
