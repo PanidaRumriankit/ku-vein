@@ -34,7 +34,7 @@ export default function Home() {
       </main>
 
       <div className="mt-8 w-full max-w-6xl z-40">
-        <Search />
+        <Search page='page'/>
       </div>
 
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>

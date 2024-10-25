@@ -6,7 +6,22 @@ import AsyncSelect from 'react-select/async';
 import { useTheme } from "next-themes";
 import { useEffect, useState } from 'react';
 
-export default function Search() {
+export function handleSearch(term, searchParams, pathname, replace) {
+  const params = new URLSearchParams(searchParams);
+
+  if (term)
+  {
+    params.set('query', term);
+  }
+  else
+  {
+    params.delete('query');
+  }
+
+  replace(`${pathname}?${params.toString()}`);
+}
+
+export default function Search({ onCourseSelect, page }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -16,19 +31,6 @@ export default function Search() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  async function HandleSearch(term) {
-    const params = new URLSearchParams(searchParams);
-    if (term)
-    {
-      params.set('query', term);
-    }
-    else
-    {
-      params.delete('query');
-    }
-    replace(`${pathname}?${params.toString()}`);
-  }
   
   const query = searchParams.get('query') || '';
 
@@ -91,10 +93,11 @@ export default function Search() {
         cacheOptions
         loadOptions={loadOptions}
         onChange={(selectedOption) => {
-          if (selectedOption) {
-            HandleSearch(selectedOption.value); 
-          } else {
-            HandleSearch('');
+          if (page === 'page') {
+            handleSearch(selectedOption ? selectedOption.value : '', searchParams, pathname, replace);
+          }
+          if (onCourseSelect) {
+            onCourseSelect(selectedOption ? selectedOption.value : '');
           }
         }}
         defaultOptions
