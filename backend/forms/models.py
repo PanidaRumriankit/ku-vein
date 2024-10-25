@@ -2,6 +2,7 @@
 
 from django.db import models
 
+
 class CourseData(models.Model):
     course_id = models.CharField(max_length=20)
     faculty = models.CharField(max_length=100)
@@ -48,6 +49,7 @@ class UserData(models.Model):
     class Meta:
         db_table = 'UserData'
 
+
 class CourseReview(models.Model):
     review_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
@@ -57,7 +59,9 @@ class CourseReview(models.Model):
     class Meta:
         db_table = 'CourseReview'
 
+
 class ReviewStat(models.Model):
+
     review = models.OneToOneField(CourseReview, on_delete=models.CASCADE, primary_key=True)
     date_data = models.DateField()
     grade = models.CharField(max_length=2)
@@ -65,6 +69,7 @@ class ReviewStat(models.Model):
 
     class Meta:
         db_table = 'ReviewStat'
+
 
 class Summary(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
@@ -77,6 +82,7 @@ class Summary(models.Model):
         db_table = 'Summary'
         unique_together = ('course', 'user')
 
+
 class QA(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
@@ -84,6 +90,7 @@ class QA(models.Model):
 
     class Meta:
         db_table = 'QA'
+
 
 class BookMark(models.Model):
     review = models.ForeignKey(CourseReview, on_delete=models.CASCADE)

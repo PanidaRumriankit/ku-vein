@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Search from './components/search';
-import {useState, useMemo} from "react";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
 import {demoReview} from "./constants";
