@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Search from './components/search';
-import {useState, useMemo, useEffect} from "react";
+import {useState, useEffect} from "react";
 import Sorting from "./components/sorting.jsx";
 import ReviewCard from "./components/reviewcard.jsx";
 import MakeApiRequest from "./constants/getreview"
+import {demoReview} from "./constants/demoreview";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -43,7 +44,7 @@ export default function Home() {
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
       {reviews.map((item, index) => (
-        <ReviewCard course={item.course_id} reviews={item.reviews} reviewer={item.user_id} faculty={item.faculty} key={index} />
+        <ReviewCard course={item.courses_id} reviews={item.reviews} reviewer={item.user_id} faculty={item.faculty} key={index} />
       ))}
     </div>
   );
