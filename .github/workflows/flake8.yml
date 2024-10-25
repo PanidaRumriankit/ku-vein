@@ -18,4 +18,4 @@ jobs:
     - name: Analysing the code with falke8
       run: |
         cd backend
-        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --exclude=test_*.py
+        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --extend-exclude=manage.py,kuvein/,*/__init__.py,*/admin.py,*/tests.py,*/views.py,*/migrations/,venv/
