@@ -43,8 +43,11 @@ export default function Home() {
         <Search/>
       </div>
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
+      {demoReview.map((item, index) => (
+        <ReviewCard item={item} key={index} />
+      ))}
       {reviews.map((item, index) => (
-        <ReviewCard course={item.courses_id} reviews={item.reviews} reviewer={item.user_id} faculty={item.faculty} key={index} />
+        <ReviewCard item={item} key={index} />
       ))}
     </div>
   );
