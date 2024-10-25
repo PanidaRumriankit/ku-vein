@@ -61,7 +61,6 @@ class CourseReview(models.Model):
 
 
 class ReviewStat(models.Model):
-
     review = models.OneToOneField(CourseReview, on_delete=models.CASCADE, primary_key=True, default=None)
     rating = models.FloatField(default=0.0)
     academic_year = models.IntegerField(default=0)

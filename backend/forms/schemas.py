@@ -1,5 +1,8 @@
 from ninja import ModelSchema
-from .models import *
+from .models import CourseData, UserData, CourseReview
+from .models import ReviewStat, Summary, QA, BookMark
+from .models import Inter, Normal, Special
+
 
 class CourseDataSchema(ModelSchema):
     class Meta:
@@ -21,30 +24,36 @@ class SpecialSchema(ModelSchema):
         model = Special
         fields = '__all__'
 
+
 class UserDataSchema(ModelSchema):
     class Meta:
         model = UserData
         fields = '__all__'
+
 
 class CourseReviewSchema(ModelSchema):
     class Meta:
         model = CourseReview
         fields = '__all__'
 
+
 class ReviewStatSchema(ModelSchema):
     class Meta:
         model = ReviewStat
         fields = '__all__'
+
 
 class SummarySchema(ModelSchema):
     class Meta:
         model = Summary
         fields = '__all__'
 
+
 class QASchema(ModelSchema):
     class Meta:
         model = QA
         fields = '__all__'
+
 
 class BookMarkSchema(ModelSchema):
     class Meta:

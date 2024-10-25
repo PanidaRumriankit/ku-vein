@@ -3,6 +3,7 @@
 import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem} from "@nextui-org/react";
 import PersonIcon from '@mui/icons-material/Person';
 import { usersDropdown } from "../constants";
+import { signOut } from "next-auth/react";
 
 export default function UserDropdown() {
   return (
@@ -20,6 +21,11 @@ export default function UserDropdown() {
               ${item.key === "logout" ? "!text-red-300 hover:!text-red-500" : ""}
               hover:bg-gray-100 dark:hover:bg-zinc-700 dark:text-white rounded-md transition-colors hover:cursor-pointer px-2 py-1
             `}
+            onClick={() => {
+              if (item.key === "logout") {
+                signOut('google');
+              }
+            }}
           >
             {item.label}
           </DropdownItem>
