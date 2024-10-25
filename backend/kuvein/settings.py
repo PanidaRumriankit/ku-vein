@@ -135,8 +135,9 @@ DATABASES = {
     }
 }
 
-if 'ca.pem' in os.listdir('kuvein'):
+if 'ca.pem' in os.listdir(os.path.join(BASE_DIR, 'kuvein')):
     DATABASES['default']['OPTIONS'] = {'ssl': {'ca': os.path.join(os.path.dirname(__file__), 'ca.pem')}}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
