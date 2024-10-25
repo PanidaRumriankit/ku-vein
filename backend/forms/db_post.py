@@ -33,7 +33,7 @@ class ReviewPost(PostStrategy):
         cur_course = CourseData.objects.filter(course_id=data['course_id'], faculty=data['faculty']).first()
 
         if not cur_user or not cur_course:
-            return Response({"error": "Authorization header missing"}, status=401)
+            return Response({"error": "This user or This course isn't in the database."}, status=401)
 
         if not data['pen_name']:
             data['pen_name'] = cur_user.user_name
