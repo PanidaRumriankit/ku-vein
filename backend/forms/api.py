@@ -4,10 +4,9 @@ from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from ninja import Schema
 from decouple import config
 
-from backend.forms.schemas import ReviewRequestSchema
+from backend.forms.schemas import ReviewRequestSchema, UserDataSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
@@ -98,13 +97,8 @@ def test_auth(request):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
 
-class UserCreateSchema(Schema):
-    name: str
-    email: str
-
-
 @app.post("/create/user")
-def create_user(request, data: UserCreateSchema):
+def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
     strategy.post_data(data.model_dump())
