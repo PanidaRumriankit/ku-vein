@@ -1,6 +1,7 @@
 import os
 import sys
 import django
+import logging
 
 from datetime import datetime
 from abc import ABC, abstractmethod
@@ -13,6 +14,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
 
+logger = logging.getLogger("user_logger")
+
 from ninja.responses import Response
 from backend.forms.models import CourseReview, UserData, CourseData, ReviewStat
 
@@ -20,9 +23,22 @@ class PostStrategy(ABC):
     """Abstract base class for update the database."""
 
     @abstractmethod
-    def post_data(self, data):
+    def post_data(self, data: dict):
         """Update the data to the database."""
         pass
+
+class UserDataPost(PostStrategy):
+    """Class for created new UserData object."""
+
+    def post_data(self, data: dict):
+        """Add the data to the UserData."""
+        if not data['user_name']:
+            data['user_name'] = f"user_{UserData.objects.count()}"
+
+        if not UserData.objects.filter(email=data['email']):
+            UserData.objects.create(user_name=data['user_name'], user_type=data['user_type'], email=data['email'])
+            logger.debug(f"created user: {data['user_name']} {data['email']}")
+        logger.debug(f"user: {data['user_name']} {data['email']}")
 
 class ReviewPost(PostStrategy):
     """Class for created new CourseReview object."""
@@ -58,7 +74,8 @@ class PostFactory:
     """Factory class to handle query strategy selection."""
 
     strategy_map = {
-        "review": ReviewPost
+        "review": ReviewPost,
+        "user": UserDataPost
     }
 
     @classmethod

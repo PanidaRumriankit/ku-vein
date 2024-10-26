@@ -1,6 +1,5 @@
 """This module use for send the data from Django to Next.js."""
 
-import logging
 
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
@@ -8,8 +7,8 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from ninja import Schema
 from decouple import config
-from backend.forms.schemas import ReviewRequestSchema
 
+from backend.forms.schemas import ReviewRequestSchema
 from .models import UserData
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
@@ -33,7 +32,6 @@ def verify_google_token(auth: str, email: str) -> bool:
     except ValueError:
         return False
 
-logger = logging.getLogger("user_logger")
 
 @app.get("/database/course_data")
 def database(request):
@@ -107,10 +105,8 @@ class UserCreateSchema(Schema):
 @app.post("/create/user")
 def create_user(request, data: UserCreateSchema):
     """Use for create new user."""
-    if not UserData.objects.filter(email=data.email):
-        UserData.objects.create(user_name=data.user_name, user_type=data.user_type, email=data.email)
-        logger.debug(f'created user: {data.user_name} {data.email}')
-    logger.debug(f'user: {data.user_name} {data.email}')
+    strategy = PostFactory.get_post_strategy("user")
+    strategy.post_data(data.model_dump())
 
 @app.post("/create/review", response={200: ReviewRequestSchema})
 def create_review(request, data: ReviewRequestSchema):
