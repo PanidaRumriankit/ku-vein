@@ -14,7 +14,7 @@ export default function AddReview() {
   const [postData, setPostData] = useState({
     email: '',
     course_id: '',
-    course_type: 'inter',
+    course_type: 'Inter',
     faculty: '',
     reviews: '',
     rating: 3,
@@ -86,7 +86,7 @@ export default function AddReview() {
             <Search onCourseSelect={(course) => setPostData({
               ...postData,
               course_id: course.course_id,
-              // Since the course_type is not defined yet, I will use 'inter' as the default value
+              // Since the course_type is not defined yet, I will use 'Inter' as the default value
               // course_type: course.course_type,
               faculty: course.faculty,
             }) } />
