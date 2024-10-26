@@ -11,7 +11,7 @@ class CourseData(models.Model):
 
     class Meta:
         db_table = 'CourseData'  # Specify the exact table name in MySQL
-        unique_together = ('course_id', 'faculty')
+        unique_together = ('course_id', 'faculty', 'course_type')
 
 class Inter(models.Model):
     course = models.OneToOneField(CourseData, on_delete=models.CASCADE,

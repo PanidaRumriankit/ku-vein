@@ -28,13 +28,13 @@ export default function Search() {
     const apiData = await GetDjangoApiData();
 
     const filteredData = apiData.filter((course) =>
-      course.course_name.toLowerCase().includes(inputValue.toLowerCase()) || 
-      course.course_id.toLowerCase().startsWith(inputValue.toLowerCase())
+      course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
+      course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
     );
 
     return filteredData.map((course) => ({
-      value: course.course_id,
-      label: `${course.course_id}\t-\t${course.course_name}`
+      value: course.courses_id,
+      label: `${course.courses_id}\t-\t${course.courses_name}`
     }));
   };
 

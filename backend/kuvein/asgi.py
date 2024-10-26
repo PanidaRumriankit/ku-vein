@@ -1,3 +1,6 @@
+# pylint: skip-file
+# -1: [file-ignored]
+
 """
 ASGI config for kuvein project.
 

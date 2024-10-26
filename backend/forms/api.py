@@ -8,8 +8,8 @@ from google.auth.transport import requests
 from ninja import Schema
 from decouple import config
 
+from backend.forms.schemas import ReviewRequestSchema
 from .models import UserData
-from .schemas import CourseReviewSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
@@ -45,16 +45,35 @@ def get_sorted_data(request):
     """Use for send sorted data to frontend."""
 
     query = request.GET.get("query")
-
+    logger.info(query)
     if not query:
+        logger.error("No query provided")
         return Response({"error": "Query parameter missing"}, status=400)
 
     elif query not in ["earliest", "latest", "upvote"]:
+        logger.error("Invalid query provided")
         return Response({"error": "Invalid Query parameter"}, status=400)
 
     try:
         strategy = QueryFactory.get_query_strategy(query)
         return Response(strategy.get_data())
+
+    except ValueError as e:
+        logger.error(e)
+        return Response({"error": str(e)}, status=400)
+
+@app.get("/database/review")
+def get_specific_review(request):
+    """Use for send specific review to frontend."""
+
+    query = request.GET.get("query")
+
+    if not query:
+        return Response({"error": "Query parameter missing"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy("review")
+        return Response(strategy.get_data(query))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -89,11 +108,11 @@ def create_user(request, data: UserCreateSchema):
     strategy = PostFactory.get_post_strategy("user")
     strategy.post_data(data.model_dump())
 
-@app.post("/create/review", response={200: CourseReviewSchema})
-def create_review(request, data: CourseReviewSchema):
+@app.post("/create/review", response={200: ReviewRequestSchema})
+def create_review(request, data: ReviewRequestSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
-    strategy.post_data(data.model_dump())
+    return strategy.post_data(data.model_dump())
 
 def backup(request):
     """Use for download data from MySQL server to local"""
