@@ -37,11 +37,11 @@ class InterQueryTests(TestCase):
         """send_all_course_data() should return the course data."""
 
         expected_data = [
-            {"course_id": "1", "faculty": "Miracle", "course_name": "Basic Miracle 1"},
-            {"course_id": "2", "faculty": "Sorcery", "course_name": "Soul Arrow Mastery"},
-            {"course_id": "3", "faculty": "Pyromancy","course_name": "Flame Manipulation"},
-            {"course_id": "4", "faculty": "Hexes", "course_name": "Dark Orb Fundamentals"},
-            {"course_id": "5", "faculty": "Faith", "course_name": "Sacred Oath"},
+            {"course_id": "1", "faculty": "Miracle", "course_type": "Priest", "course_name": "Basic Miracle 1"},
+            {"course_id": "2", "faculty": "Sorcery", "course_type": "Sorcerer", "course_name": "Soul Arrow Mastery"},
+            {"course_id": "3", "faculty": "Pyromancy", "course_type": "Pyromancer", "course_name": "Flame Manipulation"},
+            {"course_id": "4", "faculty": "Hexes", "course_type": "Hexer", "course_name": "Dark Orb Fundamentals"},
+            {"course_id": "5", "faculty": "Faith", "course_type": "Knight", "course_name": "Sacred Oath"},
         ]
 
         # Extract the values from each dictionary in both expected and actual data

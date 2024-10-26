@@ -149,7 +149,8 @@ class DatabaseQuery:
         course_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculty=F('course__faculty')
+            faculty=F('course__faculty'),
+            course_type=F('course__course_type')
         )
 
         return list(course_data)

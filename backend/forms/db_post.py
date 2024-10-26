@@ -19,6 +19,7 @@ logger = logging.getLogger("user_logger")
 from ninja.responses import Response
 from backend.forms.models import CourseReview, UserData, CourseData, ReviewStat
 
+
 class PostStrategy(ABC):
     """Abstract base class for update the database."""
 
@@ -26,6 +27,7 @@ class PostStrategy(ABC):
     def post_data(self, data: dict):
         """Update the data to the database."""
         pass
+
 
 class UserDataPost(PostStrategy):
     """Class for created new UserData object."""
@@ -40,14 +42,19 @@ class UserDataPost(PostStrategy):
             logger.debug(f"created user: {data['user_name']} {data['email']}")
         logger.debug(f"user: {data['user_name']} {data['email']}")
 
+
 class ReviewPost(PostStrategy):
     """Class for created new CourseReview object."""
 
     def post_data(self, data: dict):
         """Add the data to the CourseReview."""
-        cur_user = UserData.objects.filter(user_id=data['user_id']).first()
-        cur_course = CourseData.objects.filter(course_id=data['course_id'],
-                                               faculty=data['faculty'], course_type=data['course_type']).first()
+
+        try:
+            cur_user = UserData.objects.filter(user_id=data['user_id']).first()
+            cur_course = CourseData.objects.filter(course_id=data['course_id'],
+                                                   faculty=data['faculty'], course_type=data['course_type']).first()
+        except KeyError:
+            return Response({"error": "User data or Course Data are missing"}, status=400)
 
         if not cur_user or not cur_course:
             return Response({"error": "This user or This course isn't in the database."}, status=401)
@@ -69,6 +76,7 @@ class ReviewPost(PostStrategy):
                                   date_data=datetime.now().date(), grade=data['grade'], up_votes=0)
 
         return Response({"success": "The Review is successfully created."}, status=201)
+
 
 class PostFactory:
     """Factory class to handle query strategy selection."""
