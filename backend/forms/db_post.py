@@ -35,11 +35,15 @@ class ReviewPost(PostStrategy):
         if not cur_user or not cur_course:
             return Response({"error": "This user or This course isn't in the database."}, status=401)
 
-        if not data['pen_name']:
-            data['pen_name'] = cur_user.user_name
+        try:
+            if not data['pen_name']:
+                data['pen_name'] = cur_user.user_name
 
-        if not data['academic_year']:
-            data['academic_year'] = datetime.now().year
+            if not data['academic_year']:
+                data['academic_year'] = datetime.now().year
+
+        except KeyError:
+            return Response({"error": "pen_name or academic_year are missing"}, status=400)
 
         review_instance = CourseReview.objects.create(user=cur_user, course=cur_course, reviews=data['reviews'])
         ReviewStat.objects.create(review=review_instance, rating=data['rating'],
