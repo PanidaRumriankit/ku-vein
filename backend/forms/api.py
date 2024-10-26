@@ -1,5 +1,6 @@
 """This module use for send the data from Django to Next.js."""
 
+import logging
 
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
@@ -9,20 +10,22 @@ from ninja import Schema
 from decouple import config
 
 from backend.forms.schemas import ReviewRequestSchema
-from .models import UserData
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
+logger = logging.getLogger(__name__)
 
 
 def verify_google_token(auth: str, email: str) -> bool:
     """Verify the Google OAuth token from the frontend."""
     try:
         token = auth.split(" ")[1]
-        check_token = id_token.verify_oauth2_token(token, requests.Request(), config('GOOGLE_CLIENT_ID', cast=str,
-                        default='sif'))
+        check_token = id_token.verify_oauth2_token(token, requests.Request(),
+                                                   config('GOOGLE_CLIENT_ID',
+                                                          cast=str,
+                                                          default='sif'))
 
         if check_token['email'] == email:
             return True
@@ -39,6 +42,7 @@ def database(request):
     print(request)
 
     return Response(DatabaseQuery().send_all_course_data())
+
 
 @app.get("/database/sorted_data")
 def get_sorted_data(request):
@@ -62,6 +66,7 @@ def get_sorted_data(request):
         logger.error(e)
         return Response({"error": str(e)}, status=400)
 
+
 @app.get("/database/review")
 def get_specific_review(request):
     """Use for send specific review to frontend."""
@@ -77,6 +82,7 @@ def get_specific_review(request):
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
+
 
 @app.get("/database/cou")
 def test_auth(request):
@@ -98,9 +104,11 @@ def test_auth(request):
     except (IndexError, KeyError):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
+
 class UserCreateSchema(Schema):
     name: str
     email: str
+
 
 @app.post("/create/user")
 def create_user(request, data: UserCreateSchema):
@@ -108,11 +116,13 @@ def create_user(request, data: UserCreateSchema):
     strategy = PostFactory.get_post_strategy("user")
     strategy.post_data(data.model_dump())
 
+
 @app.post("/create/review", response={200: ReviewRequestSchema})
 def create_review(request, data: ReviewRequestSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
     return strategy.post_data(data.model_dump())
+
 
 def backup(request):
     """Use for download data from MySQL server to local"""
