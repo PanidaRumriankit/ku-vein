@@ -25,10 +25,10 @@ export default function ReviewCard({item}) {
           <div
             className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-left">Grade: {item.grades}</p>
-            <p className="text-right">{item.date} author: {item.user_name}</p>
+            <p className="text-right">{item.date} author: {item.name || item.user_name}</p>
           </div>
           <hr/>
-          <div className="text-gray-300 flex justify-between">
+          <div className="text-gray-300 flex justify-between mt-2">
             <div className="text-left">
               <Button variant="light">
                 <ThumbUpTwoToneIcon/> {item.upvote}

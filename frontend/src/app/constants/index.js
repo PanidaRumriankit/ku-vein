@@ -5,7 +5,7 @@ const notifications = [
     description: "This is the first notification",
     type: "success",
     duration: 5000,
-    isRead: false,
+    isRead: true,
     createdAt: new Date(),
     updatedAt: new Date(),
   },
