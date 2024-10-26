@@ -35,7 +35,7 @@ class UserDataPost(PostStrategy):
 
 
         if not UserData.objects.filter(email=data['email']):
-            UserData.objects.create(user_name=f"user_{UserData.objects.count()}", user_type=data['user_type'], email=data['email'])
+            UserData.objects.create(user_name=f"user_{UserData.objects.count()}", user_type="student", email=data['email'])
             logger.debug(f"created user: user_{UserData.objects.count()} {data['email']}")
         logger.debug(f"user: user_{UserData.objects.count()} {data['email']}")
 
