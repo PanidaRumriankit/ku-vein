@@ -15,8 +15,8 @@ class ReviewPostTests(TestCase):
         """Set up reusable instances for tests."""
 
         self.review_post = ReviewPost()
-        self.user = user_set_up()
-        self.course = course_set_up()
+        user_set_up()
+        course_set_up()
 
 
     def test_error_response_from_missing_user_data(self):
@@ -35,7 +35,8 @@ class ReviewPostTests(TestCase):
 
         response = self.review_post.post_data(review_data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), {'error': 'User data or Course Data are missing'})
+        self.assertEqual(json.loads(response.content),
+                         {'error': 'User data or Course Data are missing from the response body.'})
 
     def test_error_response_from_missing_course_data(self):
         """Missing course_id, course_type and faculty key"""
@@ -51,7 +52,8 @@ class ReviewPostTests(TestCase):
 
         response = self.review_post.post_data(review_data)
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(json.loads(response.content), {'error': 'User data or Course Data are missing'})
+        self.assertEqual(json.loads(response.content),
+                         {'error': 'User data or Course Data are missing from the response body.'})
 
     def test_error_response_from_missing_pen_name(self):
         """Missing pen_name key"""

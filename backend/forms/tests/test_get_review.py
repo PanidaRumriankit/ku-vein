@@ -1,8 +1,10 @@
-from ..models import CourseData, UserData, CourseReview
-from ..db_query import EarliestReview
-from ..db_post import UserDataPost, ReviewPost
+from .test_user_data import user_set_up
+from ..db_query import EarliestReview, LatestReview, UpvoteReview
+from datetime import datetime
 from django.test import TestCase
 from .test_course_data import course_set_up
+from ..models import CourseData, UserData, CourseReview, ReviewStat
+
 
 def review_set_up():
     """Set Up function for review data."""
@@ -68,9 +70,19 @@ def review_set_up():
     ]
 
     for add_user in review_data:
-        review.append(CourseReview.objects.create(**add_user))
+        user = UserData.objects.filter(email=add_user['email']).first()
+        course = CourseData.objects.filter(course_id=add_user['course_id'],
+                                                        faculty=add_user['faculty'],
+                                                        course_type=add_user['course_type']).first()
 
-    return review
+        review_instance = CourseReview.objects.create(user=user, course=course, reviews=add_user['reviews'])
+
+        review.append(ReviewStat.objects.create(review=review_instance, rating=add_user['rating'],
+                                  academic_year=add_user['academic_year'],
+                                  pen_name=add_user['pen_name'],
+                                  date_data=datetime.now().date(), grade=add_user['grade'], up_votes=0))
+
+    return review, review_data
 
 
 class EarliestReviewTests(TestCase):
@@ -78,15 +90,61 @@ class EarliestReviewTests(TestCase):
 
     def setUp(self):
         """Set up reusable instances for tests."""
-        self.earliest_review = EarliestReview()
-
-        data = {}
-        # CourseData.objects.create(**data)
-
+        self.earliest = EarliestReview()
+        course_set_up()
+        user_set_up()
+        self.review, self.data = review_set_up()
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertEqual(self.earliest_review.get_data(), [])
+        self.assertIsInstance(self.earliest.get_data(), list)
 
     def test_order_by_earliest(self):
-        pass
+        """Data should order by first to last."""
+        expected_values = [item['course_id'] for item in self.data]
+        self.assertEqual(expected_values, [item['courses_id'] for item in self.earliest.get_data()])
+
+
+class LatestReviewTests(TestCase):
+    """Test cases for LatestReview."""
+
+    def setUp(self):
+        """Set up reusable instances for tests."""
+        self.latest = LatestReview()
+        course_set_up()
+        user_set_up()
+        self.review, self.data = review_set_up()
+
+    def test_correct_data_format(self):
+        """Data should return as a list."""
+        self.assertIsInstance(self.latest.get_data(), list)
+
+    def test_order_by_latest(self):
+        """Data should order by last to first."""
+        expected_values = [item['course_id'] for item in self.data]
+        expected_values.reverse()
+
+        self.assertEqual(expected_values, [item['courses_id'] for item in self.latest.get_data()])
+
+
+class UpvoteReviewTests(TestCase):
+    """Test cases for UpvoteReview."""
+
+    def setUp(self):
+        """Set up reusable instances for tests."""
+        self.upvote = UpvoteReview()
+        course_set_up()
+        user_set_up()
+        self.review, self.data = review_set_up()
+        self.up_vote_list = [8, 9, 5, 6, 7]
+
+    def test_correct_data_format(self):
+        """Data should return as a list."""
+        self.assertIsInstance(self.upvote.get_data(), list)
+
+    def test_order_by_upvote(self):
+        """Data should order by highest to lowest."""
+        for i, update_review in enumerate(self.review):
+            update_review.up_votes = self.up_vote_list[i]
+            update_review.save()
+        self.assertEqual(sorted(self.up_vote_list, reverse=True), [item['upvote'] for item in self.upvote.get_data()])

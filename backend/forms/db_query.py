@@ -107,7 +107,7 @@ class UpvoteReview(QueryStrategy):
             date=F('date_data'),
             grades=F('grade'),
             upvote=F('up_votes')
-        ).order_by('up_votes')
+        ).order_by('-up_votes')
 
         return list(review_data)
 
