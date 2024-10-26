@@ -1,6 +1,5 @@
 """This module use for send the data from Django to Next.js."""
 
-
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
