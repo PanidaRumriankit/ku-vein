@@ -13,19 +13,19 @@ from .db_management import DatabaseBackup
 from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
+logger = logging.getLogger("user_logger")
 
 
 def verify_google_token(token: str):
     """Verify the Google OAuth token from the frontend."""
     try:
         is_valid = id_token.verify_oauth2_token(token, requests.Request(), config('GOOGLE_CLIENT_ID', cast=str,
-                        default='sif'))
+                                                default='sif'))
         return is_valid
 
     except ValueError:
         return Response({"error": "Invalid token"}, status=401)
 
-logger = logging.getLogger("user_logger")
 
 @app.get("/database/course_data")
 def database(request):
@@ -33,6 +33,7 @@ def database(request):
     print(request)
 
     return Response(DatabaseQuery().send_all_course_data())
+
 
 @app.get("/database/sorted_data")
 def get_sorted_data(request):
@@ -52,6 +53,7 @@ def get_sorted_data(request):
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
+
 
 @app.get("/database/cou")
 def test_auth(request):
@@ -81,12 +83,14 @@ class UserCreateSchema(Schema):
     name: str
     email: str
 
+
 @app.post('/create_user/')
 def create_user(request, data: UserCreateSchema):
     if not UserData.objects.filter(email=data.email):
         UserData.objects.create(user_name=data.name, user_type='student', email=data.email)
         logger.debug(f'created user: {data.name} {data.email}')
     logger.debug(f'user: {data.name} {data.email}')
+
 
 def backup(request):
     """Use for download data from MySQL server to local"""
