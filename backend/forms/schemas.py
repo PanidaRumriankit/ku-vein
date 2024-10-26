@@ -47,6 +47,7 @@ class ReviewRequestSchema(Schema):
     review_id: int
     user_id: int
     course_id: str
+    course_type: str
     faculty: str
     reviews: str
 
