@@ -25,10 +25,10 @@ class SpecialSchema(ModelSchema):
         fields = '__all__'
 
 
-class UserDataSchema(ModelSchema):
+class UserDataCreateSchema(ModelSchema):
     class Meta:
         model = UserData
-        fields = '__all__'
+        fields = ['email']
 
 
 class CourseReviewSchema(ModelSchema):
@@ -44,8 +44,7 @@ class ReviewStatSchema(ModelSchema):
 
 class ReviewRequestSchema(Schema):
     # Fields from CourseReview
-    review_id: int
-    user_id: int
+    email: str
     course_id: str
     course_type: str
     faculty: str

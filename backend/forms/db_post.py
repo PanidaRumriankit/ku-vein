@@ -32,20 +32,19 @@ class UserDataPost(PostStrategy):
 
     def post_data(self, data: dict):
         """Add the data to the UserData."""
-        if not data['user_name']:
-            data['user_name'] = f"user_{UserData.objects.count()}"
+
 
         if not UserData.objects.filter(email=data['email']):
-            UserData.objects.create(user_name=data['user_name'], user_type=data['user_type'], email=data['email'])
-            logger.debug(f"created user: {data['user_name']} {data['email']}")
-        logger.debug(f"user: {data['user_name']} {data['email']}")
+            UserData.objects.create(user_name=f"user_{UserData.objects.count()}", user_type="student", email=data['email'])
+            logger.debug(f"created user: user_{UserData.objects.count()} {data['email']}")
+        logger.debug(f"user: user_{UserData.objects.count()} {data['email']}")
 
 class ReviewPost(PostStrategy):
     """Class for created new CourseReview object."""
 
     def post_data(self, data: dict):
         """Add the data to the CourseReview."""
-        cur_user = UserData.objects.filter(user_id=data['user_id']).first()
+        cur_user = UserData.objects.filter(email=data['email']).first()
         cur_course = CourseData.objects.filter(course_id=data['course_id'],
                                                faculty=data['faculty'], course_type=data['course_type']).first()
 
