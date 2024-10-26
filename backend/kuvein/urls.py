@@ -1,3 +1,7 @@
+# pylint: skip-file
+# -1: [file-ignored]
+
+
 """
 URL configuration for kuvein project.
 
