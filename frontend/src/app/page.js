@@ -8,7 +8,6 @@ import ReviewCard from "./components/reviewcard.jsx";
 import MakeApiRequest from "./constants/getreview"
 import {demoReview} from "./constants/demoreview";
 import AddReviews from "./components/addreviews";
-import {useState, useMemo} from "react";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
