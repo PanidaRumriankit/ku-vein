@@ -12,6 +12,7 @@ from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
+logger = logging.getLogger("user_logger")
 
 
 def verify_google_token(auth: str, email: str) -> bool:
@@ -92,6 +93,7 @@ def create_review(request, data: ReviewRequestSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
     return strategy.post_data(data.model_dump())
+
 
 
 def backup(request):
