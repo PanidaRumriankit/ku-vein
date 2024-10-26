@@ -27,6 +27,7 @@ class PostStrategy(ABC):
         """Update the data to the database."""
         pass
 
+
 class UserDataPost(PostStrategy):
     """Class for created new UserData object."""
 
@@ -37,6 +38,7 @@ class UserDataPost(PostStrategy):
             UserData.objects.create(user_name=f"user_{UserData.objects.count()}", user_type="student", email=data['email'])
             logger.debug(f"created user: user_{UserData.objects.count()} {data['email']}")
         logger.debug(f"user: user_{UserData.objects.count()} {data['email']}")
+
 
 class ReviewPost(PostStrategy):
     """Class for created new CourseReview object."""
@@ -70,6 +72,7 @@ class ReviewPost(PostStrategy):
                                   date_data=datetime.now().date(), grade=data['grade'], up_votes=0)
 
         return Response({"success": "The Review is successfully created."}, status=201)
+
 
 class PostFactory:
     """Factory class to handle query strategy selection."""
