@@ -1,4 +1,4 @@
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
 from .models import ReviewStat, Summary, QA, BookMark
 from .models import Inter, Normal, Special
@@ -41,6 +41,21 @@ class ReviewStatSchema(ModelSchema):
     class Meta:
         model = ReviewStat
         fields = '__all__'
+
+class ReviewRequestSchema(Schema):
+    # Fields from CourseReview
+    review_id: int
+    user_id: int
+    course_id: str
+    course_type: str
+    faculty: str
+    reviews: str
+
+    # Fields from ReviewStat
+    rating: float
+    academic_year: int
+    pen_name: str
+    grade: str
 
 
 class SummarySchema(ModelSchema):
