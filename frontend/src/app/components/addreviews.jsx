@@ -12,8 +12,7 @@ export default function AddReview() {
   const { data: session } = useSession();
   const [hover, setHover] = useState(-1);
   const [postData, setpostData] = useState({
-    review_id: 0,
-    user_id: 0,
+    email: session.user.email,
     course_id: '',
     course_type: '',
     faculty: '',
@@ -102,8 +101,8 @@ export default function AddReview() {
                 }}
                 emptyIcon={<StarIcon style={{ opacity: 0.55, color: 'gray' }} fontSize="inherit" />}
               />
-              {postData.star !== null && (
-                <div className='ml-2'>{labels[hover !== -1 ? hover : postData.star]}</div>
+              {postData.rating !== null && (
+                <div className='ml-2'>{labels[hover !== -1 ? hover : postData.rating]}</div>
               )}
             </div>
             <div className="flex flex-wrap mt-4 font-bold">
