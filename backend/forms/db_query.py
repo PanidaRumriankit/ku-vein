@@ -9,9 +9,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
 
+from typing import Union
 from django.db.models import F
-from backend.forms.models import Inter, ReviewStat, CourseReview
 from abc import ABC, abstractmethod
+from backend.forms.models import Inter, ReviewStat, CourseReview
 
 
 
@@ -157,11 +158,12 @@ class QueryFactory:
     strategy_map = {
         "earliest": EarliestReview,
         "latest": LatestReview,
-        "upvote": UpvoteReview
+        "upvote": UpvoteReview,
+        "review": ReviewQuery
     }
 
     @classmethod
-    def get_query_strategy(cls, query: str) -> QueryStrategy:
+    def get_query_strategy(cls, query: str) -> Union[QueryStrategy, QueryFilterStrategy]:
         """
         Return the query strategy based on the query string.
 
