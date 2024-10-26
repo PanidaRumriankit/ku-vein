@@ -31,7 +31,7 @@ export default function ReviewCard({item}) {
           <div className="text-gray-300 flex justify-between">
             <div className="text-left">
               <Button variant="light">
-                <ThumbUpTwoToneIcon/> {item.upvote}
+                <ThumbUpTwoToneIcon/> {item.up_votes}
               </Button>
             </div>
             <div className="text-right">
