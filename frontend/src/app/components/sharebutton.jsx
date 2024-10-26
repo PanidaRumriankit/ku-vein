@@ -15,7 +15,7 @@ export default function ShareButton() {
         </Button>
       </PopoverTrigger>
       <PopoverContent>
-        <div>
+        <div className="text-black dark:text-white">
           <div className="my-2">
             <FacebookIcon/> Facebook
           </div>

@@ -23,7 +23,7 @@ export default function ReviewCard({item}) {
           <p>{item.reviews}</p>
           <br/>
           <div
-            className="flex items-center justify-between text-gray-300 text-right">
+            className="flex items-center justify-between text-gray-500 text-right">
             <p className="text-left">Grade: {item.grades}</p>
             <p className="text-right">{item.date} author: {item.name || item.user_name}</p>
           </div>
