@@ -36,15 +36,17 @@ export default function Search({ onCourseSelect, page }) {
 
   const loadOptions = async (inputValue) => {
     const apiData = await GetDjangoApiData();
-
+  
     const filteredData = apiData.filter((course) =>
       course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
       course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
     );
-
+  
     return filteredData.map((course) => ({
       value: course.courses_id,
-      label: `${course.courses_id}\t-\t${course.courses_name}`
+      label: `${course.courses_id}\t-\t${course.courses_name}`,
+      course_type: course.course_type,
+      faculty: course.faculty
     }));
   };
 
@@ -97,7 +99,11 @@ export default function Search({ onCourseSelect, page }) {
             handleSearch(selectedOption ? selectedOption.value : '', searchParams, pathname, replace);
           }
           if (onCourseSelect) {
-            onCourseSelect(selectedOption ? selectedOption.value : '');
+            onCourseSelect(selectedOption ? {
+              course_id: selectedOption.value,
+              course_type: selectedOption.course_type,
+              faculty: selectedOption.faculty
+            } : null);
           }
         }}
         defaultOptions

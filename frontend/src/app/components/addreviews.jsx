@@ -4,17 +4,17 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Search from './search';
 import Rating from '@mui/material/Rating';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import StarIcon from '@mui/icons-material/Star';
 
 export default function AddReview() {
   const { data: session } = useSession();
   const [hover, setHover] = useState(-1);
-  const [postData, setpostData] = useState({
-    email: session.user.email,
+  const [postData, setPostData] = useState({
+    email: '',
     course_id: '',
-    course_type: '',
+    course_type: 'inter',
     faculty: '',
     reviews: '',
     rating: 3,
@@ -62,6 +62,10 @@ export default function AddReview() {
   const idToken = session.idToken;
   const email = session.email;
 
+  useEffect(() => {
+    setPostData((prevData) => ({ ...prevData, email }));
+  }, []);
+
   return (
     <div className="fixed bottom-4 right-4">
       <Popup 
@@ -79,14 +83,20 @@ export default function AddReview() {
         {close => (
           <div className="modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-xl font-semibold pb-2">เพิ่มรีวิว</h2>
-            <Search onCourseSelect={(course_id) => setpostData({ ...postData, course_id })} page='review' />
+            <Search onCourseSelect={(course) => setPostData({
+              ...postData,
+              course_id: course.course_id,
+              // Since the course_type is not defined yet, I will use 'inter' as the default value
+              // course_type: course.course_type,
+              faculty: course.faculty,
+            }) } />
             <textarea
               type="text"
               placeholder="ความคิดเห็นต่อรายวิชา"
               className="w-full h-48 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2"
               required
               value={postData.reviews}
-              onChange={(e) => setpostData({ ...postData, reviews: e.target.value })}
+              onChange={(e) => setPostData({ ...postData, reviews: e.target.value })}
             />
             <div className="flex justify-start">
               <h3 className="mr-12 font-bold">ความพึงพอใจ</h3>
@@ -94,7 +104,7 @@ export default function AddReview() {
                 value={postData.rating}
                 getLabelText={getLabelText}
                 onChange={(event, newValue) => {
-                  setpostData({ ...postData, rating: newValue });
+                  setPostData({ ...postData, rating: newValue });
                 }}
                 onChangeActive={(event, newHover) => {
                   setHover(newHover);
@@ -113,7 +123,7 @@ export default function AddReview() {
                   className={`ml-4 text-lg hover:cursor-pointer ${
                     postData.grade === grade ? 'text-[#4ECDC4]' : 'text-gray-400 hover:text-[#4ECDC4]'
                   }`}
-                  onClick={() => setpostData((prevData) => ({ ...prevData, grade }))}
+                  onClick={() => setPostData((prevData) => ({ ...prevData, grade }))}
                 >
                   {grade}
                 </h1>
@@ -126,7 +136,7 @@ export default function AddReview() {
                 className='w-20 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
                 required 
                 value={postData.academic_year}
-                onChange={(e) => setpostData({ ...postData, academic_year: e.target.value })}
+                onChange={(e) => setPostData({ ...postData, academic_year: e.target.value })}
               />
             </div>
             <div className='flex flex-wrap mt-4 font-bold'>
@@ -136,7 +146,7 @@ export default function AddReview() {
                 className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
                 required
                 value={postData.pen_name}
-                onChange={(e) => setpostData({ ...postData, pen_name: e.target.value })}
+                onChange={(e) => setPostData({ ...postData, pen_name: e.target.value })}
                 />
             </div>
             <div className="flex justify-end mt-4">
