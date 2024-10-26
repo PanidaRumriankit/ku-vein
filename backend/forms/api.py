@@ -6,7 +6,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from backend.forms.schemas import ReviewRequestSchema, UserDataSchema
+from backend.forms.schemas import ReviewRequestSchema, UserDataCreateSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
@@ -98,7 +98,7 @@ def test_auth(request):
 
 
 @app.post("/create/user")
-def create_user(request, data: UserDataSchema):
+def create_user(request, data: UserDataCreateSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
     strategy.post_data(data.model_dump())
