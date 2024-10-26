@@ -46,9 +46,6 @@ export default function Home() {
       </div>
 
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
-      {demoReview.map((item, index) => (
-        <ReviewCard item={item} key={index} />
-      ))}
       {reviews.map((item, index) => (
         <ReviewCard item={item} key={index} />
       ))}
