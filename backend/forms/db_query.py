@@ -10,7 +10,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 django.setup()
 
 from django.db.models import F
-from backend.forms.models import Inter, ReviewStat
+from backend.forms.models import Inter, ReviewStat, CourseReview
 from abc import ABC, abstractmethod
 
 
@@ -47,10 +47,13 @@ class EarliestReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
+            ratings=F('rating'),
+            year=F('academic_year'),
+            name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            upvote=F('upvotes'),
-        ).order_by('date_data')
+            upvote=F('upvotes')
+        ).order_by('review__review_id')
 
         return list(review_data)
 
@@ -70,10 +73,13 @@ class LatestReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
+            ratings=F('rating'),
+            year=F('academic_year'),
+            name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            upvote=F('upvotes'),
-        ).order_by('-date_data')
+            upvote=F('upvotes')
+        ).order_by('-review__review_id')
 
         return list(review_data)
 
@@ -93,9 +99,12 @@ class UpvoteReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
+            ratings=F('rating'),
+            year=F('academic_year'),
+            name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            upvote=F('upvotes'),
+            upvote=F('upvotes')
         ).order_by('upvotes')
 
         return list(review_data)
@@ -106,8 +115,25 @@ class ReviewQuery(QueryFilterStrategy):
 
     def get_data(self, filter_key: dict):
         """Get the review data from the database."""
-        pass
+        review = CourseReview.objects.filter(review_id=filter_key['review_id'])
+        stat = ReviewStat.objects.filter(review=review)
 
+        review_data = stat.objects.values(
+            courses_id=F('review__course__course_id'),
+            courses_name=F('review__course__course_name'),
+            faculty=F('review__course__faculty'),
+            user_name=F('review__user__user_name'),
+            reviews=F('review__reviews'),
+            ratings=F('rating'),
+            year=F('academic_year'),
+            name=F('pen_name'),
+            date=F('date_data'),
+            grades=F('grade'),
+            upvote=F('upvotes')
+        )
+
+
+        return list(review_data)
 class DatabaseQuery:
     """Main class for handle the request from frontend"""
     def __init__(self):
