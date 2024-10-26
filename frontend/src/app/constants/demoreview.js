@@ -14,7 +14,7 @@ const demoReview = [
     "reviews": "banana",
     "date": "2023-09-10",
     "grades": "A",
-    "up_votes": 15
+    "upvote": 15
   },
   {
     "courses_id": "456789",
@@ -24,7 +24,7 @@ const demoReview = [
     "reviews": "potato",
     "date": "2023-09-12",
     "grades": "B",
-    "up_votes": 20
+    "upvote": 20
   },
   {
     "courses_id": "789101",
@@ -34,7 +34,7 @@ const demoReview = [
     "reviews": "Noppo mham mham",
     "date": "2023-09-15",
     "grades": "C",
-    "up_votes": 5
+    "upvote": 5
   },
   {
     "courses_id": "234567",
@@ -44,7 +44,7 @@ const demoReview = [
     "reviews": "pizza stole Pete",
     "date": "2023-09-18",
     "grades": "B+",
-    "up_votes": 8
+    "upvote": 8
   },
   {
     "courses_id": "345678",
@@ -54,7 +54,7 @@ const demoReview = [
     "reviews": "Ichi",
     "date": "2023-09-20",
     "grades": "A-",
-    "up_votes": 12
+    "upvote": 12
   }
 ]
 
