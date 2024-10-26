@@ -3,7 +3,8 @@ import sys
 import django
 
 # Add the parent directory to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
@@ -15,7 +16,6 @@ from abc import ABC, abstractmethod
 from backend.forms.models import Inter, ReviewStat, CourseReview
 
 
-
 class QueryStrategy(ABC):
     """Abstract base class for make the query."""
 
@@ -23,6 +23,7 @@ class QueryStrategy(ABC):
     def get_data(self):
         """Get the data from the database."""
         pass
+
 
 class QueryFilterStrategy(ABC):
     """Abstract base class for make the query with condition."""
@@ -53,7 +54,7 @@ class EarliestReview(QueryStrategy):
             name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            upvote=F('upvotes')
+            upvote=F('up_votes')
         ).order_by('review__review_id')
 
         return list(review_data)
@@ -79,7 +80,7 @@ class LatestReview(QueryStrategy):
             name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            upvote=F('upvotes')
+            upvote=F('up_votes')
         ).order_by('-review__review_id')
 
         return list(review_data)
@@ -105,8 +106,8 @@ class UpvoteReview(QueryStrategy):
             name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            upvote=F('upvotes')
-        ).order_by('upvotes')
+            upvote=F('up_votes')
+        ).order_by('up_votes')
 
         return list(review_data)
 
@@ -130,13 +131,15 @@ class ReviewQuery(QueryFilterStrategy):
             name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            upvote=F('upvotes')
+            upvote=F('up_votes')
         )
 
-
         return list(review_data)
+
+
 class DatabaseQuery:
     """Main class for handle the request from frontend"""
+
     def __init__(self):
         self.data = None
 
@@ -163,7 +166,8 @@ class QueryFactory:
     }
 
     @classmethod
-    def get_query_strategy(cls, query: str) -> Union[QueryStrategy, QueryFilterStrategy]:
+    def get_query_strategy(cls, query: str) -> Union[
+        QueryStrategy, QueryFilterStrategy]:
         """
         Return the query strategy based on the query string.
 
@@ -186,4 +190,3 @@ class QueryFactory:
 if __name__ == "__main__":
     d = DatabaseQuery()
     print(d.send_all_course_data())
-
