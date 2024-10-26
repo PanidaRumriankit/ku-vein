@@ -13,6 +13,7 @@ class CourseData(models.Model):
         db_table = 'CourseData'  # Specify the exact table name in MySQL
         unique_together = ('course_id', 'faculty')
 
+
 class Inter(models.Model):
     course = models.OneToOneField(CourseData, on_delete=models.CASCADE,
                                   related_name='inter_courses',
