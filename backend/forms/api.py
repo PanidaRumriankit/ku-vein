@@ -1,7 +1,5 @@
 """This module use for send the data from Django to Next.js."""
 
-import logging
-
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
@@ -15,7 +13,6 @@ from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
-logger = logging.getLogger(__name__)
 
 
 def verify_google_token(auth: str, email: str) -> bool:
@@ -49,13 +46,10 @@ def get_sorted_data(request):
     """Use for send sorted data to frontend."""
 
     query = request.GET.get("query")
-    logger.info(query)
     if not query:
-        logger.error("No query provided")
         return Response({"error": "Query parameter missing"}, status=400)
 
     elif query not in ["earliest", "latest", "upvote"]:
-        logger.error("Invalid query provided")
         return Response({"error": "Invalid Query parameter"}, status=400)
 
     try:
@@ -63,7 +57,6 @@ def get_sorted_data(request):
         return Response(strategy.get_data())
 
     except ValueError as e:
-        logger.error(e)
         return Response({"error": str(e)}, status=400)
 
 
