@@ -3,20 +3,22 @@
 import os
 import sys
 import django
+import json
+import pymysql
+
+from datetime import datetime
+from decouple import config
 
 # Add the parent directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
-django.setup()  # Initialize Django
+django.setup()
 
-import json
-import pymysql
-
-from datetime import datetime
-from decouple import config
 from backend.forms.models import *
+
+
 
 class MySQLConnection:
     """Class for connect to the MySQL server."""
