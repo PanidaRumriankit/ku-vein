@@ -37,6 +37,10 @@ function RootLayoutContent({ children }) {
     }
   }, [status, session]);
 
+  if (status === 'loading') {
+    return <div>Loading...</div>;
+  }
+
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -44,11 +48,11 @@ function RootLayoutContent({ children }) {
   if (status === "authenticated") {
     let user = session.user;
     fetch("http://127.0.0.1:8000/api/create/user", {
-      headers: { 'Content-Type': 'application/json' },
       method: 'post',
-      body: JSON.stringify({ 'user_name': user.name,
-                             'user_type': 'student',
-                             'email'    : user.email }),
+      body: JSON.stringify({'user_id'  : user.id, 
+                            'user_name': user.name,
+                            'user_type': 'student',
+                            'email'    : user.email }),
       credentials: 'same-origin',
   });
   }
@@ -80,7 +84,7 @@ function RootLayoutContent({ children }) {
       {children}
 
       <footer className="bg-[#4ECDC4] p-4">
-        <div className="container w-1/2 ml-0 text-white flex justify-between items-center">
+        <div className="container mx-auto text-white flex justify-between items-center">
           <p>&copy; {new Date().getFullYear()} KU Vein. All rights reserved.</p>
           <a href="https://github.com/PanidaRumriankit/ku-vein" target="_blank" rel="noopener noreferrer">
             <GitHubIcon className="w-7 h-7 hover:text-black hover:scale-110 transition-colors duration-200" />

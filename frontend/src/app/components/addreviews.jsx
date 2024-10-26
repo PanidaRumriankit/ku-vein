@@ -12,14 +12,16 @@ export default function AddReview() {
   const { data: session } = useSession();
   const [hover, setHover] = useState(-1);
   const [postData, setpostData] = useState({
-    courseID: '',
-    review: '',
-    star: 3,
+    review_id: 0,
+    user_id: 0,
+    course_id: '',
+    course_type: '',
+    faculty: '',
+    reviews: '',
+    rating: 3,
     grade: '',
-    year: new Date().getFullYear() + 543,
-    nickname: '',
-    created_at: new Date().toISOString(),
-    upvote: 0,
+    academic_year: new Date().getFullYear() + 543,
+    pen_name: '',
   });
 
   const labels = {
@@ -78,22 +80,22 @@ export default function AddReview() {
         {close => (
           <div className="modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-xl font-semibold pb-2">เพิ่มรีวิว</h2>
-            <Search onCourseSelect={(courseID) => setpostData({ ...postData, courseID })} page='review' />
+            <Search onCourseSelect={(course_id) => setpostData({ ...postData, course_id })} page='review' />
             <textarea
               type="text"
               placeholder="ความคิดเห็นต่อรายวิชา"
               className="w-full h-48 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2"
               required
-              value={postData.review}
-              onChange={(e) => setpostData({ ...postData, review: e.target.value })}
+              value={postData.reviews}
+              onChange={(e) => setpostData({ ...postData, reviews: e.target.value })}
             />
             <div className="flex justify-start">
               <h3 className="mr-12 font-bold">ความพึงพอใจ</h3>
               <Rating
-                value={postData.star}
+                value={postData.rating}
                 getLabelText={getLabelText}
                 onChange={(event, newValue) => {
-                  setpostData({ ...postData, star: newValue });
+                  setpostData({ ...postData, rating: newValue });
                 }}
                 onChangeActive={(event, newHover) => {
                   setHover(newHover);
@@ -124,8 +126,8 @@ export default function AddReview() {
                 placeholder='พ.ศ.'
                 className='w-20 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
                 required 
-                value={postData.year}
-                onChange={(e) => setpostData({ ...postData, year: e.target.value })}
+                value={postData.academic_year}
+                onChange={(e) => setpostData({ ...postData, academic_year: e.target.value })}
               />
             </div>
             <div className='flex flex-wrap mt-4 font-bold'>
@@ -134,8 +136,8 @@ export default function AddReview() {
                 placeholder='นามปากกา'
                 className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
                 required
-                value={postData.nickname}
-                onChange={(e) => setpostData({ ...postData, nickname: e.target.value })}
+                value={postData.pen_name}
+                onChange={(e) => setpostData({ ...postData, pen_name: e.target.value })}
                 />
             </div>
             <div className="flex justify-end mt-4">
