@@ -1,10 +1,9 @@
 import json
 
-from ..models import CourseData, UserData, CourseReview
-from ..db_query import EarliestReview
-from ..db_post import UserDataPost, ReviewPost
+from ..models import UserData
+from ..db_post import UserDataPost
 from django.test import TestCase
-from .test_course_data import course_set_up
+
 
 def user_set_up():
     """Set Up function for user data."""

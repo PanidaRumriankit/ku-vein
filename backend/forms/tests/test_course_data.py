@@ -2,6 +2,7 @@ from ..models import CourseData, Inter
 from ..db_query import DatabaseQuery
 from django.test import TestCase
 
+
 def course_set_up():
     """Set Up function for course data."""
 
