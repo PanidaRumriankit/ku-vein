@@ -19,7 +19,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r backend/requirements.txt
     - name: Set Environments
       run: |
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
@@ -28,4 +28,5 @@ jobs:
         echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
     - name: Run Tests
       run: |
+        cd backend
         python manage.py test
