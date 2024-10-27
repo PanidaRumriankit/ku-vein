@@ -3,10 +3,9 @@
 import Image from "next/image";
 import Search from './components/search';
 import {useState, useEffect} from "react";
-import Sorting from "./components/sorting.jsx";
-import ReviewCard from "./components/reviewcard.jsx";
+import Sorting from "./components/sorting";
+import ReviewCard from "./components/reviewcard";
 import MakeApiRequest from "./constants/getreview"
-import {demoReview} from "./constants/demoreview";
 import AddReviews from "./components/addreviews";
 
 export default function Home() {
