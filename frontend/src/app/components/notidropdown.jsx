@@ -17,7 +17,7 @@ export default function NotificationDropdown() {
         <NotificationsIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" />
       </DropdownTrigger>
       <DropdownMenu
-        className="bg-white dark:bg-zinc-800 shadow-lg rounded-md outline-none w-44 p-0"
+        className="bg-white dark:bg-zinc-800 shadow-lg rounded-md outline-none w-full p-0"
       >
         {notifications.map((item) => (
           <DropdownItem

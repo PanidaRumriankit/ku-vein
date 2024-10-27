@@ -1,40 +1,52 @@
+"use-client"
+
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import GetDjangoApiData from "../constants/getcourses";
 import AsyncSelect from 'react-select/async';
 import { useTheme } from "next-themes";
+import { useEffect, useState } from 'react';
 
-export default function Search() {
+export function handleSearch(term, searchParams, pathname, replace) {
+  const params = new URLSearchParams(searchParams);
+
+  if (term)
+  {
+    params.set('query', term);
+  }
+  else
+  {
+    params.delete('query');
+  }
+
+  replace(`${pathname}?${params.toString()}`);
+}
+
+export default function Search({ onCourseSelect, page }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  async function HandleSearch(term) {
-    const params = new URLSearchParams(searchParams);
-    if (term)
-    {
-      params.set('query', term);
-    }
-    else
-    {
-      params.delete('query');
-    }
-    replace(`${pathname}?${params.toString()}`);
-  }
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const query = searchParams.get('query') || '';
 
   const loadOptions = async (inputValue) => {
     const apiData = await GetDjangoApiData();
-
+  
     const filteredData = apiData.filter((course) =>
-      course.course_name.toLowerCase().includes(inputValue.toLowerCase()) || 
-      course.course_id.toLowerCase().startsWith(inputValue.toLowerCase())
+      course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
+      course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
     );
-
+  
     return filteredData.map((course) => ({
-      value: course.course_id,
-      label: `${course.course_id}\t-\t${course.course_name}`
+      value: course.courses_id,
+      label: `${course.courses_id}\t-\t${course.courses_name}`,
+      course_type: course.course_type,
+      faculty: course.faculty
     }));
   };
 
@@ -42,13 +54,18 @@ export default function Search() {
     control: (provided, state) => ({
       ...provided,
       backgroundColor: theme === 'dark' ? (state.isFocused ? "#2C2C2C" : "#1E1E1E") : "#FFFFFF",
-      borderColor: state.isFocused ? (theme === 'dark' ? "#565656" : "#CCCCCC") : (theme === 'dark' ? "#333" : "#E0E0E0"),
+      borderColor: state.isFocused ? (theme === 'dark' ? '#888888' : 'rgb(209 213 219)') : (theme === 'dark' ? '#555555' : '#CCCCCC'),
       color: theme === 'dark' ? "#FFFFFF" : "#000000",
+      height: '3rem',
+      boxShadow: state.isFocused ? '0 0 0 1px #888888' : null,
+      '&:hover': {
+        borderColor: state.isFocused ? (theme === 'dark' ? '#888888' : 'rgb(209 213 219)') : '#999999',
+      },
     }),
     menu: (provided) => ({
       ...provided,
-      backgroundColor: theme.menuBackground,
-      color: theme.menuColor,
+      backgroundColor: theme === 'dark' ? "#2C2C2C" : "#FFFFFF",
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
     }),
     option: (provided, state) => ({
       ...provided,
@@ -58,7 +75,7 @@ export default function Search() {
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: theme.controlColor,
+      color: theme === 'dark' ? "#FFFFFF" : "#000000"
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -66,20 +83,27 @@ export default function Search() {
     }),
     input: (provided) => ({
       ...provided,
-      color: theme.controlColor,
+      color: theme === 'dark' ? "#FFFFFF" : "#000000"
     }),
   };
 
+  if (!mounted) return null;
+
   return (
-    <div className="mt-8 w-full max-w-6xl">
+    <div className="my-2 w-full max-w-5xl mx-auto">
       <AsyncSelect
         cacheOptions
         loadOptions={loadOptions}
         onChange={(selectedOption) => {
-          if (selectedOption) {
-            HandleSearch(selectedOption.value); 
-          } else {
-            HandleSearch('');
+          if (page === 'page') {
+            handleSearch(selectedOption ? selectedOption.value : '', searchParams, pathname, replace);
+          }
+          if (onCourseSelect) {
+            onCourseSelect(selectedOption ? {
+              course_id: selectedOption.value,
+              course_type: selectedOption.course_type,
+              faculty: selectedOption.faculty
+            } : null);
           }
         }}
         defaultOptions

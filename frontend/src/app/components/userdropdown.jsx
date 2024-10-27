@@ -12,7 +12,7 @@ export default function UserDropdown() {
         <PersonIcon className="w-7 h-7 text-gray-200 hover:text-black hover:cursor-pointer" />
       </DropdownTrigger>
       <DropdownMenu
-        className="bg-white dark:bg-zinc-800 shadow-lg rounded-md outline-none w-36 p-0"
+        className="bg-white dark:bg-zinc-800 shadow-lg rounded-md outline-none w-full p-0"
       >
         {usersDropdown.map((item) => (
           <DropdownItem

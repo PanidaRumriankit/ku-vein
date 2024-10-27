@@ -1,31 +1,36 @@
 """This module use for send the data from Django to Next.js."""
 
-import logging
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from ninja import Schema
 from decouple import config
 
-from .models import UserData
+from backend.forms.schemas import ReviewRequestSchema, UserDataCreateSchema
 from .db_management import DatabaseBackup
+from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
 
 app = NinjaExtraAPI()
 
 
-def verify_google_token(token: str):
+def verify_google_token(auth: str, email: str) -> bool:
     """Verify the Google OAuth token from the frontend."""
     try:
-        is_valid = id_token.verify_oauth2_token(token, requests.Request(), config('GOOGLE_CLIENT_ID', cast=str,
-                        default='sif'))
-        return is_valid
+        token = auth.split(" ")[1]
+        check_token = id_token.verify_oauth2_token(token, requests.Request(),
+                                                   config('GOOGLE_CLIENT_ID',
+                                                          cast=str,
+                                                          default='sif'))
+
+        if check_token['email'] == email:
+            return True
+        else:
+            return False
 
     except ValueError:
-        return Response({"error": "Invalid token"}, status=401)
+        return False
 
-logger = logging.getLogger("user_logger")
 
 @app.get("/database/course_data")
 def database(request):
@@ -34,12 +39,12 @@ def database(request):
 
     return Response(DatabaseQuery().send_all_course_data())
 
+
 @app.get("/database/sorted_data")
 def get_sorted_data(request):
     """Use for send sorted data to frontend."""
 
     query = request.GET.get("query")
-
     if not query:
         return Response({"error": "Query parameter missing"}, status=400)
 
@@ -53,6 +58,7 @@ def get_sorted_data(request):
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
+
 @app.get("/database/cou")
 def test_auth(request):
     """For test API authentication only."""
@@ -63,12 +69,9 @@ def test_auth(request):
         return Response({"error": "Authorization header missing"}, status=401)
 
     try:
-        token = auth_header.split(" ")[1]
         email = request.headers.get("email")
 
-        check_token = verify_google_token(token)
-
-        if check_token['email'] == email:
+        if verify_google_token(auth_header, email):
             return Response(DatabaseQuery().send_all_course_data())
         else:
             return Response({"error": "Invalid token"}, status=403)
@@ -77,16 +80,19 @@ def test_auth(request):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
 
-class UserCreateSchema(Schema):
-    name: str
-    email: str
+@app.post("/create/user")
+def create_user(request, data: UserDataCreateSchema):
+    """Use for create new user."""
+    strategy = PostFactory.get_post_strategy("user")
+    strategy.post_data(data.model_dump())
 
-@app.post('/create_user/')
-def create_user(request, data: UserCreateSchema):
-    if not UserData.objects.filter(email=data.email):
-        UserData.objects.create(user_name=data.name, user_type='student', email=data.email)
-        logger.debug(f'created user: {data.name} {data.email}')
-    logger.debug(f'user: {data.name} {data.email}')
+
+@app.post("/create/review", response={200: ReviewRequestSchema})
+def create_review(request, data: ReviewRequestSchema):
+    """Use for create new review."""
+    strategy = PostFactory.get_post_strategy("review")
+    return strategy.post_data(data.model_dump())
+
 
 def backup(request):
     """Use for download data from MySQL server to local"""

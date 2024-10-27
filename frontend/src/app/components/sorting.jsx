@@ -12,7 +12,7 @@ import {sortOption} from "../constants";
 export default function Sorting({selectedKeys, setSelectedKeys}) {
   return (
     <div
-      className="w-full max-w-6xl flex justify-end my-4 text-black dark:text-white">
+      className="w-full max-w-5xl flex justify-end ml-20 my-4 text-black dark:text-white">
       <Dropdown>
         <DropdownTrigger>
           <Button className="mx-4 focus:outline-none inline-flex"
@@ -34,9 +34,9 @@ export default function Sorting({selectedKeys, setSelectedKeys}) {
             {sortOption.map((item) => (
               <DropdownItem key={item.key}>{item.value}</DropdownItem>
             ))}
-        </DropdownSection>
-      </DropdownMenu>
-    </Dropdown>
-</div>
-)
+          </DropdownSection>
+        </DropdownMenu>
+      </Dropdown>
+    </div>
+  )
 }
