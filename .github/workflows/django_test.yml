@@ -21,7 +21,11 @@ jobs:
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         echo DEBUG=${{ secrets.DEBUG }} >> .env
         echo TIME_ZONE=${{ secrets.TIME_ZONE }} >> .env
-        echo ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }} >> .env
+        echo DJANGO_API_ENDPOINT=${{ secrets.DJANGO_API_ENDPOINT }} >> .env
+        echo MYSQLHOST=${{ secrets.MYSQLHOST }} >> .env
+        echo MYSQLUSER=${{ secrets.MYSQLUSER }} >> .env
+        echo MYSQLPASS=${{ secrets.MYSQLPASS }} >> .env
+        echo MYSQLDATABASE=${{ secrets.MYSQLDATABASE }} >> .env
     - name: Run Tests
       run: |
         cd backend
