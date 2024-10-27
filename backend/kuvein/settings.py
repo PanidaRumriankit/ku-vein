@@ -135,7 +135,8 @@ DATABASES = {
                            default=''),
         'HOST': config('MYSQLHOST', cast=str,
                        default='127.0.0.1'),
-        'PORT': '22924',
+        'PORT': config('MYSQLPORT', cast=str,
+                       default='3306'),
     }
 }
 
