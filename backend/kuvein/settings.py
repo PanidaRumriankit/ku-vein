@@ -128,13 +128,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': config('MYSQLDATABASE', cast=str,
-                      default='Nergigante'),
+                       default='Nergigante'),
         'USER': config('MYSQLUSER', cast=str,
                        default='noppomummumnoppogoodboy'),
         'PASSWORD': config('MYSQLPASS', cast=str,
                            default='moodengmoodengdengdeng'),
         'HOST': config('MYSQLHOST', cast=str,
-                           default='funfactredpandawillstandupiffeelingthreatenedtomakethemselvesappearbigger'),
+                       default='127.0.0.1'),
         'PORT': '22924',
     }
 }
