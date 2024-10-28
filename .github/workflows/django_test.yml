@@ -14,7 +14,7 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: github_ci_test
           MYSQL_USER: django
-          MYSQL_PASSWORD:
+          MYSQL_PASSWORD: django_password
         options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
     - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
         MYSQL_PORT: 3306
         MYSQLDATABASE: github_ci_test
         MYSQLUSER: django
-        MYSQLPASS: 
+        MYSQLPASS: django_password
       run: |
         python backend/manage.py migrate
     - name: Set Environments
@@ -41,9 +41,9 @@ jobs:
         echo DEBUG=${{ secrets.DEBUG }} >> .env
         echo TIME_ZONE=${{ secrets.TIME_ZONE }} >> .env
         echo DJANGO_API_ENDPOINT=${{ secrets.DJANGO_API_ENDPOINT }} >> .env
-        echo MYSQLHOST=127.0.0.1 >> .env
+        echo MYSQLHOST=172.18.0.1 >> .env
         echo MYSQLUSER=django >> .env
-        echo MYSQLPASS= >> .env
+        echo MYSQLPASS=django_password >> .env
         echo MYSQLDATABASE=github_ci_test >> .env
         echo MYSQLPORT=3306 >> .env
     - name: Run Tests
