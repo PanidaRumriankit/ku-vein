@@ -31,8 +31,8 @@ jobs:
         MYSQL_HOST: 127.0.0.1
         MYSQL_PORT: 3306
         MYSQLDATABASE: github_ci_test
-        MYSQLUSER: test_user
-        MYSQLPASS: test_password
+        MYSQLUSER: django
+        MYSQLPASS: 
       run: |
         python backend/manage.py migrate
     - name: Set Environments
@@ -42,8 +42,8 @@ jobs:
         echo TIME_ZONE=${{ secrets.TIME_ZONE }} >> .env
         echo DJANGO_API_ENDPOINT=${{ secrets.DJANGO_API_ENDPOINT }} >> .env
         echo MYSQLHOST=127.0.0.1 >> .env
-        echo MYSQLUSER=test_user >> .env
-        echo MYSQLPASS=test_password >> .env
+        echo MYSQLUSER=django >> .env
+        echo MYSQLPASS= >> .env
         echo MYSQLDATABASE=github_ci_test >> .env
         echo MYSQLPORT=3306 >> .env
     - name: Run Tests
