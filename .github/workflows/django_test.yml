@@ -4,8 +4,18 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7  # Specify the MySQL version you need
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+          MYSQL_USER: test_user
+          MYSQL_PASSWORD: test_password
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python 3.10
@@ -16,16 +26,26 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
+    - name: Set up database
+      env:
+        MYSQL_HOST: 127.0.0.1
+        MYSQL_PORT: 3306
+        MYSQLDATABASE: test_db
+        MYSQLUSER: test_user
+        MYSQLPASS: test_password
+      run: |
+        python manage.py migrate
     - name: Set Environments
       run: |
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         echo DEBUG=${{ secrets.DEBUG }} >> .env
         echo TIME_ZONE=${{ secrets.TIME_ZONE }} >> .env
         echo DJANGO_API_ENDPOINT=${{ secrets.DJANGO_API_ENDPOINT }} >> .env
-        echo MYSQLHOST=${{ secrets.MYSQLHOST }} >> .env
-        echo MYSQLUSER=${{ secrets.MYSQLUSER }} >> .env
-        echo MYSQLPASS=${{ secrets.MYSQLPASS }} >> .env
-        echo MYSQLDATABASE=${{ secrets.MYSQLDATABASE }} >> .env
+        echo MYSQLHOST=127.0.0.1 >> .env
+        echo MYSQLUSER=test_user >> .env
+        echo MYSQLPASS=test_password >> .env
+        echo MYSQLDATABASE=test_db >> .env
+        echo MYSQLPORT=3306 >> .env
     - name: Run Tests
       run: |
         cd backend
