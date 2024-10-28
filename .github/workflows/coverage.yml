@@ -62,4 +62,5 @@ jobs:
         coverage run manage.py test
     - name: Generate Coverage Report
       run: |
+        cd backend
         coverage report
