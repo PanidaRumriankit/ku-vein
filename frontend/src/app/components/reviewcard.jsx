@@ -25,7 +25,9 @@ export default function ReviewCard({item}) {
           <div
             className="flex items-center justify-between text-gray-500 text-right">
             <p className="text-left">Grade: {item.grades}</p>
-            <p className="text-right">{item.date} author: {item.name || item.user_name}</p>
+            <p className="text-right">
+              {item.ratings} ⭐️ {item.date} author: {item.name || item.user_name}
+            </p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
