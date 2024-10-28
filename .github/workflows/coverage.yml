@@ -64,4 +64,3 @@ jobs:
       run: |
         cd backend
         coverage report
-        coverage html
