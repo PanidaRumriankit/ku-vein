@@ -26,6 +26,12 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
+    - name: Grant Permissions for Testing
+      env:
+        MYSQL_PWD: root
+      run: |
+        mysql -u root -h 172.18.0.1 -e "GRANT ALL PRIVILEGES ON test_github_ci_test.* TO 'django'@'%'; FLUSH PRIVILEGES;"
+
     - name: Set up database
       env:
         MYSQL_HOST: 172.18.0.1
