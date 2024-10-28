@@ -3,10 +3,10 @@
 import Image from "next/image";
 import Search from './components/search';
 import {useState, useEffect} from "react";
-import Sorting from "./components/sorting.jsx";
-import ReviewCard from "./components/reviewcard.jsx";
+import Sorting from "./components/sorting";
+import ReviewCard from "./components/reviewcard";
 import MakeApiRequest from "./constants/getreview"
-import {demoReview} from "./constants/demoreview";
+import AddReviews from "./components/addreviews";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -39,13 +39,18 @@ export default function Home() {
         <p className="mt-4 text-xl text-black dark:text-white">รีวิว แบ่งปัน
           Q&A</p>
       </main>
-      <div className="mt-8 w-full max-w-6xl">
-        <Search/>
+
+      <div className="mt-8 w-full max-w-6xl z-40">
+        <Search page='page'/>
       </div>
+
       <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys}/>
       {reviews.map((item, index) => (
         <ReviewCard item={item} key={index} />
       ))}
+      <div className="fixed bottom-4 right-4">
+        <AddReviews />
+      </div>
     </div>
   );
 }

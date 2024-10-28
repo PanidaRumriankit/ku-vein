@@ -1,7 +1,6 @@
 export default async function GetDjangoApiData() {
-  const apiUrl = process.env.NEXT_PUBLIC_DJANGO_API_ENDPOINT;
   try {
-    const response = await fetch(apiUrl);
+    const response = await fetch("http://127.0.0.1:8000/api/database/course_data");
     const responseData = await response.json();
     console.log('Received data from Django:', responseData);
     return responseData;
