@@ -12,7 +12,7 @@ jobs:
           - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: test_db
+          MYSQL_DATABASE: github_ci_test
           MYSQL_USER: test_user
           MYSQL_PASSWORD: test_password
         options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -30,7 +30,7 @@ jobs:
       env:
         MYSQL_HOST: 127.0.0.1
         MYSQL_PORT: 3306
-        MYSQLDATABASE: test_db
+        MYSQLDATABASE: github_ci_test
         MYSQLUSER: test_user
         MYSQLPASS: test_password
       run: |
@@ -44,7 +44,7 @@ jobs:
         echo MYSQLHOST=127.0.0.1 >> .env
         echo MYSQLUSER=test_user >> .env
         echo MYSQLPASS=test_password >> .env
-        echo MYSQLDATABASE=test_db >> .env
+        echo MYSQLDATABASE=github_ci_test >> .env
         echo MYSQLPORT=3306 >> .env
     - name: Run Tests
       run: |
