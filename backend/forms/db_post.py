@@ -5,6 +5,8 @@ import logging
 
 from datetime import datetime
 from abc import ABC, abstractmethod
+from ninja.responses import Response
+from forms.models import CourseReview, UserData, CourseData, ReviewStat
 
 
 # Add the parent directory to the Python path
@@ -16,8 +18,6 @@ django.setup()
 
 logger = logging.getLogger("user_logger")
 
-from ninja.responses import Response
-from backend.forms.models import CourseReview, UserData, CourseData, ReviewStat
 
 class PostStrategy(ABC):
     """Abstract base class for update the database."""

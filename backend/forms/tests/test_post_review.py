@@ -22,7 +22,7 @@ class ReviewPostTests(TestCase):
     def test_error_response_from_missing_user_data(self):
         """Missing email key"""
 
-        review_data =   {
+        review_data = {
             "course_id": "1",
             "course_type": "Priest",
             "faculty": "Miracle",

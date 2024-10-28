@@ -41,7 +41,6 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS',
 # Application definition
 
 INSTALLED_APPS = [
-    'forms.apps.FormsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'forms.apps.FormsConfig',
     'ninja_extra',
 ]
 
@@ -135,7 +135,8 @@ DATABASES = {
                            default=''),
         'HOST': config('MYSQLHOST', cast=str,
                        default='127.0.0.1'),
-        'PORT': '22924',
+        'PORT': config('MYSQLPORT', cast=str,
+                       default='3306'),
     }
 }
 
