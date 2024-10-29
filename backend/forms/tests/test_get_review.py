@@ -1,4 +1,4 @@
-"""Module for test everything that relate to Review feature."""
+"""Module for test everything that relate to get data in the Review feature."""
 
 from .test_user_data import user_set_up
 from ..db_query import EarliestReview, LatestReview, UpvoteReview
