@@ -35,7 +35,8 @@ export default function AddReview() {
 
   async function addReview(e) {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/create/review", {
+      // create review api
+      const response = await fetch("http://127.0.0.1:8000/api/review", {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${idToken}`,
