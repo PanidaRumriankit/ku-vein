@@ -86,8 +86,6 @@ export default function AddReview() {
             <Search onCourseSelect={(course) => setPostData({
               ...postData,
               course_id: course.course_id,
-              // Since the course_type is not defined yet, I will use 'Inter' as the default value
-              // course_type: course.course_type,
               faculty: course.faculty,
             }) } />
             <textarea
