@@ -87,6 +87,12 @@ def create_user(request, data: UserDataCreateSchema):
     strategy.post_data(data.model_dump())
 
 
+@app.put("/user/edit/username")
+def change_username(request, data):
+    """Change username for a user"""
+    pass
+
+
 @app.post("/create/review", response={200: ReviewRequestSchema})
 def create_review(request, data: ReviewRequestSchema):
     """Use for create new review."""
