@@ -13,7 +13,7 @@ django.setup()
 from typing import Union
 from django.db.models import F
 from abc import ABC, abstractmethod
-from backend.forms.models import Inter, ReviewStat, CourseReview
+from forms.models import Inter, ReviewStat, CourseReview
 
 
 class QueryStrategy(ABC):

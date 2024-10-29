@@ -10,8 +10,10 @@ class CourseData(models.Model):
     course_name = models.TextField(default=None)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'CourseData'  # Specify the exact table name in MySQL
         unique_together = ('course_id', 'faculty', 'course_type')
+
 
 class Inter(models.Model):
     course = models.OneToOneField(CourseData, on_delete=models.CASCADE,
@@ -19,6 +21,7 @@ class Inter(models.Model):
                                   default=None)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'Inter'
 
 
@@ -28,6 +31,7 @@ class Special(models.Model):
                                   default=None)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'Special'
 
 
@@ -37,6 +41,7 @@ class Normal(models.Model):
                                   default=None)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'Normal'
 
 
@@ -57,6 +62,7 @@ class CourseReview(models.Model):
     reviews = models.TextField(default=None)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'CourseReview'
 
 
@@ -70,6 +76,7 @@ class ReviewStat(models.Model):
     up_votes = models.IntegerField(default=0)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'ReviewStat'
 
 
@@ -81,6 +88,7 @@ class Summary(models.Model):
     sum_text = models.TextField(default=None)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'Summary'
         unique_together = ('course', 'user')
 
@@ -99,5 +107,6 @@ class BookMark(models.Model):
     user = models.ForeignKey(UserData, on_delete=models.PROTECT)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'BookMark'
         unique_together = ('review', 'user')

@@ -41,7 +41,6 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS',
 # Application definition
 
 INSTALLED_APPS = [
-    'forms.apps.FormsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +48,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'forms.apps.FormsConfig',
     'ninja_extra',
 ]
 
@@ -128,14 +128,15 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': config('MYSQLDATABASE', cast=str,
-                      default='Nergigante'),
+                       default='django'),
         'USER': config('MYSQLUSER', cast=str,
-                       default='noppomummumnoppogoodboy'),
+                       default='root'),
         'PASSWORD': config('MYSQLPASS', cast=str,
-                           default='moodengmoodengdengdeng'),
+                           default=''),
         'HOST': config('MYSQLHOST', cast=str,
-                           default='funfactredpandawillstandupiffeelingthreatenedtomakethemselvesappearbigger'),
-        'PORT': '22924',
+                       default='127.0.0.1'),
+        'PORT': config('MYSQLPORT', cast=str,
+                       default='3306'),
     }
 }
 
