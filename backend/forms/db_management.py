@@ -5,7 +5,6 @@ import sys
 import django
 import json
 import pymysql
-
 from datetime import datetime
 from decouple import config
 
@@ -17,7 +16,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 django.setup()
 
 from forms.models import *
-
 
 
 class MySQLConnection:
@@ -133,6 +131,7 @@ class TableManagement:
         finally:
             self.connection.close()
 
+
 class DatabaseManagement:
     """Class for add or delete value in MySQL server."""
 
@@ -140,8 +139,8 @@ class DatabaseManagement:
         self.data = None
         self.con = MySQLConnection()
         self.cursor = None
-
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat',
+                           'Inter', 'Normal', 'Special', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -169,7 +168,8 @@ class DatabaseBackup:
         self.con = MySQLConnection()
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat',
+                           'Inter', 'Normal', 'Special', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -222,7 +222,7 @@ class DatabaseBackup:
 
             with open('database/backup/logs.json', 'w', encoding='UTF-8') as log_file:
                 json.dump(str(datetime.now().date()), log_file, ensure_ascii=False, indent=4)
-            print(f"Data saved to database/backup/logs.json")
+            print("Data saved to database/backup/logs.json")
 
     def exist_data_loader(self):
         """Combined all the data in the folder and separate by course programs."""
@@ -271,4 +271,3 @@ class DatabaseBackup:
 if __name__ == "__main__":
     t = TableManagement()
     t.drop_all_tables()
-

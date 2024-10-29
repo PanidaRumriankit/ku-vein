@@ -1,11 +1,10 @@
 """This module use for send the data from Django to Next.js."""
-
+import logging
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
-
 from forms.schemas import ReviewRequestSchema, UserDataCreateSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
@@ -93,7 +92,6 @@ def create_review(request, data: ReviewRequestSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
     return strategy.post_data(data.model_dump())
-
 
 
 def backup(request):

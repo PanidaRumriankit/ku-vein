@@ -16,6 +16,7 @@ class CourseData(models.Model):
 
 
 
+
 class Inter(models.Model):
     course = models.OneToOneField(CourseData, on_delete=models.CASCADE,
                                   related_name='inter_courses',
