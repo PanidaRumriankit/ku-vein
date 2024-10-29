@@ -1,6 +1,7 @@
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
+import Rating from '@mui/material/Rating';
 import {Button} from "@nextui-org/button";
 import {colorPallet} from "../constants";
 
@@ -12,7 +13,8 @@ function RandomColor() {
 export default function ReviewCard({item}) {
   const color = RandomColor()
   return (
-    <div className="my-2 w-full max-w-5xl text-black dark:text-white">
+    <div
+      className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
         <legend
           style={{backgroundColor: color, borderColor: color}}
