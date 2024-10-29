@@ -1,20 +1,10 @@
-import os
-import sys
-import django
+
 import logging
 
 from datetime import datetime
 from abc import ABC, abstractmethod
 from ninja.responses import Response
-from forms.models import CourseReview, UserData, CourseData, ReviewStat
-
-
-# Add the parent directory to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
-
-django.setup()
+from .models import CourseReview, UserData, CourseData, ReviewStat
 
 logger = logging.getLogger("user_logger")
 

@@ -1,22 +1,9 @@
 """This module use for contain the database query."""
 
-import os
-import sys
-import django
-
-
-# Add the parent directory to the Python path
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
-
-django.setup()
-
 from typing import Union
 from django.db.models import F
 from abc import ABC, abstractmethod
-from .models import Inter, ReviewStat, CourseReview, Special, Normal, CourseData
+from .models import Inter, ReviewStat, Special, Normal, CourseData
 
 
 class QueryStrategy(ABC):
@@ -114,11 +101,12 @@ class UpvoteReview(QueryStrategy):
 
         return list(review_data)
 
+
 class InterQuery(QueryStrategy):
     """Class for sent the Inter Table data."""
+
     def get_data(self):
         """Get the data from the database and return to the frontend."""
-
         inter_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
@@ -131,9 +119,9 @@ class InterQuery(QueryStrategy):
 
 class SpecialQuery(QueryStrategy):
     """Class for sent the Special Table data."""
+
     def get_data(self):
         """Get the data from the database and return to the frontend."""
-
         special_data = Special.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
@@ -146,9 +134,9 @@ class SpecialQuery(QueryStrategy):
 
 class NormalQuery(QueryStrategy):
     """Class for sent the Normal Table data."""
+
     def get_data(self):
         """Get the data from the database and return to the frontend."""
-
         normal_data = Normal.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
@@ -161,9 +149,9 @@ class NormalQuery(QueryStrategy):
 
 class CourseQuery(QueryStrategy):
     """Class for sent all of the value in the course data."""
+
     def get_data(self):
         """Get the data from the database and return to the frontend."""
-
         course_data = CourseData.objects.select_related('course').values(
             'course_id',
             'course_name',
@@ -188,8 +176,8 @@ class QueryFactory:
     }
 
     @classmethod
-    def get_query_strategy(cls, query: str) -> Union[
-        QueryStrategy, QueryFilterStrategy]:
+    def get_query_strategy(cls, query: str)\
+            -> Union[QueryStrategy, QueryFilterStrategy]:
         """
         Return the query strategy based on the query string.
 
@@ -200,15 +188,11 @@ class QueryFactory:
             QueryStrategy: The corresponding query strategy class.
 
         Raises:
-            ValueError: If the query string doesn't match any available strategies.
+            ValueError: If the query string
+            doesn't match any available strategies.
         """
         query_lower = query.lower()
         if query_lower in cls.strategy_map:
             return cls.strategy_map[query_lower]()
         else:
             raise ValueError(f"Invalid query parameter: {query}")
-
-
-if __name__ == "__main__":
-    d = InterQuery()
-    print(d.get_data())

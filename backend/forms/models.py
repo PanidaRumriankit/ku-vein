@@ -15,7 +15,6 @@ class CourseData(models.Model):
         unique_together = ('course_id', 'faculty', 'course_type')
 
 
-
 class Inter(models.Model):
     course = models.OneToOneField(CourseData, on_delete=models.CASCADE,
                                   related_name='inter_courses',

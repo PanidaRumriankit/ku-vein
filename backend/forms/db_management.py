@@ -1,23 +1,11 @@
 """This module focus on contact with MySQL server."""
 
-import os
-import sys
-import django
 import json
 import pymysql
 
 from datetime import datetime
 from decouple import config
-
-# Add the parent directory to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
-
-django.setup()
-
-from forms.models import *
-
+from .models import *
 
 
 class MySQLConnection:
