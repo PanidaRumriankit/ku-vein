@@ -41,12 +41,12 @@ export default function Search({ onCourseSelect, page }) {
       course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
       course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
     );
-  
+
     return filteredData.map((course) => ({
       value: course.courses_id,
       label: `${course.courses_id}\t-\t${course.courses_name}`,
-      course_type: course.course_type,
-      faculty: course.faculty
+      courses_type: course.courses_type,
+      faculty: course.faculties
     }));
   };
 
@@ -100,9 +100,9 @@ export default function Search({ onCourseSelect, page }) {
           }
           if (onCourseSelect) {
             onCourseSelect(selectedOption ? {
-              course_id: selectedOption.value,
-              course_type: selectedOption.course_type,
-              faculty: selectedOption.faculty
+              courses_id: selectedOption.value,
+              courses_type: selectedOption.course_type,
+              faculty: selectedOption.faculties
             } : null);
           }
         }}
