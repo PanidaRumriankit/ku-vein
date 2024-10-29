@@ -34,9 +34,9 @@ class EarliestReview(QueryStrategy):
         review_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
-            faculty=F('review__course__faculty'),
-            user_name=F('review__user__user_name'),
-            reviews=F('review__reviews'),
+            faculties=F('review__course__faculty'),
+            username=F('review__user__user_name'),
+            review=F('review__reviews'),
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
@@ -60,9 +60,9 @@ class LatestReview(QueryStrategy):
         review_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
-            faculty=F('review__course__faculty'),
-            user_name=F('review__user__user_name'),
-            reviews=F('review__reviews'),
+            faculties=F('review__course__faculty'),
+            username=F('review__user__user_name'),
+            review=F('review__reviews'),
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
@@ -86,9 +86,9 @@ class UpvoteReview(QueryStrategy):
         review_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
-            faculty=F('review__course__faculty'),
-            user_name=F('review__user__user_name'),
-            reviews=F('review__reviews'),
+            faculties=F('review__course__faculty'),
+            username=F('review__user__user_name'),
+            review=F('review__reviews'),
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
@@ -108,8 +108,8 @@ class InterQuery(QueryStrategy):
         inter_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculty=F('course__faculty'),
-            course_type=F('course__course_type')
+            faculties=F('course__faculty'),
+            courses_type=F('course__course_type')
         )
 
         return list(inter_data)
@@ -123,8 +123,8 @@ class SpecialQuery(QueryStrategy):
         special_data = Special.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculty=F('course__faculty'),
-            course_type=F('course__course_type')
+            faculties=F('course__faculty'),
+            courses_type=F('course__course_type')
         )
 
         return list(special_data)
@@ -138,8 +138,8 @@ class NormalQuery(QueryStrategy):
         normal_data = Normal.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculty=F('course__faculty'),
-            course_type=F('course__course_type')
+            faculties=F('course__faculty'),
+            courses_type=F('course__course_type')
         )
 
         return list(normal_data)
@@ -151,10 +151,10 @@ class CourseQuery(QueryStrategy):
     def get_data(self):
         """Get the data from the database and return to the frontend."""
         course_data = CourseData.objects.select_related('course').values(
-            'course_id',
-            'course_name',
-            'faculty',
-            'course_type'
+            courses_id=F('course_id'),
+            courses_name=F('course_name'),
+            faculties=F('faculty'),
+            courses_type=F('course_type')
         )
 
         return list(course_data)
