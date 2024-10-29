@@ -1,4 +1,4 @@
-"""Module for test everything relate to CourseData Table."""
+"""Module for test everything that relate to CourseData Table."""
 
 from ..models import CourseData, Inter, Special, Normal
 from ..db_query import InterQuery, NormalQuery, SpecialQuery, CourseQuery

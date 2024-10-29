@@ -1,3 +1,4 @@
+"""This module use for post and update database."""
 
 import logging
 
@@ -23,7 +24,6 @@ class UserDataPost(PostStrategy):
 
     def post_data(self, data: dict):
         """Add the data to the UserData."""
-
         try:
             if not UserData.objects.filter(email=data['email']):
                 UserData.objects.create(

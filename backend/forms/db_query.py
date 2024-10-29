@@ -1,4 +1,4 @@
-"""This module use for contain the database query."""
+"""This module use for contain the class for database query."""
 
 from typing import Union
 from abc import ABC, abstractmethod
