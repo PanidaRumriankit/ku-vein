@@ -1,6 +1,7 @@
-from ninja import ModelSchema
+from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
 from .models import ReviewStat, Summary, QA, BookMark
+from .models import Inter, Normal, Special
 
 
 class CourseDataSchema(ModelSchema):
@@ -8,15 +9,18 @@ class CourseDataSchema(ModelSchema):
         model = CourseData
         fields = '__all__'
 
+
 class NormalSchema(ModelSchema):
     class Meta:
         model = Normal
         fields = '__all__'
 
+
 class InterSchema(ModelSchema):
     class Meta:
         model = Inter
         fields = '__all__'
+
 
 class SpecialSchema(ModelSchema):
     class Meta:
@@ -24,10 +28,10 @@ class SpecialSchema(ModelSchema):
         fields = '__all__'
 
 
-class UserDataSchema(ModelSchema):
+class UserDataCreateSchema(ModelSchema):
     class Meta:
         model = UserData
-        fields = '__all__'
+        fields = ['email']
 
 
 class CourseReviewSchema(ModelSchema):
@@ -40,6 +44,21 @@ class ReviewStatSchema(ModelSchema):
     class Meta:
         model = ReviewStat
         fields = '__all__'
+
+
+class ReviewRequestSchema(Schema):
+    # Fields from CourseReview
+    email: str
+    course_id: str
+    course_type: str
+    faculty: str
+    reviews: str
+
+    # Fields from ReviewStat
+    rating: float
+    academic_year: int
+    pen_name: str
+    grade: str
 
 
 class SummarySchema(ModelSchema):

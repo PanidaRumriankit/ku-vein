@@ -2,16 +2,18 @@ import os
 import sys
 import django
 
-from django.db.models import F
-from backend.forms.models import Inter, ReviewStat
-from abc import ABC, abstractmethod
-
 # Add the parent directory to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
+
+from typing import Union
+from django.db.models import F
+from abc import ABC, abstractmethod
+from forms.models import Inter, ReviewStat, CourseReview
 
 
 class QueryStrategy(ABC):
@@ -22,8 +24,18 @@ class QueryStrategy(ABC):
         """Get the data from the database."""
         pass
 
+
+class QueryFilterStrategy(ABC):
+    """Abstract base class for make the query with condition."""
+
+    @abstractmethod
+    def get_data(self, filter_key: dict):
+        """Get the data from the database."""
+        pass
+
+
 class EarliestReview(QueryStrategy):
-    """Table for sent CourseReview sorted by earliest."""
+    """Class for sent CourseReview sorted by earliest."""
 
     def get_data(self):
         """
@@ -37,15 +49,19 @@ class EarliestReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
-            date_data=F('date_data'),
-            grade=F('grade'),
-            upvotes=F('upvotes'),
-        ).order_by('date_data')
+            ratings=F('rating'),
+            year=F('academic_year'),
+            name=F('pen_name'),
+            date=F('date_data'),
+            grades=F('grade'),
+            upvote=F('up_votes')
+        ).order_by('review__review_id')
 
         return list(review_data)
 
+
 class LatestReview(QueryStrategy):
-    """Table for sent CourseReview sorted by latest."""
+    """Class for sent CourseReview sorted by latest."""
 
     def get_data(self):
         """
@@ -59,15 +75,19 @@ class LatestReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
-            date_data=F('date_data'),
-            grade=F('grade'),
-            upvotes=F('upvotes'),
-        ).order_by('-date_data')
+            ratings=F('rating'),
+            year=F('academic_year'),
+            name=F('pen_name'),
+            date=F('date_data'),
+            grades=F('grade'),
+            upvote=F('up_votes')
+        ).order_by('-review__review_id')
 
         return list(review_data)
 
+
 class UpvoteReview(QueryStrategy):
-    """Table for sent CourseReview sorted by upvote."""
+    """Class for sent CourseReview sorted by upvote."""
 
     def get_data(self):
         """
@@ -81,17 +101,20 @@ class UpvoteReview(QueryStrategy):
             faculty=F('review__course__faculty'),
             user_name=F('review__user__user_name'),
             reviews=F('review__reviews'),
-            date_data=F('date_data'),
-            grade=F('grade'),
-            upvotes=F('upvotes'),
-        ).order_by('-upvotes')
+            ratings=F('rating'),
+            year=F('academic_year'),
+            name=F('pen_name'),
+            date=F('date_data'),
+            grades=F('grade'),
+            upvote=F('up_votes')
+        ).order_by('-up_votes')
 
         return list(review_data)
 
 
-
 class DatabaseQuery:
     """Main class for handle the request from frontend"""
+
     def __init__(self):
         self.data = None
 
@@ -101,7 +124,8 @@ class DatabaseQuery:
         course_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculty=F('course__faculty')
+            faculty=F('course__faculty'),
+            course_type=F('course__course_type')
         )
 
         return list(course_data)
@@ -113,11 +137,12 @@ class QueryFactory:
     strategy_map = {
         "earliest": EarliestReview,
         "latest": LatestReview,
-        "upvote": UpvoteReview
+        "upvote": UpvoteReview,
     }
 
     @classmethod
-    def get_query_strategy(cls, query: str) -> QueryStrategy:
+    def get_query_strategy(cls, query: str) -> Union[
+        QueryStrategy, QueryFilterStrategy]:
         """
         Return the query strategy based on the query string.
 
@@ -140,4 +165,3 @@ class QueryFactory:
 if __name__ == "__main__":
     d = DatabaseQuery()
     print(d.send_all_course_data())
-
