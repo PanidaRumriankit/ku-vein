@@ -14,7 +14,7 @@ export default function ReviewCard({item}) {
   const color = RandomColor()
   return (
     <div
-      className="mx-auto my-2 w-full max-w-4xl text-black dark:text-white">
+      className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
         <legend
           style={{backgroundColor: color, borderColor: color}}
