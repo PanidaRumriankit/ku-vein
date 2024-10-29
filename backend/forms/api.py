@@ -33,56 +33,40 @@ def verify_google_token(auth: str, email: str) -> bool:
         return False
 
 
-@app.get("/course/inter")
-def get_inter_data(request):
+@app.get("/course")
+def get_course_data(request):
     """Use for send the data to frontend."""
     print(request)
 
-    try:
-        strategy = QueryFactory.get_query_strategy("inter")
-        return Response(strategy.get_data())
+    course_type = request.GET.get("type")
 
-    except ValueError as e:
-        return Response({"error": str(e)}, status=400)
+    if not course_type:
+       course_type = "none"
 
-@app.get("/course/special")
-def get_special_data(request):
-    """Use for send the data to frontend."""
-    print(request)
-
-    try:
-        strategy = QueryFactory.get_query_strategy("special")
-        return Response(strategy.get_data())
-
-    except ValueError as e:
-        return Response({"error": str(e)}, status=400)
-
-@app.get("/course/normal")
-def get_normal_data(request):
-    """Use for send the data to frontend."""
-    print(request)
-
-    try:
-        strategy = QueryFactory.get_query_strategy("normal")
-        return Response(strategy.get_data())
-
-    except ValueError as e:
-        return Response({"error": str(e)}, status=400)
-
-
-@app.get("/database/sorted_data")
-def get_sorted_data(request):
-    """Use for send sorted data to frontend."""
-
-    query = request.GET.get("query")
-    if not query:
-        return Response({"error": "Query parameter missing"}, status=400)
-
-    elif query not in ["earliest", "latest", "upvote"]:
+    elif course_type.lower() not in ["inter", "special", "normal"]:
         return Response({"error": "Invalid Query parameter"}, status=400)
 
     try:
-        strategy = QueryFactory.get_query_strategy(query)
+        strategy = QueryFactory.get_query_strategy(course_type)
+        return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@app.get("/review")
+def get_sorted_data(request):
+    """Use for send sorted data to frontend."""
+
+    sort = request.GET.get("sort")
+    if not sort:
+        return Response({"error": "Query parameter missing"}, status=400)
+
+    elif sort not in ["earliest", "latest", "upvote"]:
+        return Response({"error": "Invalid Query parameter"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy(sort)
         return Response(strategy.get_data())
 
     except ValueError as e:
@@ -110,14 +94,14 @@ def test_auth(request):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
 
-@app.post("/create/user")
+@app.post("/user")
 def create_user(request, data: UserDataCreateSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
     strategy.post_data(data.model_dump())
 
 
-@app.post("/create/review", response={200: ReviewRequestSchema})
+@app.post("/review", response={200: ReviewRequestSchema})
 def create_review(request, data: ReviewRequestSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
