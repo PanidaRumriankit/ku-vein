@@ -2,10 +2,9 @@
 
 import json
 import pymysql
-
 from datetime import datetime
 from decouple import config
-from .models import *
+from .models import CourseData, Inter
 
 
 class MySQLConnection:
@@ -49,11 +48,15 @@ class TableManagement:
     def __init__(self):
         self.connection = MySQLConnection()
         self.cursor = None
-        self.table_name = ["auth_group_permissions", "auth_user_user_permissions",
+        self.table_name = ["auth_group_permissions",
+                           "auth_user_user_permissions",
                            "auth_user_groups", "auth_group", "auth_permission",
-                           "django_admin_log", "auth_user", "django_content_type", "django_migrations",
-                           "django_session", "BookMark", "QA", "Summary", "ReviewStat",
-                           "CourseReview", "UserData", "Inter", "Normal", "Special", "CourseData"]
+                           "django_admin_log", "auth_user",
+                           "django_content_type", "django_migrations",
+                           "django_session", "BookMark", "QA", "Summary",
+                           "ReviewStat",
+                           "CourseReview", "UserData", "Inter", "Normal",
+                           "Special", "CourseData"]
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -121,6 +124,7 @@ class TableManagement:
         finally:
             self.connection.close()
 
+
 class DatabaseManagement:
     """Class for add or delete value in MySQL server."""
 
@@ -129,7 +133,9 @@ class DatabaseManagement:
         self.con = MySQLConnection()
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview',
+                           'UserData', 'ReviewStat', 'Inter', 'Normal',
+                           'Special', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -157,7 +163,9 @@ class DatabaseBackup:
         self.con = MySQLConnection()
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview', 'UserData', 'ReviewStat', 'Inter', 'Normal', 'Special', 'CourseData']
+        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview',
+                           'UserData', 'ReviewStat', 'Inter', 'Normal',
+                           'Special', 'CourseData']
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
@@ -172,19 +180,23 @@ class DatabaseBackup:
         for data in data_from_server:
 
             try:
-                result_data[data['faculty']][data['course_id']] = data['course_name']
+                result_data[data['faculty']][data['course_id']] =\
+                    data['course_name']
 
             except KeyError:
                 result_data[data['faculty']] = {}
-                result_data[data['faculty']][data['course_id']] = data['course_name']
+                result_data[data['faculty']][data['course_id']] =\
+                    data['course_name']
 
         return result_data
 
     @staticmethod
     def check_date():
         """Check is it time to back up?"""
-        with open('database/backup/logs.json', 'r', encoding='UTF-8') as log_file:
-            last_updated = datetime.strptime(json.load(log_file)['last-updated'], "%Y-%m-%d").date()
+        with open('database/backup/logs.json', 'r',
+                  encoding='UTF-8') as log_file:
+            last_updated = datetime.strptime(
+                json.load(log_file)['last-updated'], "%Y-%m-%d").date()
 
         if (datetime.now().date() - last_updated).days >= 7:
             return True
@@ -201,22 +213,32 @@ class DatabaseBackup:
                     self.cursor.execute(f"SELECT * FROM {table}")
 
                     # write JSON file in backup folder
-                    with open(f"./database/backup/{table.lower()}_data.่json", "w", encoding='UTF-8') as overwrite_file:
-                        json.dump(self.json_converter(self.cursor.fetchall()), overwrite_file, ensure_ascii=False, indent=4)
-                    print(f"Data saved to database/backup/{table.lower()}_data.json")
+                    with open(f"./database/backup/{table.lower()}_data.่json",
+                              "w", encoding='UTF-8') as overwrite_file:
+                        json.dump(self.json_converter(self.cursor.fetchall()),
+                                  overwrite_file, ensure_ascii=False, indent=4)
+                    print(f"Data saved to database/backup/"
+                          f"{table.lower()}_data.json")
 
             finally:
                 self.con.close()
 
-            with open('database/backup/logs.json', 'w', encoding='UTF-8') as log_file:
-                json.dump(str(datetime.now().date()), log_file, ensure_ascii=False, indent=4)
-            print(f"Data saved to database/backup/logs.json")
+            with open('database/backup/logs.json', 'w',
+                      encoding='UTF-8') as log_file:
+                json.dump(str(datetime.now().date()), log_file,
+                          ensure_ascii=False, indent=4)
+            print("Data saved to database/backup/logs.json")
 
     def exist_data_loader(self):
-        """Combined all the data in the folder and separate by course programs."""
-        with open("./database/scraped_data/inter2.json", "r", encoding="UTF-8") as file:
+        """
+        Combined all the data in the folder and
+        separate by course programs.
+        """
+        with open("./database/scraped_data/inter2.json",
+                  "r", encoding="UTF-8") as file:
             inter2 = json.load(file)
-        with open("./database/scraped_data/inter1.json", "r", encoding="UTF-8") as file:
+        with open("./database/scraped_data/inter1.json",
+                  "r", encoding="UTF-8") as file:
             inter1 = json.load(file)
 
         all_faculty = {second: {} for second in inter2.keys()}
@@ -241,8 +263,10 @@ class DatabaseBackup:
             for faculty, course_data in self.data.items():
                 for course_id, course_name in course_data.items():
                     self.cursor.execute(
-                        "INSERT INTO CourseData (course_id, faculty, course_type, course_name) "
-                        "VALUES (%s, %s, %s, %s)", (course_id, faculty, "inter", course_name)
+                        "INSERT INTO CourseData (course_id, faculty,\
+                            course_type, course_name) "
+                        "VALUES (%s, %s, %s, %s)", (course_id, faculty,
+                                                    "inter", course_name)
                     )
                     print(faculty, course_id, "inter", course_name)
                 print("Inserting...\n")
@@ -259,4 +283,3 @@ class DatabaseBackup:
 if __name__ == "__main__":
     t = TableManagement()
     t.drop_all_tables()
-

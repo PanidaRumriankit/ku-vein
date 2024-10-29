@@ -14,14 +14,12 @@ class QueryStrategy(ABC):
         """Get the data from the database."""
 
 
-
 class QueryFilterStrategy(ABC):
     """Abstract base class for make the query with condition."""
 
     @abstractmethod
     def get_data(self, filter_key: dict):
         """Get the data from the database."""
-
 
 
 class EarliestReview(QueryStrategy):

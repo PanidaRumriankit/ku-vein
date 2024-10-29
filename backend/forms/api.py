@@ -40,7 +40,7 @@ def get_course_data(request):
     course_type = request.GET.get("type")
 
     if not course_type:
-       course_type = "none"
+        course_type = "none"
 
     elif course_type.lower() not in ["inter", "special", "normal"]:
         return Response({"error": "Invalid Query parameter"}, status=400)
