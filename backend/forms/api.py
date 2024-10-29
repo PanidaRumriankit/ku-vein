@@ -6,10 +6,11 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from forms.schemas import ReviewRequestSchema, UserDataCreateSchema
+from .models import Inter
+from .schemas import ReviewRequestSchema, UserDataCreateSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
-from .db_query import DatabaseQuery, QueryFactory
+from .db_query import QueryFactory, InterQuery
 
 app = NinjaExtraAPI()
 
@@ -32,12 +33,41 @@ def verify_google_token(auth: str, email: str) -> bool:
         return False
 
 
-@app.get("/database/course_data")
-def database(request):
+@app.get("/course/inter")
+def get_inter_data(request):
     """Use for send the data to frontend."""
     print(request)
 
-    return Response(DatabaseQuery().send_all_course_data())
+    try:
+        strategy = QueryFactory.get_query_strategy("inter")
+        return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+@app.get("/course/special")
+def get_special_data(request):
+    """Use for send the data to frontend."""
+    print(request)
+
+    try:
+        strategy = QueryFactory.get_query_strategy("special")
+        return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+@app.get("/course/normal")
+def get_normal_data(request):
+    """Use for send the data to frontend."""
+    print(request)
+
+    try:
+        strategy = QueryFactory.get_query_strategy("normal")
+        return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
 
 
 @app.get("/database/sorted_data")
@@ -72,7 +102,7 @@ def test_auth(request):
         email = request.headers.get("email")
 
         if verify_google_token(auth_header, email):
-            return Response(DatabaseQuery().send_all_course_data())
+            return Response(InterQuery().get_data())
         else:
             return Response({"error": "Invalid token"}, status=403)
 

@@ -2,6 +2,7 @@ import os
 import sys
 import django
 
+
 # Add the parent directory to the Python path
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
@@ -13,7 +14,7 @@ django.setup()
 from typing import Union
 from django.db.models import F
 from abc import ABC, abstractmethod
-from forms.models import Inter, ReviewStat, CourseReview
+from .models import Inter, ReviewStat, CourseReview, Special, Normal
 
 
 class QueryStrategy(ABC):
@@ -111,24 +112,49 @@ class UpvoteReview(QueryStrategy):
 
         return list(review_data)
 
+class InterQuery(QueryStrategy):
+    """Class for sent the Inter Table data."""
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
 
-class DatabaseQuery:
-    """Main class for handle the request from frontend"""
-
-    def __init__(self):
-        self.data = None
-
-    @staticmethod
-    def send_all_course_data():
-        """Send the course_id, course_name, and faculty to frontend."""
-        course_data = Inter.objects.select_related('course').values(
+        inter_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
             faculty=F('course__faculty'),
             course_type=F('course__course_type')
         )
 
-        return list(course_data)
+        return list(inter_data)
+
+
+class SpecialQuery(QueryStrategy):
+    """Class for sent the Special Table data."""
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+
+        special_data = Special.objects.select_related('course').values(
+            courses_id=F('course__course_id'),
+            courses_name=F('course__course_name'),
+            faculty=F('course__faculty'),
+            course_type=F('course__course_type')
+        )
+
+        return list(special_data)
+
+
+class NormalQuery(QueryStrategy):
+    """Class for sent the Normal Table data."""
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+
+        normal_data = Normal.objects.select_related('course').values(
+            courses_id=F('course__course_id'),
+            courses_name=F('course__course_name'),
+            faculty=F('course__faculty'),
+            course_type=F('course__course_type')
+        )
+
+        return list(normal_data)
 
 
 class QueryFactory:
@@ -138,6 +164,9 @@ class QueryFactory:
         "earliest": EarliestReview,
         "latest": LatestReview,
         "upvote": UpvoteReview,
+        "inter": InterQuery,
+        "special": SpecialQuery,
+        "normal": NormalQuery
     }
 
     @classmethod
@@ -163,5 +192,5 @@ class QueryFactory:
 
 
 if __name__ == "__main__":
-    d = DatabaseQuery()
-    print(d.send_all_course_data())
+    d = InterQuery()
+    print(d.get_data())
