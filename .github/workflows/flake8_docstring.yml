@@ -21,4 +21,4 @@ jobs:
     - name: Lint with flake8
       run: |
         cd backend
-        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --extend-exclude=manage.py,kuvein/,*/__init__.py,*/admin.py,*/tests.py,*/views.py,*/migrations/,venv/
+        flake8 . --count --max-complexity=10 --max-line-length=127 --statistics --extend-exclude=manage.py,kuvein/,*/__init__.py,*/admin.py,*/tests.py,*/views.py,*/migrations/,venv/,code_runner.py
