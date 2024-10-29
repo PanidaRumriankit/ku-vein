@@ -36,8 +36,8 @@ class UserDataPost(PostStrategy):
                                 status=201)
 
         except KeyError:
-            return Response({"error": "email is missing\
-                             from the response body."},
+            return Response({"error": "email is missing "
+                             "from the response body."},
                             status=400)
 
 
