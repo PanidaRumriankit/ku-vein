@@ -6,7 +6,7 @@ import logging
 from datetime import datetime
 from abc import ABC, abstractmethod
 from ninja.responses import Response
-from forms.models import CourseReview, UserData, CourseData, ReviewStat
+from backend.forms.models import CourseReview, UserData, CourseData, ReviewStat
 
 
 # Add the parent directory to the Python path
