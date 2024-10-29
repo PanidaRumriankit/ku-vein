@@ -1,13 +1,13 @@
 """This module use for get the course data from the university website."""
-
-import requests
-import pdfplumber
 import os
 import json
 import re
-
-from bs4 import BeautifulSoup
 from datetime import datetime
+
+import requests
+import pdfplumber
+from bs4 import BeautifulSoup
+
 
 DAYS = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or']
@@ -23,7 +23,7 @@ def get_url() -> list[str]:
     url = f'https://registrar.ku.ac.th/class#{cur_year + 543}'
 
     # Send a GET request
-    response = requests.get(url)
+    response = requests.get(url, timeout=3)
 
     # Check if the request was successful
     if response.status_code == 200:
@@ -46,15 +46,15 @@ def get_url() -> list[str]:
             print(f"List of URL: {url_container}")
             return url_container
 
-        else:
-            print("Content div not found.")
-    else:
+        print("Content div not found.")
         print(f"Failed to retrieve page. Status code: {response.status_code}")
+
+    return []
 
 
 def download_pdf(url: str, filename: str):
     """Download PDF files."""
-    response = requests.get(url)
+    response = requests.get(url, timeout=3)
     if response.status_code == 200:
         with open(filename, 'wb') as f:
             f.write(response.content)
@@ -120,9 +120,9 @@ def is_valid_line(lines: list[str]):
     if first.isnumeric():
         if len(first) == 8:
             return True
-        else:
-            print('reject by not subject id')
-            return False
+        print('reject by not subject id')
+        return False
+
     return True
 
 
