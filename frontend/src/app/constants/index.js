@@ -55,6 +55,10 @@ const usersDropdown = [
     label: "History",
   },
   {
+    key: "setting",
+    label: "Setting",
+  },
+  {
     key: "logout",
     label: "Logout",
   },
