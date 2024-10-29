@@ -1,8 +1,8 @@
 """This module use for contain the database query."""
 
 from typing import Union
-from django.db.models import F
 from abc import ABC, abstractmethod
+from django.db.models import F
 from .models import Inter, ReviewStat, Special, Normal, CourseData
 
 
@@ -12,7 +12,7 @@ class QueryStrategy(ABC):
     @abstractmethod
     def get_data(self):
         """Get the data from the database."""
-        pass
+
 
 
 class QueryFilterStrategy(ABC):
@@ -21,7 +21,7 @@ class QueryFilterStrategy(ABC):
     @abstractmethod
     def get_data(self, filter_key: dict):
         """Get the data from the database."""
-        pass
+
 
 
 class EarliestReview(QueryStrategy):
@@ -194,5 +194,4 @@ class QueryFactory:
         query_lower = query.lower()
         if query_lower in cls.strategy_map:
             return cls.strategy_map[query_lower]()
-        else:
-            raise ValueError(f"Invalid query parameter: {query}")
+        raise ValueError(f"Invalid query parameter: {query}")

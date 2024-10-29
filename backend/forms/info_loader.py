@@ -64,12 +64,18 @@ def download_pdf(url: str, filename: str):
 
 
 def is_thai(text: str):
-    """Checks if any character in the string is either numeric or thai"""
+    """
+    Use for checks if any character in the string.
+
+    Is it either numeric or thai?
+    """
     return any(re.match("^[\u0E00-\u0E7F]*$", t) for t in text)
 
 
 def is_subject_name(text: str):
     """
+    Use for check if the string subject name.
+
     The string is subject name if it passes these criteria
     1. Each character is not in thai and not a number
     2. string is not in upper case
@@ -89,13 +95,15 @@ def is_subject_name(text: str):
 
 
 def has_num_and_alpha(text: str):
-    """Check if the string has number and alphabet at the same time"""
+    """Check if the string has number and alphabet at the same time."""
     return any(t.isnumeric() for t in text) and any(t.isalpha() for t in text)
 
 
 def is_valid_line(lines: list[str]):
     """
-    Checks that the line is not gibberish and is either 
+    Use for check if it valid line.
+
+    Checks that the line is not gibberish and is either
     a normal subject line. Ex. '01999011 -64 Food for Mankind 3 3 1 ...' or
     a subject name line. Ex. 'Sustainability'
     """
@@ -119,14 +127,16 @@ def is_valid_line(lines: list[str]):
 
 
 def get_last_subject_id(fac: str):
-    """Get the last added subject's id"""
+    """Get the last added subject's id."""
     global RESULT_DATA
     return list(RESULT_DATA[fac].keys())[-1]
 
 
 def handle_line(text: list[str], fac: str):
     """
-    Handle each line and will either create a new subject in result_data or
+    Use for handle each line.
+
+    By either create a new subject in result_data or
     add to the previous subject's name
     """
     global RESULT_DATA
@@ -161,19 +171,22 @@ def handle_line(text: list[str], fac: str):
 
 
 def is_subject_id(text: str):
+    """Check is this string a subject id."""
     if text.isnumeric() and len(text) == 8:
         return True
     return False
 
 
 def is_left_over_subject(text: str):
-    """Determine if the line is a leftover from subject name"""
-    return all(t.isalpha() and not is_thai(t) and not t.isnumeric() for t in text)
+    """Determine if the line is a leftover from subject name."""
+    return all(t.isalpha() and not is_thai(t)
+               and not t.isnumeric() for t in text)
 
 
 def get_subject_name(text: list[str], index: int = 0):
     """
-    Loop through the list of string 
+    Loop through the list of string.
+
     until the string fails is_subject_name() function
     """
     subject_name = []
