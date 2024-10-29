@@ -1,6 +1,7 @@
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
+import Rating from '@mui/material/Rating';
 import {Button} from "@nextui-org/button";
 import {colorPallet} from "../constants";
 
@@ -20,13 +21,17 @@ export default function ReviewCard({item}) {
           {item.courses_id} | {item.courses_name}
         </legend>
         <div className="text-black dark:text-white">
+          <Rating name="read-only" value={item.ratings} readOnly />
+          <br/>
           <p>{item.reviews}</p>
           <br/>
           <div
             className="flex items-center justify-between text-gray-500 text-right">
-            <p className="text-left">Grade: {item.grades}</p>
+            <p className="text-left">
+              Grade: {item.grades}
+            </p>
             <p className="text-right">
-              {item.ratings} ⭐️ {item.date} author: {item.name || item.user_name}
+              {item.date} author: {item.name || item.user_name}
             </p>
           </div>
           <hr/>
