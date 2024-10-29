@@ -6,7 +6,6 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from .models import Inter
 from .schemas import ReviewRequestSchema, UserDataCreateSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory

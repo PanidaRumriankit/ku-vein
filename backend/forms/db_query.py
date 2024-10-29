@@ -1,3 +1,5 @@
+"""This module use for contain the database query."""
+
 import os
 import sys
 import django
@@ -14,7 +16,7 @@ django.setup()
 from typing import Union
 from django.db.models import F
 from abc import ABC, abstractmethod
-from .models import Inter, ReviewStat, CourseReview, Special, Normal
+from .models import Inter, ReviewStat, CourseReview, Special, Normal, CourseData
 
 
 class QueryStrategy(ABC):
@@ -157,6 +159,21 @@ class NormalQuery(QueryStrategy):
         return list(normal_data)
 
 
+class CourseQuery(QueryStrategy):
+    """Class for sent all of the value in the course data."""
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+
+        course_data = CourseData.objects.select_related('course').values(
+            'course_id',
+            'course_name',
+            'faculty',
+            'course_type'
+        )
+
+        return list(course_data)
+
+
 class QueryFactory:
     """Factory class to handle query strategy selection."""
 
@@ -166,7 +183,8 @@ class QueryFactory:
         "upvote": UpvoteReview,
         "inter": InterQuery,
         "special": SpecialQuery,
-        "normal": NormalQuery
+        "normal": NormalQuery,
+        "none": CourseQuery
     }
 
     @classmethod
