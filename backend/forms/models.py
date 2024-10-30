@@ -47,9 +47,11 @@ class Normal(models.Model):
 
 class UserData(models.Model):
     user_id = models.AutoField(primary_key=True, unique=True)
-    user_name = models.CharField(max_length=30, unique=True)
-    user_type = models.CharField(max_length=20)
-    email = models.TextField()
+    user_name = models.CharField(max_length=30, unique=True, default=None)
+    user_type = models.CharField(max_length=20, default="student")
+    description = models.TextField(default=None)
+    email = models.TextField(default=None)
+    profile_color = models.CharField(max_length=7, default="#ffffff")
 
     class Meta:
         db_table = 'UserData'
