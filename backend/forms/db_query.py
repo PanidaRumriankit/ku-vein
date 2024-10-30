@@ -1,19 +1,9 @@
-import os
-import sys
-import django
-
-# Add the parent directory to the Python path
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
-
-django.setup()
+"""This module use for contain the class for database query."""
 
 from typing import Union
-from django.db.models import F
 from abc import ABC, abstractmethod
-from forms.models import Inter, ReviewStat, CourseReview
+from django.db.models import F
+from .models import Inter, ReviewStat, Special, Normal, CourseData
 
 
 class QueryStrategy(ABC):
@@ -22,7 +12,6 @@ class QueryStrategy(ABC):
     @abstractmethod
     def get_data(self):
         """Get the data from the database."""
-        pass
 
 
 class QueryFilterStrategy(ABC):
@@ -31,7 +20,6 @@ class QueryFilterStrategy(ABC):
     @abstractmethod
     def get_data(self, filter_key: dict):
         """Get the data from the database."""
-        pass
 
 
 class EarliestReview(QueryStrategy):
@@ -46,9 +34,9 @@ class EarliestReview(QueryStrategy):
         review_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
-            faculty=F('review__course__faculty'),
-            user_name=F('review__user__user_name'),
-            reviews=F('review__reviews'),
+            faculties=F('review__course__faculty'),
+            username=F('review__user__user_name'),
+            review_text=F('review__reviews'),
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
@@ -72,9 +60,9 @@ class LatestReview(QueryStrategy):
         review_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
-            faculty=F('review__course__faculty'),
-            user_name=F('review__user__user_name'),
-            reviews=F('review__reviews'),
+            faculties=F('review__course__faculty'),
+            username=F('review__user__user_name'),
+            review_text=F('review__reviews'),
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
@@ -98,9 +86,9 @@ class UpvoteReview(QueryStrategy):
         review_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
-            faculty=F('review__course__faculty'),
-            user_name=F('review__user__user_name'),
-            reviews=F('review__reviews'),
+            faculties=F('review__course__faculty'),
+            username=F('review__user__user_name'),
+            review_text=F('review__reviews'),
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
@@ -112,20 +100,61 @@ class UpvoteReview(QueryStrategy):
         return list(review_data)
 
 
-class DatabaseQuery:
-    """Main class for handle the request from frontend"""
+class InterQuery(QueryStrategy):
+    """Class for sent the Inter Table data."""
 
-    def __init__(self):
-        self.data = None
-
-    @staticmethod
-    def send_all_course_data():
-        """Send the course_id, course_name, and faculty to frontend."""
-        course_data = Inter.objects.select_related('course').values(
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+        inter_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculty=F('course__faculty'),
-            course_type=F('course__course_type')
+            faculties=F('course__faculty'),
+            courses_type=F('course__course_type')
+        )
+
+        return list(inter_data)
+
+
+class SpecialQuery(QueryStrategy):
+    """Class for sent the Special Table data."""
+
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+        special_data = Special.objects.select_related('course').values(
+            courses_id=F('course__course_id'),
+            courses_name=F('course__course_name'),
+            faculties=F('course__faculty'),
+            courses_type=F('course__course_type')
+        )
+
+        return list(special_data)
+
+
+class NormalQuery(QueryStrategy):
+    """Class for sent the Normal Table data."""
+
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+        normal_data = Normal.objects.select_related('course').values(
+            courses_id=F('course__course_id'),
+            courses_name=F('course__course_name'),
+            faculties=F('course__faculty'),
+            courses_type=F('course__course_type')
+        )
+
+        return list(normal_data)
+
+
+class CourseQuery(QueryStrategy):
+    """Class for sent all of the value in the course data."""
+
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+        course_data = CourseData.objects.select_related('course').values(
+            courses_id=F('course_id'),
+            courses_name=F('course_name'),
+            faculties=F('faculty'),
+            courses_type=F('course_type')
         )
 
         return list(course_data)
@@ -138,11 +167,15 @@ class QueryFactory:
         "earliest": EarliestReview,
         "latest": LatestReview,
         "upvote": UpvoteReview,
+        "inter": InterQuery,
+        "special": SpecialQuery,
+        "normal": NormalQuery,
+        "none": CourseQuery
     }
 
     @classmethod
-    def get_query_strategy(cls, query: str) -> Union[
-        QueryStrategy, QueryFilterStrategy]:
+    def get_query_strategy(cls, query: str)\
+            -> Union[QueryStrategy, QueryFilterStrategy]:
         """
         Return the query strategy based on the query string.
 
@@ -153,15 +186,10 @@ class QueryFactory:
             QueryStrategy: The corresponding query strategy class.
 
         Raises:
-            ValueError: If the query string doesn't match any available strategies.
+            ValueError: If the query string
+            doesn't match any available strategies.
         """
         query_lower = query.lower()
         if query_lower in cls.strategy_map:
             return cls.strategy_map[query_lower]()
-        else:
-            raise ValueError(f"Invalid query parameter: {query}")
-
-
-if __name__ == "__main__":
-    d = DatabaseQuery()
-    print(d.send_all_course_data())
+        raise ValueError(f"Invalid query parameter: {query}")
