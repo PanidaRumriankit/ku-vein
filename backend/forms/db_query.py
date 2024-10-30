@@ -116,9 +116,6 @@ class QueryFactory:
 
     strategy_map = {
         "sort": SortReview,
-        "earliest": EarliestReview,
-        "latest": LatestReview,
-        "upvote": UpvoteReview,
         "inter": InterQuery,
         "special": SpecialQuery,
         "normal": NormalQuery,
