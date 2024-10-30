@@ -58,8 +58,8 @@ class UserData(models.Model):
 
 
 class FollowData(models.Model):
-    this_user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    follow_by = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    this_user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='following')
+    follow_by = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='followers')
 
     class Meta:
         app_label = 'forms'
