@@ -33,20 +33,20 @@ def verify_google_token(auth: str, email: str) -> bool:
 
 
 @app.get("/course")
-def get_course_data(request):
+def get_course_data(request, course_type=None):
     """Use for send the data to frontend."""
     print(request)
 
-    course_type = request.GET.get("type")
+    query_type = course_type
 
-    if not course_type:
-        course_type = "none"
+    if not query_type:
+        query_type = "none"
 
-    elif course_type.lower() not in ["inter", "special", "normal"]:
+    elif query_type.lower() not in ["inter", "special", "normal"]:
         return Response({"error": "Invalid type parameter"}, status=400)
 
     try:
-        strategy = QueryFactory.get_query_strategy(course_type)
+        strategy = QueryFactory.get_query_strategy(query_type)
         return Response(strategy.get_data())
 
     except ValueError as e:
@@ -54,9 +54,8 @@ def get_course_data(request):
 
 
 @app.get("/review")
-def get_sorted_data(request):
+def get_sorted_data(request, sort):
     """Use for send sorted data to frontend."""
-    sort = request.GET.get("sort")
     if not sort:
         return Response({"error": "Sort parameter is missing"}, status=400)
 
@@ -92,10 +91,8 @@ def test_auth(request):
 
 
 @app.get("/user")
-def get_user(request):
+def get_user(request, email):
     """Use for send the username and user id to the frontend."""
-    email = request.GET.get("email")
-
     if not email:
         return Response({"error": "Email parameter is missing"}, status=400)
 
