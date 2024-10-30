@@ -6,7 +6,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from .schemas import ReviewRequestSchema, UserDataSchema
+from .schemas import ReviewPostSchema, UserDataSchema, UpvotePostSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -111,10 +111,17 @@ def create_user(request, data: UserDataSchema):
     strategy.post_data(data.model_dump())
 
 
-@app.post("/review", response={200: ReviewRequestSchema})
-def create_review(request, data: ReviewRequestSchema):
+@app.post("/review", response={200: ReviewPostSchema})
+def create_review(request, data: ReviewPostSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
+    return strategy.post_data(data.model_dump())
+
+
+@app.post("/upvote", response={200: UpvotePostSchema})
+def add_upvote(request, data: UpvotePostSchema):
+    """Use for add new upvote."""
+    strategy = PostFactory.get_post_strategy("upvote")
     return strategy.post_data(data.model_dump())
 
 
