@@ -32,6 +32,7 @@ export default function AddReview() {
     4: 'Satisfied',
     5: 'Very satisfied',
   };
+
   // TODO fix course review
   async function addReview(e) {
     try {
@@ -45,18 +46,14 @@ export default function AddReview() {
         },
         body: JSON.stringify(postData),
       });
-      if (!email || !idToken)
-      {
+      if (!email || !idToken) {
         console.log("ID Token or email is missing.");
         return;
       }
-      if (response.ok)
-      {
+      if (response.ok) {
         const data = await response.json();
         console.log('Success:', data);
-      }
-      else
-      {
+      } else {
         console.log('Error:', response.status, response.text());
       }
     } catch (error) {
@@ -71,7 +68,7 @@ export default function AddReview() {
   if (!session) return null;
 
   const idToken = session.idToken || session.accessToken;
-  const email = session.user.email;
+  const email = session.email;
 
   useEffect(() => {
     setPostData((prevData) => ({...prevData, email}));
@@ -95,13 +92,16 @@ export default function AddReview() {
           <div
             className="text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-xl font-semibold pb-2">เพิ่มรีวิว</h2>
-            <Search oncourseelect={(course) => setPostData({
-              ...postData,
-              course_id: course.courses_id,
-              // Since the course_type is not defined yet, I will use 'Inter' as the default value
-              // course_type: course.course_type,
-              faculty: course.faculties,
-            })}/>
+            <Search onCourseSelect={(course) => {
+              setPostData({
+                ...postData,
+                course_id: course.courses_id,
+                faculty: course.faculty,
+                // Since the course_type is not defined yet, I will use 'Inter' as the default value
+                // course_type: course.course_type,
+              })
+              console.log("Course", course);  // check course
+            }}/>
             <textarea
               type="text"
               placeholder="ความคิดเห็นต่อรายวิชา"
@@ -178,11 +178,9 @@ export default function AddReview() {
             <div className="flex justify-end mt-4">
               <button
                 className="bg-[#4ECDC4] px-4 py-2 rounded text-white hover:bg-[#44b3ab]"
-                onClick={async () => {
-                  if (session) {
-                    await addReview();
-                    close();
-                  }
+                onClick={() => {
+                  addReview();
+                  close();
                 }}
               >
                 Submit

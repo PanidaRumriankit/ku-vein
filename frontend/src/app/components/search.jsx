@@ -31,12 +31,12 @@ export default function Search({ onCourseSelect, page }) {
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   const query = searchParams.get('query') || '';
 
   const loadOptions = async (inputValue) => {
     const apiData = await GetDjangoApiData();
-  
+
     const filteredData = apiData.filter((course) =>
       course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
       course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
@@ -46,7 +46,7 @@ export default function Search({ onCourseSelect, page }) {
       value: course.courses_id,
       label: `${course.courses_id}\t-\t${course.courses_name}`,
       courses_type: course.courses_type,
-      faculty: course.faculties
+      faculty: course.faculties || "Undefined"
     }));
   };
 
@@ -101,8 +101,8 @@ export default function Search({ onCourseSelect, page }) {
           if (onCourseSelect) {
             onCourseSelect(selectedOption ? {
               courses_id: selectedOption.value,
-              courses_type: selectedOption.course_type,
-              faculty: selectedOption.faculties
+              courses_type: selectedOption.courses_type,
+              faculty: selectedOption.faculty
             } : null);
           }
         }}
