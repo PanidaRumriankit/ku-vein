@@ -1,7 +1,7 @@
 """Module for test everything that relate to get data in the Review feature."""
 
 from .test_user_data import user_set_up
-from ..db_query import EarliestReview, LatestReview, UpvoteReview
+from ..db_query import SortReview
 from datetime import datetime
 from django.test import TestCase
 from .test_course_data import course_set_up
@@ -103,21 +103,21 @@ class EarliestReviewTests(TestCase):
 
     def setUp(self):
         """Set up reusable instances for tests."""
-        self.earliest = EarliestReview()
+        self.earliest = SortReview()
         course_set_up()
         user_set_up()
         self.review, self.data = review_set_up()
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertIsInstance(self.earliest.get_data(), list)
+        self.assertIsInstance(self.earliest.get_data("earliest"), list)
 
     def test_order_by_earliest(self):
         """Data should order by first to last."""
         expected_values = [item['course_id'] for item in self.data]
         self.assertEqual(expected_values,
                          [item['courses_id']
-                          for item in self.earliest.get_data()])
+                          for item in self.earliest.get_data("earliest")])
 
 
 class LatestReviewTests(TestCase):
@@ -125,14 +125,14 @@ class LatestReviewTests(TestCase):
 
     def setUp(self):
         """Set up reusable instances for tests."""
-        self.latest = LatestReview()
+        self.latest = SortReview()
         course_set_up()
         user_set_up()
         self.review, self.data = review_set_up()
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertIsInstance(self.latest.get_data(), list)
+        self.assertIsInstance(self.latest.get_data("latest"), list)
 
     def test_order_by_latest(self):
         """Data should order by last to first."""
@@ -141,7 +141,7 @@ class LatestReviewTests(TestCase):
 
         self.assertEqual(expected_values,
                          [item['courses_id']
-                          for item in self.latest.get_data()])
+                          for item in self.latest.get_data("latest")])
 
 
 class UpvoteReviewTests(TestCase):
@@ -149,7 +149,7 @@ class UpvoteReviewTests(TestCase):
 
     def setUp(self):
         """Set up reusable instances for tests."""
-        self.upvote = UpvoteReview()
+        self.upvote = SortReview()
         course_set_up()
         user_set_up()
         self.review, self.data = review_set_up()
@@ -157,7 +157,7 @@ class UpvoteReviewTests(TestCase):
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertIsInstance(self.upvote.get_data(), list)
+        self.assertIsInstance(self.upvote.get_data("upvote"), list)
 
     def test_order_by_upvote(self):
         """Data should order by highest to lowest."""
@@ -166,4 +166,4 @@ class UpvoteReviewTests(TestCase):
             update_review.save()
         self.assertEqual(sorted(self.up_vote_list, reverse=True),
                          [item['upvote']
-                          for item in self.upvote.get_data()])
+                          for item in self.upvote.get_data("upvote")])
