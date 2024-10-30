@@ -13,7 +13,7 @@ django.setup()
 from typing import Union
 from django.db.models import F
 from abc import ABC, abstractmethod
-from backend.forms.models import Inter, ReviewStat, CourseReview
+from forms.models import Inter, ReviewStat, CourseReview
 
 
 class QueryStrategy(ABC):
@@ -107,32 +107,7 @@ class UpvoteReview(QueryStrategy):
             date=F('date_data'),
             grades=F('grade'),
             upvote=F('up_votes')
-        ).order_by('up_votes')
-
-        return list(review_data)
-
-
-class ReviewQuery(QueryFilterStrategy):
-    """Class for sent specific review."""
-
-    def get_data(self, filter_key: dict):
-        """Get the review data from the database."""
-        review = CourseReview.objects.filter(review_id=filter_key['review_id'])
-        stat = ReviewStat.objects.filter(review=review)
-
-        review_data = stat.objects.values(
-            courses_id=F('review__course__course_id'),
-            courses_name=F('review__course__course_name'),
-            faculty=F('review__course__faculty'),
-            user_name=F('review__user__user_name'),
-            reviews=F('review__reviews'),
-            ratings=F('rating'),
-            year=F('academic_year'),
-            name=F('pen_name'),
-            date=F('date_data'),
-            grades=F('grade'),
-            upvote=F('up_votes')
-        )
+        ).order_by('-up_votes')
 
         return list(review_data)
 
@@ -149,7 +124,8 @@ class DatabaseQuery:
         course_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculty=F('course__faculty')
+            faculty=F('course__faculty'),
+            course_type=F('course__course_type')
         )
 
         return list(course_data)
@@ -162,7 +138,6 @@ class QueryFactory:
         "earliest": EarliestReview,
         "latest": LatestReview,
         "upvote": UpvoteReview,
-        "review": ReviewQuery
     }
 
     @classmethod

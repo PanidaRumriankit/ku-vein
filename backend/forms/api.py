@@ -6,7 +6,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from backend.forms.schemas import ReviewRequestSchema, UserDataCreateSchema
+from forms.schemas import ReviewRequestSchema, UserDataCreateSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
@@ -54,23 +54,6 @@ def get_sorted_data(request):
     try:
         strategy = QueryFactory.get_query_strategy(query)
         return Response(strategy.get_data())
-
-    except ValueError as e:
-        return Response({"error": str(e)}, status=400)
-
-
-@app.get("/database/review")
-def get_specific_review(request):
-    """Use for send specific review to frontend."""
-
-    query = request.GET.get("query")
-
-    if not query:
-        return Response({"error": "Query parameter missing"}, status=400)
-
-    try:
-        strategy = QueryFactory.get_query_strategy("review")
-        return Response(strategy.get_data(query))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)

@@ -9,15 +9,18 @@ class CourseDataSchema(ModelSchema):
         model = CourseData
         fields = '__all__'
 
+
 class NormalSchema(ModelSchema):
     class Meta:
         model = Normal
         fields = '__all__'
 
+
 class InterSchema(ModelSchema):
     class Meta:
         model = Inter
         fields = '__all__'
+
 
 class SpecialSchema(ModelSchema):
     class Meta:
@@ -41,6 +44,7 @@ class ReviewStatSchema(ModelSchema):
     class Meta:
         model = ReviewStat
         fields = '__all__'
+
 
 class ReviewRequestSchema(Schema):
     # Fields from CourseReview

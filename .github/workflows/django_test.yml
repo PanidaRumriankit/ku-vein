@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Coverage
+name: Django CI
 
 on: [push]
 
@@ -25,12 +22,10 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: '3.10'
-    - name: Install dependencies
+    - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        cd backend
-        pip install -r requirements.txt
-        pip install coverage
+        pip install -r backend/requirements.txt
     - name: Grant Permissions for Testing
       env:
         MYSQL_PWD: root
@@ -56,11 +51,7 @@ jobs:
         echo MYSQLPASS=django_password >> .env
         echo MYSQLDATABASE=github_ci_test >> .env
         echo MYSQLPORT=3306 >> .env
-    - name: Test with coverage
+    - name: Run Tests
       run: |
         cd backend
-        coverage run manage.py test
-    - name: Generate Coverage Report
-      run: |
-        cd backend
-        coverage report
+        python manage.py test

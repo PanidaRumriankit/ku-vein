@@ -29,7 +29,8 @@ export default function ReportButton() {
             </form>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={() => {/* Handle form submission */
+            <Button color="primary" onClick={() => {
+              setIsOpen(false)
             }}>Submit</Button>
           </ModalFooter>
         </ModalContent>

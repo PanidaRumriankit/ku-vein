@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Popup from 'reactjs-popup';
@@ -81,7 +83,7 @@ export default function AddReview() {
         contentStyle={{ border: 'none', padding: '0', background: 'none' }}
       >
         {close => (
-          <div className="modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+          <div className="text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-xl font-semibold pb-2">เพิ่มรีวิว</h2>
             <Search onCourseSelect={(course) => setPostData({
               ...postData,

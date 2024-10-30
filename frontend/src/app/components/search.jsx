@@ -1,4 +1,4 @@
-"use-client"
+"use client"
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import GetDjangoApiData from "../constants/getcourses";
