@@ -56,7 +56,6 @@ def get_course_data(request):
 @app.get("/review")
 def get_sorted_data(request):
     """Use for send sorted data to frontend."""
-
     sort = request.GET.get("sort")
     if not sort:
         return Response({"error": "Query parameter missing"}, status=400)
@@ -75,7 +74,6 @@ def get_sorted_data(request):
 @app.get("/database/cou")
 def test_auth(request):
     """For test API authentication only."""
-
     auth_header = request.headers.get("Authorization")
 
     if auth_header is None:
@@ -108,7 +106,6 @@ def create_review(request, data: ReviewRequestSchema):
 
 
 def backup(request):
-    """Use for download data from MySQL server to local"""
+    """Use for download data from MySQL server to local."""
     print(request)
-
     DatabaseBackup().local_backup()

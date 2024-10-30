@@ -11,6 +11,7 @@ class MySQLConnection:
     """Class for connect to the MySQL server."""
 
     def __init__(self):
+        """Define attributes."""
         self.connection = None
         self.cursor = None
 
@@ -46,6 +47,7 @@ class TableManagement:
     """Class for managing tables in MySQL server."""
 
     def __init__(self):
+        """Define attributes."""
         self.connection = MySQLConnection()
         self.cursor = None
         self.table_name = ["auth_group_permissions",
@@ -94,7 +96,6 @@ class TableManagement:
 
     def show_data(self, table_name: str):
         """Return all data from the specific table."""
-
         self.connect()
 
         try:
@@ -110,7 +111,6 @@ class TableManagement:
 
     def show_attr(self, table_name: str):
         """Show all attribute of the table."""
-
         self.connect()
 
         try:
@@ -129,6 +129,7 @@ class DatabaseManagement:
     """Class for add or delete value in MySQL server."""
 
     def __init__(self):
+        """Define attributes."""
         self.data = None
         self.con = MySQLConnection()
         self.cursor = None
@@ -145,7 +146,6 @@ class DatabaseManagement:
     @staticmethod
     def add_course_data_to_sub(course_type: str):
         """Add datas to the Inter, Special, Normal tables."""
-
         filtered_data = CourseData.objects.filter(course_type=course_type)
 
         for course in filtered_data:
@@ -159,6 +159,7 @@ class DatabaseBackup:
     """Class for database backup."""
 
     def __init__(self):
+        """Define attributes."""
         self.data = None
         self.con = MySQLConnection()
         self.cursor = None
@@ -192,7 +193,7 @@ class DatabaseBackup:
 
     @staticmethod
     def check_date():
-        """Check is it time to back up?"""
+        """Check is it time to back up?."""
         with open('database/backup/logs.json', 'r',
                   encoding='UTF-8') as log_file:
             last_updated = datetime.strptime(
@@ -203,8 +204,7 @@ class DatabaseBackup:
         return False
 
     def local_backup(self):
-        """Used for pull all data from MySQL server to local every week."""
-
+        """Pull all data from MySQL server to local every week."""
         if self.check_date():
             self.connect()
 
@@ -230,10 +230,7 @@ class DatabaseBackup:
             print("Data saved to database/backup/logs.json")
 
     def exist_data_loader(self):
-        """
-        Combined all the data in the folder and
-        separate by course programs.
-        """
+        """Combine all data in the folder and separate by course programs."""
         with open("./database/scraped_data/inter2.json",
                   "r", encoding="UTF-8") as file:
             inter2 = json.load(file)
@@ -254,8 +251,7 @@ class DatabaseBackup:
         self.data = all_faculty
 
     def insert_data_to_remote(self):
-        """Used for insert the backup database to the database server."""
-
+        """Insert the backup database to the database server."""
         self.connect()
 
         try:
