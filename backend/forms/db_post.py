@@ -79,7 +79,7 @@ class ReviewPost(PostStrategy):
                                   academic_year=data['academic_year'],
                                   pen_name=data['pen_name'],
                                   date_data=datetime.now().date(),
-                                  grade=data['grade'], up_votes=0)
+                                  grade=data['grade'])
 
         return Response({"success": "The Review is successfully created."},
                         status=201)

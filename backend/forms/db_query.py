@@ -28,7 +28,7 @@ class SortReview(QueryFilterStrategy):
     def __init__(self):
         self.sorted_data = None
         self.order = {"earliest": "review__review_id",
-                      "latest": "-review__review_id", "upvote": "-up_votes"}
+                      "latest": "-review__review_id", "upvote": "-upvote"}
 
     def get_data(self, order_by):
         """Get the sorted data from the database."""
