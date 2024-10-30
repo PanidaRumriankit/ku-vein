@@ -1,13 +1,13 @@
 """This module use for get the course data from the university website."""
-
-import requests
-import pdfplumber
 import os
 import json
 import re
-
-from bs4 import BeautifulSoup
 from datetime import datetime
+
+import requests
+import pdfplumber
+from bs4 import BeautifulSoup
+
 
 DAYS = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or']
@@ -23,7 +23,7 @@ def get_url() -> list[str]:
     url = f'https://registrar.ku.ac.th/class#{cur_year + 543}'
 
     # Send a GET request
-    response = requests.get(url)
+    response = requests.get(url, timeout=3)
 
     # Check if the request was successful
     if response.status_code == 200:
@@ -46,15 +46,15 @@ def get_url() -> list[str]:
             print(f"List of URL: {url_container}")
             return url_container
 
-        else:
-            print("Content div not found.")
-    else:
+        print("Content div not found.")
         print(f"Failed to retrieve page. Status code: {response.status_code}")
+
+    return []
 
 
 def download_pdf(url: str, filename: str):
     """Download PDF files."""
-    response = requests.get(url)
+    response = requests.get(url, timeout=3)
     if response.status_code == 200:
         with open(filename, 'wb') as f:
             f.write(response.content)
@@ -64,12 +64,18 @@ def download_pdf(url: str, filename: str):
 
 
 def is_thai(text: str):
-    """Checks if any character in the string is either numeric or thai"""
+    """
+    Use for checks if any character in the string.
+
+    Is it either numeric or thai?
+    """
     return any(re.match("^[\u0E00-\u0E7F]*$", t) for t in text)
 
 
 def is_subject_name(text: str):
     """
+    Use for check if the string subject name.
+
     The string is subject name if it passes these criteria
     1. Each character is not in thai and not a number
     2. string is not in upper case
@@ -89,13 +95,15 @@ def is_subject_name(text: str):
 
 
 def has_num_and_alpha(text: str):
-    """Check if the string has number and alphabet at the same time"""
+    """Check if the string has number and alphabet at the same time."""
     return any(t.isnumeric() for t in text) and any(t.isalpha() for t in text)
 
 
 def is_valid_line(lines: list[str]):
     """
-    Checks that the line is not gibberish and is either 
+    Use for check if it valid line.
+
+    Checks that the line is not gibberish and is either
     a normal subject line. Ex. '01999011 -64 Food for Mankind 3 3 1 ...' or
     a subject name line. Ex. 'Sustainability'
     """
@@ -112,21 +120,23 @@ def is_valid_line(lines: list[str]):
     if first.isnumeric():
         if len(first) == 8:
             return True
-        else:
-            print('reject by not subject id')
-            return False
+        print('reject by not subject id')
+        return False
+
     return True
 
 
 def get_last_subject_id(fac: str):
-    """Get the last added subject's id"""
+    """Get the last added subject's id."""
     global RESULT_DATA
     return list(RESULT_DATA[fac].keys())[-1]
 
 
 def handle_line(text: list[str], fac: str):
     """
-    Handle each line and will either create a new subject in result_data or
+    Use for handle each line.
+
+    By either create a new subject in result_data or
     add to the previous subject's name
     """
     global RESULT_DATA
@@ -161,19 +171,22 @@ def handle_line(text: list[str], fac: str):
 
 
 def is_subject_id(text: str):
+    """Check is this string a subject id."""
     if text.isnumeric() and len(text) == 8:
         return True
     return False
 
 
 def is_left_over_subject(text: str):
-    """Determine if the line is a leftover from subject name"""
-    return all(t.isalpha() and not is_thai(t) and not t.isnumeric() for t in text)
+    """Determine if the line is a leftover from subject name."""
+    return all(t.isalpha() and not is_thai(t)
+               and not t.isnumeric() for t in text)
 
 
 def get_subject_name(text: list[str], index: int = 0):
     """
-    Loop through the list of string 
+    Loop through the list of string.
+
     until the string fails is_subject_name() function
     """
     subject_name = []

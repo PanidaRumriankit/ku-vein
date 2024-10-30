@@ -41,6 +41,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS',
 # Application definition
 
 INSTALLED_APPS = [
+    'forms.apps.FormsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +49,6 @@ INSTALLED_APPS = [
     'corsheaders',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'forms.apps.FormsConfig',
     'ninja_extra',
 ]
 
