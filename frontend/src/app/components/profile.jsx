@@ -10,6 +10,17 @@ const Profile = () => {
         console.log('Profile updated:', { username });
     };
 
+    function change_username(new_username) {
+      axios({
+        method: 'patch',
+        url: 'http://127.0.0.1:8000/api/user',
+        data: {
+          email: user.email,
+          user_name: new_username
+        }
+      });
+    }
+
     return (
         <div className="profile-settings">
             <h2>User Profile Settings</h2>
