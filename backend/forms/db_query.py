@@ -22,16 +22,21 @@ class QueryFilterStrategy(ABC):
         """Get the data from the database."""
 
 
-class EarliestReview(QueryStrategy):
-    """Class for sent CourseReview sorted by earliest."""
+class SortReview(QueryFilterStrategy):
+    """Class for sent CourseReview sorted by condition."""
 
-    def get_data(self):
-        """
-        Get the sorted data from the database.
+    def __init__(self):
+        self.sorted_data = None
+        self.order = {"earliest": "review__review_id",
+                      "latest": "-review__review_id", "upvote": "-up_votes"}
 
-        Order by, earliest data.
-        """
-        review_data = ReviewStat.objects.values(
+    def get_data(self, order_by):
+        """Get the sorted data from the database."""
+        self.sort_by(self.order[order_by])
+        return list(self.sorted_data)
+
+    def sort_by(self, condition):
+        self.sorted_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
             faculties=F('review__course__faculty'),
@@ -43,61 +48,7 @@ class EarliestReview(QueryStrategy):
             date=F('date_data'),
             grades=F('grade'),
             upvote=F('up_votes')
-        ).order_by('review__review_id')
-
-        return list(review_data)
-
-
-class LatestReview(QueryStrategy):
-    """Class for sent CourseReview sorted by latest."""
-
-    def get_data(self):
-        """
-        Get the sorted data from the database.
-
-        Order by, latest data.
-        """
-        review_data = ReviewStat.objects.values(
-            courses_id=F('review__course__course_id'),
-            courses_name=F('review__course__course_name'),
-            faculties=F('review__course__faculty'),
-            username=F('review__user__user_name'),
-            review_text=F('review__reviews'),
-            ratings=F('rating'),
-            year=F('academic_year'),
-            name=F('pen_name'),
-            date=F('date_data'),
-            grades=F('grade'),
-            upvote=F('up_votes')
-        ).order_by('-review__review_id')
-
-        return list(review_data)
-
-
-class UpvoteReview(QueryStrategy):
-    """Class for sent CourseReview sorted by upvote."""
-
-    def get_data(self):
-        """
-        Get the sorted data from the database.
-
-        Order by, upvote data.
-        """
-        review_data = ReviewStat.objects.values(
-            courses_id=F('review__course__course_id'),
-            courses_name=F('review__course__course_name'),
-            faculties=F('review__course__faculty'),
-            username=F('review__user__user_name'),
-            review_text=F('review__reviews'),
-            ratings=F('rating'),
-            year=F('academic_year'),
-            name=F('pen_name'),
-            date=F('date_data'),
-            grades=F('grade'),
-            upvote=F('up_votes')
-        ).order_by('-up_votes')
-
-        return list(review_data)
+        ).order_by(condition)
 
 
 class InterQuery(QueryStrategy):
@@ -164,6 +115,7 @@ class QueryFactory:
     """Factory class to handle query strategy selection."""
 
     strategy_map = {
+        "sort": SortReview,
         "earliest": EarliestReview,
         "latest": LatestReview,
         "upvote": UpvoteReview,
