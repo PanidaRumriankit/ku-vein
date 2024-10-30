@@ -4,9 +4,11 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-o
 import PersonIcon from "@mui/icons-material/Person";
 import { usersDropdown } from "../constants";
 import { signOut } from "next-auth/react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function UserDropdown() {
+  const router = useRouter();
+
   return (
     <Dropdown>
       <DropdownTrigger>
@@ -23,14 +25,12 @@ export default function UserDropdown() {
             onClick={() => {
               if (item.key === "logout") {
                 signOut("google");
+              } else {
+                router.push(`/${item.key}`);
               }
             }}
           >
-            {item.key !== "logout" ? (
-              <Link href={`/${item.key}`}>{item.label}</Link>
-            ) : (
-              item.label
-            )}
+            {item.label}
           </DropdownItem>
         ))}
       </DropdownMenu>
