@@ -62,7 +62,7 @@ class SpecialSchema(ModelSchema):
         fields = '__all__'
 
 
-class UserDataCreateSchema(ModelSchema):
+class UserDataSchema(ModelSchema):
     """
     Schema for creating new UserData entries with limited fields.
 

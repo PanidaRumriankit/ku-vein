@@ -6,7 +6,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from .schemas import ReviewRequestSchema, UserDataCreateSchema
+from .schemas import ReviewRequestSchema, UserDataSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -43,7 +43,7 @@ def get_course_data(request):
         course_type = "none"
 
     elif course_type.lower() not in ["inter", "special", "normal"]:
-        return Response({"error": "Invalid Query parameter"}, status=400)
+        return Response({"error": "Invalid type parameter"}, status=400)
 
     try:
         strategy = QueryFactory.get_query_strategy(course_type)
@@ -58,14 +58,14 @@ def get_sorted_data(request):
     """Use for send sorted data to frontend."""
     sort = request.GET.get("sort")
     if not sort:
-        return Response({"error": "Query parameter missing"}, status=400)
+        return Response({"error": "Sort parameter is missing"}, status=400)
 
     elif sort not in ["earliest", "latest", "upvote"]:
-        return Response({"error": "Invalid Query parameter"}, status=400)
+        return Response({"error": "Invalid Sort parameter"}, status=400)
 
     try:
-        strategy = QueryFactory.get_query_strategy(sort)
-        return Response(strategy.get_data())
+        strategy = QueryFactory.get_query_strategy("sort")
+        return Response(strategy.get_data(sort))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -91,8 +91,24 @@ def test_auth(request):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
 
+@app.get("/user")
+def get_user(request):
+    """Use for send the username and user id to the frontend."""
+    email = request.GET.get("email")
+
+    if not email:
+        return Response({"error": "Email parameter is missing"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy("user")
+        return Response(strategy.get_data(email))
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
 @app.post("/user")
-def create_user(request, data: UserDataCreateSchema):
+def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
     strategy.post_data(data.model_dump())
