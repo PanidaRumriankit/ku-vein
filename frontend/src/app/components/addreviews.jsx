@@ -33,7 +33,6 @@ export default function AddReview() {
     5: 'Very satisfied',
   };
 
-  // TODO fix course review
   async function addReview(e) {
     try {
       // create review api
