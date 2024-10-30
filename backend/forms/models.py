@@ -49,12 +49,22 @@ class UserData(models.Model):
     user_id = models.AutoField(primary_key=True, unique=True)
     user_name = models.CharField(max_length=30, unique=True, default=None)
     user_type = models.CharField(max_length=20, default="student")
-    description = models.TextField(default=None)
     email = models.TextField(default=None)
+    description = models.TextField(default="")
     profile_color = models.CharField(max_length=7, default="#ffffff")
 
     class Meta:
         db_table = 'UserData'
+
+
+class FollowData(models.Model):
+    this_user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    follow_by = models.ForeignKey(UserData, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'FollowData'
+        unique_together = ('this_user', 'follow_by')
 
 
 class CourseReview(models.Model):
@@ -77,12 +87,20 @@ class ReviewStat(models.Model):
     pen_name = models.CharField(max_length=100, default=None)
     date_data = models.DateField(default=None)
     grade = models.CharField(max_length=2, default=None)
-    up_votes = models.IntegerField(default=0)
 
     class Meta:
         app_label = 'forms'
         db_table = 'ReviewStat'
 
+
+class UpvoteStat(models.Model):
+    review_stat = models.ForeignKey(ReviewStat, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'UpvoteStat'
+        unique_together = ('review_stat', 'user')
 
 class Summary(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
