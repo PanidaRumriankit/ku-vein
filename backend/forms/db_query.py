@@ -3,7 +3,7 @@
 from typing import Union
 from abc import ABC, abstractmethod
 from django.db.models import F
-from .models import Inter, ReviewStat, Special, Normal, CourseData
+from .models import Inter, ReviewStat, Special, Normal, CourseData, UserData
 
 
 class QueryStrategy(ABC):
@@ -97,7 +97,7 @@ class NormalQuery(QueryStrategy):
 
 
 class CourseQuery(QueryStrategy):
-    """Class for sent all of the value in the course data."""
+    """Class for sent all the value in the course data."""
 
     def get_data(self):
         """Get the data from the database and return to the frontend."""
@@ -111,6 +111,18 @@ class CourseQuery(QueryStrategy):
         return list(course_data)
 
 
+class UserQuery(QueryFilterStrategy):
+    """Class for sent the value in the user data."""
+
+    def get_data(self, email: str):
+        """Get the data from the database and return to the frontend."""
+        user_data = UserData.objects.filter(email=email).values(
+            id=F('user_id'),
+            username=F('user_name')
+        )
+        return list(user_data)
+
+
 class QueryFactory:
     """Factory class to handle query strategy selection."""
 
@@ -119,7 +131,8 @@ class QueryFactory:
         "inter": InterQuery,
         "special": SpecialQuery,
         "normal": NormalQuery,
-        "none": CourseQuery
+        "none": CourseQuery,
+        "user": UserQuery,
     }
 
     @classmethod

@@ -11,8 +11,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
 
+from forms.models import UserData
 from forms.db_query import InterQuery
 
 if __name__ == "__main__":
-    d = InterQuery()
-    print(d.get_data())
+    print(UserData.objects.all().values(
+        'email'
+    ))

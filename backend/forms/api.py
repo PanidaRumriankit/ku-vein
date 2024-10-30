@@ -90,6 +90,7 @@ def test_auth(request):
     except (IndexError, KeyError):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
+
 @app.get("/user")
 def get_user(request):
     """Use for send the username and user id to the frontend."""
