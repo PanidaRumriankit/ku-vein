@@ -34,6 +34,12 @@ class UserDataCreateSchema(ModelSchema):
         fields = ['email']
 
 
+class ChangeUsernameSchema(ModelSchema):
+    class Meta:
+        model = UserData
+        fields = ['email', 'user_name']
+
+
 class CourseReviewSchema(ModelSchema):
     class Meta:
         model = CourseReview

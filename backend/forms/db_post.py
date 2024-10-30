@@ -33,16 +33,14 @@ class UserDataPost(PostStrategy):
 
     def post_data(self, data: dict):
         """Add the data to the UserData."""
-
         try:
-            if not UserData.objects.filter(email=data['email']):
-                UserData.objects.create(user_name=f"user_{UserData.objects.count()}", user_type="student", email=data['email'])
-                logger.debug(f"created user: user_{UserData.objects.count()} {data['email']}")
-                return Response({"success": "The User is successfully created."}, status=201)
-
+            UserData.objects.get(email=data['email'])
+            logger.debug(f"logged in as: user_{UserData.objects.count()} {data['email']}")
+        except UserData.DoesNotExist:
+            UserData.objects.create(user_name=f"user_{UserData.objects.count()}", user_type="student", email=data['email'])
+            return Response({"success": "The User is successfully created."}, status=201)
         except KeyError:
             return Response({"error": "email is missing from the response body."}, status=400)
-
 
 class ReviewPost(PostStrategy):
     """Class for created new CourseReview object."""

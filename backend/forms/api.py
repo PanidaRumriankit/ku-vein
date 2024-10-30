@@ -5,10 +5,11 @@ from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
-from forms.schemas import ReviewRequestSchema, UserDataCreateSchema
+from forms.schemas import ReviewRequestSchema, UserDataCreateSchema, ChangeUsernameSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import DatabaseQuery, QueryFactory
+from forms.models import UserData
 
 app = NinjaExtraAPI()
 logger = logging.getLogger("user_logger")
@@ -84,14 +85,21 @@ def test_auth(request):
 def create_user(request, data: UserDataCreateSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
-    strategy.post_data(data.model_dump())
+    print(data.model_dump())
+    return strategy.post_data(data.model_dump())
 
 
-@app.put("/user/edit/username")
-def change_username(request, data):
-    """Change username for a user"""
-    pass
-
+@app.patch("/user/edit/username")
+def change_username(request, data: ChangeUsernameSchema):
+    """Change username for a user."""
+    try:
+        user = UserData.objects.get(email=data.email)
+        user.user_name = data.user_name
+        return Response([{"success": "Username has been updated to banana."},
+                         [{'user_name': user.user_name} for user in UserData.objects.all()]],
+                        status=201)
+    except UserData.DoesNotExist:
+        return Response({"error": "user not found"}, status=400)
 
 @app.post("/create/review", response={200: ReviewRequestSchema})
 def create_review(request, data: ReviewRequestSchema):

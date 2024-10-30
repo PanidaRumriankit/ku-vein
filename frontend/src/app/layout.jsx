@@ -49,7 +49,16 @@ function RootLayoutContent({ children }) {
     let user = session.user;
     fetch("http://127.0.0.1:8000/api/create/user", {
       method: 'post',
-      body: JSON.stringify({ 'email'    : user.email }),
+      body: JSON.stringify({ 'email' : user.email }),
+      credentials: 'same-origin',
+  });
+  }
+
+  function change_username_demo() {
+    let user = session.user;
+    fetch("http://127.0.0.1:8000/api/user/edit/username", {
+      method: 'patch',
+      body: JSON.stringify({ 'user_name' : user.name }),
       credentials: 'same-origin',
   });
   }
@@ -63,6 +72,7 @@ function RootLayoutContent({ children }) {
             <li><ThemeSwitcher /></li>
             {session ? (
               <>
+                <li><button onClick={() => change_username_demo()}>change username</button></li>
                 <li><NotificationDropdown /></li>
                 <li><UserDropdown /></li>
               </>
