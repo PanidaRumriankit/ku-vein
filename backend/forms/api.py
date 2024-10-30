@@ -111,7 +111,6 @@ def get_user(request):
 def change_username(request, data: ChangeUsernameSchema):
     """Change username for the user."""
     try:
-        print('im here')
         user = UserData.objects.get(email=data.email)
         user.user_name = data.user_name
         user.save()
