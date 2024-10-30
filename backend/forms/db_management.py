@@ -274,8 +274,3 @@ class DatabaseBackup:
         finally:
 
             self.con.close()
-
-
-if __name__ == "__main__":
-    t = TableManagement()
-    t.drop_all_tables()

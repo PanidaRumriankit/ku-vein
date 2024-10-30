@@ -5,7 +5,7 @@ from ..db_query import SortReview
 from datetime import datetime
 from django.test import TestCase
 from .test_course_data import course_set_up
-from ..models import CourseData, UserData, CourseReview, ReviewStat
+from ..models import CourseData, UserData, CourseReview, ReviewStat, UpvoteStat
 
 
 def review_set_up():
@@ -93,9 +93,21 @@ def review_set_up():
                              academic_year=add_user['academic_year'],
                              pen_name=add_user['pen_name'],
                              date_data=datetime.now().date(),
-                             grade=add_user['grade'], up_votes=0))
+                             grade=add_user['grade']))
 
     return review, review_data
+
+def upvote_set_up(review_stat, user_data):
+    """Set Up function for Upvote data."""
+
+    upvote = []
+    for i, review_ins in enumerate(review_stat):
+        for cur_user in range(len(user_data) - i):
+            upvote.append(UpvoteStat.objects.create(
+                review_stat=review_ins,
+                user=user_data[cur_user])
+            )
+    return upvote
 
 
 class EarliestReviewTests(TestCase):
@@ -151,9 +163,8 @@ class UpvoteReviewTests(TestCase):
         """Set up reusable instances for tests."""
         self.upvote = SortReview()
         course_set_up()
-        user_set_up()
+        self.user = user_set_up()
         self.review, self.data = review_set_up()
-        self.up_vote_list = [8, 9, 5, 6, 7]
 
     def test_correct_data_format(self):
         """Data should return as a list."""
@@ -161,9 +172,7 @@ class UpvoteReviewTests(TestCase):
 
     def test_order_by_upvote(self):
         """Data should order by highest to lowest."""
-        for i, update_review in enumerate(self.review):
-            update_review.up_votes = self.up_vote_list[i]
-            update_review.save()
-        self.assertEqual(sorted(self.up_vote_list, reverse=True),
+        upvote_set_up(self.review, self.user)
+        self.assertEqual([5, 4, 3, 2, 1],
                          [item['upvote']
                           for item in self.upvote.get_data("upvote")])

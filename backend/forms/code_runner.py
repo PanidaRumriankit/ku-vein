@@ -11,10 +11,20 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
 
-from forms.models import UserData
 from forms.db_query import InterQuery
+from forms.db_management import TableManagement, DatabaseManagement, DatabaseBackup
 
 if __name__ == "__main__":
-    print(UserData.objects.all().values(
-        'email'
-    ))
+    t = TableManagement()
+    t.drop_all_tables()
+
+    # After migrate uncomment this
+    # d = DatabaseBackup()
+    # d.exist_data_loader()
+    # d.insert_data_to_remote()
+    #
+    # da = DatabaseManagement()
+    # da.add_course_data_to_sub("inter")
+
+
+

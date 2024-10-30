@@ -2,8 +2,8 @@
 
 from typing import Union
 from abc import ABC, abstractmethod
-from django.db.models import F
-from .models import Inter, ReviewStat, Special, Normal, CourseData, UserData
+from django.db.models import F, Count
+from .models import Inter, ReviewStat, Special, Normal, CourseData, UserData, UpvoteStat
 
 
 class QueryStrategy(ABC):
@@ -28,7 +28,7 @@ class SortReview(QueryFilterStrategy):
     def __init__(self):
         self.sorted_data = None
         self.order = {"earliest": "review__review_id",
-                      "latest": "-review__review_id", "upvote": "-up_votes"}
+                      "latest": "-review__review_id", "upvote": "-upvote"}
 
     def get_data(self, order_by):
         """Get the sorted data from the database."""
@@ -46,8 +46,9 @@ class SortReview(QueryFilterStrategy):
             year=F('academic_year'),
             name=F('pen_name'),
             date=F('date_data'),
-            grades=F('grade'),
-            upvote=F('up_votes')
+            grades=F('grade')
+        ).annotate(
+            upvote=Count('upvotestat')
         ).order_by(condition)
 
 
