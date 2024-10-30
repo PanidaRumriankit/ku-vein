@@ -5,8 +5,8 @@ from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
-
-from .schemas import ReviewRequestSchema, UserDataSchema
+from forms.models import UserData
+from .schemas import ReviewRequestSchema, UserDataSchema, ChangeUsernameSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -107,11 +107,23 @@ def get_user(request):
         return Response({"error": str(e)}, status=400)
 
 
+@app.patch("/user")
+def change_username(request, data: ChangeUsernameSchema):
+    """Change username for the user."""
+    try:
+        print('im here')
+        user = UserData.objects.get(email=data.email)
+        user.user_name = data.user_name
+        user.save()
+        return Response({"success": "changed username to banana."}, status=200)
+    except UserData.DoesNotExist:
+        return Response({"error": "requested user does not exists."}, status=400)
+
+
 @app.post("/user")
 def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
-    print(data.model_dump())
     return strategy.post_data(data.model_dump())
 
 
