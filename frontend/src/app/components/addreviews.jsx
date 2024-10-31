@@ -96,7 +96,7 @@ export default function AddReview() {
                 ...postData,
                 course_id: course.courses_id,
                 faculty: course.faculty,
-                // Since the course_type is not defined yet, I will use 'Inter' as the default value
+                // Since the course_type is not defined yet, I will use 'inter' as the default value
                 // course_type: course.course_type,
               })
               console.log("Course", course);  // check course
