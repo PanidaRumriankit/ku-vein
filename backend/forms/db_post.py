@@ -128,8 +128,8 @@ class UpvotePost(PostStrategy):
         exist = UpvoteStat.objects.filter(review_stat=self.review_stat, user=self.user)
         if exist.count():
             exist.delete()
-        return Response({"success": "Successfully Unlike the Review."},
-                        status=201)
+            return Response({"success": "Successfully Unlike the Review."},
+                            status=201)
 
     def get_instance(self, data: dict):
         """Get the review_stat and user instance."""
