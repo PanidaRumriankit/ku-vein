@@ -26,7 +26,6 @@ class UserDataPatch(PatchStrategy):
         try:
             user = UserData.objects.get(email=data['email'])
             user.user_name = data['user_name']
-            user.save()
 
         except UserData.DoesNotExist:
             return Response({"error": "The User with that email does not exists."},
@@ -36,6 +35,10 @@ class UserDataPatch(PatchStrategy):
             return Response({"error": "email or user_name is missing "
                              "from the data."},
                             status=400)
+
+        user.save()
+        return Response({"success": f"The requested user's username has been "
+                                    f"changed to {data['user_name']}"})
 
 
 class ReviewPatch(PatchStrategy):
