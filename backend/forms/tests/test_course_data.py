@@ -1,37 +1,9 @@
 """Module for test everything that relate to CourseData Table."""
 
-from ..models import CourseData, Inter, Special, Normal
+from ..models import Inter, Special, Normal
 from ..db_query import InterQuery, NormalQuery, SpecialQuery, CourseQuery
+from .set_up import course_set_up
 from django.test import TestCase
-
-TEST_DATA = [
-        {"course_id": "1", "faculty": "Miracle",
-         "course_type": "Priest", "course_name": "Basic Miracle 1"},
-
-        {"course_id": "2", "faculty": "Sorcery",
-         "course_type": "Sorcerer", "course_name": "Soul Arrow Mastery"},
-
-        {"course_id": "3", "faculty": "Pyromancy",
-         "course_type": "Pyromancer", "course_name": "Flame Manipulation"},
-
-        {"course_id": "4", "faculty": "Hexes",
-         "course_type": "Hexer", "course_name": "Dark Orb Fundamentals"},
-
-        {"course_id": "5", "faculty": "Faith",
-         "course_type": "Knight", "course_name": "Sacred Oath"},
-    ]
-
-
-def course_set_up():
-    """Set Up function for course data."""
-    course = []
-
-    test_data = TEST_DATA
-
-    for insert_data in test_data:
-        course.append(CourseData.objects.create(**insert_data))
-
-    return course
 
 
 class CourseQueryTests(TestCase):
@@ -40,11 +12,11 @@ class CourseQueryTests(TestCase):
     def setUp(self):
         """Set up reusable instances for tests."""
         self.course = CourseQuery()
-        self.course_data = course_set_up()
+        self.course_data, self.data = course_set_up()
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        expected_data = TEST_DATA
+        expected_data = self.data
 
         expected_values = [list(sorted(item.values()))
                            for item in expected_data]
@@ -61,7 +33,7 @@ class InterQueryTests(TestCase):
         """Set up reusable instances for tests."""
         self.inter = InterQuery()
 
-        self.course = course_set_up()
+        self.course, self.data = course_set_up()
 
         for course in self.course:
             Inter.objects.create(course=course)
@@ -72,7 +44,7 @@ class InterQueryTests(TestCase):
 
     def test_correct_data_output(self):
         """send_all_course_data() should return the course data."""
-        expected_data = TEST_DATA
+        expected_data = self.data
 
         expected_values = [list(sorted(item.values()))
                            for item in expected_data]
@@ -89,14 +61,14 @@ class SpecialQueryTests(TestCase):
         """Set up reusable instances for tests."""
         self.special = SpecialQuery()
 
-        self.course = course_set_up()
+        self.course, self.data = course_set_up()
 
         for course in self.course:
             Special.objects.create(course=course)
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        expected_data = TEST_DATA
+        expected_data = self.data
 
         expected_values = [list(sorted(item.values()))
                            for item in expected_data]
@@ -113,14 +85,14 @@ class NormalQueryTests(TestCase):
         """Set up reusable instances for tests."""
         self.normal = NormalQuery()
 
-        self.course = course_set_up()
+        self.course, self.data = course_set_up()
 
         for course in self.course:
             Normal.objects.create(course=course)
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        expected_data = TEST_DATA
+        expected_data = self.data
 
         expected_values = [list(sorted(item.values()))
                            for item in expected_data]

@@ -6,8 +6,7 @@ from datetime import datetime
 from ..models import CourseReview, ReviewStat
 from ..db_post import ReviewPost
 from django.test import TestCase
-from .test_course_data import course_set_up
-from .test_user_data import user_set_up
+from .set_up import course_set_up, user_set_up
 
 
 class ReviewPostTests(TestCase):
