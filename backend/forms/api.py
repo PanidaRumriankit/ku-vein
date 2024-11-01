@@ -5,11 +5,11 @@ from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
-from forms.models import UserData
 from .schemas import ReviewRequestSchema, UserDataSchema, ChangeUsernameSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
+from .db_patch import PatchFactory
 
 app = NinjaExtraAPI()
 
@@ -110,13 +110,8 @@ def get_user(request):
 @app.patch("/user")
 def change_username(request, data: ChangeUsernameSchema):
     """Change username for the user."""
-    try:
-        user = UserData.objects.get(email=data.email)
-        user.user_name = data.user_name
-        user.save()
-        return Response({"success": "changed username to banana."}, status=200)
-    except UserData.DoesNotExist:
-        return Response({"error": "requested user does not exists."}, status=400)
+    strategy = PatchFactory.get_patch_strategy("user")
+    return strategy.patch_data(data.model_dump())
 
 
 @app.post("/user")
