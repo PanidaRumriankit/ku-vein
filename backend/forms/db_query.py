@@ -119,7 +119,9 @@ class UserQuery(QueryFilterStrategy):
         """Get the data from the database and return to the frontend."""
         user_data = UserData.objects.filter(email=email).values(
             id=F('user_id'),
-            username=F('user_name')
+            username=F('user_name'),
+            desc=F('description'),
+            pf_color=F('profile_color'),
         )
         return list(user_data)
 
