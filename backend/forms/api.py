@@ -6,10 +6,10 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from forms.schemas import ReviewRequestSchema, UserDataCreateSchema
+from .schemas import ReviewPostSchema, UserDataSchema, UpvotePostSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
-from .db_query import DatabaseQuery, QueryFactory
+from .db_query import QueryFactory, InterQuery
 
 app = NinjaExtraAPI()
 
@@ -32,28 +32,39 @@ def verify_google_token(auth: str, email: str) -> bool:
         return False
 
 
-@app.get("/database/course_data")
-def database(request):
+@app.get("/course")
+def get_course_data(request, course_type=None):
     """Use for send the data to frontend."""
     print(request)
 
-    return Response(DatabaseQuery().send_all_course_data())
+    query_type = course_type
 
+    if not query_type:
+        query_type = "none"
 
-@app.get("/database/sorted_data")
-def get_sorted_data(request):
-    """Use for send sorted data to frontend."""
-
-    query = request.GET.get("query")
-    if not query:
-        return Response({"error": "Query parameter missing"}, status=400)
-
-    elif query not in ["earliest", "latest", "upvote"]:
-        return Response({"error": "Invalid Query parameter"}, status=400)
+    elif query_type.lower() not in ["inter", "special", "normal"]:
+        return Response({"error": "Invalid type parameter"}, status=400)
 
     try:
-        strategy = QueryFactory.get_query_strategy(query)
+        strategy = QueryFactory.get_query_strategy(query_type)
         return Response(strategy.get_data())
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@app.get("/review")
+def get_sorted_data(request, sort):
+    """Use for send sorted data to frontend."""
+    if not sort:
+        return Response({"error": "Sort parameter is missing"}, status=400)
+
+    elif sort not in ["earliest", "latest", "upvote"]:
+        return Response({"error": "Invalid Sort parameter"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy("sort")
+        return Response(strategy.get_data(sort))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -62,7 +73,6 @@ def get_sorted_data(request):
 @app.get("/database/cou")
 def test_auth(request):
     """For test API authentication only."""
-
     auth_header = request.headers.get("Authorization")
 
     if auth_header is None:
@@ -72,7 +82,7 @@ def test_auth(request):
         email = request.headers.get("email")
 
         if verify_google_token(auth_header, email):
-            return Response(DatabaseQuery().send_all_course_data())
+            return Response(InterQuery().get_data())
         else:
             return Response({"error": "Invalid token"}, status=403)
 
@@ -80,22 +90,42 @@ def test_auth(request):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
 
-@app.post("/create/user")
-def create_user(request, data: UserDataCreateSchema):
+@app.get("/user")
+def get_user(request, email):
+    """Use for send the username and user id to the frontend."""
+    if not email:
+        return Response({"error": "Email parameter is missing"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy("user")
+        return Response(strategy.get_data(email))
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@app.post("/user")
+def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
     strategy.post_data(data.model_dump())
 
 
-@app.post("/create/review", response={200: ReviewRequestSchema})
-def create_review(request, data: ReviewRequestSchema):
+@app.post("/review", response={200: ReviewPostSchema})
+def create_review(request, data: ReviewPostSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
     return strategy.post_data(data.model_dump())
 
 
-def backup(request):
-    """Use for download data from MySQL server to local"""
-    print(request)
+@app.post("/upvote", response={200: UpvotePostSchema})
+def add_upvote(request, data: UpvotePostSchema):
+    """Use for add new upvote."""
+    strategy = PostFactory.get_post_strategy("upvote")
+    return strategy.post_data(data.model_dump())
 
+
+def backup(request):
+    """Use for download data from MySQL server to local."""
+    print(request)
     DatabaseBackup().local_backup()
