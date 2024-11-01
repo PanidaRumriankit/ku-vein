@@ -76,10 +76,18 @@ class UserDataSchema(ModelSchema):
         fields = ['email']
 
 
-class ChangeUsernameSchema(ModelSchema):
+class UserDataEditSchema(ModelSchema):
+    """
+    Schema for editing existing user data.
+
+    Take all the fields from the accounts edit forms.
+    """
+
     class Meta:
+        """Metaclass for linking this schema to the target model."""
+
         model = UserData
-        fields = ['email', 'user_name']
+        fields = '__all__'
 
 
 class CourseReviewSchema(ModelSchema):
