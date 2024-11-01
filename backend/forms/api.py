@@ -1,5 +1,4 @@
 """This module use for send the data from Django to Next.js."""
-import logging
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
@@ -119,7 +118,7 @@ def create_user(request, data: UserDataSchema):
     return strategy.post_data(data.model_dump())
 
 
-@app.post("/review", response={200: PostSchema})
+@app.post("/review", response={200: ReviewPostSchema})
 def create_review(request, data: ReviewPostSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
