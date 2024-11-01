@@ -102,6 +102,7 @@ class UpvoteStat(models.Model):
         db_table = 'UpvoteStat'
         unique_together = ('review_stat', 'user')
 
+
 class Summary(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')

@@ -105,7 +105,7 @@ class ReviewStatSchema(ModelSchema):
         fields = '__all__'
 
 
-class ReviewRequestSchema(Schema):
+class ReviewPostSchema(Schema):
     """
     Schema for handling incoming review requests from users.
 
@@ -132,6 +132,14 @@ class ReviewRequestSchema(Schema):
     academic_year: int
     pen_name: str
     grade: str
+
+
+class UpvotePostSchema(Schema):
+    """Schema for increase the upvote number."""
+    email: str
+    course_id: str
+    faculty: str
+    course_type: str
 
 
 class SummarySchema(ModelSchema):

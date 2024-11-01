@@ -6,7 +6,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from .schemas import ReviewRequestSchema, UserDataSchema
+from .schemas import ReviewPostSchema, UserDataSchema, UpvotePostSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -33,20 +33,20 @@ def verify_google_token(auth: str, email: str) -> bool:
 
 
 @app.get("/course")
-def get_course_data(request):
+def get_course_data(request, course_type=None):
     """Use for send the data to frontend."""
     print(request)
 
-    course_type = request.GET.get("type")
+    query_type = course_type
 
-    if not course_type:
-        course_type = "none"
+    if not query_type:
+        query_type = "none"
 
-    elif course_type.lower() not in ["inter", "special", "normal"]:
+    elif query_type.lower() not in ["inter", "special", "normal"]:
         return Response({"error": "Invalid type parameter"}, status=400)
 
     try:
-        strategy = QueryFactory.get_query_strategy(course_type)
+        strategy = QueryFactory.get_query_strategy(query_type)
         return Response(strategy.get_data())
 
     except ValueError as e:
@@ -54,9 +54,8 @@ def get_course_data(request):
 
 
 @app.get("/review")
-def get_sorted_data(request):
+def get_sorted_data(request, sort):
     """Use for send sorted data to frontend."""
-    sort = request.GET.get("sort")
     if not sort:
         return Response({"error": "Sort parameter is missing"}, status=400)
 
@@ -92,10 +91,8 @@ def test_auth(request):
 
 
 @app.get("/user")
-def get_user(request):
+def get_user(request, email):
     """Use for send the username and user id to the frontend."""
-    email = request.GET.get("email")
-
     if not email:
         return Response({"error": "Email parameter is missing"}, status=400)
 
@@ -114,10 +111,17 @@ def create_user(request, data: UserDataSchema):
     strategy.post_data(data.model_dump())
 
 
-@app.post("/review", response={200: ReviewRequestSchema})
-def create_review(request, data: ReviewRequestSchema):
+@app.post("/review", response={200: ReviewPostSchema})
+def create_review(request, data: ReviewPostSchema):
     """Use for create new review."""
     strategy = PostFactory.get_post_strategy("review")
+    return strategy.post_data(data.model_dump())
+
+
+@app.post("/upvote", response={200: UpvotePostSchema})
+def add_upvote(request, data: UpvotePostSchema):
+    """Use for add new upvote."""
+    strategy = PostFactory.get_post_strategy("upvote")
     return strategy.post_data(data.model_dump())
 
 
