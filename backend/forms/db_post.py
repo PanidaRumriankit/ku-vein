@@ -165,12 +165,11 @@ class FollowPost(PostStrategy):
     def post_data(self, data: dict):
         """Add new follower to the database."""
         try:
-            cur_user = UserData.objects.filter(user_id=data['current_user_id'])
-            target_user = UserData.objects.filter(user_id=data['target_user_id'])
+            cur_user = UserData.objects.filter(user_id=data['current_user_id']).first()
+            target_user = UserData.objects.filter(user_id=data['target_user_id']).first()
         except KeyError:
             return Response({"error": "current_user_id or target_user_id are missing "
                                       "from the response body."}, status=400)
-        FollowData.objects.create(this_user=cur_user, follow_by=target_user)
 
         if not cur_user:
             return Response({"error": "This user isn't "
@@ -178,6 +177,9 @@ class FollowPost(PostStrategy):
         elif not target_user:
             return Response({"error": "Target user isn't "
                                       "in the database."}, status=401)
+
+        FollowData.objects.create(this_user=cur_user, follow_by=target_user)
+
 
         return Response({"success": "Successfully add follower data."},
                         status=201)
