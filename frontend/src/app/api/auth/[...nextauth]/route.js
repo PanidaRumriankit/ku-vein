@@ -8,7 +8,9 @@ export const authOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             authorization: {
                 params: {
-                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid'
+                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid',
+                    prompt: 'consent',
+                    access_type: 'offline',
                 }
             }
         })
@@ -20,7 +22,9 @@ export const authOptions = {
                 token.accessToken = account.access_token;
                 token.email = profile?.email;
                 token.idToken = account.id_token;
-                token.accessTokenExpires = Date.now() + account.expires_at * 1000;
+                token.refreshToken = account.refresh_token || token.refreshToken;
+                token.accessTokenExpires = Date.now() + 3600 * 1000;
+                console.log("Token expires at: " + new Date(token.accessTokenExpires).toLocaleString())
             }
 
             if (Date.now() < token.accessTokenExpires) {
@@ -55,10 +59,12 @@ async function refreshAccessToken(token) {
 
         if (!response.ok) throw refreshedTokens;
 
+        console.log("Refresh Token expires at: " + new Date(Date.now() + refreshedTokens.expires_in * 1000).toLocaleString())
+
         return {
             ...token,
             accessToken: refreshedTokens.access_token,
-            accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+            accessTokenExpires: Date.now() + 3600 * 1000,
             idToken: refreshedTokens.id_token ?? token.idToken
         };
     } catch (error) {
