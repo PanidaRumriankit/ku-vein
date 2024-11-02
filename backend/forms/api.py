@@ -5,11 +5,11 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from .schemas import ReviewPostSchema, UserDataSchema, UpvotePostSchema, ChangeUsernameSchema
+from .schemas import ReviewPostSchema, UserDataSchema, UpvotePostSchema, UserDataEditSchema
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
-from .db_patch import PatchFactory
+from .db_put import PutFactory
 
 app = NinjaExtraAPI()
 
@@ -105,9 +105,9 @@ def get_user(request, email):
 
 
 @app.patch("/user")
-def change_username(request, data: ChangeUsernameSchema):
+def change_username(request, data: UserDataSchema):
     """Change username for the user."""
-    strategy = PatchFactory.get_patch_strategy("user")
+    strategy = PutFactory.get_patch_strategy("user")
     return strategy.patch_data(data.model_dump())
 
 
