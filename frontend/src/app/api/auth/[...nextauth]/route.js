@@ -59,7 +59,7 @@ async function refreshAccessToken(token) {
 
         if (!response.ok) throw refreshedTokens;
 
-        console.log("Refresh Token expires at: " + new Date(Date.now() + refreshedTokens.expires_in * 1000).toLocaleString())
+        console.log("Refresh Token expires at: " + new Date(Date.now() + 3600 * 1000).toLocaleString())
 
         return {
             ...token,
