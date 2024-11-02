@@ -52,7 +52,6 @@ class UserData(models.Model):
     email = models.TextField(default=None)
     description = models.TextField(default="")
     profile_color = models.CharField(max_length=7, default="#ffffff")
-    instructor = models.CharField(max_length=40, default=None)
 
     class Meta:
         db_table = 'UserData'
@@ -74,6 +73,7 @@ class CourseReview(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='reviews')
     reviews = models.TextField(default=None)
+    instructor = models.CharField(max_length=40, default=None)
 
     class Meta:
         app_label = 'forms'
