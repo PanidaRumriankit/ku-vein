@@ -1,5 +1,6 @@
 from datetime import datetime
-from ..models import CourseData, UserData, CourseReview, ReviewStat, UpvoteStat
+from ..models import (CourseData, UserData,
+                      CourseReview, ReviewStat, UpvoteStat, FollowData)
 
 
 def course_set_up():
@@ -173,3 +174,17 @@ def upvote_set_up(review_stat, user_data):
                 user=user_data[cur_user])
             )
     return upvote, upvote_data
+
+def follower_setup(user):
+    """Setup function for follower feature."""
+
+    follow = []
+
+    for i, cur_user in enumerate(user):
+        for follow_by in range(len(user) - i - 1):
+            follow.append(FollowData.objects.create(
+                this_user=cur_user,
+                follow_by=user[follow_by + 1]
+            ))
+
+    return follow
