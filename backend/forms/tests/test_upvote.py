@@ -3,9 +3,8 @@ import json
 from ..db_query import SortReview
 from ..db_post import UpvotePost
 from django.test import TestCase
-from .set_up import user_set_up
-from .test_get_review import review_set_up
-from .test_course_data import course_set_up
+from .set_up import user_set_up, review_set_up, course_set_up
+
 
 TEST_DATA = [
 
