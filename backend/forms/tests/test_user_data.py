@@ -91,6 +91,14 @@ class UserDataPutTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content)["error"],
                          "Some attribute is missing from the data.")
+        
+    def test_response_user_doesnt_exist(self):
+        """Data provided user_id that doesn't match any user."""
+        self.user_data['user_id'] = 9999
+        response = self.user_put.put_data(self.user_data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content)["error"],
+                         "The User with that ID does not exists.")
 
     def test_response_successful_put(self):
         """
