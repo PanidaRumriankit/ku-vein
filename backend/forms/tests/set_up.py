@@ -129,7 +129,7 @@ def user_set_up():
         {"user_name": "Siegmeyer of Catarina",
          "user_type": "Knight", "email": "siegmeyer@gmail.com"},
 
-        {"user_name": "Lucatiel of Mirrah ",
+        {"user_name": "Lucatiel of Mirrah",
          "user_type": "Knight", "email": "aslatiel@gmail.com"},
 
         {"user_name": "Big Hat Logan",
