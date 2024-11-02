@@ -124,8 +124,11 @@ class UserQuery(QueryFilterStrategy):
             id=F('user_id'),
             username=F('user_name'),
             desc=F('description'),
-            pf_color=F('profile_color')
+            pf_color=F('profile_color'),
         ).first()
+
+        user['following'] = []
+        user['follower'] = []
 
         if user:
             following = list(FollowData.objects.filter(follow_by=user['id']).values(
@@ -140,6 +143,7 @@ class UserQuery(QueryFilterStrategy):
 
             user['following'] = following
             user['follower'] = follower
+
 
         return user
 

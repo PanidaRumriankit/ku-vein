@@ -180,11 +180,10 @@ def follower_setup(user):
 
     follow = []
 
-    for i, cur_user in enumerate(user):
-        for follow_by in range(len(user) - i - 1):
-            follow.append(FollowData.objects.create(
-                this_user=cur_user,
-                follow_by=user[follow_by + 1]
-            ))
+    for all_follow in user[1:]:
+        follow.append(FollowData.objects.create(
+            this_user=user[0],
+            follow_by=all_follow
+        ))
 
     return follow
