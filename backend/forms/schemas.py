@@ -76,7 +76,7 @@ class UserDataSchema(ModelSchema):
         fields = ['email']
 
 
-class FollowSchema(ModelSchema):
+class FollowSchema(Schema):
     """Schema for follower feature."""
     current_user_id: str
     target_user_id: str
