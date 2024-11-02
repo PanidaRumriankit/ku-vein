@@ -104,8 +104,8 @@ def get_user(request, email):
         return Response({"error": str(e)}, status=400)
 
 
-@app.patch("/user")
-def change_username(request, data: UserDataSchema):
+@app.put("/user")
+def change_username(request, data: UserDataEditSchema):
     """Change username for the user."""
     strategy = PutFactory.get_patch_strategy("user")
     return strategy.patch_data(data.model_dump())
