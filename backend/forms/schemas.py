@@ -89,6 +89,12 @@ class UserDataEditSchema(ModelSchema):
         model = UserData
         fields = '__all__'
 
+        
+class FollowSchema(Schema):
+    """Schema for follower feature."""
+    current_user_id: str
+    target_user_id: str
+
 
 class CourseReviewSchema(ModelSchema):
     """
