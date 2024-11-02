@@ -22,7 +22,9 @@ export default function ReviewCard({item}) {
           {item.courses_id} | {item.courses_name}
         </legend>
         <div className="text-black dark:text-white">
-          <p>{item.review_text}</p>
+          <Rating name="read-only" value={item.ratings} readOnly />
+          <br/>
+          <p>{item.reviews}</p>
           <br/>
           <div
             className="flex items-center justify-between text-gray-300 text-right">
