@@ -11,7 +11,7 @@ const demoReview = [
     "courses_name": "Bacon 101",
     "faculties": "engineering",
     "user_name": "John Doe",
-    "reviews": "banana",
+    "review_text": "banana",
     "date": "2023-09-10",
     "grades": "A",
     "upvote": 15
@@ -21,7 +21,7 @@ const demoReview = [
     "courses_name": "Demo 101",
     "faculties": "science",
     "user_name": "Jane Smith",
-    "reviews": "potato",
+    "review_text": "potato",
     "date": "2023-09-12",
     "grades": "B",
     "upvote": 20
@@ -31,7 +31,7 @@ const demoReview = [
     "courses_name": "Intro to Anything",
     "faculties": "arts",
     "user_name": "Alice Johnson",
-    "reviews": "Noppo mham mham",
+    "review_text": "Noppo mham mham",
     "date": "2023-09-15",
     "grades": "C",
     "upvote": 5
@@ -41,7 +41,7 @@ const demoReview = [
     "courses_name": "Basics 101",
     "faculties": "business",
     "user_name": "Peter Pan",
-    "reviews": "pizza stole Pete",
+    "review_text": "pizza stole Pete",
     "date": "2023-09-18",
     "grades": "B+",
     "upvote": 8
@@ -51,7 +51,7 @@ const demoReview = [
     "courses_name": "Fun Studies",
     "faculties": "law",
     "user_name": "Ichiro Suzuki",
-    "reviews": "Ichi",
+    "review_text": "Ichi",
     "date": "2023-09-20",
     "grades": "A-",
     "upvote": 12
@@ -66,7 +66,7 @@ const oldDemoReview = {
     "courses_id": "1346012",
     "courses_name": "Bacon Ipsum 101",
   },
-  "reviews": bacon,
+  "review_text": bacon,
   "reviewer": "Ichi"
 }
 

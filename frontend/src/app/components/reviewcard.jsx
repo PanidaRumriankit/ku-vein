@@ -22,14 +22,15 @@ export default function ReviewCard({item}) {
           {item.courses_id} | {item.courses_name}
         </legend>
         <div className="text-black dark:text-white">
-          <Rating name="read-only" value={item.ratings} readOnly />
+          <Rating name="read-only" value={item.ratings} readOnly/>
           <br/>
-          <p>{item.reviews}</p>
+          <p>{item.review_text}</p>
           <br/>
           <div
             className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-left">Grade: {item.grades}</p>
-            <p className="text-right">{item.date} author: {item.name || item.username}</p>
+            <p
+              className="text-right">{item.date} author: {item.name || item.username}</p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
