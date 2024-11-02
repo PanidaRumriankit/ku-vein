@@ -39,7 +39,7 @@ class SortReview(QueryFilterStrategy):
 
     def sort_by(self, condition, course_id=None):
         """Return the sorted data."""
-        self.sorted_data = ReviewStat.objects.values(
+        query = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
             faculties=F('review__course__faculty'),
@@ -52,7 +52,12 @@ class SortReview(QueryFilterStrategy):
             grades=F('grade')
         ).annotate(
             upvote=Count('upvotestat')
-        ).order_by(condition).filter(courses_id=course_id)
+        ).order_by(condition)
+
+        if course_id:
+            query = query.filter(courses_id=course_id)
+
+        self.sorted_data = query
 
 
 class InterQuery(QueryStrategy):
