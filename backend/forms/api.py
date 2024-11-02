@@ -54,7 +54,7 @@ def get_course_data(request, course_type=None):
 
 
 @app.get("/review")
-def get_sorted_data(request, sort):
+def get_sorted_data(request, sort, course_id=None):
     """Use for send sorted data to frontend."""
     if not sort:
         return Response({"error": "Sort parameter is missing"}, status=400)
@@ -64,7 +64,7 @@ def get_sorted_data(request, sort):
 
     try:
         strategy = QueryFactory.get_query_strategy("sort")
-        return Response(strategy.get_data(sort))
+        return Response(strategy.get_data(order_by=sort, filter=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)

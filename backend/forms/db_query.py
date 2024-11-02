@@ -11,7 +11,7 @@ class QueryStrategy(ABC):
     """Abstract base class for make the query."""
 
     @abstractmethod
-    def get_data(self):
+    def get_data(self, order_by, filter=None):
         """Get the data from the database."""
 
 
@@ -32,12 +32,12 @@ class SortReview(QueryFilterStrategy):
         self.order = {"earliest": "review__review_id",
                       "latest": "-review__review_id", "upvote": "-upvote"}
 
-    def get_data(self, order_by):
+    def get_data(self, order_by, filter=None):
         """Get the sorted data from the database."""
-        self.sort_by(self.order[order_by])
+        self.sort_by(self.order[order_by], filter)
         return list(self.sorted_data)
 
-    def sort_by(self, condition):
+    def sort_by(self, condition, course_id=None):
         """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
@@ -52,7 +52,7 @@ class SortReview(QueryFilterStrategy):
             grades=F('grade')
         ).annotate(
             upvote=Count('upvotestat')
-        ).order_by(condition)
+        ).order_by(condition).filter(courses_id=course_id)
 
 
 class InterQuery(QueryStrategy):
