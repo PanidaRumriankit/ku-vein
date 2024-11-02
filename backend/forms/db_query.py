@@ -144,6 +144,8 @@ class UserQuery(QueryFilterStrategy):
             user['following'] = following
             user['follower'] = follower
 
+        user['follower_count'] = len(user['follower'])
+        user['following_count'] = len(user['following'])
 
         return user
 
