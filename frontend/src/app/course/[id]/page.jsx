@@ -1,9 +1,8 @@
 "use client"
 
-import Image from "next/image";
 import Sorting from "../../components/sorting";
-import Search from "../../components/search";
 import ReviewCard from "../../components/reviewcard";
+import CourseNavigationBar from "../../components/coursenavigation";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
 
 import {useEffect, useState} from "react";
@@ -21,33 +20,19 @@ export default function CoursePage({params}) {
     };
 
     fetchReviews();
-  }, [selectedKeys]);
-
+  }, [params.id, selectedKeys]);
   return (
     <div className="text-black flex flex-col items-center
     min-h-screen bg-white dark:bg-black dark:text-white">
-      <main className="flex flex-col items-center pt-20">
-        <Image
-          src="/artery.png"
-          alt="Artery"
-          width={98}
-          height={120}
-          priority
-        />
-
-        <h1 className="mt-4 text-3xl font-bold text-black dark:text-white">KU Vein</h1>
-
-        <p className="mt-4 text-xl text-black dark:text-white">รีวิว แบ่งปัน Q&A</p>
-
-      </main>
-
-      <div className="mt-8 w-full max-w-6xl z-40">
-        <Search page='page'/>
-      </div>
 
       <div className="w-full max-w-5xl">
-        <Sorting selectedKeys={selectedKeys}
-                 setSelectedKeys={setSelectedKeys}/>
+        <div className="justify-start">
+          <CourseNavigationBar courseId={params.id}/>
+        </div>
+        <div className="justify-end">
+          <Sorting selectedKeys={selectedKeys}
+                   setSelectedKeys={setSelectedKeys}/>
+        </div>
 
         {reviews.length > 0 ? (
           reviews.map((item, index) => (
