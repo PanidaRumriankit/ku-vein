@@ -73,7 +73,7 @@ class CourseReview(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='reviews')
     reviews = models.TextField(default=None)
-    instructor = models.CharField(max_length=40, default=None)
+    instructor = models.CharField(max_length=40, default=None, null=True)
 
     class Meta:
         app_label = 'forms'
