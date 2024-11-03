@@ -1,5 +1,4 @@
 """This module use for send the data from Django to Next.js."""
-
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
@@ -7,10 +6,12 @@ from google.auth.transport import requests
 from decouple import config
 
 from .schemas import (ReviewPostSchema, UserDataSchema,
-                      UpvotePostSchema, FollowSchema)
+                      UpvotePostSchema, FollowSchema,
+                      UserDataEditSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
+from .db_put import PutFactory
 
 app = NinjaExtraAPI()
 
@@ -105,11 +106,18 @@ def get_user(request, email):
         return Response({"error": str(e)}, status=400)
 
 
+@app.put("/user")
+def change_username(request, data: UserDataEditSchema):
+    """Change username for the user."""
+    strategy = PutFactory.get_put_strategy("user")
+    return strategy.put_data(data.model_dump())
+
+
 @app.post("/user")
 def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
-    strategy.post_data(data.model_dump())
+    return strategy.post_data(data.model_dump())
 
 
 @app.post("/follow", response={200: FollowSchema})
@@ -117,6 +125,7 @@ def add_follower(request, data: FollowSchema):
     """Use for add new follower to the database."""
     strategy = PostFactory.get_post_strategy("follow")
     return strategy.post_data(data.model_dump())
+
 
 @app.post("/review", response={200: ReviewPostSchema})
 def create_review(request, data: ReviewPostSchema):
