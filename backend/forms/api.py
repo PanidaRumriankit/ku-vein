@@ -109,8 +109,8 @@ def get_user(request, email):
 @app.put("/user")
 def change_username(request, data: UserDataEditSchema):
     """Change username for the user."""
-    strategy = PutFactory.get_patch_strategy("user")
-    return strategy.patch_data(data.model_dump())
+    strategy = PutFactory.get_put_strategy("user")
+    return strategy.put_data(data.model_dump())
 
 
 @app.post("/user")
