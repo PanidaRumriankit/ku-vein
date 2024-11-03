@@ -11,7 +11,7 @@ class QueryStrategy(ABC):
     """Abstract base class for make the query."""
 
     @abstractmethod
-    def get_data(self, order_by, filter=None):
+    def get_data(self):
         """Get the data from the database."""
 
 
