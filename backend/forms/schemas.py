@@ -2,7 +2,7 @@
 
 from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
-from .models import ReviewStat, Summary, QA, BookMark
+from .models import ReviewStat, Note, QA, BookMark
 from .models import Inter, Normal, Special
 
 
@@ -162,7 +162,7 @@ class UpvotePostSchema(Schema):
     course_type: str
 
 
-class SummarySchema(ModelSchema):
+class NoteSchema(ModelSchema):
     """
     Schema for Summary model, representing summaries written by users.
 
@@ -172,7 +172,7 @@ class SummarySchema(ModelSchema):
     class Meta:
         """Metaclass for linking this schema to the target model."""
 
-        model = Summary
+        model = Note
         fields = '__all__'
 
 
