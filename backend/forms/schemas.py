@@ -76,6 +76,12 @@ class UserDataSchema(ModelSchema):
         fields = ['email']
 
 
+class FollowSchema(Schema):
+    """Schema for follower feature."""
+    current_user_id: str
+    target_user_id: str
+
+
 class CourseReviewSchema(ModelSchema):
     """
     Schema for CourseReview model, representing reviews left by users.
@@ -105,7 +111,7 @@ class ReviewStatSchema(ModelSchema):
         fields = '__all__'
 
 
-class ReviewRequestSchema(Schema):
+class ReviewPostSchema(Schema):
     """
     Schema for handling incoming review requests from users.
 
@@ -132,6 +138,14 @@ class ReviewRequestSchema(Schema):
     academic_year: int
     pen_name: str
     grade: str
+
+
+class UpvotePostSchema(Schema):
+    """Schema for increase the upvote number."""
+    email: str
+    course_id: str
+    faculty: str
+    course_type: str
 
 
 class NoteSchema(ModelSchema):
