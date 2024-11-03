@@ -1,4 +1,4 @@
-"""Module for test Follower Following feature."""
+"""Module for test GET Follower feature."""
 
 from ..models import FollowData
 from ..db_query import UserQuery
@@ -6,8 +6,8 @@ from .set_up import user_set_up, follower_setup
 from django.test import TestCase
 
 
-class FollowerFeatureTest(TestCase):
-    """Class for test follower feature."""
+class FollowerGetTest(TestCase):
+    """Class for test GET follower."""
 
     def setUp(self):
         """Set up reusable instances for tests."""
@@ -62,3 +62,31 @@ class FollowerFeatureTest(TestCase):
                 for following in new_following['following']),
             "Expected 'Siegmeyer of Catarina' to be following"
         )
+
+    def test_follower_count(self):
+        """
+        First user follower count should be 4.
+
+        Because of follower_setup.
+        """
+        all_followed = self.user.get_data(self.user_ins[0].email)
+        self.assertEqual(all_followed['follower_count'], 4)
+
+    def test_following_count(self):
+        """
+        Second user following count should be 1.
+
+        Because of follower_setup.
+        """
+        all_followed = self.user.get_data(self.user_ins[1].email)
+        self.assertEqual(all_followed['following_count'], 1)
+
+    def test_default_following_count(self):
+        """Currently, First user shouldn't follow anyone."""
+        all_followed = self.user.get_data(self.user_ins[0].email)
+        self.assertEqual(all_followed['following_count'], 0)
+
+    def test_default_follower_count(self):
+        """Currently, Second user shouldn't get followed by anyone."""
+        all_followed = self.user.get_data(self.user_ins[1].email)
+        self.assertEqual(all_followed['follower_count'], 0)

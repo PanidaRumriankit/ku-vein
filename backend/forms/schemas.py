@@ -2,7 +2,7 @@
 
 from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
-from .models import ReviewStat, Summary, QA, BookMark
+from .models import ReviewStat, Note, QA, BookMark
 from .models import Inter, Normal, Special
 
 
@@ -76,6 +76,12 @@ class UserDataSchema(ModelSchema):
         fields = ['email']
 
 
+class FollowSchema(Schema):
+    """Schema for follower feature."""
+    current_user_id: str
+    target_user_id: str
+
+
 class CourseReviewSchema(ModelSchema):
     """
     Schema for CourseReview model, representing reviews left by users.
@@ -142,7 +148,7 @@ class UpvotePostSchema(Schema):
     course_type: str
 
 
-class SummarySchema(ModelSchema):
+class NoteSchema(ModelSchema):
     """
     Schema for Summary model, representing summaries written by users.
 
@@ -152,7 +158,7 @@ class SummarySchema(ModelSchema):
     class Meta:
         """Metaclass for linking this schema to the target model."""
 
-        model = Summary
+        model = Note
         fields = '__all__'
 
 

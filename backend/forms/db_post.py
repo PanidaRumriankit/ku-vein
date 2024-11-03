@@ -5,7 +5,8 @@ import logging
 from datetime import datetime
 from abc import ABC, abstractmethod
 from ninja.responses import Response
-from .models import CourseReview, UserData, CourseData, ReviewStat, UpvoteStat
+from .models import (CourseReview, UserData,
+                     CourseData, ReviewStat, UpvoteStat, FollowData)
 
 logger = logging.getLogger("user_logger")
 
@@ -158,6 +159,32 @@ class UpvotePost(PostStrategy):
                                       "in the database."}, status=401)
 
 
+class FollowPost(PostStrategy):
+    """Class for created new FollowData."""
+
+    def post_data(self, data: dict):
+        """Add new follower to the database."""
+        try:
+            cur_user = UserData.objects.filter(user_id=data['current_user_id']).first()
+            target_user = UserData.objects.filter(user_id=data['target_user_id']).first()
+        except KeyError:
+            return Response({"error": "current_user_id or target_user_id are missing "
+                                      "from the response body."}, status=400)
+
+        if not cur_user:
+            return Response({"error": "This user isn't "
+                                      "in the database."}, status=401)
+        elif not target_user:
+            return Response({"error": "Target user isn't "
+                                      "in the database."}, status=401)
+
+        FollowData.objects.create(this_user=cur_user, follow_by=target_user)
+
+
+        return Response({"success": "Successfully add follower data."},
+                        status=201)
+
+
 class PostFactory:
     """Factory class to handle query strategy selection."""
 
@@ -165,6 +192,7 @@ class PostFactory:
         "review": ReviewPost,
         "user": UserDataPost,
         "upvote": UpvotePost,
+        "follow": FollowPost,
     }
 
     @classmethod

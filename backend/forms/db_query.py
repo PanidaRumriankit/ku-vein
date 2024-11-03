@@ -49,7 +49,8 @@ class SortReview(QueryFilterStrategy):
             year=F('academic_year'),
             name=F('pen_name'),
             date=F('date_data'),
-            grades=F('grade')
+            grades=F('grade'),
+            professor=F('review__instructor')
         ).annotate(
             upvote=Count('upvotestat')
         ).order_by(condition)
@@ -149,6 +150,8 @@ class UserQuery(QueryFilterStrategy):
             user['following'] = following
             user['follower'] = follower
 
+        user['follower_count'] = len(user['follower'])
+        user['following_count'] = len(user['following'])
 
         return user
 
