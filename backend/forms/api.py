@@ -126,6 +126,7 @@ def add_follower(request, data: FollowSchema):
     strategy = PostFactory.get_post_strategy("follow")
     return strategy.post_data(data.model_dump())
 
+
 @app.post("/review", response={200: ReviewPostSchema})
 def create_review(request, data: ReviewPostSchema):
     """Use for create new review."""
