@@ -112,7 +112,7 @@ class Note(models.Model):
 
     class Meta:
         app_label = 'forms'
-        db_table = 'note'
+        db_table = 'Note'
         unique_together = ('course', 'user')
 
 
@@ -129,7 +129,7 @@ class QA(models.Model):
 class Comment(models.Model):
     question = models.ForeignKey(QA, on_delete=models.CASCADE)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    comment = models.TextField(default=None)
+    comment = models.CharField(max_length=255, default=None)
 
     class Meta:
         app_label = 'forms'
