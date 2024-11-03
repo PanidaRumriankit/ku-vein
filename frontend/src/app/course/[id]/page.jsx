@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Sorting from "../../components/sorting";
 import Search from "../../components/search";
-import ReviewCard from "../../components/coursereviewcard";
+import ReviewCard from "../../components/reviewcard";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
 
 import {useEffect, useState} from "react";

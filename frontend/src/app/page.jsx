@@ -49,7 +49,7 @@ export default function Home() {
                  setSelectedKeys={setSelectedKeys}/>
         {reviews.length > 0 ? (
           reviews.map((item, index) => (
-            <ReviewCard item={item} key={index}/>
+            <ReviewCard item={item} key={index} page={"page"}/>
           ))
         ) : (
           <p className="text-green-400 text-center">No review currently</p>
