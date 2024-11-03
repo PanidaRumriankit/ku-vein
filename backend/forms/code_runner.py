@@ -17,6 +17,7 @@ from forms.db_management import TableManagement, DatabaseManagement, DatabaseBac
 if __name__ == "__main__":
     t = TableManagement()
     t.drop_all_tables()
+    print(t.get_table_name())
 
     # After migrate uncomment this
     # d = DatabaseBackup()
