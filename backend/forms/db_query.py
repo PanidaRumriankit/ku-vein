@@ -3,7 +3,8 @@
 from typing import Union
 from abc import ABC, abstractmethod
 from django.db.models import F, Count
-from .models import Inter, ReviewStat, Special, Normal, CourseData, UserData, UpvoteStat
+from .models import (Inter, ReviewStat, Special,
+                     Normal, CourseData, UserData, FollowData)
 
 
 class QueryStrategy(ABC):
@@ -26,6 +27,7 @@ class SortReview(QueryFilterStrategy):
     """Class for sent CourseReview sorted by condition."""
 
     def __init__(self):
+        """Initialize method for SortReview."""
         self.sorted_data = None
         self.order = {"earliest": "review__review_id",
                       "latest": "-review__review_id", "upvote": "-upvote"}
@@ -36,6 +38,7 @@ class SortReview(QueryFilterStrategy):
         return list(self.sorted_data)
 
     def sort_by(self, condition):
+        """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
@@ -118,11 +121,34 @@ class UserQuery(QueryFilterStrategy):
 
     def get_data(self, email: str):
         """Get the data from the database and return to the frontend."""
-        user_data = UserData.objects.filter(email=email).values(
+        user = UserData.objects.filter(email=email).values(
             id=F('user_id'),
-            username=F('user_name')
-        )
-        return list(user_data)
+            username=F('user_name'),
+            desc=F('description'),
+            pf_color=F('profile_color'),
+        ).first()
+
+        user['following'] = []
+        user['follower'] = []
+
+        if user:
+            following = list(FollowData.objects.filter(follow_by=user['id']).values(
+                username=F('this_user__user_name'),
+                desc=F('this_user__description')
+            ))
+
+            follower = list(FollowData.objects.filter(this_user=user['id']).values(
+                username=F('follow_by__user_name'),
+                desc=F('follow_by__description')
+            ))
+
+            user['following'] = following
+            user['follower'] = follower
+
+        user['follower_count'] = len(user['follower'])
+        user['following_count'] = len(user['following'])
+
+        return user
 
 
 class QueryFactory:
