@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Rating from '@mui/material/Rating';
 
-import Search from "../components/search";
+import Search from "../../components/search";
 
 export default function CourseLayout({children, params}) {
+  const courseId = params.id;
   const totalReview = 1;
   const courseName = "Just a random course name";
-
+  const averageGrade = 3.5;
 
   return (
     <div>
@@ -40,7 +41,7 @@ export default function CourseLayout({children, params}) {
           <div className="flex flex-wrap">
             {/*Change the color and course name later*/}
             <div
-              className="p-2 bg-red-400 border-red-400 border-solid border rounded text-black">{params.id}</div>
+              className="p-2 bg-red-400 border-red-400 border-solid border rounded text-black">{courseId}</div>
             <div
               className="p-2 text-black dark:text-white">{courseName}</div>
           </div>
@@ -55,6 +56,12 @@ export default function CourseLayout({children, params}) {
               <div>รีวิวทั้งหมด</div>
               {/*Change the total review later*/}
               <div>{totalReview}</div>
+            </div>
+
+            <div className="flex justify-between">
+              <div>เกรดโดยเฉลี่ย</div>
+              {/*Change the total review later*/}
+              <div>{averageGrade}</div>
             </div>
           </div>
         </div>
