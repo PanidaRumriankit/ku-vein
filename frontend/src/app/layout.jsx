@@ -2,6 +2,7 @@
 
 import {inter} from "./fonts/fonts";
 import "./globals.css";
+import axios from 'axios';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import {ThemeSwitcher} from "./components/theme";
 import {ThemeProvider} from 'next-themes';
@@ -48,10 +49,12 @@ function RootLayoutContent({children}) {
   if (status === "authenticated") {
     let user = session.user;
     // create user api
-    fetch("http://127.0.0.1:8000/api/user", {
-      method: 'post',
-      body: JSON.stringify({'email': user.email}),
-      credentials: 'same-origin',
+    axios({
+    method: 'post',
+    url: 'http://127.0.0.1:8000/api/user',
+    data: {
+      email: user.email
+    }
     });
   }
 
