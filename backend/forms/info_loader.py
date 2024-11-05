@@ -10,9 +10,12 @@ from bs4 import BeautifulSoup
 
 
 DAYS = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
-NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or']
+NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or', 'together', 'Online', 'LAB', 'ONLINE']
+BUILDING = ['VT', 'HUM', 'SC', 'ED', 'AI', 'E', 'BA', 'EC', 'ED', 'Soc']
 FORBIDDEN_WORD = NOT_COURSE_NAME + DAYS
 ROMAN_NUMBER = ['I', 'II', 'III', 'IV', 'V', 'VI']
+IS_COURSE_NAME = ['&', 'a']
+GOOD_WORD = ROMAN_NUMBER + IS_COURSE_NAME
 RESULT_DATA = {}
 
 
@@ -83,12 +86,14 @@ def is_subject_name(text: str):
     Remarks:
     If it is a roman number it passes.
     """
-    if text in ROMAN_NUMBER:
+    if text in GOOD_WORD:
         return True
+    if text in FORBIDDEN_WORD:
+        return False
     if any(is_thai(t) or t.isnumeric() for t in text):
         return False
-    if text.isupper():
-        return False
+    # if text.isupper():
+    #     return False
     if len(text) <= 1:
         return False
     return True
@@ -129,7 +134,12 @@ def is_valid_line(lines: list[str]):
 def get_last_subject_id(fac: str):
     """Get the last added subject's id."""
     global RESULT_DATA
-    return list(RESULT_DATA[fac].keys())[-1]
+    print(fac)
+    print(list(RESULT_DATA[fac].keys()))
+    try:
+        return list(RESULT_DATA[fac].keys())[-1]
+    except IndexError:
+        pass
 
 
 def handle_line(text: list[str], fac: str):
@@ -154,9 +164,14 @@ def handle_line(text: list[str], fac: str):
         return
     if not is_valid_line(text):
         reject.append(text)
+        print('reject by not valid line')
         return
-    subject_id = first
+    if is_subject_id(first.split(',')[0]):
+        subject_id = first
+    else:
+        subject_id = first + text[1]
     if not is_subject_id(subject_id):
+        print('reject by not subject_id')
         return False
     subject_name = get_subject_name(text, 2)
     if subject_name in FORBIDDEN_WORD:
@@ -172,15 +187,15 @@ def handle_line(text: list[str], fac: str):
 
 def is_subject_id(text: str):
     """Check is this string a subject id."""
-    if text.isnumeric() and len(text) == 8:
+    if len(text) == 11:
         return True
     return False
 
 
 def is_left_over_subject(text: str):
     """Determine if the line is a leftover from subject name."""
-    return all(t.isalpha() and not is_thai(t)
-               and not t.isnumeric() for t in text)
+    return (all(t.isalpha() and not is_thai(t) and not t.isnumeric() for t in text.replace('-', ''))) or \
+           (text[0] in '()' or text[-1] in '()')
 
 
 def get_subject_name(text: list[str], index: int = 0):
@@ -206,9 +221,9 @@ def extract_text_from_pdf(pdf_path: str,
     print(f"Start Extract Text From {filename}\n")
     global RESULT_DATA
     RESULT_DATA = {}
+    faculty = "undefined"
+    RESULT_DATA[faculty] = {}
     with pdfplumber.open(pdf_path) as pdf:
-        faculty = "undefined"
-        RESULT_DATA[faculty] = {}
         # Loop PDF pages
         for page in pdf.pages:
             page_text = page.extract_text()  # Extract text from the page
