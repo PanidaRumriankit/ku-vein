@@ -51,10 +51,6 @@ const usersDropdown = [
     label: "Bookmarks",
   },
   {
-    key: "history",
-    label: "History",
-  },
-  {
     key: "setting",
     label: "Setting",
   },
