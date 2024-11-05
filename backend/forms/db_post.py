@@ -173,10 +173,17 @@ class FollowPost(PostStrategy):
     def post_data(self, data: dict):
         """Add new follower to the database."""
         try:
-            self.user = UserData.objects.filter(user_id=data['current_user_id']).first()
-            self.target_user = UserData.objects.filter(user_id=data['target_user_id']).first()
+            self.user = UserData.objects.filter(
+                user_id=data['current_user_id']
+            ).first()
+
+            self.target_user = UserData.objects.filter(
+                user_id=data['target_user_id']
+            ).first()
+
         except KeyError:
-            return Response({"error": "current_user_id or target_user_id are missing "
+            return Response({"error": "current_user_id "
+                                      "or target_user_id are missing "
                                       "from the response body."}, status=400)
 
         if not self.user:
@@ -188,7 +195,6 @@ class FollowPost(PostStrategy):
 
         return self.add_or_delete()
 
-
     def add_or_delete(self):
         """
         Check is the user already follow or not.
@@ -196,12 +202,17 @@ class FollowPost(PostStrategy):
         If already follow. Then,unfollow delete the object.
         Else create new follower objects.
         """
-        exist = FollowData.objects.filter(this_user=self.user, follow_by=self.target_user)
+        exist = FollowData.objects.filter(this_user=self.user,
+                                          follow_by=self.target_user)
         if exist.count():
             exist.delete()
-            return Response({"success": "Successfully Unlike the Review."},
+            return Response({"success": "Successfully"
+                                        " Unlike the Review."},
                             status=201)
-        FollowData.objects.create(this_user=self.user, follow_by=self.target_user)
+
+        FollowData.objects.create(this_user=self.user,
+                                  follow_by=self.target_user)
+
         return Response({"success": "Successfully add follower data."},
                         status=201)
 
