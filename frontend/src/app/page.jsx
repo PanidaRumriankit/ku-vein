@@ -2,11 +2,12 @@
 
 import Image from "next/image";
 import Search from './components/search';
-import {useState, useEffect} from "react";
 import Sorting from "./components/sorting";
 import ReviewCard from "./components/reviewcard";
 import MakeApiRequest from "./constants/getreview"
 import AddReviews from "./components/addreviews";
+
+import {useState, useEffect} from "react";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -46,9 +47,13 @@ export default function Home() {
       <div className="w-full max-w-5xl">
         <Sorting selectedKeys={selectedKeys}
                  setSelectedKeys={setSelectedKeys}/>
-        {reviews.map((item, index) => (
-          <ReviewCard item={item} key={index}/>
-        ))}
+        {reviews.length > 0 ? (
+          reviews.map((item, index) => (
+            <ReviewCard item={item} key={index} page={"page"}/>
+          ))
+        ) : (
+          <p className="text-green-400 text-center">No review currently</p>
+        )}
       </div>
       <div className="fixed bottom-4 right-4 z-40">
         <AddReviews/>
