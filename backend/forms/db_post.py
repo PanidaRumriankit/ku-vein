@@ -207,7 +207,7 @@ class FollowPost(PostStrategy):
         if exist.count():
             exist.delete()
             return Response({"success": "Successfully"
-                                        " Unlike the Review."},
+                                        " Unfollow the user."},
                             status=201)
 
         FollowData.objects.create(this_user=self.user,
