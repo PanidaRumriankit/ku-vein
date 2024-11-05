@@ -136,7 +136,6 @@ export default function Search({ onCourseSelect, page }) {
         cacheOptions
         loadOptions={loadOptions}
         onChange={handleChange}
-        onBlur={() => setSelectedFaculty(null)}
         defaultOptions
         placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
         styles={customStyles}
