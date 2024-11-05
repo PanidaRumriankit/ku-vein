@@ -29,7 +29,8 @@ class ReviewPostTests(TestCase):
             "rating": 4.5,
             "academic_year": 2024,
             "pen_name": "Solaire of Astora",
-            "grade": "A"
+            "grade": "A",
+            "instructor": None
         }
 
         response = self.review_post.post_data(review_data)
@@ -47,7 +48,8 @@ class ReviewPostTests(TestCase):
             "rating": 4.5,
             "academic_year": 2024,
             "pen_name": "Solaire of Astora",
-            "grade": "A"
+            "grade": "A",
+            "instructor": None
         }
 
         response = self.review_post.post_data(review_data)
@@ -67,7 +69,8 @@ class ReviewPostTests(TestCase):
                        " albeit with a dark twist. Not for the faint-hearted.",
             "rating": 4.6,
             "academic_year": 2024,
-            "grade": "B"
+            "grade": "B",
+            "instructor": None
         }
 
         response = self.review_post.post_data(review_data)
@@ -86,7 +89,8 @@ class ReviewPostTests(TestCase):
                        " albeit with a dark twist. Not for the faint-hearted.",
             "rating": 4.6,
             "pen_name": "Lucatiel of Mirrah",
-            "grade": "B"
+            "grade": "B",
+            "instructor": None
         }
 
         response = self.review_post.post_data(review_data)
@@ -105,7 +109,8 @@ class ReviewPostTests(TestCase):
             "rating": 4.8,
             "academic_year": 2024,
             "pen_name": "Artorias",
-            "grade": "A"
+            "grade": "A",
+            "instructor": None
         }
         response = self.review_post.post_data(test_data)
         self.assertEqual(response.status_code, 401)
@@ -125,7 +130,8 @@ class ReviewPostTests(TestCase):
             "rating": 4.6,
             "academic_year": 2024,
             "pen_name": "Lucatiel of Mirrah",
-            "grade": "B"
+            "grade": "B",
+            "instructor": None
         }
         response = self.review_post.post_data(test_data)
         self.assertEqual(response.status_code, 201)
@@ -144,7 +150,8 @@ class ReviewPostTests(TestCase):
             "rating": 4.5,
             "academic_year": 2024,
             "pen_name": "",
-            "grade": "A"
+            "grade": "A",
+            "instructor": None
         }
 
         response = self.review_post.post_data(test_data)
@@ -167,7 +174,8 @@ class ReviewPostTests(TestCase):
             "rating": 4.5,
             "academic_year": 0,
             "pen_name": "Solaire of Astora",
-            "grade": "A"
+            "grade": "A",
+            "instructor": None
         }
 
         response = self.review_post.post_data(test_data)
