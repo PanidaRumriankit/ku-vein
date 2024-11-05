@@ -6,7 +6,6 @@ from ..models import UserData
 from ..db_post import UserDataPost
 from ..db_put import UserDataPut
 from django.test import TestCase
-import copy
 
 
 class UserDataPostTests(TestCase):
@@ -69,6 +68,7 @@ class UserDataPostTests(TestCase):
         for i, user in enumerate(UserData.objects.all()):
             self.assertEqual(user.email, user_test_data[i]['email'])
 
+
 class UserDataPutTest(TestCase):
     """Testcases for PUT request."""
 
@@ -91,7 +91,7 @@ class UserDataPutTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content)["error"],
                          "Some attribute is missing from the data.")
-        
+
     def test_response_user_doesnt_exist(self):
         """Data provided user_id that doesn't match any user."""
         self.user_data['user_id'] = 9999
