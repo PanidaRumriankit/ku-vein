@@ -33,7 +33,7 @@ export default function AddReview() {
     5: 'Very satisfied',
   };
 
-  async function addReview(e) {
+  async function addReview() {
     try {
       // create review api
       const response = await fetch("http://127.0.0.1:8000/api/review", {

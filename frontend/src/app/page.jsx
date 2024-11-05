@@ -34,10 +34,8 @@ export default function Home() {
           height={120}
           priority
         />
-        <h1 className="mt-4 text-3xl font-bold text-black dark:text-white">KU
-          Vein</h1>
-        <p className="mt-4 text-xl text-black dark:text-white">รีวิว แบ่งปัน
-          Q&A</p>
+        <h1 className="mt-4 text-3xl font-bold text-black dark:text-white">KU Vein</h1>
+        <p className="mt-4 text-xl text-black dark:text-white">รีวิว แบ่งปัน Q&A</p>
       </main>
 
       <div className="mt-8 w-full max-w-6xl z-40">
