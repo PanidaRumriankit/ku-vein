@@ -152,6 +152,7 @@ class ReviewPostSchema(Schema):
     academic_year: int
     pen_name: str
     grade: str
+    instructor: str
 
 
 class UpvotePostSchema(Schema):

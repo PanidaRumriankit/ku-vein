@@ -71,7 +71,8 @@ class ReviewPost(PostStrategy):
 
         review_instance = CourseReview.objects.create(user=self.user,
                                                       course=self.course,
-                                                      reviews=data['reviews'])
+                                                      reviews=data['reviews'],
+                                                      instructor=data['instructor'])
         ReviewStat.objects.create(review=review_instance,
                                   rating=data['rating'],
                                   academic_year=data['academic_year'],
