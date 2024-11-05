@@ -182,6 +182,7 @@ export default function Profile() {
             />
             <TextField
               fullWidth
+              value={colorBg}
               onChange={(e) => {
                 const newColor = e.target.value;
                 setColorBg(newColor);
