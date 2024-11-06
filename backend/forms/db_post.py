@@ -212,6 +212,9 @@ class NotePost(PostStrategy):
 
             user = UserData.objects.get(email=data['email'])
 
+            if 'file' not in data or data['file'] is None:
+                return Response({"error": "File is missing."}, status=400)
+
             Note.objects.create(
                 course=course,
                 user=user,

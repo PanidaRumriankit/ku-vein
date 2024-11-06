@@ -1,6 +1,6 @@
 import json
 
-from ..db_query import SortReview
+from django.core.files.uploadedfile import SimpleUploadedFile
 from ..db_post import NotePost
 from django.test import TestCase
 from .set_up import user_set_up, course_set_up
@@ -15,6 +15,10 @@ class NotePostTests(TestCase):
 
         self.course_data = course_set_up()[1]
         self.user = user_set_up()
+        self.fake_pdf = SimpleUploadedFile(
+            "test_note.pdf",
+            b"PDF content here", content_type="application/pdf"
+        )
 
     def test_response_missing_email(self):
         """Test missing email key in response body."""
@@ -22,7 +26,7 @@ class NotePostTests(TestCase):
             "course_id": self.course_data[0]['course_id'],
             "faculty":  self.course_data[0]['faculty'],
             "course_type": self.course_data[0]['course_type'],
-            "file": "base64-encoded-string"
+            "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
 
@@ -37,7 +41,7 @@ class NotePostTests(TestCase):
             "email": self.user[0].email,
             "faculty": self.course_data[0]['faculty'],
             "course_type": self.course_data[0]['course_type'],
-            "file": "base64-encoded-string"
+            "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
 
@@ -53,7 +57,7 @@ class NotePostTests(TestCase):
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
             "course_type": self.course_data[0]['course_type'],
-            "file": "base64-encoded-string"
+            "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
 
@@ -68,7 +72,7 @@ class NotePostTests(TestCase):
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
             "faculty": self.course_data[0]['faculty'],
-            "file": "base64-encoded-string"
+            "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
 
@@ -89,8 +93,7 @@ class NotePostTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content),
-                         {"error": "Data is missing "
-                                   "from the response body."})
+                         {"error": "File is missing."})
 
     def test_course_does_not_in_the_database(self):
         """Test course data isn't in the database."""
@@ -99,7 +102,7 @@ class NotePostTests(TestCase):
             "course_id": "69",
             "faculty": self.course_data[0]['faculty'],
             "course_type": self.course_data[0]['course_type'],
-            "file": "base64-encoded-string"
+            "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
 
@@ -115,7 +118,7 @@ class NotePostTests(TestCase):
             "course_id": "1",
             "faculty": self.course_data[0]['faculty'],
             "course_type": self.course_data[0]['course_type'],
-            "file": "base64-encoded-string"
+            "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
 
