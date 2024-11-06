@@ -14,7 +14,7 @@ NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or', 'together', 'Online', 'LAB'
 BUILDING = ['VT', 'HUM', 'SC', 'ED', 'AI', 'E', 'BA', 'EC', 'ED', 'Soc']
 FORBIDDEN_WORD = NOT_COURSE_NAME + DAYS
 ROMAN_NUMBER = ['I', 'II', 'III', 'IV', 'V', 'VI']
-IS_COURSE_NAME = ['&', 'a']
+IS_COURSE_NAME = ['&', 'a', '-']
 GOOD_WORD = ROMAN_NUMBER + IS_COURSE_NAME
 RESULT_DATA = {}
 
