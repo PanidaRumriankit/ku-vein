@@ -218,11 +218,16 @@ class NotePost(PostStrategy):
                 note_file=data['file']
             )
             return Response({"success": "Note"
-                                        " uploaded successfully"},
+                                        " uploaded successfully."},
                             status=201)
+
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+
         except CourseData.DoesNotExist:
             return Response({"error":"Course"
-                                     " not found"}, status=401)
+                                     " isn't in the database."}, status=401)
         except UserData.DoesNotExist:
             return Response({"error": "This course isn't "
                                       "in the database."}, status=401)
@@ -236,6 +241,7 @@ class PostFactory:
         "user": UserDataPost,
         "upvote": UpvotePost,
         "follow": FollowPost,
+        "note": NotePost
     }
 
     @classmethod
