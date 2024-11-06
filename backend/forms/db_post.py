@@ -6,7 +6,8 @@ from datetime import datetime
 from abc import ABC, abstractmethod
 from ninja.responses import Response
 from .models import (CourseReview, UserData,
-                     CourseData, ReviewStat, UpvoteStat, FollowData)
+                     CourseData, ReviewStat,
+                     UpvoteStat, FollowData, Note)
 
 logger = logging.getLogger("user_logger")
 
@@ -136,28 +137,31 @@ class UpvotePost(PostStrategy):
     def get_instance(self, data: dict):
         """Get the review_stat and user instance."""
         try:
-            self.user = UserData.objects.filter(email=data['email']).first()
-            self.course = CourseData.objects.filter(
+            self.user = UserData.objects.get(email=data['email'])
+            self.course = CourseData.objects.get(
                 course_id=data['course_id'],
                 faculty=data['faculty'],
                 course_type=data['course_type']
-            ).first()
+            )
 
-            review = CourseReview.objects.filter(
+            review = CourseReview.objects.get(
                 course=self.course
-            ).first()
+            )
 
-            self.review_stat = ReviewStat.objects.filter(
+            self.review_stat = ReviewStat.objects.get(
                 review=review
-            ).first()
+            )
 
         except KeyError:
             return Response({"error": "User data or Course Data are missing "
                                       "from the response body."}, status=400)
-
-        if not self.user or not self.course:
-            return Response({"error": "This user or This course isn't "
+        except CourseData.DoesNotExist:
+            return Response({"error": "This course isn't "
                                       "in the database."}, status=401)
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't "
+                                      "in the database."}, status=401)
+
 
 
 class FollowPost(PostStrategy):
@@ -184,6 +188,36 @@ class FollowPost(PostStrategy):
 
         return Response({"success": "Successfully add follower data."},
                         status=201)
+
+
+class NotePost(PostStrategy):
+    """Class for created new Note object."""
+
+    def post_data(self, data: dict):
+        """Add new note to the database."""
+        try:
+            course = CourseData.objects.get(
+                course_id=data['course_id'],
+                faculty=data['faculty'],
+                course_type=data['course_type']
+            )
+
+            user = UserData.objects.get(email=data['email'])
+
+            Note.objects.create(
+                course=course,
+                user=user,
+                note_file=data['file']
+            )
+            return Response({"success": "Note"
+                                        " uploaded successfully"},
+                            status=201)
+        except CourseData.DoesNotExist:
+            return Response({"error":"Course"
+                                     " not found"}, status=401)
+        except UserData.DoesNotExist:
+            return Response({"error": "This course isn't "
+                                      "in the database."}, status=401)
 
 
 class PostFactory:
