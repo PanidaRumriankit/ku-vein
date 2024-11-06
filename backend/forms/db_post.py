@@ -86,18 +86,21 @@ class ReviewPost(PostStrategy):
     def get_instance(self, data: dict):
         """Get the course and user instance."""
         try:
-            self.user = UserData.objects.filter(email=data['email']).first()
-            self.course = CourseData.objects.filter(
+            self.user = UserData.objects.get(email=data['email'])
+            self.course = CourseData.objects.get(
                 course_id=data['course_id'],
                 faculty=data['faculty'],
-                course_type=data['course_type']).first()
+                course_type=data['course_type'])
         except KeyError:
             return Response({"error": "User data or Course Data are missing "
                                       "from the response body."}, status=400)
 
-        if not self.user or not self.course:
-            return Response({"error": "This user or This course "
-                                      "isn't in the database."}, status=401)
+        except CourseData.DoesNotExist:
+            return Response({"error": "This course isn't "
+                                      "in the database."}, status=401)
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't "
+                                      "in the database."}, status=401)
 
 
 class UpvotePost(PostStrategy):
@@ -161,7 +164,12 @@ class UpvotePost(PostStrategy):
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
-
+        except CourseReview.DoesNotExist:
+            return Response({"error": "This review isn't "
+                                      "in the database."}, status=401)
+        except ReviewStat.DoesNotExist:
+            return Response({"error": "This review stat isn't "
+                                      "in the database."}, status=401)
 
 
 class FollowPost(PostStrategy):
