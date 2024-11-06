@@ -142,7 +142,6 @@ class ReviewPostSchema(Schema):
     - pen_name (str): User's preferred display name.
     - grade (str): Grade assigned to the course by the user.
     """
-
     email: str
     course_id: str
     course_type: str
@@ -174,6 +173,34 @@ class NoteSchema(ModelSchema):
 
         model = Note
         fields = '__all__'
+
+
+class NotePostSchema(Schema):
+    """
+    Schema for handling POST requests to upload a note associated with a course and user.
+
+    Attributes:
+        email (str): The email address of the user uploading the note.
+        course_id (str): The unique identifier of the course.
+        faculty (str): The faculty name associated with the course.
+        course_type (str): The type of course (e.g., 'Normal', 'Special').
+        file (str): The file to be uploaded (should be a PDF file). The file is represented as a string
+                      URL or base64-encoded data of the PDF file.
+
+    Example:
+        {
+            "email": "user@example.com",
+            "course_id": "123",
+            "faculty": "Computer Science",
+            "course_type": "Normal",
+            "file": "base64-encoded-string"
+        }
+    """
+    email : str
+    course_id: str
+    faculty: str
+    course_type: str
+    file : str
 
 
 class QASchema(ModelSchema):

@@ -7,7 +7,7 @@ from decouple import config
 
 from .schemas import (ReviewPostSchema, UserDataSchema,
                       UpvotePostSchema, FollowSchema,
-                      UserDataEditSchema)
+                      UserDataEditSchema, NotePostSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -138,6 +138,13 @@ def create_review(request, data: ReviewPostSchema):
 def add_upvote(request, data: UpvotePostSchema):
     """Use for add new upvote."""
     strategy = PostFactory.get_post_strategy("upvote")
+    return strategy.post_data(data.model_dump())
+
+
+@app.post("/note", response={200: NotePostSchema})
+def add_note(request, data: NotePostSchema):
+    """Use for add new Note object."""
+    strategy = PostFactory.get_post_strategy("note")
     return strategy.post_data(data.model_dump())
 
 
