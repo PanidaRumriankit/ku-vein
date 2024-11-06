@@ -221,7 +221,7 @@ class NotePost(PostStrategy):
                 note_file=data['file']
             )
             return Response({"success": "Note"
-                                        " uploaded successfully."},
+                                        " created successfully."},
                             status=201)
 
         except KeyError:
@@ -229,10 +229,10 @@ class NotePost(PostStrategy):
                                       "from the response body."}, status=400)
 
         except CourseData.DoesNotExist:
-            return Response({"error":"Course"
+            return Response({"error":"This course"
                                      " isn't in the database."}, status=401)
         except UserData.DoesNotExist:
-            return Response({"error": "This course isn't "
+            return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
 
 
