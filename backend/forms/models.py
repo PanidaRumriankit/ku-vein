@@ -108,7 +108,7 @@ class Note(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    note_file = models.FileField(upload_to='summaries/', blank=True, null=True)
+    note_file = models.FileField(upload_to='database/note_files', blank=True, null=True)
 
     class Meta:
         app_label = 'forms'

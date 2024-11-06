@@ -65,6 +65,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'forms', 'media')
+MEDIA_URL = '/media/'
+
+
 ROOT_URLCONF = 'kuvein.urls'
 
 CORS_URLS_REGEX = r"^/api/.*$"
