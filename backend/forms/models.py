@@ -116,25 +116,25 @@ class Note(models.Model):
         unique_together = ('course', 'user')
 
 
-class QA(models.Model):
+class QA_Question(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
     question_text = models.TextField(default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'forms'
-        db_table = 'QA'
+        db_table = 'QA_Question'
 
 
-class Comment(models.Model):
-    question = models.ForeignKey(QA, on_delete=models.CASCADE)
+class QA_Answer(models.Model):
+    answer_id = models.AutoField(unique=True, primary_key=True)
+    question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     comment = models.CharField(max_length=255, default=None)
 
     class Meta:
         app_label = 'forms'
-        db_table = 'Comment'
-        unique_together = ('user', 'comment')
+        db_table = 'QA_Answer'
 
 
 class BookMark(models.Model):
