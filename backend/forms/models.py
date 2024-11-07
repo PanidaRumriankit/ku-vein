@@ -123,18 +123,18 @@ class QA_Question(models.Model):
 
     class Meta:
         app_label = 'forms'
-        db_table = 'QA_Question'
+        db_table = 'QAQuestion'
 
 
 class QA_Answer(models.Model):
     answer_id = models.AutoField(unique=True, primary_key=True)
     question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    comment = models.CharField(max_length=255, default=None)
+    answer_text = models.CharField(max_length=255, default=None)
 
     class Meta:
         app_label = 'forms'
-        db_table = 'QA_Answer'
+        db_table = 'QAAnswer'
 
 
 class BookMark(models.Model):
