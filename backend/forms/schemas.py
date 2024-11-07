@@ -2,7 +2,7 @@
 
 from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
-from .models import ReviewStat, Note, QA, BookMark
+from .models import ReviewStat, Note, BookMark
 from .models import Inter, Normal, Special
 
 
@@ -196,6 +196,7 @@ class NotePostSchema(Schema):
             "file": "base64-encoded-string"
         }
     """
+
     email : str
     course_id: str
     faculty: str
@@ -203,18 +204,45 @@ class NotePostSchema(Schema):
     file : str
 
 
-class QASchema(ModelSchema):
+class QuestionCreateSchema(Schema):
     """
-    Schema for QA model, containing questions and answers related to courses.
+    Schema for QA_Question, used for creating new questions.
 
-    Includes all fields in the QA model.
+    Attributes:
+        user_id (str): The user id of the question's creator.
+        question_text (str): The texts of the question.
+
+    Example:
+        {
+            "user_id": "1",
+            "question_text": "Is Prof.Ichi a monkey?",
+        }
     """
 
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
+    user_id: str
+    question_text: str
 
-        model = QA
-        fields = '__all__'
+
+class AnswerCreateSchema(Schema):
+    """
+    Schema for QA_Answer, used for creating new answers to a question.
+
+    Attributes:
+        question_id (str): The question id of the answer.
+        answer_text (str): The texts of the question.
+        user_id (str): The user id of the user who answered the question.
+
+    Example:
+        {
+            "question_id": "1"
+            "answer_text": "Prof.Ichi is just a Congalala fan.",
+            "user_id": "2"
+        }
+    """
+
+    question_id: str
+    answer_text: str
+    user_id: str
 
 
 class BookMarkSchema(ModelSchema):
