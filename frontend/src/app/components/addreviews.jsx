@@ -33,7 +33,7 @@ export default function AddReview() {
     5: 'Very satisfied',
   };
 
-  async function addReview(e) {
+  async function addReview() {
     try {
       // create review api
       const response = await fetch("http://127.0.0.1:8000/api/review", {
@@ -91,16 +91,11 @@ export default function AddReview() {
           <div
             className="text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-xl font-semibold pb-2">เพิ่มรีวิว</h2>
-            <Search onCourseSelect={(course) => {
-              setPostData({
-                ...postData,
-                course_id: course.courses_id,
-                faculty: course.faculty,
-                // Since the course_type is not defined yet, I will use 'inter' as the default value
-                // course_type: course.course_type,
-              })
-              console.log("Course", course);  // check course
-            }}/>
+            <Search onCourseSelect={(course) => setPostData({
+              ...postData,
+              course_id: course.course_id,
+              faculty: course.faculty,
+            }) } />
             <textarea
               type="text"
               placeholder="ความคิดเห็นต่อรายวิชา"
