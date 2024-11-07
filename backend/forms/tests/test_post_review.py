@@ -110,8 +110,27 @@ class ReviewPostTests(TestCase):
         response = self.review_post.post_data(test_data)
         self.assertEqual(response.status_code, 401)
         self.assertEqual(json.loads(response.content),
-                         {'error': "This user or"
-                                   " This course isn't in the database."})
+                         {'error': "This user isn't"
+                                   " in the database."})
+
+    def test_course_does_not_in_the_database(self):
+        """Test User data doesn't in the database."""
+        test_data = {
+            "email": "aslatiel@gmail.com",
+            "course_id": "6",
+            "course_type": "Wolf",
+            "faculty": "Faith",
+            "reviews": "Woof Woof!",
+            "rating": 4.8,
+            "academic_year": 2024,
+            "pen_name": "Artorias",
+            "grade": "A"
+        }
+        response = self.review_post.post_data(test_data)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(json.loads(response.content),
+                         {'error': "This course isn't"
+                                   " in the database."})
 
     def test_response_success(self):
         """This code should successfully create a review."""
