@@ -7,7 +7,8 @@ from abc import ABC, abstractmethod
 from ninja.responses import Response
 from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
-                     UpvoteStat, FollowData, Note)
+                     UpvoteStat, FollowData, Note,
+                     QA_Question, QA_Answer)
 
 logger = logging.getLogger("user_logger")
 
@@ -252,8 +253,8 @@ class NotePost(PostStrategy):
                 user=user,
                 note_file=data['file']
             )
-            return Response({"success": "Note"
-                                        " created successfully."},
+            return Response({"success": "Note "
+                                        "created successfully."},
                             status=201)
 
         except KeyError:
@@ -261,11 +262,60 @@ class NotePost(PostStrategy):
                                       "from the response body."}, status=400)
 
         except CourseData.DoesNotExist:
-            return Response({"error":"This course"
-                                     " isn't in the database."}, status=401)
+            return Response({"error": "This course"
+                                      " isn't in the database."}, status=401)
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
+
+
+class QuestionPost(PostStrategy):
+    """Class for creating new QA_Question object."""
+
+    def post_data(self, data: dict):
+        """Add new QA_Question to the database."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+            QA_Question.objects.create(question_text=data['question_text'],
+                                       user=user)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+
+        return Response({"success": "QA_Question created successfully."},
+                        status=201)
+
+
+class AnswerPost(PostStrategy):
+    """Class for creating new QA_Answer object."""
+
+    def post_data(request, data: dict):
+        """Add new QA_Answer to the database."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+            question = QA_Question.objects.get(question_id=data['question_id'])
+            QA_Answer.objects.create(question=question,
+                                     user=user,
+                                     answer_text=data['answer_text'])
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
+
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+
+        return Response({"success": "QA_Answer created successfully."},
+                        status=201)
 
 
 class PostFactory:
@@ -276,7 +326,9 @@ class PostFactory:
         "user": UserDataPost,
         "upvote": UpvotePost,
         "follow": FollowPost,
-        "note": NotePost
+        "note": NotePost,
+        "question": QuestionPost,
+        "answer": AnswerPost
     }
 
     @classmethod
