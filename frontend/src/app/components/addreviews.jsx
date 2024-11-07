@@ -23,6 +23,7 @@ export default function AddReview() {
     grade: 'C',
     academic_year: new Date().getFullYear() + 543,
     pen_name: '',
+    instructor: '',
   });
 
   const labels = {
@@ -153,6 +154,19 @@ export default function AddReview() {
                      onChange={(e) => setPostData({
                        ...postData,
                        academic_year: e.target.value
+                     })}
+              />
+            </div>
+            <div className='flex flex-wrap mt-4 font-bold'>
+              <h1 className='mr-18'>อาจารย์</h1>
+              <input type='text'
+                     placeholder='อาจารย์'
+                     className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
+                     required
+                     value={postData.instructor}
+                     onChange={(e) => setPostData({
+                       ...postData,
+                       instructor: e.target.value
                      })}
               />
             </div>

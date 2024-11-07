@@ -1,5 +1,6 @@
 """This module is for receive json data from the frontend to use in backend."""
 
+from typing import Optional
 from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
 from .models import ReviewStat, Note, QA, BookMark
@@ -151,6 +152,7 @@ class ReviewPostSchema(Schema):
     academic_year: int
     pen_name: str
     grade: str
+    instructor: Optional[str] = None
 
 
 class UpvotePostSchema(Schema):
