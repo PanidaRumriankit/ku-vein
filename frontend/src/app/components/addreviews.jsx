@@ -94,7 +94,7 @@ export default function AddReview() {
             <h2 className="text-xl font-semibold pb-2">เพิ่มรีวิว</h2>
             <Search onCourseSelect={(course) => setPostData({
               ...postData,
-              course_id: course.course_id,
+              course_id: course.courses_id,
               faculty: course.faculty,
             }) } />
             <textarea
