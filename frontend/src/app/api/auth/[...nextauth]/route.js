@@ -1,5 +1,5 @@
-import NextAuth from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authOptions = {
     providers: [
@@ -8,12 +8,12 @@ export const authOptions = {
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             authorization: {
                 params: {
-                    scope: 'https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid',
-                    prompt: 'consent',
-                    access_type: 'offline',
-                }
-            }
-        })
+                    scope: "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid",
+                    prompt: "consent",
+                    access_type: "offline",
+                },
+            },
+        }),
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
@@ -24,9 +24,10 @@ export const authOptions = {
                 token.idToken = account.id_token;
                 token.refreshToken = account.refresh_token || token.refreshToken;
                 token.accessTokenExpires = Date.now() + 3600 * 1000;
-                console.log("Token expires at: " + new Date(token.accessTokenExpires).toLocaleString())
+                console.log("Token expires at: " + new Date(token.accessTokenExpires).toLocaleString());
             }
 
+            // Check if the access token has expired
             if (Date.now() < token.accessTokenExpires) {
                 return token;
             }
@@ -50,29 +51,29 @@ async function refreshAccessToken(token) {
 
         const response = await fetch(url, {
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
+                "Content-Type": "application/x-www-form-urlencoded",
             },
-            method: "POST"
+            method: "POST",
         });
 
         const refreshedTokens = await response.json();
 
         if (!response.ok) throw refreshedTokens;
 
-        console.log("Refresh Token expires at: " + new Date(Date.now() + 3600 * 1000).toLocaleString())
+        console.log("Refresh Token expires at: " + new Date(Date.now() + 3600 * 1000).toLocaleString());
 
         return {
             ...token,
             accessToken: refreshedTokens.access_token,
-            accessTokenExpires: Date.now() + 3600 * 1000,
-            idToken: refreshedTokens.id_token ?? token.idToken
+            accessTokenExpires: Date.now() + 3600 * 1000, // 1 hour
+            idToken: refreshedTokens.id_token ?? token.idToken,
         };
     } catch (error) {
         console.error("Error refreshing access token:", error);
 
         return {
             ...token,
-            error: "RefreshAccessTokenError"
+            error: "RefreshAccessTokenError",
         };
     }
 }
