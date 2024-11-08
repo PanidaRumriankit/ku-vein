@@ -75,6 +75,7 @@ export default function AddReview() {
   if (!session) return null;
 
   const idToken = session.idToken || session.accessToken;
+  const email = session.email;
 
   return (
     <div className="fixed bottom-4 right-4">
