@@ -65,14 +65,17 @@ export default function AddReview() {
     return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
   }
 
+  useEffect(() => {
+    if (session) {
+      const email = session.email;
+      setPostData((prevData) => ({ ...prevData, email }));
+    }
+  }, [session]);
+  
   if (!session) return null;
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
-
-  useEffect(() => {
-    setPostData((prevData) => ({...prevData, email}));
-  }, []);
 
   return (
     <div className="fixed bottom-4 right-4">
