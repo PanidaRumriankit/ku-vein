@@ -137,3 +137,5 @@ ca.pem
 
 # Log file
 *.log
+
+database/

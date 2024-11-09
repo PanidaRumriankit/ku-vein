@@ -72,7 +72,8 @@ class ReviewPost(PostStrategy):
 
         review_instance = CourseReview.objects.create(user=self.user,
                                                       course=self.course,
-                                                      reviews=data['reviews'])
+                                                      reviews=data['reviews'],
+                                                      instructor=data['instructor'])
         ReviewStat.objects.create(review=review_instance,
                                   rating=data['rating'],
                                   academic_year=data['academic_year'],
@@ -119,36 +120,34 @@ class UpvotePost(PostStrategy):
         if isinstance(error_check, Response):
             return error_check
 
-        unlike = self.is_exist()
+        return self.add_or_delete()
 
-        if isinstance(unlike, Response):
-            return unlike
+    def add_or_delete(self):
+        """
+        Check is the user already like or not.
+
+        If already like. Then, unlike course review by delete the object.
+        Else create new upvote objects.
+        """
+        exist = UpvoteStat.objects.filter(review_stat=self.review_stat,
+                                          user=self.user)
+        if exist.count():
+            exist.delete()
+            return Response({"success": "Successfully Unlike the Review."},
+                            status=201)
 
         UpvoteStat.objects.create(review_stat=self.review_stat, user=self.user)
 
         return Response({"success": "Successfully Like the Review."},
                         status=201)
 
-    def is_exist(self):
-        """Check is the user already like or not."""
-        exist = UpvoteStat.objects.filter(review_stat=self.review_stat, user=self.user)
-        if exist.count():
-            exist.delete()
-            return Response({"success": "Successfully Unlike the Review."},
-                            status=201)
-
     def get_instance(self, data: dict):
         """Get the review_stat and user instance."""
         try:
             self.user = UserData.objects.get(email=data['email'])
-            self.course = CourseData.objects.get(
-                course_id=data['course_id'],
-                faculty=data['faculty'],
-                course_type=data['course_type']
-            )
 
             review = CourseReview.objects.get(
-                course=self.course
+                review_id=data['review_id']
             )
 
             self.review_stat = ReviewStat.objects.get(
@@ -156,11 +155,8 @@ class UpvotePost(PostStrategy):
             )
 
         except KeyError:
-            return Response({"error": "User data or Course Data are missing "
+            return Response({"error": "User data or Review Data are missing "
                                       "from the response body."}, status=400)
-        except CourseData.DoesNotExist:
-            return Response({"error": "This course isn't "
-                                      "in the database."}, status=401)
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
@@ -175,24 +171,53 @@ class UpvotePost(PostStrategy):
 class FollowPost(PostStrategy):
     """Class for created new FollowData."""
 
+    def __init__(self):
+        """Contain user, course, and review_stat instance."""
+        self.user = None
+        self.target_user = None
+
     def post_data(self, data: dict):
         """Add new follower to the database."""
         try:
-            cur_user = UserData.objects.filter(user_id=data['current_user_id']).first()
-            target_user = UserData.objects.filter(user_id=data['target_user_id']).first()
+            self.user = UserData.objects.filter(
+                user_id=data['current_user_id']
+            ).first()
+
+            self.target_user = UserData.objects.filter(
+                user_id=data['target_user_id']
+            ).first()
+
         except KeyError:
-            return Response({"error": "current_user_id or target_user_id are missing "
+            return Response({"error": "current_user_id "
+                                      "or target_user_id are missing "
                                       "from the response body."}, status=400)
 
-        if not cur_user:
+        if not self.user:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
-        elif not target_user:
+        elif not self.target_user:
             return Response({"error": "Target user isn't "
                                       "in the database."}, status=401)
 
-        FollowData.objects.create(this_user=cur_user, follow_by=target_user)
+        return self.add_or_delete()
 
+    def add_or_delete(self):
+        """
+        Check is the user already follow or not.
+
+        If already follow. Then,unfollow delete the object.
+        Else create new follower objects.
+        """
+        exist = FollowData.objects.filter(this_user=self.user,
+                                          follow_by=self.target_user)
+        if exist.count():
+            exist.delete()
+            return Response({"success": "Successfully"
+                                        " Unfollow the user."},
+                            status=201)
+
+        FollowData.objects.create(this_user=self.user,
+                                  follow_by=self.target_user)
 
         return Response({"success": "Successfully add follower data."},
                         status=201)

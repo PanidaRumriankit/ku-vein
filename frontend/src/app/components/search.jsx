@@ -121,7 +121,7 @@ export default function Search({ onCourseSelect, page }) {
         onCourseSelect({
           courses_id: selectedOption.value,
           courses_type: selectedOption.courses_type,
-          faculties: selectedOption.faculties
+          faculty: selectedOption.faculty
         });
       }
     }
@@ -136,7 +136,6 @@ export default function Search({ onCourseSelect, page }) {
         cacheOptions
         loadOptions={loadOptions}
         onChange={handleChange}
-        onBlur={() => setSelectedFaculty(null)}
         defaultOptions
         placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
         styles={customStyles}
