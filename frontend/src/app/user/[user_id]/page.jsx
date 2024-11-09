@@ -1,58 +1,64 @@
 // user/[user_id]/page.jsx
 "use client";
 
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useSession } from "next-auth/react";
 import GetUserData from '../../constants/getuser';
 
 export default function UserProfile() {
+  const router = useRouter();
   const params = useParams();
   const user_id = params.user_id;
   const [activeTab, setActiveTab] = useState('reviews');
   const { data: session } = useSession();
-  const [userData, setUserData] = useState(false);
+  const [userData, setUserData] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [currentID, setCurrentID] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (session && user_id) {
-        async function fetchData() {
-          const data = await GetUserData(user_id, "user_id");
-          const personalData = await GetUserData(session.email, "email");
-          setCurrentID(personalData.id);
-          console.log('userData: ', data);
-          setUserData({
-            user_id: data.id,
-            user_name: data.username,
-            user_type: "student",
-            email: session.email,
-            description: data.desc,
-            profile_color: data.pf_color,
-            follower_count: data.follower_count,
-            following_count: data.following_count,
-            following: data.following,
-            follower: data.follower,
-          });
+      async function fetchData() {
+        const [data, personalData] = await Promise.all([
+          GetUserData(user_id, "user_id"),
+          GetUserData(session.email, "email"),
+        ]);
+
+        if (user_id == personalData.id) {
+          console.log('Redirecting to profile page...');
+          router.push('/profile');
+          return;
         }
-        fetchData();
+
+        setUserData({
+          user_id: data.id,
+          user_name: data.username,
+          user_type: "student",
+          email: session.email,
+          description: data.desc,
+          profile_color: data.pf_color,
+          follower_count: data.follower_count,
+          following_count: data.following_count,
+          following: data.following,
+          follower: data.follower,
+        });
+        setLoading(false);
       }
+      fetchData();
     }
-  , [session, user_id, currentID]);
+  }, [session, user_id, router]);
 
-  if (!session) return null;
+  if (loading || !userData) return <p>Loading...</p>;
 
-  useEffect(() => {
-    if (userData && currentID && Array.isArray(userData.follower)) {
-      setIsFollowing(userData.follower.includes(currentID));
-    }
-  }, [userData, currentID]);
-
-  const idToken = session.idToken || session.accessToken;
-  const email = session.email;
+  const idToken = session?.idToken || session?.accessToken;
+  const email = session?.email;
 
   async function followUser() {
+    if (!email || !idToken) {
+      console.log("ID Token or email is missing.");
+      return;
+    }
     try {
       const response = await fetch("http://127.0.0.1:8000/api/follow", {
         method: 'POST',
@@ -62,29 +68,21 @@ export default function UserProfile() {
           "email": email,
         },
         body: JSON.stringify({
-          current_user_id: String(currentID),
+          current_user_id: String(personalData.id),
           target_user_id: String(userData.user_id),
         }),
       });
-      if (!email || !idToken) {
-        console.log("ID Token or email is missing.");
-        return;
-      }
       if (response.ok) {
         const data = await response.json();
         console.log('Success:', data);
         setIsFollowing(!isFollowing);
       } else {
-        console.log('Error:', response.status, response.text());
+        console.log('Error:', response.status, response.statusText);
       }
     }
     catch (error) {
       console.error('Error:', error);
     }
-  }
-
-  if (!userData) {
-    return <p>Loading...</p>;
   }
 
   return (
@@ -95,8 +93,7 @@ export default function UserProfile() {
         <div
           className="w-100 h-48 -mx-6"
           style={{ background: userData.profile_color }}
-        >
-        </div>
+        ></div>
 
         {/* Profile Picture */}
         {session?.user?.image ? (
@@ -130,7 +127,6 @@ export default function UserProfile() {
 
           {/* Follow and Edit Profile Buttons */}
           <div className="flex justify-end gap-4 -mt-40 mr-12">
-            {/* Follow Button */}
             <button
               className={`px-8 py-2 rounded text-white ${
                 isFollowing ? 'bg-transparent text-[#4ECDC4] outline outline-[#4ECDC4] hover:outline-[#44b3ab] hover:text-[#44b3ab]' : 'bg-[#4ECDC4] hover:bg-[#44b3ab]'
@@ -139,7 +135,6 @@ export default function UserProfile() {
             >
               {isFollowing ? 'Unfollow' : 'Follow'}
             </button>
-
           </div>
         </div>
       </div>
