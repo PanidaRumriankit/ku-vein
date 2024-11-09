@@ -134,34 +134,39 @@ class UserQuery(QueryFilterStrategy):
 
     def get_data(self, email: str):
         """Get the data from the database and return to the frontend."""
-        user = UserData.objects.filter(email=email).values(
-            id=F('user_id'),
-            username=F('user_name'),
-            desc=F('description'),
-            pf_color=F('profile_color'),
-        ).first()
+        try:
+            user = UserData.objects.get(email=email).values(
+                id=F('user_id'),
+                username=F('user_name'),
+                desc=F('description'),
+                pf_color=F('profile_color'),
+            )
 
-        user['following'] = []
-        user['follower'] = []
+            user['following'] = []
+            user['follower'] = []
 
-        if user:
-            following = list(FollowData.objects.filter(follow_by=user['id']).values(
-                username=F('this_user__user_name'),
-                desc=F('this_user__description')
-            ))
+            if user:
+                following = list(FollowData.objects.filter(follow_by=user['id']).values(
+                    username=F('this_user__user_name'),
+                    desc=F('this_user__description')
+                ))
 
-            follower = list(FollowData.objects.filter(this_user=user['id']).values(
-                username=F('follow_by__user_name'),
-                desc=F('follow_by__description')
-            ))
+                follower = list(FollowData.objects.filter(this_user=user['id']).values(
+                    username=F('follow_by__user_name'),
+                    desc=F('follow_by__description')
+                ))
 
-            user['following'] = following
-            user['follower'] = follower
+                user['following'] = following
+                user['follower'] = follower
 
-        user['follower_count'] = len(user['follower'])
-        user['following_count'] = len(user['following'])
+            user['follower_count'] = len(user['follower'])
+            user['following_count'] = len(user['following'])
 
-        return user
+            return user
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't "
+                                      "in the database."}, status=401)
 
 
 class NoteQuery(QueryFilterStrategy):
