@@ -226,6 +226,7 @@ class QueryFactory:
         "normal": NormalQuery,
         "none": CourseQuery,
         "user": UserQuery,
+        "note": NoteQuery
     }
 
     @classmethod
