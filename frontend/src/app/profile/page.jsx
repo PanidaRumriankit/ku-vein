@@ -30,7 +30,7 @@ export default function Profile() {
   useEffect(() => {
     if (session) {
       async function fetchData() {
-        const userData = await GetUserData(session.user.email);
+        const userData = await GetUserData(session.user.email, "email");
         console.log('userData: ', userData);
         setPutData({
           user_id: userData.id,

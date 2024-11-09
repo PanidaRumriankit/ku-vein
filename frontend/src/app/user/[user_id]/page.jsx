@@ -1,44 +1,53 @@
-// /user/[user_id].js
+// user/[user_id]/page.jsx
 "use client";
 
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useSession } from "next-auth/react";
-import GetUserData from '../constants/getuser';
+import GetUserData from '../../constants/getuser';
 
 export default function UserProfile() {
-  const router = useRouter();
-  const { user_id } = router.query;
-  const [activeTab, setActiveTab] = useState('posts');
+  const params = useParams();
+  const user_id = params.user_id;
+  const [activeTab, setActiveTab] = useState('reviews');
   const { data: session } = useSession();
   const [userData, setUserData] = useState(false);
-  const [colorBg, setColorBg] = useState('');
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [currentID, setCurrentID] = useState(null);
 
   useEffect(() => {
-    if (session) {
-      async function fetchData() {
-        const data = await GetUserData(user_id);
-        console.log('userData: ', data);
-        setUserData({
-          user_id: userData.id,
-          user_name: userData.username,
-          user_type: "student",
-          email: session.email,
-          description: userData.desc,
-          profile_color: userData.pf_color,
-          follower_count: userData.follower_count,
-          following_count: userData.following_count,
-          following: userData.following,
-          follower: userData.follower,
-        });
-        setColorBg(userData.pf_color);
+    if (session && user_id) {
+        async function fetchData() {
+          const data = await GetUserData(user_id, "user_id");
+          const personalData = await GetUserData(session.email, "email");
+          setCurrentID(personalData.id);
+          console.log('userData: ', data);
+          setUserData({
+            user_id: data.id,
+            user_name: data.username,
+            user_type: "student",
+            email: session.email,
+            description: data.desc,
+            profile_color: data.pf_color,
+            follower_count: data.follower_count,
+            following_count: data.following_count,
+            following: data.following,
+            follower: data.follower,
+          });
+        }
+        fetchData();
       }
-      fetchData();
     }
-  }, [session]);
+  , [session, user_id, currentID]);
 
   if (!session) return null;
+
+  useEffect(() => {
+    if (userData && currentID && Array.isArray(userData.follower)) {
+      setIsFollowing(userData.follower.includes(currentID));
+    }
+  }, [userData, currentID]);
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
@@ -53,8 +62,8 @@ export default function UserProfile() {
           "email": email,
         },
         body: JSON.stringify({
-          current_user_id: userData.user_id,
-          target_user_id: userData.user_id,
+          current_user_id: String(currentID),
+          target_user_id: String(userData.user_id),
         }),
       });
       if (!email || !idToken) {
@@ -85,7 +94,7 @@ export default function UserProfile() {
         {/* Profile Background */}
         <div
           className="w-100 h-48 -mx-6"
-          style={{ background: colorBg }}
+          style={{ background: userData.profile_color }}
         >
         </div>
 
@@ -124,7 +133,7 @@ export default function UserProfile() {
             {/* Follow Button */}
             <button
               className={`px-8 py-2 rounded text-white ${
-                isFollowing ? 'bg-transparent text-[#4ECDC4] hover:text-[#44b3ab]' : 'bg-[#4ECDC4] hover:bg-[#44b3ab]'
+                isFollowing ? 'bg-transparent text-[#4ECDC4] outline outline-[#4ECDC4] hover:outline-[#44b3ab] hover:text-[#44b3ab]' : 'bg-[#4ECDC4] hover:bg-[#44b3ab]'
               }`}
               onClick={followUser}
             >
