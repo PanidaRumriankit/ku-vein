@@ -3,6 +3,7 @@
 from typing import Union
 from abc import ABC, abstractmethod
 from django.db.models import F, Count
+from ninja.responses import Response
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData)
 from typing import Any
@@ -127,44 +128,51 @@ class CourseQuery(QueryStrategy):
 class UserQuery(QueryFilterStrategy):
     """Class for sent the value in the user data."""
 
+    def __init__(self):
+        self.user = None
+
     def get_data(self, filter_key: dict):
         """Get the data from the database and return to the frontend."""
         if filter_key['email']:
-            user = UserData.objects.filter(email=filter_key['email']).values(
+            self.user = UserData.objects.filter(email=filter_key['email']).values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
                 pf_color=F('profile_color'),
             ).first()
-        else:
-            user = UserData.objects.filter(email=filter_key['user_id']).values(
+        elif filter_key['user_id']:
+            self.user = UserData.objects.filter(user_id=filter_key['user_id']).values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
                 pf_color=F('profile_color'),
             ).first()
+        try:
+            self.user['following'] = []
+            self.user['follower'] = []
+        except (TypeError, KeyError):
+            return Response({"error": "This user isn't"
+                                      " in the database."},
+                            status=401)
 
-        user['following'] = []
-        user['follower'] = []
-
-        if user:
-            following = list(FollowData.objects.filter(follow_by=user['id']).values(
+        if self.user:
+            following = list(FollowData.objects.filter(follow_by=self.user['id']).values(
                 username=F('this_user__user_name'),
                 desc=F('this_user__description')
             ))
 
-            follower = list(FollowData.objects.filter(this_user=user['id']).values(
+            follower = list(FollowData.objects.filter(this_user=self.user['id']).values(
                 username=F('follow_by__user_name'),
                 desc=F('follow_by__description')
             ))
 
-            user['following'] = following
-            user['follower'] = follower
+            self.user['following'] = following
+            self.user['follower'] = follower
 
-        user['follower_count'] = len(user['follower'])
-        user['following_count'] = len(user['following'])
+        self.user['follower_count'] = len(self.user['follower'])
+        self.user['following_count'] = len(self.user['following'])
 
-        return user
+        return self.user
 
 
 class QueryFactory:
