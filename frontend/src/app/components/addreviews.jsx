@@ -65,14 +65,17 @@ export default function AddReview() {
     return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
   }
 
+  useEffect(() => {
+    if (session) {
+      const email = session.email;
+      setPostData((prevData) => ({ ...prevData, email }));
+    }
+  }, [session]);
+  
   if (!session) return null;
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
-
-  useEffect(() => {
-    setPostData((prevData) => ({...prevData, email}));
-  }, []);
 
   return (
     <div className="fixed bottom-4 right-4">
@@ -94,7 +97,7 @@ export default function AddReview() {
             <h2 className="text-xl font-semibold pb-2">เพิ่มรีวิว</h2>
             <Search onCourseSelect={(course) => setPostData({
               ...postData,
-              course_id: course.course_id,
+              course_id: course.courses_id,
               faculty: course.faculty,
             }) } />
             <textarea

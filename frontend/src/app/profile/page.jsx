@@ -27,31 +27,33 @@ export default function Profile() {
   const openEditDialog = () => setEditOpen(true);
   const closeEditDialog = () => setEditOpen(false);
 
+  useEffect(() => {
+    if (session) {
+      async function fetchData() {
+        const userData = await GetUserData(session.user.email);
+        console.log('userData: ', userData);
+        setPutData({
+          user_id: userData.id,
+          user_name: userData.username,
+          user_type: "student",
+          email: session.email,
+          description: userData.desc,
+          profile_color: userData.pf_color,
+          follower_count: userData.follower_count,
+          following_count: userData.following_count,
+          following: userData.following,
+          follower: userData.follower,
+        });
+        setColorBg(userData.pf_color);
+      }
+      fetchData();
+    }
+  }, [session]);
+
   if (!session) return null;
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
-
-  useEffect(() => {
-    async function fetchData() {
-      const userData = await GetUserData(session.user.email);
-      console.log('userData: ', userData);
-      setPutData({
-        user_id: userData.id,
-        user_name: userData.username,
-        user_type: "student",
-        email: session.email,
-        description: userData.desc,
-        profile_color: userData.pf_color,
-        follower_count: userData.follower_count,
-        following_count: userData.following_count,
-        following: userData.following,
-        follower: userData.follower,
-      });
-      setColorBg(userData.pf_color);
-    }
-    fetchData();
-  }, [session]);
 
   async function putProfile() {
     try {
