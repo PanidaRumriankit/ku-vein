@@ -149,6 +149,20 @@ def add_note(request, data: NotePostSchema):
     return strategy.post_data(data.model_dump())
 
 
+@app.get("/qa/question")
+def get_question(request):
+    """Get all Q&A questions."""
+    strategy = QueryFactory.get_query_strategy("qa_question")
+    return Response(strategy.get_data())
+
+
+@app.get("/qa/answer")
+def get_answer(request, question_id):
+    """Get all Answers to a Q&A question."""
+    strategy = QueryFactory.get_query_strategy("qa_answer")
+    return Response(strategy.get_data(question_id))
+
+
 @app.post("/qa/question")
 def add_question(request, data: QuestionCreateSchema):
     """Use for creating new question for Q&A."""
