@@ -3,8 +3,10 @@
 import json
 from ..db_post import FollowPost
 from ..models import FollowData
+from django.db.models import F
 from .set_up import user_set_up
 from django.test import TestCase
+
 
 class FollowPostTest(TestCase):
     """Class for test POST follower."""
@@ -65,8 +67,26 @@ class FollowPostTest(TestCase):
                          {"error": "Target user isn't "
                                    "in the database."})
 
-    def test_response_success(self):
-        """Successfully post the data."""
+    def test_response_unfollow_success(self):
+        """Successfully unfollow the user."""
+        self.post.post_data({
+            "current_user_id": self.user_ins[0].user_id,
+            "target_user_id": self.user_ins[1].user_id
+        })
+
+        response = self.post.post_data({
+            "current_user_id": self.user_ins[0].user_id,
+            "target_user_id": self.user_ins[1].user_id
+        })
+
+        self.assertEqual(response.status_code, 201)
+
+        self.assertEqual(json.loads(response.content),
+                         {"success": "Successfully"
+                                     " Unfollow the user."})
+
+    def test_response_follow_success(self):
+        """Successfully follow the user."""
         response = self.post.post_data({
             "current_user_id": self.user_ins[0].user_id,
             "target_user_id": self.user_ins[1].user_id
@@ -86,13 +106,13 @@ class FollowPostTest(TestCase):
                 "target_user_id": self.user_ins[i + 1].user_id
             })
 
-        result_data = [
-            {"this_user": data.follow_by, "follow_by": data.this_user}
-            for data in FollowData.objects.all()
-        ]
+        result_data = list(FollowData.objects.values(
+            'this_user', 'follow_by'
+        ))
 
         expected_data = [
-            {"this_user": self.user_ins[0], "follow_by": expected}
+            {"this_user": self.user_ins[0].user_id,
+             "follow_by": expected.user_id}
             for expected in self.user_ins[1:]
         ]
 
@@ -107,14 +127,57 @@ class FollowPostTest(TestCase):
                 "target_user_id": self.user_ins[0].user_id
             })
 
-        result_data = [
-            {"this_user": data.follow_by, "follow_by": data.this_user}
-            for data in FollowData.objects.all()
-        ]
+        result_data = list(FollowData.objects.values(
+            'this_user', 'follow_by'
+        ))
 
         expected_data = [
-            {"this_user": expected, "follow_by": self.user_ins[0]}
+            {"this_user": expected.user_id,
+             "follow_by": self.user_ins[0].user_id}
             for expected in self.user_ins[1:]
         ]
 
         self.assertEqual(result_data, expected_data)
+
+    def test_unfollow(self):
+        """
+        If same user got POST second time.
+
+        Then, user should unfollow the target user.
+        """
+        test_data = {
+            "current_user_id": self.user_ins[0].user_id,
+            "target_user_id": self.user_ins[1].user_id
+        }
+
+        self.post.post_data(test_data)
+
+        self.post.post_data(test_data)
+
+        self.assertFalse(FollowData.objects.all().exists())
+
+        self.post.post_data(test_data)
+
+        self.assertEqual(
+            test_data,
+            FollowData.objects.values(
+                current_user_id=F('this_user_id'),
+                target_user_id=F('follow_by_id')
+            ).first()
+        )
+
+        # User can follow to diff user after unfollow
+        self.post.post_data({
+            "current_user_id": self.user_ins[0].user_id,
+            "target_user_id": self.user_ins[2].user_id
+        })
+
+        self.assertEqual({
+            "current_user_id": self.user_ins[0].user_id,
+            "target_user_id": self.user_ins[2].user_id},
+
+            FollowData.objects.values(
+                current_user_id=F('this_user_id'),
+                target_user_id=F('follow_by_id')
+            )[1]
+        )

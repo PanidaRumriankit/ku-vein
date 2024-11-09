@@ -60,9 +60,9 @@ function RootLayoutContent({children}) {
 
   return (
     <>
-      <nav className="bg-[#4ECDC4] p-4">
+      <nav className="bg-[#4ECDC4] fixed top-0 left-0 w-full h-14 p-4 z-50">
         <div
-          className="container mx-auto flex justify-between items-center px-10">
+          className="container fixed mx-auto flex justify-between items-center px-10">
           <a href="/"
              className="text-white text-xl font-bold hover:text-gray-200">KU
             Vein</a>
