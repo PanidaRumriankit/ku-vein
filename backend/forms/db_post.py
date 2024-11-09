@@ -231,6 +231,7 @@ class NotePost(PostStrategy):
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
                                      " isn't in the database."}, status=401)
+
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)

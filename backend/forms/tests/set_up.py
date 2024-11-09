@@ -198,29 +198,23 @@ def follower_setup(user):
 
 def note_generator(course, user, note_content):
     """Generator function to yield Note instances with files."""
-    for i, content in enumerate(note_content):
-        note_file = SimpleUploadedFile(
-            name=f"{content[:10]}.pdf",
-            content=content.encode('utf-8'),
-            content_type="application/pdf"
-        )
-        yield Note.objects.create(
-            user=user,
-            course=course[i],
-            note_file=note_file
-        )
+
 
 
 def note_setup(course, user):
     """Set up function for Note feature using a generator."""
-    note_content = [
-        "Yes, indeed", "The Darksign brands the Undead.",
-        "And in this land, the Undead are corralled",
-        "and led to the north, where they are locked away",
-        "to await the end of the world... This is your fate."
-    ]
+    note_content = "Yes, indeed"
+    note_file = SimpleUploadedFile(
+        name=f"{note_content[:10]}.pdf",
+        content=note_content.encode('utf-8'),
+        content_type="application/pdf"
+    )
 
-    note_generator_instance = note_generator(course, user, note_content)
-    notes = list(note_generator_instance)  # Collect all notes generated
-    return notes
+    note = Note.objects.create(
+        user=user[0],
+        course=course[0],
+        note_file=note_file
+    )
+
+    return note
 
