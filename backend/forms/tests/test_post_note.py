@@ -3,11 +3,11 @@
 import os
 import json
 
+from django.test import TestCase
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from ..models import Note
 from ..db_post import NotePost
-from django.test import TestCase
 from .set_up import user_set_up, course_set_up
 
 
