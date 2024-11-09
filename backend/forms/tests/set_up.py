@@ -184,7 +184,7 @@ def upvote_set_up(review_stat, user_data):
 
 
 def follower_setup(user):
-    """Setup function for follower feature."""
+    """Set up function for follower feature."""
     follow = []
 
     for all_follow in user[1:]:
@@ -197,7 +197,7 @@ def follower_setup(user):
 
 
 def note_setup(course, user):
-    """Setup function for Note feature."""
+    """Set up function for Note feature."""
     note = []
     note_content = ["Yes, indeed", "The Darksign brands the Undead.",
                     "And in this land, the Undead are corralled",
@@ -206,7 +206,8 @@ def note_setup(course, user):
 
     note_flies = [SimpleUploadedFile(name=f"{content[:10]}.pdf",
                                      content=content.encode('utf-8'),
-                                     content_type="application/pdf") for content in note_content]
+                                     content_type="application/pdf")
+                  for content in note_content]
 
     for i, note_create in enumerate(user):
         note.append(Note.objects.create(
