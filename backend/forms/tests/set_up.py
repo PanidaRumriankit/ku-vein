@@ -1,6 +1,11 @@
+"""Set up function for every feature."""
+
 from datetime import datetime
+from django.core.files.uploadedfile import SimpleUploadedFile
 from ..models import (CourseData, UserData,
-                      CourseReview, ReviewStat, UpvoteStat, FollowData)
+                      CourseReview, ReviewStat,
+                      UpvoteStat, FollowData,
+                      Note)
 
 
 def course_set_up():
@@ -28,6 +33,7 @@ def course_set_up():
         course.append(CourseData.objects.create(**insert_data))
 
     return course, test_data
+
 
 def review_set_up():
     """Set Up function for review data."""
@@ -118,6 +124,7 @@ def review_set_up():
 
     return review, review_data
 
+
 def user_set_up():
     """Set Up function for user data."""
     user = []
@@ -144,9 +151,9 @@ def user_set_up():
 
     return user
 
+
 def upvote_set_up(review_stat, user_data):
     """Set Up function for Upvote data."""
-
     upvote = []
 
     upvote_data = [
@@ -175,9 +182,9 @@ def upvote_set_up(review_stat, user_data):
             )
     return upvote, upvote_data
 
+
 def follower_setup(user):
     """Setup function for follower feature."""
-
     follow = []
 
     for all_follow in user[1:]:
@@ -187,3 +194,25 @@ def follower_setup(user):
         ))
 
     return follow
+
+
+def note_setup(course, user):
+    """Setup function for Note feature."""
+    note = []
+    note_content = ["Yes, indeed", "The Darksign brands the Undead.",
+                    "And in this land, the Undead are corralled",
+                    "and led to the north, where they are locked away",
+                    "to await the end of the world... This is your fate."]
+
+    note_flies = [SimpleUploadedFile(name=f"{content[:10]}.pdf",
+                                     content=content.encode('utf-8'),
+                                     content_type="application/pdf") for content in note_content]
+
+    for i, note_create in enumerate(user):
+        note.append(Note.objects.create(
+            user=note_create,
+            course=course[i],
+            note_file=note_flies[i]
+        ))
+
+    return note, note_flies
