@@ -14,18 +14,22 @@ export default function UserProfile() {
   const [activeTab, setActiveTab] = useState('reviews');
   const { data: session } = useSession();
   const [userData, setUserData] = useState(null);
+  const [personalData, setPersonalData] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (session && user_id) {
       async function fetchData() {
-        const [data, personalData] = await Promise.all([
+        const [data, personData] = await Promise.all([
           GetUserData(user_id, "user_id"),
           GetUserData(session.email, "email"),
         ]);
 
-        if (user_id == personalData.id) {
+        console.log('Fetched personData:', personData);
+        setPersonalData(personData);
+
+        if (user_id == personData.id) {
           console.log('Redirecting to profile page...');
           router.push('/profile');
           return;
@@ -44,6 +48,9 @@ export default function UserProfile() {
           follower: data.follower,
         });
         setLoading(false);
+        if (userData && personalData) {
+          setIsFollowing(userData.follower?.includes(personalData.id));
+        }
       }
       fetchData();
     }
@@ -59,6 +66,14 @@ export default function UserProfile() {
       console.log("ID Token or email is missing.");
       return;
     }
+
+    console.log('Fetched personalData:', personalData);
+
+    if (!personalData || !personalData.id) {
+      console.log("Personal data is not loaded yet.");
+      return;
+    }
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/follow", {
         method: 'POST',
@@ -72,6 +87,7 @@ export default function UserProfile() {
           target_user_id: String(userData.user_id),
         }),
       });
+
       if (response.ok) {
         const data = await response.json();
         console.log('Success:', data);
@@ -128,8 +144,8 @@ export default function UserProfile() {
           {/* Follow and Edit Profile Buttons */}
           <div className="flex justify-end gap-4 -mt-40 mr-12">
             <button
-              className={`px-8 py-2 rounded text-white ${
-                isFollowing ? 'bg-transparent text-[#4ECDC4] outline outline-[#4ECDC4] hover:outline-[#44b3ab] hover:text-[#44b3ab]' : 'bg-[#4ECDC4] hover:bg-[#44b3ab]'
+              className={`px-8 py-2 rounded ${
+                isFollowing ? 'bg-transparent text-[#44b3ab] outline outline-[#44b3ab] hover:outline-[#4ECDC4] hover:text-[#4ECDC4]' : 'text-white bg-[#4ECDC4] hover:bg-[#44b3ab]'
               }`}
               onClick={followUser}
             >
