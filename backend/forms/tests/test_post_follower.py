@@ -87,7 +87,7 @@ class FollowPostTest(TestCase):
             })
 
         result_data = [
-            {"this_user": data.this_user, "follow_by": data.follow_by}
+            {"this_user": data.follow_by, "follow_by": data.this_user}
             for data in FollowData.objects.all()
         ]
 
@@ -108,7 +108,7 @@ class FollowPostTest(TestCase):
             })
 
         result_data = [
-            {"this_user": data.this_user, "follow_by": data.follow_by}
+            {"this_user": data.follow_by, "follow_by": data.this_user}
             for data in FollowData.objects.all()
         ]
 

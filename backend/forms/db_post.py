@@ -191,7 +191,7 @@ class FollowPost(PostStrategy):
             return Response({"error": "Target user isn't "
                                       "in the database."}, status=401)
 
-        FollowData.objects.create(this_user=cur_user, follow_by=target_user)
+        FollowData.objects.create(this_user=target_user, follow_by=cur_user)
 
 
         return Response({"success": "Successfully add follower data."},
