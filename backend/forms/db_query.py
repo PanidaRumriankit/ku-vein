@@ -127,14 +127,22 @@ class CourseQuery(QueryStrategy):
 class UserQuery(QueryFilterStrategy):
     """Class for sent the value in the user data."""
 
-    def get_data(self, email: str):
+    def get_data(self, filter_key: dict):
         """Get the data from the database and return to the frontend."""
-        user = UserData.objects.filter(email=email).values(
-            id=F('user_id'),
-            username=F('user_name'),
-            desc=F('description'),
-            pf_color=F('profile_color'),
-        ).first()
+        if filter_key['email']:
+            user = UserData.objects.get(email=filter_key['email']).values(
+                id=F('user_id'),
+                username=F('user_name'),
+                desc=F('description'),
+                pf_color=F('profile_color'),
+            )
+        else:
+            user = UserData.objects.get(email=filter_key['user_id']).values(
+                id=F('user_id'),
+                username=F('user_name'),
+                desc=F('description'),
+                pf_color=F('profile_color'),
+            )
 
         user['following'] = []
         user['follower'] = []
