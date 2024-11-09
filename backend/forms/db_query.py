@@ -40,6 +40,7 @@ class SortReview(QueryFilterStrategy):
     def sort_by(self, condition):
         """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
+            reviews_id=F('review__review_id'),
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
             faculties=F('review__course__faculty'),
