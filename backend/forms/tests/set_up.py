@@ -1,6 +1,11 @@
+"""Set up function for every feature."""
+
 from datetime import datetime
+from django.core.files.uploadedfile import SimpleUploadedFile
 from ..models import (CourseData, UserData,
-                      CourseReview, ReviewStat, UpvoteStat, FollowData)
+                      CourseReview, ReviewStat,
+                      UpvoteStat, FollowData,
+                      Note)
 
 
 def course_set_up():
@@ -28,6 +33,7 @@ def course_set_up():
         course.append(CourseData.objects.create(**insert_data))
 
     return course, test_data
+
 
 def review_set_up():
     """Set Up function for review data."""
@@ -118,6 +124,7 @@ def review_set_up():
 
     return review, review_data
 
+
 def user_set_up():
     """Set Up function for user data."""
     user = []
@@ -144,9 +151,9 @@ def user_set_up():
 
     return user
 
+
 def upvote_set_up(review_stat, user_data):
     """Set Up function for Upvote data."""
-
     upvote = []
 
     upvote_data = [
@@ -175,9 +182,9 @@ def upvote_set_up(review_stat, user_data):
             )
     return upvote, upvote_data
 
-def follower_setup(user):
-    """Setup function for follower feature."""
 
+def follower_setup(user):
+    """Set up function for follower feature."""
     follow = []
 
     for all_follow in user[1:]:
@@ -187,3 +194,27 @@ def follower_setup(user):
         ))
 
     return follow
+
+
+def note_generator(course, user, note_content):
+    """Generator function to yield Note instances with files."""
+
+
+
+def note_setup(course, user):
+    """Set up function for Note feature using a generator."""
+    note_content = "Yes, indeed"
+    note_file = SimpleUploadedFile(
+        name=f"{note_content[:10]}.pdf",
+        content=note_content.encode('utf-8'),
+        content_type="application/pdf"
+    )
+
+    note = Note.objects.create(
+        user=user[0],
+        course=course[0],
+        note_file=note_file
+    )
+
+    return note
+
