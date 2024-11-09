@@ -1,8 +1,9 @@
 """This module is for receive json data from the frontend to use in backend."""
 
+from typing import Optional
 from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
-from .models import ReviewStat, Summary, QA, BookMark
+from .models import ReviewStat, Note, QA, BookMark
 from .models import Inter, Normal, Special
 
 
@@ -76,6 +77,20 @@ class UserDataSchema(ModelSchema):
         fields = ['email']
 
 
+class UserDataEditSchema(ModelSchema):
+    """
+    Schema for editing existing user data.
+
+    Take all the fields from the accounts edit forms.
+    """
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = UserData
+        fields = '__all__'
+
+        
 class FollowSchema(Schema):
     """Schema for follower feature."""
     current_user_id: str
@@ -128,7 +143,6 @@ class ReviewPostSchema(Schema):
     - pen_name (str): User's preferred display name.
     - grade (str): Grade assigned to the course by the user.
     """
-
     email: str
     course_id: str
     course_type: str
@@ -138,6 +152,7 @@ class ReviewPostSchema(Schema):
     academic_year: int
     pen_name: str
     grade: str
+    instructor: Optional[str] = None
 
 
 class UpvotePostSchema(Schema):
@@ -148,7 +163,7 @@ class UpvotePostSchema(Schema):
     course_type: str
 
 
-class SummarySchema(ModelSchema):
+class NoteSchema(ModelSchema):
     """
     Schema for Summary model, representing summaries written by users.
 
@@ -158,8 +173,36 @@ class SummarySchema(ModelSchema):
     class Meta:
         """Metaclass for linking this schema to the target model."""
 
-        model = Summary
+        model = Note
         fields = '__all__'
+
+
+class NotePostSchema(Schema):
+    """
+    Schema for handling POST requests to upload a note associated with a course and user.
+
+    Attributes:
+        email (str): The email address of the user uploading the note.
+        course_id (str): The unique identifier of the course.
+        faculty (str): The faculty name associated with the course.
+        course_type (str): The type of course (e.g., 'Normal', 'Special').
+        file (str): The file to be uploaded (should be a PDF file). The file is represented as a string
+                      URL or base64-encoded data of the PDF file.
+
+    Example:
+        {
+            "email": "user@example.com",
+            "course_id": "123",
+            "faculty": "Computer Science",
+            "course_type": "Normal",
+            "file": "base64-encoded-string"
+        }
+    """
+    email : str
+    course_id: str
+    faculty: str
+    course_type: str
+    file : str
 
 
 class QASchema(ModelSchema):

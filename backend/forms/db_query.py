@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from django.db.models import F, Count
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData)
+from typing import Any
 
 
 class QueryStrategy(ABC):
@@ -13,14 +14,16 @@ class QueryStrategy(ABC):
     @abstractmethod
     def get_data(self):
         """Get the data from the database."""
+        pass
 
 
 class QueryFilterStrategy(ABC):
     """Abstract base class for make the query with condition."""
 
     @abstractmethod
-    def get_data(self, filter_key: dict):
+    def get_data(self, *args: Any, **kwargs: Any) -> Any:
         """Get the data from the database."""
+        pass
 
 
 class SortReview(QueryFilterStrategy):
@@ -32,12 +35,12 @@ class SortReview(QueryFilterStrategy):
         self.order = {"earliest": "review__review_id",
                       "latest": "-review__review_id", "upvote": "-upvote"}
 
-    def get_data(self, order_by):
+    def get_data(self, order_by: str, filter_by: str=None):
         """Get the sorted data from the database."""
-        self.sort_by(self.order[order_by])
+        self.sort_by(self.order[order_by], filter_by)
         return list(self.sorted_data)
 
-    def sort_by(self, condition):
+    def sort_by(self, condition: str, course_id: str=None) -> None:
         """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
@@ -50,10 +53,15 @@ class SortReview(QueryFilterStrategy):
             year=F('academic_year'),
             name=F('pen_name'),
             date=F('date_data'),
-            grades=F('grade')
+            grades=F('grade'),
+            professor=F('review__instructor')
         ).annotate(
             upvote=Count('upvotestat')
         ).order_by(condition)
+
+        if course_id:
+            self.sorted_data = self.sorted_data.filter(courses_id=course_id)
+
 
 
 class InterQuery(QueryStrategy):

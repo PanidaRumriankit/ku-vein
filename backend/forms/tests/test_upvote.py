@@ -56,7 +56,7 @@ class UpvotePostTests(TestCase):
                          {"error": "User data or Course Data are missing "
                                    "from the response body."})
 
-    def test_post_user_not_in_db_response(self):
+    def test_post_course_not_in_db_response(self):
         """Course that not in the database shouldn't be able to have a like."""
         response = self.upvote.post_data({
             "email": "solaire@gmail.com", "course_id": "6",
@@ -65,10 +65,10 @@ class UpvotePostTests(TestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertEqual(json.loads(response.content),
-                         {"error": "This user or This course isn't "
+                         {"error": "This course isn't "
                                    "in the database."})
 
-    def test_post_course_not_in_db_response(self):
+    def test_post_user_not_in_db_response(self):
         """User that not in the database shouldn't be able to like the review."""
         response = self.upvote.post_data({
             "email": "antonia@gmail.com", "course_id": "1",
@@ -77,7 +77,7 @@ class UpvotePostTests(TestCase):
 
         self.assertEqual(response.status_code, 401)
         self.assertEqual(json.loads(response.content),
-                         {"error": "This user or This course isn't "
+                         {"error": "This user isn't "
                                    "in the database."})
 
     def test_post_success_like_response(self):

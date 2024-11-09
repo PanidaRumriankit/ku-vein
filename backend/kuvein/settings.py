@@ -65,6 +65,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
 ]
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'forms', 'media')
+MEDIA_URL = '/media/'
+
+
 ROOT_URLCONF = 'kuvein.urls'
 
 CORS_URLS_REGEX = r"^/api/.*$"
@@ -115,7 +119,7 @@ LOGGING = {
     },
     "formatters": {
         "verbose": {
-            "format": "{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "format": "{name} {levelname} {asctime} {module} {message}",
             "style": "{",
         },
     }

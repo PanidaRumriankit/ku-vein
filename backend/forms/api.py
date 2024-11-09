@@ -1,5 +1,4 @@
 """This module use for send the data from Django to Next.js."""
-
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
@@ -7,10 +6,12 @@ from google.auth.transport import requests
 from decouple import config
 
 from .schemas import (ReviewPostSchema, UserDataSchema,
-                      UpvotePostSchema, FollowSchema)
+                      UpvotePostSchema, FollowSchema,
+                      UserDataEditSchema, NotePostSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
+from .db_put import PutFactory
 
 app = NinjaExtraAPI()
 
@@ -55,7 +56,7 @@ def get_course_data(request, course_type=None):
 
 
 @app.get("/review")
-def get_sorted_data(request, sort):
+def get_sorted_data(request, sort, course_id=None):
     """Use for send sorted data to frontend."""
     if not sort:
         return Response({"error": "Sort parameter is missing"}, status=400)
@@ -65,7 +66,7 @@ def get_sorted_data(request, sort):
 
     try:
         strategy = QueryFactory.get_query_strategy("sort")
-        return Response(strategy.get_data(sort))
+        return Response(strategy.get_data(order_by=sort, filter_by=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -105,11 +106,18 @@ def get_user(request, email):
         return Response({"error": str(e)}, status=400)
 
 
+@app.put("/user")
+def change_username(request, data: UserDataEditSchema):
+    """Change username for the user."""
+    strategy = PutFactory.get_put_strategy("user")
+    return strategy.put_data(data.model_dump())
+
+
 @app.post("/user")
 def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
-    strategy.post_data(data.model_dump())
+    return strategy.post_data(data.model_dump())
 
 
 @app.post("/follow", response={200: FollowSchema})
@@ -117,6 +125,7 @@ def add_follower(request, data: FollowSchema):
     """Use for add new follower to the database."""
     strategy = PostFactory.get_post_strategy("follow")
     return strategy.post_data(data.model_dump())
+
 
 @app.post("/review", response={200: ReviewPostSchema})
 def create_review(request, data: ReviewPostSchema):
@@ -129,6 +138,13 @@ def create_review(request, data: ReviewPostSchema):
 def add_upvote(request, data: UpvotePostSchema):
     """Use for add new upvote."""
     strategy = PostFactory.get_post_strategy("upvote")
+    return strategy.post_data(data.model_dump())
+
+
+@app.post("/note", response={200: NotePostSchema})
+def add_note(request, data: NotePostSchema):
+    """Use for add new Note object."""
+    strategy = PostFactory.get_post_strategy("note")
     return strategy.post_data(data.model_dump())
 
 

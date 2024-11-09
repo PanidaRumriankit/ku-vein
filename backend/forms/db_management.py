@@ -55,9 +55,10 @@ class TableManagement:
                            "auth_user_groups", "auth_group", "auth_permission",
                            "django_admin_log", "auth_user",
                            "django_content_type", "django_migrations",
-                           "django_session", "BookMark", "QA", "Summary",
-                           "ReviewStat",
-                           "CourseReview", "UserData", "Inter", "Normal",
+                           "django_session", "BookMark", "Comment",
+                           "QA", "Note", "UpvoteStat",
+                           "ReviewStat", "CourseReview",
+                           "FollowData", "UserData", "Inter", "Normal",
                            "Special", "CourseData"]
 
     def connect(self):
