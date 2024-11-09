@@ -139,33 +139,44 @@ class UserQuery(QueryFilterStrategy):
     def get_data(self, filter_key: dict):
         """Get the data from the database and return to the frontend."""
         if filter_key['email']:
-            self.user = UserData.objects.filter(email=filter_key['email']).values(
+            self.user = UserData.objects.filter(
+                email=filter_key['email']
+            ).values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
                 pf_color=F('profile_color'),
             ).first()
+
         elif filter_key['user_id']:
-            self.user = UserData.objects.filter(user_id=filter_key['user_id']).values(
+            self.user = UserData.objects.filter(
+                user_id=filter_key['user_id']
+            ).values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
-                pf_color=F('profile_color'),
+                pf_color=F('profile_color')
             ).first()
         try:
             self.user['following'] = []
             self.user['follower'] = []
         except (TypeError, KeyError):
-            return Response({"error": "This user isn't in the database."},
+            return Response({"error": "This user isn't"
+                                      " in the database."},
                             status=401)
 
         if self.user:
-            following = list(FollowData.objects.filter(follow_by=self.user['id']).values(
+            following = list(FollowData.objects.filter(
+                follow_by=self.user['id']
+            ).values(
                 username=F('this_user__user_name'),
                 desc=F('this_user__description')
             ))
 
-            follower = list(FollowData.objects.filter(this_user=self.user['id']).values(
+
+            follower = list(FollowData.objects.filter(
+                this_user=self.user['id']
+            ).values(
                 username=F('follow_by__user_name'),
                 desc=F('follow_by__description')
             ))
@@ -179,6 +190,51 @@ class UserQuery(QueryFilterStrategy):
         return self.user
 
 
+class NoteQuery(QueryFilterStrategy):
+    """Class for sent Note value to the frontend."""
+
+    def get_data(self, filter_key: dict):
+        """Get the user data from the database and return it to fronend."""
+        try:
+            course = CourseData.objects.get(course_id=filter_key['course_id'],
+                                            faculty=filter_key['faculty'],
+                                            course_type=filter_key['course_type'])
+            user = UserData.objects.get(email=filter_key['email'])
+
+            note = Note.objects.filter(
+                course=course,
+                user=user
+            ).values(
+                courses_id=F('course__course_id'),
+                courses_name=F('course__course_name'),
+                faculties=F('course__faculty'),
+                courses_type=F('course__course_type'),
+                u_id=F('user__user_id'),
+                username=F('user__user_name'),
+                pdf_file=F('note_file')
+            ).first()
+
+            relative_path = note['pdf_file']
+
+            if "/" in relative_path:
+                relative_path = relative_path.replace("/", "\\")
+
+            absolute_note_file_path = os.path.join(settings.BASE_DIR, 'media', relative_path)
+            note['pdf_file'] = absolute_note_file_path
+
+            return note
+
+        except CourseData.DoesNotExist:
+            return Response({"error": "This course"
+                                     " isn't in the database."}, status=401)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't "
+                               "in the database."}, status=401)
+
+        except Note.DoesNotExist:
+            return Response({"error": "This Note isn't "
+                               "in the database."}, status=401)
 class QuestionQuery(QueryStrategy):
     """Class for sending all the questions in the Q&A data."""
 
