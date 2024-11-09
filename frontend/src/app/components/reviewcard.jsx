@@ -2,11 +2,15 @@
 
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
-import UpvoteButton from "./upvotebutton.jsx";
+
+import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import Rating from '@mui/material/Rating';
+import StarIcon from '@mui/icons-material/Star';
 import {colorPallet} from "../constants";
 
+import {Button} from "@nextui-org/button";
 import {useRouter} from "next/navigation";
+import {useState} from "react"
 
 function RandomColor() {
   const index = Math.floor(Math.random() * colorPallet.length)
@@ -16,6 +20,28 @@ function RandomColor() {
 export default function ReviewCard({item, page = null}) {
   const router = useRouter();
   const color = RandomColor()
+  const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
+
+  const handleUpvote = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/upvote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({reviewId: item.id, email: item.email}), // Adjust the payload as needed
+      });
+
+      if (response.ok) {
+        setUpvoteCount(upvoteCount + 1); // Increase count locally on success
+      } else {
+        const errorText = await response.text();
+        console.log("Error upvoting:", response.status, errorText);
+      }
+    } catch (error) {
+      console.error("Error upvoting review:", error);
+    }
+  };
 
   const handleLegendClick = () => {
     router.push(`/course/${item.courses_id}`);
@@ -34,7 +60,14 @@ export default function ReviewCard({item, page = null}) {
           </legend>
         }
         <div className="text-black dark:text-white">
-          <Rating name="read-only" value={item.ratings} readOnly/>
+          <div className="justify-between flex">
+            <Rating value={item.ratings}
+                    readOnly
+                    emptyIcon={<StarIcon style={{opacity: 0}}/>}
+            />
+            {item.professor &&
+              <p className="text-gray-300">Instructor: {item.professor}</p>}
+          </div>
           <br/>
           <p>{item.review_text}</p>
           <br/>
@@ -48,7 +81,9 @@ export default function ReviewCard({item, page = null}) {
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
             <div className="text-left">
-              <UpvoteButton upvote={item.upvote}/>
+              <Button variant="light" onClick={handleUpvote}>
+                <ThumbUpTwoToneIcon/> {item.upvote}
+              </Button>
             </div>
             <div className="text-right">
               <ReportButton/>
