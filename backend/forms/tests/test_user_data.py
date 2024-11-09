@@ -2,7 +2,9 @@
 
 import json
 
+from .set_up import user_set_up
 from ..models import UserData
+from ..db_query import UserQuery
 from ..db_post import UserDataPost
 from ..db_put import UserDataPut
 from django.test import TestCase
@@ -68,6 +70,71 @@ class UserDataPostTests(TestCase):
         for i, user in enumerate(UserData.objects.all()):
             self.assertEqual(user.email, user_test_data[i]['email'])
 
+
+class UserQueryTest(TestCase):
+    """Test cases for GET request."""
+
+    def setUp(self):
+        """Set up for every test."""
+        self.user_query = UserQuery()
+        self.user = user_set_up()
+
+    def test_user_id_correct_output(self):
+        """Frontend dev can use user_id to get the data."""
+        user = self.user[0]
+        result = self.user_query.get_data(
+            {"email": None, "user_id": user.user_id}
+        )
+
+        expect = {
+            "id": user.user_id,
+            "username": user.user_name,
+            "desc": user.description,
+            "pf_color": user.profile_color,
+            "following": [],
+            "follower": [],
+            "follower_count": 0,
+            "following_count": 0,
+        }
+        self.assertEqual(result, expect)
+
+    def test_email_correct_output(self):
+        """Frontend dev can use email to get the data."""
+        user = self.user[0]
+        result = self.user_query.get_data(
+            {"email": user.email, "user_id": None}
+        )
+
+        expect = {
+            "id": user.user_id,
+            "username": user.user_name,
+            "desc": user.description,
+            "pf_color": user.profile_color,
+            "following": [],
+            "follower": [],
+            "follower_count": 0,
+            "following_count": 0,
+        }
+        self.assertEqual(result, expect)
+
+    def test_email_and_id_correct_output(self):
+        """Frontend dev can use both key to get the data."""
+        user = self.user[0]
+        result = self.user_query.get_data(
+            {"email": user.email, "user_id": user.user_id}
+        )
+
+        expect = {
+            "id": user.user_id,
+            "username": user.user_name,
+            "desc": user.description,
+            "pf_color": user.profile_color,
+            "following": [],
+            "follower": [],
+            "follower_count": 0,
+            "following_count": 0,
+        }
+        self.assertEqual(result, expect)
 
 class UserDataPutTest(TestCase):
     """Testcases for PUT request."""
