@@ -4,7 +4,8 @@ from typing import Union
 from abc import ABC, abstractmethod
 from django.db.models import F, Count
 from .models import (Inter, ReviewStat, Special,
-                     Normal, CourseData, UserData, FollowData)
+                     Normal, CourseData, UserData, FollowData,
+                     QA_Question, QA_Answer)
 from typing import Any
 
 
@@ -159,6 +160,33 @@ class UserQuery(QueryFilterStrategy):
         return user
 
 
+class QuestionQuery(QueryStrategy):
+    """Class for sending all the questions in the Q&A data."""
+
+    def get_data(self):
+        """Get the data from the database and return to the frontend."""
+        question_data = QA_Question.objects.select_related().values(
+            questions_id=F('question_id'),
+            questions_text=F('question_text'),
+            users=F('user')
+        )
+
+        return list(question_data)
+
+
+class AnswerQuery(QueryFilterStrategy):
+    """Class for sending all the answers for a question in the Q&A data."""
+
+    def get_data(self, question_id) -> Any:
+        """Get the data from the database and return to the frontend."""
+        answer_set = QA_Question.objects.select_related().get(question_id=question_id).qa_answer_set.all()
+        answer_data = answer_set.values(
+            text=F('answer_text')
+        )
+
+        return list(answer_data)
+
+
 class QueryFactory:
     """Factory class to handle query strategy selection."""
 
@@ -169,7 +197,9 @@ class QueryFactory:
         "normal": NormalQuery,
         "none": CourseQuery,
         "user": UserQuery,
-    }
+        "qa_question": QuestionQuery,
+        "qa_answer": AnswerQuery,
+        }
 
     @classmethod
     def get_query_strategy(cls, query: str)\
