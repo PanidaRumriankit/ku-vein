@@ -73,7 +73,8 @@ class ReviewPost(PostStrategy):
 
         review_instance = CourseReview.objects.create(user=self.user,
                                                       course=self.course,
-                                                      reviews=data['reviews'])
+                                                      reviews=data['reviews'],
+                                                      instructor=data['instructor'])
         ReviewStat.objects.create(review=review_instance,
                                   rating=data['rating'],
                                   academic_year=data['academic_year'],
@@ -145,14 +146,9 @@ class UpvotePost(PostStrategy):
         """Get the review_stat and user instance."""
         try:
             self.user = UserData.objects.get(email=data['email'])
-            self.course = CourseData.objects.get(
-                course_id=data['course_id'],
-                faculty=data['faculty'],
-                course_type=data['course_type']
-            )
 
             review = CourseReview.objects.get(
-                course=self.course
+                review_id=data['review_id']
             )
 
             self.review_stat = ReviewStat.objects.get(
@@ -160,11 +156,8 @@ class UpvotePost(PostStrategy):
             )
 
         except KeyError:
-            return Response({"error": "User data or Course Data are missing "
+            return Response({"error": "User data or Review Data are missing "
                                       "from the response body."}, status=400)
-        except CourseData.DoesNotExist:
-            return Response({"error": "This course isn't "
-                                      "in the database."}, status=401)
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
