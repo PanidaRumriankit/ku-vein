@@ -229,7 +229,7 @@ class NotePost(PostStrategy):
                                       "from the response body."}, status=400)
 
         except CourseData.DoesNotExist:
-            return Response({"error":"This course"
+            return Response({"error": "This course"
                                      " isn't in the database."}, status=401)
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
