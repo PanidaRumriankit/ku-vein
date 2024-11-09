@@ -231,24 +231,31 @@ def qa_setup():
     return questions, answers
 =======
 
-def note_setup(course, user):
-    """Set up function for Note feature."""
-    note = []
-    note_content = ["Yes, indeed", "The Darksign brands the Undead.",
-                    "And in this land, the Undead are corralled",
-                    "and led to the north, where they are locked away",
-                    "to await the end of the world... This is your fate."]
-
-    note_flies = [SimpleUploadedFile(name=f"{content[:10]}.pdf",
-                                     content=content.encode('utf-8'),
-                                     content_type="application/pdf")
-                  for content in note_content]
-
-    for i, note_create in enumerate(user):
-        note.append(Note.objects.create(
-            user=note_create,
+def note_generator(course, user, note_content):
+    """Generator function to yield Note instances with files."""
+    for i, content in enumerate(note_content):
+        note_file = SimpleUploadedFile(
+            name=f"{content[:10]}.pdf",
+            content=content.encode('utf-8'),
+            content_type="application/pdf"
+        )
+        yield Note.objects.create(
+            user=user,
             course=course[i],
-            note_file=note_flies[i]
-        ))
+            note_file=note_file
+        )
 
-    return note, note_flies
+
+def note_setup(course, user):
+    """Set up function for Note feature using a generator."""
+    note_content = [
+        "Yes, indeed", "The Darksign brands the Undead.",
+        "And in this land, the Undead are corralled",
+        "and led to the north, where they are locked away",
+        "to await the end of the world... This is your fate."
+    ]
+
+    note_generator_instance = note_generator(course, user, note_content)
+    notes = list(note_generator_instance)  # Collect all notes generated
+    return notes
+
