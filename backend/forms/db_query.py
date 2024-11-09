@@ -130,19 +130,19 @@ class UserQuery(QueryFilterStrategy):
     def get_data(self, filter_key: dict):
         """Get the data from the database and return to the frontend."""
         if filter_key['email']:
-            user = UserData.objects.get(email=filter_key['email']).values(
+            user = UserData.objects.filter(email=filter_key['email']).values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
                 pf_color=F('profile_color'),
-            )
+            ).first()
         else:
-            user = UserData.objects.get(email=filter_key['user_id']).values(
+            user = UserData.objects.filter(email=filter_key['user_id']).values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
                 pf_color=F('profile_color'),
-            )
+            ).first()
 
         user['following'] = []
         user['follower'] = []

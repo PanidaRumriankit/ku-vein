@@ -155,7 +155,7 @@ class UpvotePost(PostStrategy):
             )
 
         except KeyError:
-            return Response({"error": "User data or Course Data are missing "
+            return Response({"error": "User data or Review Data are missing "
                                       "from the response body."}, status=400)
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
