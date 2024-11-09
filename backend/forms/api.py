@@ -93,14 +93,14 @@ def test_auth(request):
 
 
 @app.get("/user")
-def get_user(request, email):
+def get_user(request, email=None, user_id=None):
     """Use for send the username and user id to the frontend."""
-    if not email:
-        return Response({"error": "Email parameter is missing"}, status=400)
+    if not email and not user_id:
+        return Response({"error": "Data for parameter is missing"}, status=400)
 
     try:
         strategy = QueryFactory.get_query_strategy("user")
-        return Response(strategy.get_data(email))
+        return Response(strategy.get_data({"email": email, "user_id": user_id}))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)

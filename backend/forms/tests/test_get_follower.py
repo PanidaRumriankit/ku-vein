@@ -17,13 +17,17 @@ class FollowerGetTest(TestCase):
 
     def test_default_following(self):
         """There should be following empty list in default."""
-        default_following = self.user.get_data(self.user_ins[0].email)
+        default_following = self.user.get_data(
+            {"email": self.user_ins[0].email, "user_id": None}
+        )
         self.assertEqual([], default_following['following'])
 
     def test_default_follower(self):
         """There should be follower empty list in default."""
         for everyone in self.user_ins[1:]:
-            default_following = self.user.get_data(everyone.email)
+            default_following = self.user.get_data(
+                {"email": everyone.email, "user_id": None}
+            )
             self.assertEqual([], default_following['follower'])
 
     def test_everyone_followed(self):
@@ -32,7 +36,9 @@ class FollowerGetTest(TestCase):
 
         Everyone name should appear in follower list of the first guy.
         """
-        all_followed = self.user.get_data(self.user_ins[0].email)
+        all_followed = self.user.get_data(
+            {"email": self.user_ins[0].email, "user_id": None}
+        )
         self.assertEqual([
             {'username': 'Siegmeyer of Catarina', 'desc': ''},
             {'username': 'Lucatiel of Mirrah', 'desc': ''},
@@ -48,8 +54,12 @@ class FollowerGetTest(TestCase):
             follow_by=self.user_ins[2]
         )
 
-        new_follower = self.user.get_data(self.user_ins[1].email)
-        new_following = self.user.get_data(self.user_ins[2].email)
+        new_follower = self.user.get_data(
+            {"email": self.user_ins[1].email, "user_id": None}
+        )
+        new_following = self.user.get_data(
+            {"email": self.user_ins[2].email, "user_id": None}
+        )
 
         self.assertTrue(
             any(follower['username'] == "Lucatiel of Mirrah"
@@ -69,7 +79,9 @@ class FollowerGetTest(TestCase):
 
         Because of follower_setup.
         """
-        all_followed = self.user.get_data(self.user_ins[0].email)
+        all_followed = self.user.get_data(
+            {"email": self.user_ins[0].email, "user_id": None}
+        )
         self.assertEqual(all_followed['follower_count'], 4)
 
     def test_following_count(self):
@@ -78,15 +90,21 @@ class FollowerGetTest(TestCase):
 
         Because of follower_setup.
         """
-        all_followed = self.user.get_data(self.user_ins[1].email)
+        all_followed = self.user.get_data(
+            {"email": self.user_ins[1].email, "user_id": None}
+        )
         self.assertEqual(all_followed['following_count'], 1)
 
     def test_default_following_count(self):
         """Currently, First user shouldn't follow anyone."""
-        all_followed = self.user.get_data(self.user_ins[0].email)
+        all_followed = self.user.get_data(
+            {"email": self.user_ins[0].email, "user_id": None}
+        )
         self.assertEqual(all_followed['following_count'], 0)
 
     def test_default_follower_count(self):
         """Currently, Second user shouldn't get followed by anyone."""
-        all_followed = self.user.get_data(self.user_ins[1].email)
+        all_followed = self.user.get_data(
+            {"email": self.user_ins[1].email, "user_id": None}
+        )
         self.assertEqual(all_followed['follower_count'], 0)
