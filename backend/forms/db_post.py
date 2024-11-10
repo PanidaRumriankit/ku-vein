@@ -200,7 +200,11 @@ class FollowPost(PostStrategy):
             return Response({"error": "Target user isn't "
                                       "in the database."}, status=401)
 
+<<<<<<< HEAD
         return self.add_or_delete()
+=======
+        FollowData.objects.create(this_user=target_user, follow_by=cur_user)
+>>>>>>> 4804ef0 (fix: I realized that my previous follower logic was incorrect; I swapped the follower and following user when creating the POST method.)
 
     def add_or_delete(self):
         """
