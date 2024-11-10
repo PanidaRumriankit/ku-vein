@@ -194,3 +194,34 @@ def follower_setup(user):
             follow_by=all_follow
         ))
     return follow
+
+def qa_setup():
+    test_user = UserData.objects.create(**{
+        "user_name": "Solaire of Astora",
+        "user_type": "Knight",
+        "email": "solaire@gmail.com"
+        })
+    questions = []
+    answers = []
+    qa_data = [
+        {
+            "question_text": "Test question",
+            "user": test_user
+        }
+    ]
+    for i,q in enumerate(qa_data):
+        _q = QA_Question.objects.create(**q)
+        answer = {"question_id": _q.question_id,
+                  "user": test_user,
+                  "answer_text": f"Test answer {i}"}
+        QA_Answer.objects.create(**answer)
+
+        question = {
+            "questions_id": _q.question_id,
+            "questions_text": _q.question_text,
+            "users": _q.user.user_id
+            }
+        answer = {"text": answer['answer_text']}
+        questions += [question]
+        answers += [answer]
+    return questions, answers
