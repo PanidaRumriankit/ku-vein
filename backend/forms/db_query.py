@@ -152,8 +152,7 @@ class UserQuery(QueryFilterStrategy):
             self.user['following'] = []
             self.user['follower'] = []
         except (TypeError, KeyError):
-            return Response({"error": "This user isn't"
-                                      " in the database."},
+            return Response({"error": "This user isn't in the database."},
                             status=401)
 
         if self.user:
@@ -182,9 +181,9 @@ class QuestionQuery(QueryStrategy):
     def get_data(self, *args, **kwargs):
         """Get the data from the database and return to the frontend."""
         question_data = QA_Question.objects.select_related().values(
-            questions_id=F('question_id'),
-            questions_text=F('question_text'),
-            users=F('user')
+                    questions_id=F('question_id'),
+                    questions_text=F('question_text'),
+                    users=F('user')
         )
 
         return list(question_data)
@@ -197,7 +196,7 @@ class AnswerQuery(QueryFilterStrategy):
         """Get the data from the database and return to the frontend."""
         try:
             question = QA_Question.objects.select_related().get(question_id=question_id)
-            answer_set = question   .qa_answer_set.all()
+            answer_set = question.qa_answer_set.all()
             answer_data = answer_set.values(
                 text=F('answer_text')
             )
