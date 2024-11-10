@@ -118,8 +118,8 @@ class FollowPostTest(TestCase):
 >>>>>>> 4804ef0 (fix: I realized that my previous follower logic was incorrect; I swapped the follower and following user when creating the POST method.)
 
         expected_data = [
-            {"this_user": self.user_ins[0].user_id,
-             "follow_by": expected.user_id}
+            {"this_user": expected.user_id,
+             "follow_by": self.user_ins[0].user_id}
             for expected in self.user_ins[1:]
         ]
 
@@ -146,8 +146,8 @@ class FollowPostTest(TestCase):
 >>>>>>> 4804ef0 (fix: I realized that my previous follower logic was incorrect; I swapped the follower and following user when creating the POST method.)
 
         expected_data = [
-            {"this_user": expected.user_id,
-             "follow_by": self.user_ins[0].user_id}
+            {"this_user": self.user_ins[0].user_id,
+             "follow_by": expected.user_id}
             for expected in self.user_ins[1:]
         ]
 
@@ -175,8 +175,8 @@ class FollowPostTest(TestCase):
         self.assertEqual(
             test_data,
             FollowData.objects.values(
-                current_user_id=F('this_user_id'),
-                target_user_id=F('follow_by_id')
+                current_user_id=F('follow_by_id'),
+                target_user_id=F('this_user_id')
             ).first()
         )
 
@@ -191,7 +191,7 @@ class FollowPostTest(TestCase):
             "target_user_id": self.user_ins[2].user_id},
 
             FollowData.objects.values(
-                current_user_id=F('this_user_id'),
-                target_user_id=F('follow_by_id')
+                current_user_id=F('follow_by_id'),
+                target_user_id=F('this_user_id')
             )[1]
         )

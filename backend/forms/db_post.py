@@ -213,16 +213,16 @@ class FollowPost(PostStrategy):
         If already follow. Then,unfollow delete the object.
         Else create new follower objects.
         """
-        exist = FollowData.objects.filter(this_user=self.user,
-                                          follow_by=self.target_user)
+        exist = FollowData.objects.filter(this_user=self.target_user,
+                                          follow_by=self.user)
         if exist.count():
             exist.delete()
             return Response({"success": "Successfully"
                                         " Unfollow the user."},
                             status=201)
 
-        FollowData.objects.create(this_user=self.user,
-                                  follow_by=self.target_user)
+        FollowData.objects.create(this_user=self.target_user,
+                                  follow_by=self.user)
 
         return Response({"success": "Successfully add follower data."},
                         status=201)
