@@ -6,6 +6,7 @@ import axios from 'axios';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import {ThemeSwitcher} from "./components/theme";
 import {ThemeProvider} from 'next-themes';
+import {userURL} from "./constants/backurl.js";
 import UserDropdown from "./components/userdropdown";
 import NotificationDropdown from "./components/notidropdown";
 import PersonIcon from '@mui/icons-material/Person';
@@ -55,7 +56,7 @@ function RootLayoutContent({children}) {
     // create user api
     axios({
     method: 'post',
-    url: 'http://127.0.0.1:8000/api/user',
+    url: userURL,
     data: {
       email: user.email
     }

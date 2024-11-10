@@ -8,6 +8,7 @@ import Search from './search';
 import Rating from '@mui/material/Rating';
 import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
+import {reviewURL} from '../constants/backurl.js'
 import StarIcon from '@mui/icons-material/Star';
 
 export default function AddReview() {
@@ -37,7 +38,7 @@ export default function AddReview() {
   async function addReview() {
     try {
       // create review api
-      const response = await fetch("http://127.0.0.1:8000/api/review", {
+      const response = await fetch(reviewURL, {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${idToken}`,

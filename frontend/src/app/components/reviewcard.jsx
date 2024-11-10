@@ -7,6 +7,7 @@ import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
+import upvoteURL from "../constants/backurl.js"
 import {colorPallet} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
 
@@ -39,7 +40,7 @@ export default function ReviewCard({item, page = null}) {
     setIsLoading(true);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/upvote", {
+      const response = await fetch(upvoteURL, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${idToken}`,
