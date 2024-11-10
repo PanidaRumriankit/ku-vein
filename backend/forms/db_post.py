@@ -34,8 +34,8 @@ class UserDataPost(PostStrategy):
             UserData.objects.create(
                 user_name=f"user_{UserData.objects.count()}",
                 user_type="student", email=data['email'])
-            logger.debug(f"created user: user_{UserData.objects.count()} "
-                            f"{data['email']}")
+            logger.debug(f"created user: user_{UserData.objects.count()}"
+                         f" {data['email']}")
             return Response({"success": "The User is successfully created."},
                             status=201)
 
@@ -71,16 +71,20 @@ class ReviewPost(PostStrategy):
             return Response({"error": "pen_name or academic_year are missing"},
                             status=400)
 
-        review_instance = CourseReview.objects.create(user=self.user,
-                                                      course=self.course,
-                                                      reviews=data['reviews'],
-                                                      instructor=data['instructor'])
-        ReviewStat.objects.create(review=review_instance,
-                                  rating=data['rating'],
-                                  academic_year=data['academic_year'],
-                                  pen_name=data['pen_name'],
-                                  date_data=datetime.now().date(),
-                                  grade=data['grade'])
+        review_instance = CourseReview.objects.create(
+            user=self.user,
+            course=self.course,
+            reviews=data['reviews'],
+            instructor=data['instructor']
+        )
+        ReviewStat.objects.create(
+            review=review_instance,
+            rating=data['rating'],
+            academic_year=data['academic_year'],
+            pen_name=data['pen_name'],
+            date_data=datetime.now().date(),
+            grade=data['grade']
+        )
 
         return Response({"success": "The Review is successfully created."},
                         status=201)
@@ -209,16 +213,16 @@ class FollowPost(PostStrategy):
         If already follow. Then,unfollow delete the object.
         Else create new follower objects.
         """
-        exist = FollowData.objects.filter(this_user=self.user,
-                                          follow_by=self.target_user)
+        exist = FollowData.objects.filter(this_user=self.target_user,
+                                          follow_by=self.user)
         if exist.count():
             exist.delete()
             return Response({"success": "Successfully"
                                         " Unfollow the user."},
                             status=201)
 
-        FollowData.objects.create(this_user=self.user,
-                                  follow_by=self.target_user)
+        FollowData.objects.create(this_user=self.target_user,
+                                  follow_by=self.user)
 
         return Response({"success": "Successfully add follower data."},
                         status=201)
@@ -257,9 +261,10 @@ class NotePost(PostStrategy):
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
                                       " isn't in the database."}, status=401)
+
         except UserData.DoesNotExist:
-            return Response({"error": "This user isn't "
-                                      "in the database."}, status=401)
+            return Response({"error": "This user isn't"
+                                      " in the database."}, status=401)
 
 
 class QuestionPost(PostStrategy):

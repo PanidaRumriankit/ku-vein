@@ -1,6 +1,11 @@
+"""Set up function for every feature."""
+
 from datetime import datetime
+from django.core.files.uploadedfile import SimpleUploadedFile
 from ..models import (CourseData, UserData,
-                      CourseReview, ReviewStat, UpvoteStat, FollowData,
+                      CourseReview, ReviewStat,
+                      UpvoteStat, FollowData,
+                      Note,
                       QA_Question, QA_Answer)
 
 
@@ -29,6 +34,7 @@ def course_set_up():
         course.append(CourseData.objects.create(**insert_data))
 
     return course, test_data
+
 
 def review_set_up():
     """Set Up function for review data."""
@@ -119,6 +125,7 @@ def review_set_up():
 
     return review, review_data
 
+
 def user_set_up():
     """Set Up function for user data."""
     user = []
@@ -145,9 +152,9 @@ def user_set_up():
 
     return user
 
+
 def upvote_set_up(review_stat, user_data):
     """Set Up function for Upvote data."""
-
     upvote = []
 
     upvote_data = [
@@ -176,9 +183,9 @@ def upvote_set_up(review_stat, user_data):
             )
     return upvote, upvote_data
 
-def follower_setup(user):
-    """Setup function for follower feature."""
 
+def follower_setup(user):
+    """Set up function for follower feature."""
     follow = []
 
     for all_follow in user[1:]:
@@ -188,34 +195,3 @@ def follower_setup(user):
         ))
 
     return follow
-
-def qa_setup():
-    test_user = UserData.objects.create(**{
-        "user_name": "Solaire of Astora",
-        "user_type": "Knight",
-        "email": "solaire@gmail.com"
-        })
-    questions = []
-    answers = []
-    qa_data = [
-        {
-            "question_text": "Test question",
-            "user": test_user
-        }
-    ]
-    for i,q in enumerate(qa_data):
-        _q = QA_Question.objects.create(**q)
-        answer = {"question_id": _q.question_id,
-                  "user": test_user,
-                  "answer_text": f"Test answer {i}"}
-        QA_Answer.objects.create(**answer)
-
-        question = {
-            "questions_id": _q.question_id,
-            "questions_text": _q.question_text,
-            "users": _q.user.user_id
-            }
-        answer = {"text": answer['answer_text']}
-        questions += [question]
-        answers += [answer]
-    return questions, answers
