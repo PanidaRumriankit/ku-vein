@@ -1,21 +1,22 @@
 "use client";
 
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import { useSession } from "next-auth/react";
-import { HexColorPicker } from 'react-colorful';
+import {useState, useEffect} from 'react';
+import {useSession} from "next-auth/react";
+import {HexColorPicker} from 'react-colorful';
 import BrushIcon from '@mui/icons-material/Brush';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import GetUserData from '../constants/getuser';
-import { useTheme } from 'next-themes';
+import {userURL} from "../constants/backurl";
+import {useTheme} from 'next-themes';
 
 export default function Profile() {
-  const { theme } = useTheme();
+  const {theme} = useTheme();
   const [activeTab, setActiveTab] = useState('posts');
-  const { data: session } = useSession();
+  const {data: session} = useSession();
   const [hovered, setHovered] = useState(false);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -46,6 +47,7 @@ export default function Profile() {
         });
         setColorBg(userData.pf_color);
       }
+
       fetchData();
     }
   }, [session]);
@@ -66,7 +68,7 @@ export default function Profile() {
         profile_color: putData.profile_color,
       };
 
-      const response = await fetch("http://127.0.0.1:8000/api/user", {
+      const response = await fetch(userURL, {
         method: 'PUT',
         headers: {
           "Authorization": `Bearer ${idToken}`,
@@ -91,24 +93,27 @@ export default function Profile() {
   }
 
   if (!putData) return null;
-  
+
   console.log('Patch Data:', putData);
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-white dark:bg-black">
+    <div
+      className="flex flex-col items-center min-h-screen bg-white dark:bg-black">
       {/* Profile Header */}
-      <div className="w-full p-6 rounded-md text-center text-black dark:text-white relative">
+      <div
+        className="w-full p-6 rounded-md text-center text-black dark:text-white relative">
         {/* Profile Background */}
         <div
           className="w-100 h-48 -mx-6"
-          style={{ background: colorBg }}
+          style={{background: colorBg}}
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           onClick={handleColorClick}
         >
           {hovered && (
-            <div className="w-full h-48 inset-0 bg-black bg-opacity-30 flex items-center justify-end pr-4 cursor-pointer">
-              <BrushIcon className="text-white text-3xl mt-36" />
+            <div
+              className="w-full h-48 inset-0 bg-black bg-opacity-30 flex items-center justify-end pr-4 cursor-pointer">
+              <BrushIcon className="text-white text-3xl mt-36"/>
             </div>
           )}
         </div>
@@ -125,7 +130,8 @@ export default function Profile() {
             />
           </div>
         ) : (
-          <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div> // Placeholder if no image
+          <div
+            className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div> // Placeholder if no image
         )}
 
         <div className="mt-16 mb-24">
@@ -161,7 +167,7 @@ export default function Profile() {
         PaperProps={{
           style: {
             backgroundColor: theme === 'dark' ? '#1e1e1e' : '#ffffff',
-            color: theme === 'dark' ? '#ffffff' : '#000000', 
+            color: theme === 'dark' ? '#ffffff' : '#000000',
           },
         }}
         onClose={() => {
@@ -178,7 +184,7 @@ export default function Profile() {
               color={colorBg}
               onChange={(color) => {
                 setColorBg(color);
-                setPutData({ ...putData, profile_color: color });
+                setPutData({...putData, profile_color: color});
               }}
               className="mx-auto"
             />
@@ -188,7 +194,7 @@ export default function Profile() {
               onChange={(e) => {
                 const newColor = e.target.value;
                 setColorBg(newColor);
-                setPutData({ ...putData, profile_color: newColor });
+                setPutData({...putData, profile_color: newColor});
               }}
               variant="outlined"
               size="small"
@@ -240,7 +246,10 @@ export default function Profile() {
             label="Username"
             variant="outlined"
             value={putData.user_name}
-            onChange={(e) => setPutData({ ...putData, user_name: e.target.value })}
+            onChange={(e) => setPutData({
+              ...putData,
+              user_name: e.target.value
+            })}
             margin="normal"
             InputProps={{
               style: {
@@ -259,7 +268,10 @@ export default function Profile() {
             label="Description"
             variant="outlined"
             value={putData.description}
-            onChange={(e) => setPutData({ ...putData, description: e.target.value })}
+            onChange={(e) => setPutData({
+              ...putData,
+              description: e.target.value
+            })}
             margin="normal"
             multiline
             rows={4}
@@ -290,7 +302,8 @@ export default function Profile() {
       </Dialog>
 
       {/* Tab Navigation */}
-      <div className="flex justify-around w-3/4 mt-6 border-b-2 border-gray-200">
+      <div
+        className="flex justify-around w-3/4 mt-6 border-b-2 border-gray-200">
         {['Reviews', 'Posts', 'Replies', 'Notes'].map(tab => (
           <button
             key={tab}
