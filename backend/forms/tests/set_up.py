@@ -195,6 +195,23 @@ def follower_setup(user):
         ))
     return follow
 
+def note_setup(course, user):
+    """Set up function for Note feature using a generator."""
+    note_content = "Yes, indeed"
+    note_file = SimpleUploadedFile(
+        name=f"{note_content[:10]}.pdf",
+        content=note_content.encode('utf-8'),
+        content_type="application/pdf"
+    )
+
+    note = Note.objects.create(
+        user=user[0],
+        course=course[0],
+        note_file=note_file
+    )
+
+    return note
+
 def qa_setup():
     test_user = UserData.objects.create(**{
         "user_name": "Solaire of Astora",
