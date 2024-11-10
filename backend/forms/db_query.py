@@ -10,7 +10,8 @@ from ninja.responses import Response
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
                      Note,
-                     QA_Question, QA_Answer)
+                     QA_Question, QA_Answer,
+                     UpvoteStat, CourseReview)
 from typing import Any
 
 
@@ -190,6 +191,43 @@ class UserQuery(QueryFilterStrategy):
         return self.user
 
 
+class UpvoteQuery(QueryFilterStrategy):
+    """Class for check upvote state."""
+
+    def get_data(self, filter_key: dict) -> bool|Response:
+        """
+        Check is the user already like the review.
+
+        :return
+        true if user already like the review
+        false if user doesn't like the review
+        """
+
+        try:
+            review = CourseReview.objects.get(review_id=filter_key['review_id'])
+            stat = ReviewStat.objects.get(review=review)
+            user = UserData.objects.get(email=filter_key['email'])
+
+            UpvoteStat.objects.get(review_stat=stat, user=user)
+
+            return True
+
+        except CourseReview.DoesNotExist:
+            return Response({"error": "This review"
+                                     " isn't in the database."}, status=401)
+
+        except ReviewStat.DoesNotExist:
+            return Response({"error": "This review_stat"
+                                      " isn't in the database."}, status=401)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user"
+                                      " isn't in the database."}, status=401)
+
+        except UpvoteStat.DoesNotExist:
+            return False
+
+
 class NoteQuery(QueryFilterStrategy):
     """Class for sent Note value to the frontend."""
 
@@ -276,14 +314,11 @@ class QueryFactory:
         "normal": NormalQuery,
         "none": CourseQuery,
         "user": UserQuery,
-<<<<<<< HEAD
         "qa_question": QuestionQuery,
         "qa_answer": AnswerQuery,
-        }
-=======
-        "note": NoteQuery
+        "note": NoteQuery,
+        "upvote": UpvoteQuery
     }
->>>>>>> 8903508 (feat: Add GET API endpoint for Note Feature)
 
     @classmethod
     def get_query_strategy(cls, query: str)\
