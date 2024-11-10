@@ -276,9 +276,14 @@ class QueryFactory:
         "normal": NormalQuery,
         "none": CourseQuery,
         "user": UserQuery,
+<<<<<<< HEAD
         "qa_question": QuestionQuery,
         "qa_answer": AnswerQuery,
         }
+=======
+        "note": NoteQuery
+    }
+>>>>>>> 8903508 (feat: Add GET API endpoint for Note Feature)
 
     @classmethod
     def get_query_strategy(cls, query: str)\

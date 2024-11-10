@@ -94,7 +94,11 @@ def test_auth(request):
 
 
 @app.get("/user")
+<<<<<<< HEAD
 def get_user(request, email=None, user_id=None):
+=======
+def get_user(request, email: str):
+>>>>>>> 8903508 (feat: Add GET API endpoint for Note Feature)
     """Use for send the username and user id to the frontend."""
     if not email and not user_id:
         return Response({"error": "Data for parameter is missing"}, status=400)
@@ -102,6 +106,23 @@ def get_user(request, email=None, user_id=None):
     try:
         strategy = QueryFactory.get_query_strategy("user")
         return Response(strategy.get_data({"email": email, "user_id": user_id}))
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@app.get("/note")
+def get_note_data(request, email: str, course_id: str, faculty: str, course_type: str):
+    """Use for send the note data to the frontend"""
+    if not email and not course_id and not faculty and not course_type:
+        return Response({"error": "Missing parameter."}, status=401)
+
+    filter_key = {"email": email, "course_id": course_id,
+                  "faculty": faculty, "course_type": course_type}
+
+    try:
+        strategy = QueryFactory.get_query_strategy("note")
+        return Response(strategy.get_data(filter_key))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
