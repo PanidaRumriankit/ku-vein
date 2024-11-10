@@ -1,11 +1,13 @@
+"""Test case for create Note feature."""
+
 import os
 import json
 
+from django.test import TestCase
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from ..models import Note
 from ..db_post import NotePost
-from django.test import TestCase
 from .set_up import user_set_up, course_set_up
 
 
@@ -60,7 +62,6 @@ class NotePostTests(TestCase):
         self.assertEqual(json.loads(response.content),
                          {"error": "Data is missing "
                                    "from the response body."})
-
 
     def test_response_missing_faculty(self):
         """Test missing faculty key in response body."""
@@ -159,7 +160,7 @@ class NotePostTests(TestCase):
                                      " created successfully."})
 
     def test_post_note(self):
-        """yes"""
+        """This should successfully create the note."""
         test_data = {
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
@@ -171,8 +172,8 @@ class NotePostTests(TestCase):
 
         note = Note.objects.first()
 
-        self.assertEqual(note.course.course_name, self.course_data[0]['course_name'])
+        self.assertEqual(note.course.course_name,
+                         self.course_data[0]['course_name'])
         self.assertEqual(note.user.user_name, self.user[0].user_name)
         self.assertTrue(note.note_file.name.startswith('note_files/'))
         self.assertTrue(note.note_file.name.endswith('.pdf'))
-
