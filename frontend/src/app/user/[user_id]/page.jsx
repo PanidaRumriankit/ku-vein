@@ -4,6 +4,7 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSession } from "next-auth/react";
+import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
 import { followURL } from '../../constants/backurl';
 
@@ -51,7 +52,6 @@ export default function UserProfile() {
 
         setLoading(false);
         setFollowerCount(data.follower_count);
-        // console.log('isfollowing:', isFollowing);
       }
       fetchData();
     }
@@ -130,14 +130,56 @@ export default function UserProfile() {
           <p className="text-gray-400">@{userData.user_id}</p>
           <p className="text-gray-500">{userData.description}</p>
           <div className="flex justify-center space-x-4 mt-4">
-            <div className="text-center">
-              <span className="block">{userData.following_count}</span>
-              <span className="text-gray-500">Following</span>
-            </div>
-            <div className="text-center">
-              <span className="block">{followerCount}</span>
-              <span className="text-gray-500">Followers</span>
-            </div>
+            {/* Following Count */}
+            <Popup trigger={
+              <div className="text-center cursor-pointer">
+                <span className="block">{userData.following_count}</span>
+                <span className="text-gray-500">Following</span>
+              </div>
+            } modal closeOnDocumentClick>
+              {close => (
+                <div className="p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+                  <h2 className="text-lg font-semibold mb-4">Following</h2>
+                  {userData.following.length > 0 ? (
+                    <ul>
+                      {userData.following.map((followedUser, index) => (
+                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
+                          <p className="font-medium">{followedUser.username}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc || 'No description'}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">No users followed.</p>
+                  )}
+                </div>
+              )}
+            </Popup>
+            {/* Follower Count */}
+            <Popup trigger={
+              <div className="text-center cursor-pointer">
+                <span className="block">{followerCount}</span>
+                <span className="text-gray-500">Follower</span>
+              </div>
+            } modal closeOnDocumentClick>
+              {close => (
+                <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+                  <h2 className="text-lg font-semibold mb-4">Followers</h2>
+                  {userData.follower.length > 0 ? (
+                    <ul>
+                      {userData.follower.map((followeredUser, index) => (
+                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
+                          <p className="font-medium">{followeredUser.username}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc || 'No description'}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">No users followed.</p>
+                  )}
+                </div>
+              )}
+            </Popup>
           </div>
 
           {/* Follow and Edit Profile Buttons */}
@@ -149,12 +191,6 @@ export default function UserProfile() {
               onClick={() => {
                 setIsFollowing(prev => !prev);
                 setFollowerCount(prev => (isFollowing ? prev - 1 : prev + 1));
-                // setUserData(prevUserData => ({
-                //   ...prevUserData,
-                //   follower_count: !isFollowing
-                //     ? prevUserData.follower_count + 1
-                //     : prevUserData.follower_count - 1,
-                // }));
                 followUser();
               }}
             >
