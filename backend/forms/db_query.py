@@ -179,7 +179,7 @@ class UserQuery(QueryFilterStrategy):
 class QuestionQuery(QueryStrategy):
     """Class for sending all the questions in the Q&A data."""
 
-    def get_data(self):
+    def get_data(self, *args, **kwargs):
         """Get the data from the database and return to the frontend."""
         question_data = QA_Question.objects.select_related().values(
             questions_id=F('question_id'),
@@ -193,14 +193,18 @@ class QuestionQuery(QueryStrategy):
 class AnswerQuery(QueryFilterStrategy):
     """Class for sending all the answers for a question in the Q&A data."""
 
-    def get_data(self, question_id) -> Any:
+    def get_data(self, question_id):
         """Get the data from the database and return to the frontend."""
-        answer_set = QA_Question.objects.select_related().get(question_id=question_id).qa_answer_set.all()
-        answer_data = answer_set.values(
-            text=F('answer_text')
-        )
+        try:
+            question = QA_Question.objects.select_related().get(question_id=question_id)
+            answer_set = question   .qa_answer_set.all()
+            answer_data = answer_set.values(
+                text=F('answer_text')
+            )
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question isn't in the database."}, status=400)
 
-        return list(answer_data)
+        return Response(list(answer_data), status=200)
 
 
 class QueryFactory:
