@@ -6,30 +6,38 @@ import ShareButton from "./sharebutton.jsx";
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
+
 import {colorPallet} from "../constants";
+import MakeApiRequest from '../constants/getupvotestatus';
 
 import {Button} from "@nextui-org/button";
 import {useRouter} from "next/navigation";
-import {useEffect, useState} from "react"
+import { useEffect, useState } from "react";
 import {useSession} from "next-auth/react";
 
 function RandomColor() {
-  const index = Math.floor(Math.random() * colorPallet.length)
+  const index = Math.floor(Math.random() * colorPallet.length);
   return colorPallet[index];
 }
 
 export default function ReviewCard({item, page = null}) {
   const router = useRouter();
-  const color = RandomColor()
+  const color = RandomColor();
   const {data: session} = useSession();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
+  const [isVoted, setIsVoted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [postData, setPostData] = useState({
     email: '',
     review_id: item.reviews_id
   });
-  const upvote = item.upvote || 0;
+  const idToken = session?.idToken || session?.accessToken;
+  const email = session?.email;
 
   const handleUpvote = async () => {
+    if (isLoading || !email || !idToken) return;
+    setIsLoading(true);
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/upvote", {
         method: "POST",
@@ -38,22 +46,23 @@ export default function ReviewCard({item, page = null}) {
           "Content-Type": "application/json",
           "email": email,
         },
-        body: JSON.stringify({review_id: postData.review_id, email: postData.email}), // Adjust the payload as needed
+        body: JSON.stringify({
+          review_id: postData.review_id,
+          email: postData.email
+        })
       });
 
-      if (!email || !idToken) {
-        console.log("ID Token or email is missing.");
-        return;
-      }
-
       if (response.ok) {
-        setUpvoteCount(upvoteCount + 1); // Increase count locally on success
+        setUpvoteCount(prevCount => isVoted ? prevCount - 1 : prevCount + 1);
+        setIsVoted(prevState => !prevState);
       } else {
         const errorText = await response.text();
         console.log("Error upvoting:", response.status, errorText);
       }
     } catch (error) {
       console.error("Error upvoting review:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,67 +71,20 @@ export default function ReviewCard({item, page = null}) {
   };
 
   useEffect(() => {
-    if (session) {
-      const email = session.email;
-      setPostData((prevData) => ({...prevData, email}));
-    }
-  }, [session]);
-
-  if (!session) return (
-    <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
-      <fieldset className="border border-gray-300 rounded-md p-4">
-        {page === "page" &&
-          <legend
-            style={{backgroundColor: color, borderColor: color}}
-            className="p-2 border-solid border rounded text-black font-bold dark:text-white"
-            onClick={handleLegendClick}
-          >
-            {item.courses_id} | {item.courses_name}
-          </legend>
-        }
-        <div className="text-black dark:text-white">
-          <div className="justify-between flex">
-            <Rating value={item.ratings}
-                    readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0}}/>}
-            />
-            {item.professor &&
-              <p className="text-gray-300">Instructor: {item.professor}</p>}
-          </div>
-          <br/>
-          <p>{item.review_text}</p>
-          <br/>
-          <div
-            className="flex items-center justify-between text-gray-300 text-right">
-            <p className="text-left">Grade: {item.grades}</p>
-            <p className="text-right">
-              {item.date} author: {item.name || item.username}
-            </p>
-          </div>
-          <hr/>
-          <div className="text-gray-300 flex justify-between mt-2">
-            <div className="text-left">
-              <Button variant="light" disabled>
-                <ThumbUpTwoToneIcon/> {upvote}
-              </Button>
-            </div>
-            <div className="text-right">
-              <ReportButton/>
-              <ShareButton/>
-            </div>
-          </div>
-        </div>
-      </fieldset>
-    </div>
-  );
-
-  const idToken = session.idToken || session.accessToken;
-  const email = session.email;
+    const fetchData = async () => {
+      if (session) {
+        setPostData(prevData => ({...prevData, email}));
+        const voteStatus = await MakeApiRequest(email, item.reviews_id);
+        setIsVoted(voteStatus);
+      }
+    };
+    fetchData();
+  }, [session, email, item.reviews_id]);
 
   return (
     <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
-        {page === "page" &&
+        {page === "page" && (
           <legend
             style={{backgroundColor: color, borderColor: color}}
             className="p-2 border-solid border rounded text-black font-bold dark:text-white"
@@ -130,31 +92,24 @@ export default function ReviewCard({item, page = null}) {
           >
             {item.courses_id} | {item.courses_name}
           </legend>
-        }
+        )}
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
-            <Rating value={item.ratings}
-                    readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0}}/>}
-            />
-            {item.professor &&
-              <p className="text-gray-300">Instructor: {item.professor}</p>}
+            <Rating value={item.ratings} readOnly emptyIcon={<StarIcon style={{ opacity: 0 }} />} />
+            {item.professor && <p className="text-gray-300">Instructor: {item.professor}</p>}
           </div>
           <br/>
           <p>{item.review_text}</p>
           <br/>
-          <div
-            className="flex items-center justify-between text-gray-300 text-right">
+          <div className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-left">Grade: {item.grades}</p>
-            <p className="text-right">
-              {item.date} author: {item.name || item.username}
-            </p>
+            <p className="text-right">{item.date} author: {item.name || item.username}</p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
             <div className="text-left">
-              <Button variant="light" onClick={handleUpvote}>
-                <ThumbUpTwoToneIcon/> {upvote}
+              <Button variant="light" onClick={handleUpvote} disabled={!session || isLoading}>
+                <ThumbUpTwoToneIcon/> {upvoteCount}
               </Button>
             </div>
             <div className="text-right">
