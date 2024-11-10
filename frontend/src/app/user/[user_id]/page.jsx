@@ -1,11 +1,11 @@
-// user/[user_id]/page.jsx
+// user/[user_id]
 "use client";
 
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import { useSession } from "next-auth/react";
 import GetUserData from '../../constants/getuser';
+import { followURL } from '../../constants/backurl';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function UserProfile() {
   const [personalData, setPersonalData] = useState(null);
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [followerCount, setFollowerCount] = useState(0);
 
   useEffect(() => {
     if (session && user_id) {
@@ -47,14 +48,24 @@ export default function UserProfile() {
           following: data.following,
           follower: data.follower,
         });
+
         setLoading(false);
-        if (userData && personalData) {
-          setIsFollowing(userData.follower?.includes(personalData.id));
-        }
+        setFollowerCount(data.follower_count);
+        // console.log('isfollowing:', isFollowing);
       }
       fetchData();
     }
   }, [session, user_id, router]);
+
+  useEffect(() => {
+    if (session && userData && personalData) {
+      // Check if the user is already following the target user (should use id instead of username but since id is not working, I will use username for now)
+      setIsFollowing(userData.follower.some(follower => follower.username === personalData.username));
+      console.log('User Data:', userData);
+      console.log('Personal Data:', personalData);
+      console.log('isfollowing:', isFollowing);
+    }
+  }, [session, userData, personalData]);
 
   if (loading || !userData) return <p>Loading...</p>;
 
@@ -75,7 +86,7 @@ export default function UserProfile() {
     }
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/follow", {
+      const response = await fetch(followURL, {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${idToken}`,
@@ -91,10 +102,10 @@ export default function UserProfile() {
       if (response.ok) {
         const data = await response.json();
         console.log('Success:', data);
-        setIsFollowing(!isFollowing);
-      } else {
-        console.log('Error:', response.status, response.statusText);
-      }
+
+        } else {
+          console.log('Error:', response.status, response.statusText);
+        }
     }
     catch (error) {
       console.error('Error:', error);
@@ -112,7 +123,7 @@ export default function UserProfile() {
         ></div>
 
         {/* Profile Picture */}
-          <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div>
+        <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div>
 
         <div className="mt-16 mb-24">
           <h1 className="text-2xl font-semibold">{userData.user_name}</h1>
@@ -124,7 +135,7 @@ export default function UserProfile() {
               <span className="text-gray-500">Following</span>
             </div>
             <div className="text-center">
-              <span className="block">{userData.follower_count}</span>
+              <span className="block">{followerCount}</span>
               <span className="text-gray-500">Followers</span>
             </div>
           </div>
@@ -135,7 +146,17 @@ export default function UserProfile() {
               className={`px-8 py-2 rounded ${
                 isFollowing ? 'bg-transparent text-[#44b3ab] outline outline-[#44b3ab] hover:outline-[#4ECDC4] hover:text-[#4ECDC4]' : 'text-white bg-[#4ECDC4] hover:bg-[#44b3ab]'
               }`}
-              onClick={followUser}
+              onClick={() => {
+                setIsFollowing(prev => !prev);
+                setFollowerCount(prev => (isFollowing ? prev - 1 : prev + 1));
+                // setUserData(prevUserData => ({
+                //   ...prevUserData,
+                //   follower_count: !isFollowing
+                //     ? prevUserData.follower_count + 1
+                //     : prevUserData.follower_count - 1,
+                // }));
+                followUser();
+              }}
             >
               {isFollowing ? 'Unfollow' : 'Follow'}
             </button>
