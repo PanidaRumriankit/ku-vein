@@ -106,10 +106,9 @@ class FollowPostTest(TestCase):
                 "target_user_id": self.user_ins[i + 1].user_id
             })
 
-        result_data = [
-            {"this_user": data.follow_by, "follow_by": data.this_user}
-            for data in FollowData.objects.all()
-        ]
+        result_data = list(FollowData.objects.values(
+            'this_user', 'follow_by'
+        ))
 
         expected_data = [
             {"this_user": expected.user_id,
@@ -128,10 +127,9 @@ class FollowPostTest(TestCase):
                 "target_user_id": self.user_ins[0].user_id
             })
 
-        result_data = [
-            {"this_user": data.follow_by, "follow_by": data.this_user}
-            for data in FollowData.objects.all()
-        ]
+        result_data = list(FollowData.objects.values(
+            'this_user', 'follow_by'
+        ))
 
         expected_data = [
             {"this_user": self.user_ins[0].user_id,
