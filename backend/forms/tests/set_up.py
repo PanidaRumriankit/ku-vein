@@ -198,7 +198,7 @@ def follower_setup(user):
 
     return follow
 
-<<<<<<< HEAD
+
 def qa_setup():
     test_user = UserData.objects.create(**{
         "user_name": "Solaire of Astora",
@@ -229,7 +229,7 @@ def qa_setup():
         questions += [question]
         answers += [answer]
     return questions, answers
-=======
+
 
 def note_generator(course, user, note_content):
     """Generator function to yield Note instances with files."""

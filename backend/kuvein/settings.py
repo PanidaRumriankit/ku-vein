@@ -75,6 +75,7 @@ CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # default Next.js
     "http://127.0.0.1:3000", # Next.js
+    "http://ku-vein.vercel.app", # Vercel frontend
 ]
 
 CORS_ALLOW_HEADERS = [

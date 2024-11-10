@@ -174,7 +174,6 @@ class UserQuery(QueryFilterStrategy):
                 desc=F('this_user__description')
             ))
 
-
             follower = list(FollowData.objects.filter(
                 this_user=self.user['id']
             ).values(
@@ -317,6 +316,7 @@ class AnswerQuery(QueryFilterStrategy):
         return Response(list(answer_data), status=200)
 
 
+
 class QueryFactory:
     """Factory class to handle query strategy selection."""
 
@@ -330,7 +330,7 @@ class QueryFactory:
         "qa_question": QuestionQuery,
         "qa_answer": AnswerQuery,
         "note": NoteQuery,
-        "upvote": UpvoteQuery
+        "upvote": UpvoteQuery,
     }
 
     @classmethod
