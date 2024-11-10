@@ -94,11 +94,7 @@ def test_auth(request):
 
 
 @app.get("/user")
-<<<<<<< HEAD
 def get_user(request, email=None, user_id=None):
-=======
-def get_user(request, email: str):
->>>>>>> 8903508 (feat: Add GET API endpoint for Note Feature)
     """Use for send the username and user id to the frontend."""
     if not email and not user_id:
         return Response({"error": "Data for parameter is missing"}, status=400)
