@@ -1,0 +1,73 @@
+"""Module for test POST Q&A feature."""
+import json
+
+from ..db_post import QuestionPost, AnswerPost
+from .set_up import user_set_up, qa_setup
+from django.test import TestCase
+
+
+class QuestionPostTest(TestCase):
+    """Class for test POST question."""
+    def setUp(self):
+        """Set up reusable instances for tests."""
+        users = user_set_up()
+        self.user = users[0]
+        self.Qpost = QuestionPost()
+        self.Apost = AnswerPost()
+        self.question = {
+            "question_text": "Test question",
+            "user_id": self.user.user_id
+        }
+
+    def test_post_question(self):
+        """Test normal post to /qa."""
+        response = self.Qpost.post_data(self.question)
+        self.assertEqual(json.loads(response.content)['success'], "QA_Question created successfully.")
+        self.assertEqual(response.status_code, 201)
+
+    def test_post_bad_question(self):
+        """Test bad post to /qa."""
+        del self.question['user_id']
+        response = self.Qpost.post_data(self.question)
+        self.assertEqual(json.loads(response.content)['error'], "Data is missing from the response body.")
+        self.assertEqual(response.status_code, 400)
+
+
+class AnswerPostTest(TestCase):
+    """Class for test POST answer."""
+
+    def setUp(self):
+        qa_setup()
+        users = user_set_up()
+        self.user = users[0]
+        self.Qpost = QuestionPost()
+        self.Apost = AnswerPost()
+        self.answer = {
+            'question_id': 1,
+            'answer_text': 'Test answer',
+            'user_id': self.user.user_id
+        }
+
+    def test_post_answer(self):
+        """Test normal post to /qa/answer."""
+        response = self.Apost.post_data(self.answer)
+        self.assertEqual(json.loads(response.content)['success'], "QA_Answer created successfully.")
+        self.assertEqual(response.status_code, 201)
+
+    def test_missing_field_post_answer(self):
+        del self.answer['user_id']
+        response = self.Apost.post_data(self.answer)
+        self.assertEqual(json.loads(response.content)['error'], "Data is missing from the response body.")
+        self.assertEqual(response.status_code, 400)
+
+    def test_bad_user_id_post_answer(self):
+        self.answer['user_id'] = 9876
+        response = self.Apost.post_data(self.answer)
+        self.assertEqual(json.loads(response.content)['error'], "This user isn't in the database.")
+        self.assertEqual(response.status_code, 400)
+
+    def test_bad_question_id_post_answer(self):
+        self.answer['question_id'] = 9876
+        response = self.Apost.post_data(self.answer)
+        self.assertEqual(json.loads(response.content)['error'], "This question isn't in the database.")
+        self.assertEqual(response.status_code, 400)
