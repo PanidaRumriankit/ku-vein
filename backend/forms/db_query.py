@@ -42,12 +42,12 @@ class SortReview(QueryFilterStrategy):
         self.order = {"earliest": "review__review_id",
                       "latest": "-review__review_id", "upvote": "-upvote"}
 
-    def get_data(self, order_by: str, filter_by: str=None):
+    def get_data(self, order_by: str, filter_by: str = None):
         """Get the sorted data from the database."""
         self.sort_by(self.order[order_by], filter_by)
         return list(self.sorted_data)
 
-    def sort_by(self, condition: str, course_id: str=None) -> None:
+    def sort_by(self, condition: str, course_id: str = None) -> None:
         """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
@@ -68,7 +68,6 @@ class SortReview(QueryFilterStrategy):
 
         if course_id:
             self.sorted_data = self.sorted_data.filter(courses_id=course_id)
-
 
 
 class InterQuery(QueryStrategy):
@@ -135,6 +134,7 @@ class UserQuery(QueryFilterStrategy):
     """Class for sent the value in the user data."""
 
     def __init__(self):
+        """Initialize method for UserQuery."""
         self.user = None
 
     def get_data(self, filter_key: dict):
@@ -194,7 +194,7 @@ class UserQuery(QueryFilterStrategy):
 class UpvoteQuery(QueryFilterStrategy):
     """Class for check upvote state."""
 
-    def get_data(self, filter_key: dict) -> bool|Response:
+    def get_data(self, filter_key: dict) -> bool | Response:
         """
         Check is the user already like the review.
 
@@ -202,9 +202,10 @@ class UpvoteQuery(QueryFilterStrategy):
         true if user already like the review
         false if user doesn't like the review
         """
-
         try:
-            review = CourseReview.objects.get(review_id=filter_key['review_id'])
+            review = CourseReview.objects.get(
+                review_id=filter_key['review_id']
+            )
             stat = ReviewStat.objects.get(review=review)
             user = UserData.objects.get(email=filter_key['email'])
 
@@ -214,7 +215,7 @@ class UpvoteQuery(QueryFilterStrategy):
 
         except CourseReview.DoesNotExist:
             return Response({"error": "This review"
-                                     " isn't in the database."}, status=401)
+                                      " isn't in the database."}, status=401)
 
         except ReviewStat.DoesNotExist:
             return Response({"error": "This review_stat"
@@ -234,9 +235,11 @@ class NoteQuery(QueryFilterStrategy):
     def get_data(self, filter_key: dict):
         """Get the user data from the database and return it to fronend."""
         try:
-            course = CourseData.objects.get(course_id=filter_key['course_id'],
-                                            faculty=filter_key['faculty'],
-                                            course_type=filter_key['course_type'])
+            course = CourseData.objects.get(
+                course_id=filter_key['course_id'],
+                faculty=filter_key['faculty'],
+                course_type=filter_key['course_type']
+            )
             user = UserData.objects.get(email=filter_key['email'])
 
             note = Note.objects.filter(
@@ -257,22 +260,28 @@ class NoteQuery(QueryFilterStrategy):
             if "/" in relative_path:
                 relative_path = relative_path.replace("/", "\\")
 
-            absolute_note_file_path = os.path.join(settings.BASE_DIR, 'media', relative_path)
+            absolute_note_file_path = os.path.join(
+                settings.BASE_DIR,
+                'media',
+                relative_path
+            )
             note['pdf_file'] = absolute_note_file_path
 
             return note
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
-                                     " isn't in the database."}, status=401)
+                                      " isn't in the database."}, status=401)
 
         except UserData.DoesNotExist:
-            return Response({"error": "This user isn't "
-                               "in the database."}, status=401)
+            return Response({"error": "This user isn't"
+                                      " in the database."}, status=401)
 
         except Note.DoesNotExist:
             return Response({"error": "This Note isn't "
                                "in the database."}, status=401)
+
+
 class QuestionQuery(QueryStrategy):
     """Class for sending all the questions in the Q&A data."""
 
