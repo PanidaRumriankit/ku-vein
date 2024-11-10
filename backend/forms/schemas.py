@@ -158,7 +158,7 @@ class ReviewPostSchema(Schema):
 class UpvotePostSchema(Schema):
     """Schema for increase the upvote number."""
     email: str
-    review_id: str
+    review_id: int
 
 
 class NoteSchema(ModelSchema):
