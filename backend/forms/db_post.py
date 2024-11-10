@@ -33,8 +33,8 @@ class UserDataPost(PostStrategy):
             UserData.objects.create(
                 user_name=f"user_{UserData.objects.count()}",
                 user_type="student", email=data['email'])
-            logger.debug(f"created user: user_{UserData.objects.count()} "
-                            f"{data['email']}")
+            logger.debug(f"created user: user_{UserData.objects.count()}"
+                         f" {data['email']}")
             return Response({"success": "The User is successfully created."},
                             status=201)
 
@@ -70,16 +70,20 @@ class ReviewPost(PostStrategy):
             return Response({"error": "pen_name or academic_year are missing"},
                             status=400)
 
-        review_instance = CourseReview.objects.create(user=self.user,
-                                                      course=self.course,
-                                                      reviews=data['reviews'],
-                                                      instructor=data['instructor'])
-        ReviewStat.objects.create(review=review_instance,
-                                  rating=data['rating'],
-                                  academic_year=data['academic_year'],
-                                  pen_name=data['pen_name'],
-                                  date_data=datetime.now().date(),
-                                  grade=data['grade'])
+        review_instance = CourseReview.objects.create(
+            user=self.user,
+            course=self.course,
+            reviews=data['reviews'],
+            instructor=data['instructor']
+        )
+        ReviewStat.objects.create(
+            review=review_instance,
+            rating=data['rating'],
+            academic_year=data['academic_year'],
+            pen_name=data['pen_name'],
+            date_data=datetime.now().date(),
+            grade=data['grade']
+        )
 
         return Response({"success": "The Review is successfully created."},
                         status=201)
@@ -255,11 +259,11 @@ class NotePost(PostStrategy):
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
-                                     " isn't in the database."}, status=401)
+                                      " isn't in the database."}, status=401)
 
         except UserData.DoesNotExist:
-            return Response({"error": "This user isn't "
-                                      "in the database."}, status=401)
+            return Response({"error": "This user isn't"
+                                      " in the database."}, status=401)
 
 
 class PostFactory:
