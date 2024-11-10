@@ -9,7 +9,7 @@ import {ThemeProvider} from 'next-themes';
 import UserDropdown from "./components/userdropdown";
 import NotificationDropdown from "./components/notidropdown";
 import PersonIcon from '@mui/icons-material/Person';
-import {SessionProvider, useSession, signIn} from "next-auth/react";
+import {SessionProvider, useSession, signIn, signOut} from "next-auth/react";
 import {useEffect, useState} from 'react';
 
 export default function RootLayout({children}) {
@@ -35,6 +35,10 @@ function RootLayoutContent({children}) {
     if (status === 'error') {
       console.error('Session error:', session);
       setError('There was an error loading the session. Please try refreshing the page.');
+    }
+
+    if (session?.error === "AccessTokenExpired") {
+      signOut();
     }
   }, [status, session]);
 
