@@ -3,12 +3,10 @@
 from datetime import datetime
 from django.core.files.uploadedfile import SimpleUploadedFile
 from ..models import (CourseData, UserData,
-                      CourseReview, ReviewStat, UpvoteStat, FollowData,
-                      QA_Question, QA_Answer,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
-                      Note)
-
+                      Note,
+                      QA_Question, QA_Answer)
 
 
 def course_set_up():
@@ -195,61 +193,4 @@ def follower_setup(user):
             this_user=user[0],
             follow_by=all_follow
         ))
-
     return follow
-
-
-def qa_setup():
-    test_user = UserData.objects.create(**{
-        "user_name": "Solaire of Astora",
-        "user_type": "Knight",
-        "email": "solaire@gmail.com"
-        })
-    questions = []
-    answers = []
-    qa_data = [
-        {
-            "question_text": "Test question",
-            "user": test_user
-        }
-    ]
-    for i,q in enumerate(qa_data):
-        _q = QA_Question.objects.create(**q)
-        answer = {"question_id": _q.question_id,
-                  "user": test_user,
-                  "answer_text": f"Test answer {i}"}
-        QA_Answer.objects.create(**answer)
-
-        question = {
-            "questions_id": _q.question_id,
-            "questions_text": _q.question_text,
-            "users": _q.user.user_id
-            }
-        answer = {"text": answer['answer_text']}
-        questions += [question]
-        answers += [answer]
-    return questions, answers
-
-
-def note_generator(course, user, note_content):
-    """Generator function to yield Note instances with files."""
-
-
-
-def note_setup(course, user):
-    """Set up function for Note feature using a generator."""
-    note_content = "Yes, indeed"
-    note_file = SimpleUploadedFile(
-        name=f"{note_content[:10]}.pdf",
-        content=note_content.encode('utf-8'),
-        content_type="application/pdf"
-    )
-
-    note = Note.objects.create(
-        user=user[0],
-        course=course[0],
-        note_file=note_file
-    )
-
-    return note
-

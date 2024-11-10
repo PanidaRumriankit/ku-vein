@@ -9,9 +9,8 @@ from django.db.models import F, Count
 from ninja.responses import Response
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
-                     Note,
                      QA_Question, QA_Answer,
-                     UpvoteStat, CourseReview)
+                     Note, UpvoteStat, CourseReview)
 from typing import Any
 
 
@@ -190,6 +189,37 @@ class UserQuery(QueryFilterStrategy):
         return self.user
 
 
+class QuestionQuery(QueryStrategy):
+    """Class for sending all the questions in the Q&A data."""
+
+    def get_data(self, *args, **kwargs):
+        """Get the data from the database and return to the frontend."""
+        question_data = QA_Question.objects.select_related().values(
+                    questions_id=F('question_id'),
+                    questions_text=F('question_text'),
+                    users=F('user')
+        )
+
+        return list(question_data)
+
+
+class AnswerQuery(QueryFilterStrategy):
+    """Class for sending all the answers for a question in the Q&A data."""
+
+    def get_data(self, question_id):
+        """Get the data from the database and return to the frontend."""
+        try:
+            question = QA_Question.objects.select_related().get(question_id=question_id)
+            answer_set = question.qa_answer_set.all()
+            answer_data = answer_set.values(
+                text=F('answer_text')
+            )
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question isn't in the database."}, status=400)
+
+        return Response(list(answer_data), status=200)
+
+
 class UpvoteQuery(QueryFilterStrategy):
     """Class for check upvote state."""
 
@@ -314,7 +344,6 @@ class AnswerQuery(QueryFilterStrategy):
             return Response({"error": "This question isn't in the database."}, status=400)
 
         return Response(list(answer_data), status=200)
-
 
 
 class QueryFactory:
