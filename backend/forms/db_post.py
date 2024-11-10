@@ -34,8 +34,8 @@ class UserDataPost(PostStrategy):
             UserData.objects.create(
                 user_name=f"user_{UserData.objects.count()}",
                 user_type="student", email=data['email'])
-            logger.debug(f"created user: user_{UserData.objects.count()} "
-                            f"{data['email']}")
+            logger.debug(f"created user: user_{UserData.objects.count()}"
+                         f" {data['email']}")
             return Response({"success": "The User is successfully created."},
                             status=201)
 
@@ -71,16 +71,20 @@ class ReviewPost(PostStrategy):
             return Response({"error": "pen_name or academic_year are missing"},
                             status=400)
 
-        review_instance = CourseReview.objects.create(user=self.user,
-                                                      course=self.course,
-                                                      reviews=data['reviews'],
-                                                      instructor=data['instructor'])
-        ReviewStat.objects.create(review=review_instance,
-                                  rating=data['rating'],
-                                  academic_year=data['academic_year'],
-                                  pen_name=data['pen_name'],
-                                  date_data=datetime.now().date(),
-                                  grade=data['grade'])
+        review_instance = CourseReview.objects.create(
+            user=self.user,
+            course=self.course,
+            reviews=data['reviews'],
+            instructor=data['instructor']
+        )
+        ReviewStat.objects.create(
+            review=review_instance,
+            rating=data['rating'],
+            academic_year=data['academic_year'],
+            pen_name=data['pen_name'],
+            date_data=datetime.now().date(),
+            grade=data['grade']
+        )
 
         return Response({"success": "The Review is successfully created."},
                         status=201)
@@ -200,11 +204,7 @@ class FollowPost(PostStrategy):
             return Response({"error": "Target user isn't "
                                       "in the database."}, status=401)
 
-<<<<<<< HEAD
         return self.add_or_delete()
-=======
-        FollowData.objects.create(this_user=target_user, follow_by=cur_user)
->>>>>>> 4804ef0 (fix: I realized that my previous follower logic was incorrect; I swapped the follower and following user when creating the POST method.)
 
     def add_or_delete(self):
         """
