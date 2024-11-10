@@ -131,6 +131,13 @@ def get_note_data(request, email: str, course_id: str, faculty: str, course_type
 @app.get("/upvote")
 def is_upvote(request, email: str, review_id: int):
     """Check is the user already like the review."""
+    if not email:
+        return Response({"error": "Missing email parameter."},
+                        status=401)
+    elif not review_id:
+        return Response({"error": "Missing review_id parameter."},
+                        status=401)
+
     strategy = QueryFactory.get_query_strategy("upvote")
     return Response(strategy.get_data({"email": email, "review_id": review_id}))
 
