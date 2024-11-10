@@ -210,6 +210,10 @@ class UpvoteQuery(QueryFilterStrategy):
 
             return True
 
+        except KeyError:
+            return Response({"error": "Missing review_id or"
+                                      " email from response body"}, status=400)
+
         except CourseReview.DoesNotExist:
             return Response({"error": "This review"
                                       " isn't in the database."}, status=401)
