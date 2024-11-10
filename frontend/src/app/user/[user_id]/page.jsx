@@ -112,19 +112,7 @@ export default function UserProfile() {
         ></div>
 
         {/* Profile Picture */}
-        {session?.user?.image ? (
-          <div className="absolute top-40 left-1/2 transform -translate-x-1/2">
-            <Image
-              src={session.user.image}
-              alt="Profile"
-              width={100}
-              height={100}
-              className="rounded-full border-gray-500 border-2"
-            />
-          </div>
-        ) : (
-          <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div> // Placeholder if no image
-        )}
+          <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div>
 
         <div className="mt-16 mb-24">
           <h1 className="text-2xl font-semibold">{userData.user_name}</h1>
