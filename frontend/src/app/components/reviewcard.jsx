@@ -7,7 +7,7 @@ import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
-import upvoteURL from "../constants/backurl.js"
+import {upvoteURL} from "../constants/backurl.js"
 import {colorPallet} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
 
