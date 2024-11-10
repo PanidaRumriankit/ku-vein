@@ -1,6 +1,7 @@
 """Module for test POST Q&A feature."""
 import json
 
+from ..models import UserData
 from ..db_post import QuestionPost, AnswerPost
 from .set_up import user_set_up, qa_setup
 from django.test import TestCase
@@ -10,8 +11,11 @@ class QuestionPostTest(TestCase):
     """Class for test POST question."""
     def setUp(self):
         """Set up reusable instances for tests."""
-        users = user_set_up()
-        self.user = users[0]
+        self.user = UserData.objects.create(
+            user_name='test user',
+            user_type='student',
+            email='test email yes'
+        )
         self.Qpost = QuestionPost()
         self.Apost = AnswerPost()
         self.question = {
@@ -37,13 +41,16 @@ class AnswerPostTest(TestCase):
     """Class for test POST answer."""
 
     def setUp(self):
-        qa_setup()
-        users = user_set_up()
-        self.user = users[0]
+        self.questions, self.answers = qa_setup()
+        self.user = UserData.objects.create(
+            user_name='test user too',
+            user_type='student',
+            email='test email yes right'
+        )
         self.Qpost = QuestionPost()
         self.Apost = AnswerPost()
         self.answer = {
-            'question_id': 1,
+            'question_id': self.questions[0]['questions_id'],
             'answer_text': 'Test answer',
             'user_id': self.user.user_id
         }

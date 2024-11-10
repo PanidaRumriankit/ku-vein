@@ -17,7 +17,8 @@ class QuestionGetTest(TestCase):
 
     def test_get_all_question(self):
         """Test normal get from /qa with no arguments."""
-        self.assertEqual(self.Qquery.get_data(), self.questions)
+        response = self.Qquery.get_data()
+        self.assertEqual(json.loads(response.content), self.questions)
 
 
 class AnswerGetTest(TestCase):
