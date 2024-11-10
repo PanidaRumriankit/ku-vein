@@ -59,11 +59,11 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (session && userData && personalData) {
-      // Check if the user is already following the target user (should use id instead of username but since id is not working, I will use username for now)
+      // Check if the user is already following the target user
       setIsFollowing(userData.follower.some(follower => follower.username === personalData.username));
-      console.log('User Data:', userData);
-      console.log('Personal Data:', personalData);
-      console.log('isfollowing:', isFollowing);
+      // console.log('User Data:', userData);
+      // console.log('Personal Data:', personalData);
+      // console.log('isfollowing:', isFollowing);
     }
   }, [session, userData, personalData]);
 
@@ -138,12 +138,16 @@ export default function UserProfile() {
               </div>
             } modal closeOnDocumentClick>
               {close => (
-                <div className="p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+                <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
                   <h2 className="text-lg font-semibold mb-4">Following</h2>
                   {userData.following.length > 0 ? (
                     <ul>
                       {userData.following.map((followedUser, index) => (
-                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
+                        <li
+                          key={index}
+                          className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
+                          // onClick={() => {router.push(`/user/${user_id}`);}}
+                          >
                           <p className="font-medium">{followedUser.username}</p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc || 'No description'}</p>
                         </li>
