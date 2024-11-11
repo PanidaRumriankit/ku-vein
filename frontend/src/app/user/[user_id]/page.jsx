@@ -67,6 +67,8 @@ export default function UserProfile() {
     }
   }, [session, userData, personalData]);
 
+  if (!session) return null;
+
   if (loading || !userData) return <p>Loading...</p>;
 
   const idToken = session?.idToken || session?.accessToken;
