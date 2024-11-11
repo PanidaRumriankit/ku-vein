@@ -53,8 +53,12 @@ function RootLayoutContent({children}) {
           },
           body: JSON.stringify({ email: session.user.email }),
         });
-
-        if (!response.ok) {
+    
+        if (response.status === 409) {
+          // 409 Conflict indicates the user already exists
+          console.log('User already exists.');
+          return;
+        } else if (!response.ok) {
           console.error('Error creating user:', response.statusText);
         }
       } catch (error) {
