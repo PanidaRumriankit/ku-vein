@@ -149,12 +149,12 @@ export default function UserProfile() {
                           // onClick={() => {router.push(`/user/${user_id}`);}}
                           >
                           <p className="font-medium">{followedUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc || 'No description'}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc}</p>
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-gray-500">This account doesn't follow anyone.</p>
+                    <p className="text-gray-500">{`This account doesn't follow anyone.`}</p>
                   )}
                 </div>
               )}
@@ -174,7 +174,7 @@ export default function UserProfile() {
                       {userData.follower.map((followeredUser, index) => (
                         <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
                           <p className="font-medium">{followeredUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc || 'No description'}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
                         </li>
                       ))}
                     </ul>

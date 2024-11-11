@@ -26,7 +26,6 @@ export default function RootLayout({children}) {
   );
 }
 
-
 function RootLayoutContent({children}) {
   const {data: session, status} = useSession();
   const [error, setError] = useState(null);
@@ -43,6 +42,31 @@ function RootLayoutContent({children}) {
     }
   }, [status, session]);
 
+  // Create user in database
+  useEffect(() => {
+    const CreateUser = async () => {
+      try {
+        const response = await fetch(userURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: session.user.email }),
+        });
+
+        if (!response.ok) {
+          console.error('Error creating user:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+      }
+    };
+
+    if (status === "authenticated") {
+      CreateUser();
+    }
+  }, [status, session]);
+
   if (status === 'loading') {
     return <div>Loading...</div>;
   }
@@ -50,32 +74,6 @@ function RootLayoutContent({children}) {
   if (error) {
     return <div>Error: {error}</div>;
   }
-
-  // Create user in database
-  const CreateUser = async () => {
-    try {
-      const response = await fetch(userURL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: user.email }),
-      });
-  
-      if (!response.ok) {
-        console.error('Error creating user:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Network error:', error);
-    }
-  };
-  
-  useEffect(() => {
-    if (status === "authenticated") {
-      CreateUser();
-    }
-  }, [status]);
-  
 
   return (
     <>
