@@ -147,7 +147,7 @@ class BookMark(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     instance = GenericForeignKey('content_type', 'object_id')
-    data_type = models.CharField(max_length=10, default=None)
+    data_type = models.CharField(max_length=20, default=None)
     user = models.ForeignKey(UserData, on_delete=models.PROTECT)
 
     class Meta:
@@ -160,7 +160,7 @@ class History(models.Model):
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     instance = GenericForeignKey('content_type', 'object_id')
-    data_type = models.CharField(max_length=10, default=None)
+    data_type = models.CharField(max_length=20, default=None)
     user = models.ForeignKey(UserData, on_delete=models.PROTECT)
 
     class Meta:
