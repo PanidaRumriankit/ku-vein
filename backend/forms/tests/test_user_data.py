@@ -87,7 +87,7 @@ class UserQueryTest(TestCase):
         )
 
         expect = {
-            "id": str(user.user_id),
+            "id": user.user_id,
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
@@ -106,7 +106,7 @@ class UserQueryTest(TestCase):
         )
 
         expect = {
-            "id": str(user.user_id),
+            "id": user.user_id,
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
@@ -125,7 +125,7 @@ class UserQueryTest(TestCase):
         )
 
         expect = {
-            "id": str(user.user_id),
+            "id": user.user_id,
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
