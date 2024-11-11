@@ -94,7 +94,7 @@ export default function ReviewCard({item, page = null}) {
             <Rating value={item.ratings} readOnly
                     emptyIcon={<StarIcon style={{opacity: 0}}/>}/>
             {item.professor &&
-              <p className="text-gray-300">Instructor: {item.professor}</p>}
+              <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
           <br/>
           <p>{item.review_text}</p>
@@ -103,7 +103,7 @@ export default function ReviewCard({item, page = null}) {
             className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-left">Grade: {item.grades}</p>
             <p
-              className="text-right">{item.date} author: {item.name || item.username}</p>
+              className="text-right">{item.date} โดย: {item.name || item.username}</p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
