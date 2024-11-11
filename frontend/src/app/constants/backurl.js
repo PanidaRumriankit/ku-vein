@@ -4,4 +4,5 @@ const userURL = backURL + '/user';
 const courseURL = backURL + '/course';
 const upvoteURL = backURL + '/upvote';
 
+export default backURL;
 export {reviewURL, userURL, courseURL, upvoteURL};
