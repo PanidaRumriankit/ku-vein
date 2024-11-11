@@ -7,13 +7,13 @@ import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
-import upvoteURL from "../constants/backurl.js"
+import {upvoteURL} from "../constants/backurl.js"
 import {colorPallet} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
 
 import {Button} from "@nextui-org/button";
 import {useRouter} from "next/navigation";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 
 function RandomColor() {
@@ -28,10 +28,6 @@ export default function ReviewCard({item, page = null}) {
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [postData, setPostData] = useState({
-    email: '',
-    review_id: item.reviews_id
-  });
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
@@ -48,17 +44,16 @@ export default function ReviewCard({item, page = null}) {
           "email": email,
         },
         body: JSON.stringify({
-          review_id: postData.review_id,
-          email: postData.email
+          review_id: item.reviews_id,
+          email: email
         })
       });
 
       if (response.ok) {
         setUpvoteCount(prevCount => isVoted ? prevCount - 1 : prevCount + 1);
-        setIsVoted(prevState => !prevState);
+        setIsVoted(!isVoted);
       } else {
-        const errorText = await response.text();
-        console.log("Error upvoting:", response.status, errorText);
+        console.log("Error upvoting:", await response.text());
       }
     } catch (error) {
       console.error("Error upvoting review:", error);
@@ -74,7 +69,6 @@ export default function ReviewCard({item, page = null}) {
   useEffect(() => {
     const fetchData = async () => {
       if (session) {
-        setPostData(prevData => ({...prevData, email}));
         const voteStatus = await MakeApiRequest(email, item.reviews_id);
         setIsVoted(voteStatus);
       }
@@ -96,20 +90,25 @@ export default function ReviewCard({item, page = null}) {
         )}
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
-            <Rating value={item.ratings} readOnly emptyIcon={<StarIcon style={{ opacity: 0 }} />} />
-            {item.professor && <p className="text-gray-300">Instructor: {item.professor}</p>}
+            <Rating value={item.ratings} readOnly
+                    emptyIcon={<StarIcon style={{opacity: 0}}/>}/>
+            {item.professor &&
+              <p className="text-gray-300">Instructor: {item.professor}</p>}
           </div>
           <br/>
           <p>{item.review_text}</p>
           <br/>
-          <div className="flex items-center justify-between text-gray-300 text-right">
+          <div
+            className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-left">Grade: {item.grades}</p>
-            <p className="text-right">{item.date} author: {item.name || item.username}</p>
+            <p
+              className="text-right">{item.date} author: {item.name || item.username}</p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
             <div className="text-left">
-              <Button variant="light" onClick={handleUpvote} disabled={!session || isLoading}>
+              <Button variant="light" onClick={handleUpvote}
+                      disabled={!session || isLoading}>
                 <ThumbUpTwoToneIcon/> {upvoteCount}
               </Button>
             </div>
