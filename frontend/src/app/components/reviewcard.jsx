@@ -92,7 +92,7 @@ export default function ReviewCard({item, page = null}) {
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0}}/>}/>
+                    emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
             {item.professor &&
               <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
