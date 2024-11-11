@@ -172,6 +172,7 @@ class UserQuery(QueryFilterStrategy):
 
         self.user['follower_count'] = len(self.user['follower'])
         self.user['following_count'] = len(self.user['following'])
+        self.user['id'] = str(self.user['id'])
 
         return self.user
 
