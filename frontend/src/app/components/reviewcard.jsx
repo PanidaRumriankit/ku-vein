@@ -74,7 +74,8 @@ export default function ReviewCard({item, page = null}) {
       }
     };
     fetchData();
-  }, [session, email, item.reviews_id]);
+    setUpvoteCount(item.upvote || 0);
+  }, [session, email, item]);
 
   return (
     <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
