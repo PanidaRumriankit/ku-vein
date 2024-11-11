@@ -154,7 +154,7 @@ export default function UserProfile() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-gray-500">No users followed.</p>
+                    <p className="text-gray-500">This account doesn't follow anyone.</p>
                   )}
                 </div>
               )}
@@ -179,7 +179,7 @@ export default function UserProfile() {
                       ))}
                     </ul>
                   ) : (
-                    <p className="text-gray-500">No users followed.</p>
+                    <p className="text-gray-500">This account has no follower.</p>
                   )}
                 </div>
               )}

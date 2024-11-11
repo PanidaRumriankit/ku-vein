@@ -12,6 +12,7 @@ import TextField from '@mui/material/TextField';
 import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
+import Popup from 'reactjs-popup';
 
 export default function Profile() {
   const {theme} = useTheme();
@@ -139,14 +140,56 @@ export default function Profile() {
           <p className="text-gray-400">@{putData.user_id}</p>
           <p className="text-gray-500">{putData.description}</p>
           <div className="flex justify-center space-x-4 mt-4">
-            <div className="text-center">
-              <span className="block">{putData.following_count}</span>
-              <span className="text-gray-500">Following</span>
-            </div>
-            <div className="text-center">
-              <span className="block">{putData.follower_count}</span>
-              <span className="text-gray-500">Followers</span>
-            </div>
+            {/* Following Count */}
+            <Popup trigger={
+              <div className="text-center cursor-pointer">
+                <span className="block">{putData.following_count}</span>
+                <span className="text-gray-500">Following</span>
+              </div>
+            } modal closeOnDocumentClick>
+              {close => (
+                <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+                  <h2 className="text-lg font-semibold mb-4">Following</h2>
+                  {putData.following.length > 0 ? (
+                    <ul>
+                      {putData.following.map((followedUser, index) => (
+                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
+                          <p className="font-medium">{followedUser.username}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">followedUser.desc</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">This account doesn't follow anyone.</p>
+                  )}
+                </div>
+              )}
+            </Popup>
+            {/* Follower Count */}
+            <Popup trigger={
+              <div className="text-center cursor-pointer">
+                <span className="block">{putData.follower_count}</span>
+                <span className="text-gray-500">Follower</span>
+              </div>
+            } modal closeOnDocumentClick>
+              {close => (
+                <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+                  <h2 className="text-lg font-semibold mb-4">Followers</h2>
+                  {putData.follower.length > 0 ? (
+                    <ul>
+                      {putData.follower.map((followeredUser, index) => (
+                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
+                          <p className="font-medium">{followeredUser.username}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">followeredUser.desc</p>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-500">This account has no follower.</p>
+                  )}
+                </div>
+              )}
+            </Popup>
           </div>
 
           {/* Edit Profile Button */}
