@@ -90,6 +90,10 @@ class ReviewStat(models.Model):
     pen_name = models.CharField(max_length=100, default=None)
     date_data = models.DateField(default=None)
     grade = models.CharField(max_length=2, default=None)
+    effort = models.IntegerField(default=None)
+    attendance = models.IntegerField(default=None)
+    scoring_criteria = models.CharField(max_length=20, default=None)
+    class_type = models.CharField(max_length=20, default=None)
 
     class Meta:
         app_label = 'forms'
