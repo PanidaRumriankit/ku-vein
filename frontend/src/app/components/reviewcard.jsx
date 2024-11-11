@@ -101,7 +101,7 @@ export default function ReviewCard({item, page = null}) {
           <br/>
           <div
             className="flex items-center justify-between text-gray-300 text-right">
-            <p className="text-left">Grade: {item.grades}</p>
+            <p className="text-left">เกรด: {item.grades}</p>
             <p
               className="text-right">{item.date} โดย: {item.name || item.username}</p>
           </div>
