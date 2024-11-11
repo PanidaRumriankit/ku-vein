@@ -35,7 +35,7 @@ export default function AddReview() {
     5: 'Very satisfied',
   };
 
-  async function addReview() {
+  async function AddingReview() {
     try {
       // create review api
       const response = await fetch(reviewURL, {
@@ -62,7 +62,7 @@ export default function AddReview() {
     }
   }
 
-  function getLabelText(value) {
+  function GetLabelText(value) {
     return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
   }
 
@@ -116,7 +116,7 @@ export default function AddReview() {
               <h3 className="mr-12 font-bold">ความพึงพอใจ</h3>
               <Rating
                 value={postData.rating}
-                getLabelText={getLabelText}
+                getLabelText={GetLabelText}
                 onChange={(event, newValue) => {
                   setPostData({...postData, rating: newValue});
                 }}
@@ -191,7 +191,7 @@ export default function AddReview() {
               <button
                 className="bg-[#4ECDC4] px-4 py-2 rounded text-white hover:bg-[#44b3ab]"
                 onClick={() => {
-                  addReview();
+                  AddingReview();
                   close();
                 }}
               >

@@ -22,7 +22,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (session && user_id) {
-      async function fetchData() {
+      async function FetchData() {
         const [data, personData] = await Promise.all([
           GetUserData(user_id, "user_id"),
           GetUserData(session.email, "email"),
@@ -53,7 +53,7 @@ export default function UserProfile() {
         setLoading(false);
         setFollowerCount(data.follower_count);
       }
-      fetchData();
+      FetchData();
     }
   }, [session, user_id, router]);
 

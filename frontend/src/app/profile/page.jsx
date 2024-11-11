@@ -31,7 +31,7 @@ export default function Profile() {
 
   useEffect(() => {
     if (session) {
-      async function fetchData() {
+      async function FetchData() {
         const userData = await GetUserData(session.user.email, "email");
         console.log('userData: ', userData);
         setPutData({
@@ -49,7 +49,7 @@ export default function Profile() {
         setColorBg(userData.pf_color);
       }
 
-      fetchData();
+      FetchData();
     }
   }, [session]);
 
