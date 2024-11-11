@@ -1,6 +1,8 @@
 """Models module for make query for the frontend."""
 
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class CourseData(models.Model):
@@ -138,10 +140,26 @@ class Comment(models.Model):
 
 
 class BookMark(models.Model):
-    review = models.ForeignKey(CourseReview, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    instance = GenericForeignKey('content_type', 'object_id')
+    data_type = models.CharField(max_length=10, default=None)
     user = models.ForeignKey(UserData, on_delete=models.PROTECT)
 
     class Meta:
         app_label = 'forms'
         db_table = 'BookMark'
-        unique_together = ('review', 'user')
+        unique_together = ('content_type', 'object_id', 'user')
+
+
+class History(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    instance = GenericForeignKey('content_type', 'object_id')
+    data_type = models.CharField(max_length=10, default=None)
+    user = models.ForeignKey(UserData, on_delete=models.PROTECT)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'History'
+        unique_together = ('content_type', 'object_id', 'user')
