@@ -107,6 +107,37 @@ def get_user(request, email=None, user_id=None):
         return Response({"error": str(e)}, status=400)
 
 
+@app.get("/note")
+def get_note_data(request, email: str, course_id: str, faculty: str, course_type: str):
+    """Use for send the note data to the frontend"""
+    if not email and not course_id and not faculty and not course_type:
+        return Response({"error": "Missing parameter."}, status=401)
+
+    filter_key = {"email": email, "course_id": course_id,
+                  "faculty": faculty, "course_type": course_type}
+
+    try:
+        strategy = QueryFactory.get_query_strategy("note")
+        return Response(strategy.get_data(filter_key))
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@app.get("/upvote")
+def is_upvote(request, email: str, review_id: int):
+    """Check is the user already like the review."""
+    if not email:
+        return Response({"error": "Missing email parameter."},
+                        status=401)
+    elif not review_id:
+        return Response({"error": "Missing review_id parameter."},
+                        status=401)
+
+    strategy = QueryFactory.get_query_strategy("upvote")
+    return Response(strategy.get_data({"email": email, "review_id": review_id}))
+
+
 @app.put("/user")
 def change_username(request, data: UserDataEditSchema):
     """Change username for the user."""
@@ -149,21 +180,17 @@ def add_note(request, data: NotePostSchema):
     return strategy.post_data(data.model_dump())
 
 
-@app.get("/qa/question")
-def get_question(request):
-    """Get all Q&A questions."""
-    strategy = QueryFactory.get_query_strategy("qa_question")
-    return Response(strategy.get_data())
-
-
-@app.get("/qa/answer")
-def get_answer(request, question_id):
+@app.get("/qa")
+def get_answer(request, question_id=None):
     """Get all Answers to a Q&A question."""
-    strategy = QueryFactory.get_query_strategy("qa_answer")
-    return Response(strategy.get_data(question_id))
+    if question_id is None:
+        strategy = QueryFactory.get_query_strategy("qa_question")
+    else:
+        strategy = QueryFactory.get_query_strategy("qa_answer")
+    return strategy.get_data(question_id)
 
 
-@app.post("/qa/question")
+@app.post("/qa")
 def add_question(request, data: QuestionCreateSchema):
     """Use for creating new question for Q&A."""
     strategy = PostFactory.get_post_strategy("question")

@@ -160,13 +160,22 @@ class UserDataPutTest(TestCase):
         self.assertEqual(json.loads(response.content)["error"],
                          "Some attribute is missing from the data.")
 
-    def test_response_user_doesnt_exist(self):
-        """Data provided user_id that doesn't match any user."""
-        self.user_data['user_id'] = 9999
+    def test_response_user_name_already_exist(self):
+        """Data provided user_name that is already exist."""
+        self.user_data['user_id'] = 1
         response = self.user_put.put_data(self.user_data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content)["error"],
-                         "The User with that ID does not exists.")
+                         "This username was taken.")
+        
+    def test_response_user_id_doesnt_exist(self):
+        """Data provided user_name that is already exist."""
+        self.user_data['user_id'] = 1
+        self.user_data['user_name'] = 'user that no one uses'
+        response = self.user_put.put_data(self.user_data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(json.loads(response.content)["error"],
+                            "The User with that ID does not exists.")
 
     def test_response_successful_put(self):
         """
@@ -183,7 +192,8 @@ class UserDataPutTest(TestCase):
 
     def test_response_non_existent_user(self):
         """Non existent user in PUT request."""
-        self.user_data['user_id'] = 2
+        self.user_data['user_id'] = 9999
+        self.user_data['user_name'] = 'no one took this name yet'
         response = self.user_put.put_data(self.user_data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content)['error'], "The User with that ID does not exists.")

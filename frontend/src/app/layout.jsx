@@ -6,10 +6,11 @@ import axios from 'axios';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import {ThemeSwitcher} from "./components/theme";
 import {ThemeProvider} from 'next-themes';
+import {userURL} from "./constants/backurl.js";
 import UserDropdown from "./components/userdropdown";
 import NotificationDropdown from "./components/notidropdown";
 import PersonIcon from '@mui/icons-material/Person';
-import {SessionProvider, useSession, signIn} from "next-auth/react";
+import {SessionProvider, useSession, signIn, signOut} from "next-auth/react";
 import {useEffect, useState} from 'react';
 
 export default function RootLayout({children}) {
@@ -36,6 +37,10 @@ function RootLayoutContent({children}) {
       console.error('Session error:', session);
       setError('There was an error loading the session. Please try refreshing the page.');
     }
+
+    if (session?.error === "AccessTokenExpired") {
+      signOut();
+    }
   }, [status, session]);
 
   if (status === 'loading') {
@@ -51,7 +56,7 @@ function RootLayoutContent({children}) {
     // create user api
     axios({
     method: 'post',
-    url: 'http://127.0.0.1:8000/api/user',
+    url: userURL,
     data: {
       email: user.email
     }

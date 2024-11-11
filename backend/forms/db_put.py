@@ -24,6 +24,14 @@ class UserDataPut(PutStrategy):
     def put_data(self, data: dict):
         """Add the data to the UserData."""
         try:
+            checkuser = UserData.objects.get(user_name=data['user_name'])
+        except UserData.DoesNotExist:
+            pass
+        else:
+            if checkuser.user_id != data['user_id']:
+                return Response({'error': 'This username was taken.'}, status=400)
+        
+        try:
             user = UserData.objects.get(user_id=data['user_id'])
 
             if '_state' in data.keys():
