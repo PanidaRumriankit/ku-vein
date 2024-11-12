@@ -189,37 +189,6 @@ class UserQuery(QueryFilterStrategy):
         return self.user
 
 
-class QuestionQuery(QueryStrategy):
-    """Class for sending all the questions in the Q&A data."""
-
-    def get_data(self, *args, **kwargs):
-        """Get the data from the database and return to the frontend."""
-        question_data = QA_Question.objects.select_related().values(
-                    questions_id=F('question_id'),
-                    questions_text=F('question_text'),
-                    users=F('user')
-        )
-
-        return list(question_data)
-
-
-class AnswerQuery(QueryFilterStrategy):
-    """Class for sending all the answers for a question in the Q&A data."""
-
-    def get_data(self, question_id):
-        """Get the data from the database and return to the frontend."""
-        try:
-            question = QA_Question.objects.select_related().get(question_id=question_id)
-            answer_set = question.qa_answer_set.all()
-            answer_data = answer_set.values(
-                text=F('answer_text')
-            )
-        except QA_Question.DoesNotExist:
-            return Response({"error": "This question isn't in the database."}, status=400)
-
-        return Response(list(answer_data), status=200)
-
-
 class UpvoteQuery(QueryFilterStrategy):
     """Class for check upvote state."""
 
@@ -315,18 +284,35 @@ class NoteQuery(QueryFilterStrategy):
                                "in the database."}, status=401)
 
 
+def clean_time_data(q):
+    """This function is used to clean datetime formatting."""
+    post_time = q['post_time']
+    q['post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
+    q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
+
+
 class QuestionQuery(QueryStrategy):
     """Class for sending all the questions in the Q&A data."""
 
     def get_data(self, *args, **kwargs):
         """Get the data from the database and return to the frontend."""
-        question_data = QA_Question.objects.select_related().values(
-                    questions_id=F('question_id'),
-                    questions_text=F('question_text'),
-                    users=F('user')
-        )
+        question_data = []
+        for question in QA_Question.objects.select_related().all():
+            question_data += [self.get_qa_data(question)]
 
-        return Response(list(question_data), status=200)
+        return Response(question_data, status=200)
+
+    def get_qa_data(self, question):
+        convo_cnt = question.qa_answer_set.count()
+        q_data = {
+                    'questions_id': question.question_id,
+                    'questions_text': question.question_text,
+                    'users': question.user.user_id,
+                    'num_convo': convo_cnt,
+                    'post_time': question.posted_time,
+                 }
+        clean_time_data(q_data)
+        return q_data
 
 
 class AnswerQuery(QueryFilterStrategy):
@@ -338,12 +324,20 @@ class AnswerQuery(QueryFilterStrategy):
             question = QA_Question.objects.select_related().get(question_id=question_id)
             answer_set = question.qa_answer_set.all()
             answer_data = answer_set.values(
-                text=F('answer_text')
+                answers_id=F('answer_id'),
+                text=F('answer_text'),
+                users=F('user'),
+                post_time=F('posted_time'),
             )
+
+            answer_data = list(answer_data)
+            for d in answer_data:
+                clean_time_data(d)
+
         except QA_Question.DoesNotExist:
             return Response({"error": "This question isn't in the database."}, status=400)
 
-        return Response(list(answer_data), status=200)
+        return Response(answer_data, status=200)
 
 
 class QueryFactory:
