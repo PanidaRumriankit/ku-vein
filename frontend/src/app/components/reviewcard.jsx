@@ -110,7 +110,7 @@ export default function ReviewCard({item, page = null}) {
             <div className="text-left">
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon/> {upvoteCount}
+                <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
               </Button>
             </div>
             <div className="text-right">
