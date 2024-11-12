@@ -239,19 +239,16 @@ class DatabaseBackup:
                   "r", encoding="UTF-8") as file:
             inter1 = json.load(file)
 
-        all_faculty = {second: {} for second in inter2.keys()}
-        first_term = {first: {} for first in inter1.keys()}
-        all_faculty.update(first_term)
-
+        all_faculty = {}
         for key, vals in inter2.items():
-            all_faculty[key].update(vals)
+            all_faculty[key] = vals
 
         for key, vals in inter1.items():
-            all_faculty[key].update(vals)
+            all_faculty[key] = vals
 
         self.data = all_faculty
 
-    def insert_data_to_remote(self):
+    def insert_data_to_remote(self, course_type):
         """Insert the backup database to the database server."""
         self.connect()
 
@@ -260,12 +257,12 @@ class DatabaseBackup:
             for faculty, course_data in self.data.items():
                 for course_id, course_name in course_data.items():
                     self.cursor.execute(
-                        "INSERT INTO CourseData (course_id, faculty,\
+                        "INSERT INTO CourseData (course_id,\
                             course_type, course_name) "
-                        "VALUES (%s, %s, %s, %s)", (course_id, faculty,
-                                                    "inter", course_name)
+                        "VALUES (%s, %s, %s, %s)", (course_id,
+                                                    course_type, course_name)
                     )
-                    print(faculty, course_id, "inter", course_name)
+                    print(faculty, course_id, course_type, course_name)
                 print("Inserting...\n")
 
             self.con.connection.commit()
