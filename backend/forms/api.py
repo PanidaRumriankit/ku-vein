@@ -167,9 +167,9 @@ def create_review(request, data: ReviewPostSchema):
 
 
 @app.post("/upvote", response={200: UpvotePostSchema})
-def add_upvote(request, data: UpvotePostSchema):
+def add_upvote(request, mode, data: UpvotePostSchema):
     """Use for add new upvote."""
-    strategy = PostFactory.get_post_strategy("upvote")
+    strategy = PostFactory.get_post_strategy(mode)
     return strategy.post_data(data.model_dump())
 
 
