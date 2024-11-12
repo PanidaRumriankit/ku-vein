@@ -4,6 +4,7 @@ import Image from "next/image";
 import Rating from '@mui/material/Rating';
 
 import Search from "../../components/search";
+import StarIcon from "@mui/icons-material/Star";
 
 export default function CourseLayout({children, params}) {
   const courseId = params.id;
@@ -49,7 +50,10 @@ export default function CourseLayout({children, params}) {
           <div className="mt-4">
             <div className="flex justify-between">
               <div>ความพึงพอใจ</div>
-              <div><Rating name="read-only" value={3} readOnly/></div>
+              <div>
+                <Rating name="read-only" value={3} readOnly
+                        emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
+              </div>
             </div>
 
             <div className="flex justify-between">
