@@ -57,7 +57,7 @@ class TableManagement:
                            "django_content_type", "django_migrations",
                            "django_session", "History", "BookMark", "Comment",
                            "QAQuestionUpvote", "QAAnswerUpvote",
-                           "QA", "QAAnswer", "QAQuestion",
+                           "QA", "QAAnswer", "QAQuestion", "Summary",
                            "Note", "UpvoteStat", "History",
                            "ReviewStat", "CourseReview",
                            "FollowData", "UserData", "Inter", "Normal",
@@ -256,16 +256,15 @@ class DatabaseBackup:
         self.connect()
 
         try:
-
-            for faculty, course_data in self.data.items():
-                for course_id, course_name in course_data.items():
-                    self.cursor.execute(
-                        "INSERT INTO CourseData (course_id,\
-                            course_type, course_name) "
-                        "VALUES (%s, %s, %s, %s)", (course_id,
-                                                    course_type, course_name)
-                    )
-                    print(faculty, course_id, course_type, course_name)
+            print(self.data)
+            for course_id, course_name in self.data.items():
+                self.cursor.execute(
+                    "INSERT INTO CourseData (course_id,\
+                        course_type, course_name) "
+                    "VALUES (%s, %s, %s)", (course_id,
+                                                course_type, course_name)
+                )
+                print(course_id, course_type, course_name)
                 print("Inserting...\n")
 
             self.con.connection.commit()
