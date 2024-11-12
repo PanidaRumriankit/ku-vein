@@ -83,7 +83,7 @@ export default function ReviewCard({item, page = null}) {
         {page === "page" && (
           <legend
             style={{backgroundColor: color, borderColor: color}}
-            className="p-2 border-solid border rounded text-black font-bold dark:text-white"
+            className="hover: cursor-pointer p-2 border-solid border rounded text-black font-bold dark:text-white"
             onClick={handleLegendClick}
           >
             {item.courses_id} | {item.courses_name}

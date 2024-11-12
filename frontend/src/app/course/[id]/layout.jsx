@@ -32,7 +32,7 @@ export default function CourseLayout({children, params}) {
             Q&A</p>
         </main>
 
-        <div className="mt-8 w-full max-w-6xl z-40">
+        <div className="mt-8 w-full max-w-6xl z-50">
           <Search page='page'/>
         </div>
 
