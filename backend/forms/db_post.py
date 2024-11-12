@@ -8,7 +8,8 @@ from ninja.responses import Response
 from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
                      UpvoteStat, FollowData, Note,
-                     QA_Question, QA_Answer)
+                     QA_Question, QA_Answer,
+                     QA_Question_Upvote, QA_Answer_Upvote)
 
 logger = logging.getLogger("user_logger")
 
@@ -109,7 +110,7 @@ class ReviewPost(PostStrategy):
                                       "in the database."}, status=401)
 
 
-class UpvotePost(PostStrategy):
+class ReviewUpvotePost(PostStrategy):
     """Class for created new UpvoteStat object."""
 
     def __init__(self):
@@ -152,7 +153,7 @@ class UpvotePost(PostStrategy):
             self.user = UserData.objects.get(email=data['email'])
 
             review = CourseReview.objects.get(
-                review_id=data['review_id']
+                review_id=data['id']
             )
 
             self.review_stat = ReviewStat.objects.get(
@@ -288,6 +289,45 @@ class QuestionPost(PostStrategy):
                         status=201)
 
 
+class QuestionUpvotePost(PostStrategy):
+    """Class for creating new QA_Question_Upvote object."""
+    def __init__(self):
+        self.question = None
+        self.user = None
+
+    def post_data(self, data: dict):
+        try:
+            self.question = QA_Question.objects.get(question_id=data['id'])
+            self.user = UserData.objects.get(email=data['email'])
+
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+        
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+        
+        return self.add_or_delete()
+
+    def add_or_delete(self):
+        
+        if upvote := QA_Question_Upvote.objects.filter(question=self.question,
+                                                       user=self.user):
+            upvote.delete()
+            return Response({"success": "Successfully unlike the Question."},
+                            status=201)
+
+        QA_Question_Upvote.objects.create(question=self.question,
+                                            user=self.user)
+        return Response({"success": "Successfully like the Question."},
+                        status=201)
+
+
 class AnswerPost(PostStrategy):
     """Class for creating new QA_Answer object."""
 
@@ -314,7 +354,47 @@ class AnswerPost(PostStrategy):
 
         return Response({"success": "QA_Answer created successfully."},
                         status=201)
+    
 
+class AnswerUpvotePost(PostStrategy):
+    """Class for creating new QA_Answern_Upvote object."""
+
+    def __init__(self):
+        self.answer = None
+        self.user = None
+
+    def post_data(self, data: dict):
+        try:
+            self.answer = QA_Answer.objects.get(answer_id=data['id'])
+            self.user = UserData.objects.get(email=data['email'])
+
+        except QA_Answer.DoesNotExist:
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+        
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+        
+        return self.add_or_delete()
+
+    def add_or_delete(self):
+        if upvote := QA_Answer_Upvote.objects.filter(answer=self.answer,
+                                                       user=self.user):
+            upvote.delete()
+            return Response({"success": "Successfully Unlike the Answer."},
+                            status=201)
+
+        QA_Answer_Upvote.objects.create(answer=self.answer,
+                                            user=self.user)
+
+        return Response({"success": "Successfully like the Answer."},
+                        status=201)
+    
 
 class PostFactory:
     """Factory class to handle query strategy selection."""
@@ -322,7 +402,9 @@ class PostFactory:
     strategy_map = {
         "review": ReviewPost,
         "user": UserDataPost,
-        "upvote": UpvotePost,
+        "review_upvote": ReviewUpvotePost,
+        "question_upvote": QuestionUpvotePost,
+        "answer_upvote": AnswerUpvotePost,
         "follow": FollowPost,
         "note": NotePost,
         "question": QuestionPost,
