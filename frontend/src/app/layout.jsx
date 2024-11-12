@@ -5,10 +5,11 @@ import "./globals.css";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import {ThemeSwitcher} from "./components/theme";
 import {ThemeProvider} from 'next-themes';
+import {userURL} from "./constants/backurl.js";
 import UserDropdown from "./components/userdropdown";
 import NotificationDropdown from "./components/notidropdown";
 import PersonIcon from '@mui/icons-material/Person';
-import {SessionProvider, useSession, signIn} from "next-auth/react";
+import {SessionProvider, useSession, signIn, signOut} from "next-auth/react";
 import {useEffect, useState} from 'react';
 
 export default function RootLayout({children}) {
@@ -25,15 +26,48 @@ export default function RootLayout({children}) {
   );
 }
 
-
 function RootLayoutContent({children}) {
   const {data: session, status} = useSession();
   const [error, setError] = useState(null);
 
+  // Check for session errors
   useEffect(() => {
     if (status === 'error') {
       console.error('Session error:', session);
       setError('There was an error loading the session. Please try refreshing the page.');
+    }
+
+    if (session?.error === "AccessTokenExpired") {
+      signOut();
+    }
+  }, [status, session]);
+
+  // Create user in database
+  useEffect(() => {
+    const CreateUser = async () => {
+      try {
+        const response = await fetch(userURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: session.user.email }),
+        });
+    
+        if (response.status === 409) {
+          // 409 Conflict indicates the user already exists
+          console.log('User already exists.');
+          return;
+        } else if (!response.ok) {
+          console.error('Error creating user:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+      }
+    };
+
+    if (status === "authenticated") {
+      CreateUser();
     }
   }, [status, session]);
 
@@ -45,21 +79,11 @@ function RootLayoutContent({children}) {
     return <div>Error: {error}</div>;
   }
 
-  if (status === "authenticated") {
-    let user = session.user;
-    // create user api
-    fetch("http://127.0.0.1:8000/api/user", {
-      method: 'post',
-      body: JSON.stringify({'email': user.email}),
-      credentials: 'same-origin',
-    });
-  }
-
   return (
     <>
-      <nav className="bg-[#4ECDC4] p-4">
+      <nav className="bg-[#4ECDC4] fixed top-0 left-0 w-full h-14 p-4 z-50">
         <div
-          className="container mx-auto flex justify-between items-center px-10">
+          className="container fixed mx-auto flex justify-between items-center px-10">
           <a href="/"
              className="text-white text-xl font-bold hover:text-gray-200">KU
             Vein</a>

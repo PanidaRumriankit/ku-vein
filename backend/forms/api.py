@@ -1,15 +1,17 @@
 """This module use for send the data from Django to Next.js."""
-
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from decouple import config
 
-from .schemas import ReviewPostSchema, UserDataSchema, UpvotePostSchema
+from .schemas import (ReviewPostSchema, UserDataSchema,
+                      UpvotePostSchema, FollowSchema,
+                      UserDataEditSchema, NotePostSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
+from .db_put import PutFactory
 
 app = NinjaExtraAPI()
 
@@ -54,7 +56,7 @@ def get_course_data(request, course_type=None):
 
 
 @app.get("/review")
-def get_sorted_data(request, sort):
+def get_sorted_data(request, sort, course_id=None):
     """Use for send sorted data to frontend."""
     if not sort:
         return Response({"error": "Sort parameter is missing"}, status=400)
@@ -64,7 +66,7 @@ def get_sorted_data(request, sort):
 
     try:
         strategy = QueryFactory.get_query_strategy("sort")
-        return Response(strategy.get_data(sort))
+        return Response(strategy.get_data(order_by=sort, filter_by=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -91,24 +93,69 @@ def test_auth(request):
 
 
 @app.get("/user")
-def get_user(request, email):
+def get_user(request, email=None, user_id=None):
     """Use for send the username and user id to the frontend."""
-    if not email:
-        return Response({"error": "Email parameter is missing"}, status=400)
+    if not email and not user_id:
+        return Response({"error": "Data for parameter is missing"}, status=400)
 
     try:
         strategy = QueryFactory.get_query_strategy("user")
-        return Response(strategy.get_data(email))
+        return Response(strategy.get_data({"email": email, "user_id": user_id}))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
+
+
+@app.get("/note")
+def get_note_data(request, email: str, course_id: str, faculty: str, course_type: str):
+    """Use for send the note data to the frontend"""
+    if not email and not course_id and not faculty and not course_type:
+        return Response({"error": "Missing parameter."}, status=401)
+
+    filter_key = {"email": email, "course_id": course_id,
+                  "faculty": faculty, "course_type": course_type}
+
+    try:
+        strategy = QueryFactory.get_query_strategy("note")
+        return Response(strategy.get_data(filter_key))
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@app.get("/upvote")
+def is_upvote(request, email: str, review_id: int):
+    """Check is the user already like the review."""
+    if not email:
+        return Response({"error": "Missing email parameter."},
+                        status=401)
+    elif not review_id:
+        return Response({"error": "Missing review_id parameter."},
+                        status=401)
+
+    strategy = QueryFactory.get_query_strategy("upvote")
+    return Response(strategy.get_data({"email": email, "review_id": review_id}))
+
+
+@app.put("/user")
+def change_username(request, data: UserDataEditSchema):
+    """Change username for the user."""
+    strategy = PutFactory.get_put_strategy("user")
+    return strategy.put_data(data.model_dump())
 
 
 @app.post("/user")
 def create_user(request, data: UserDataSchema):
     """Use for create new user."""
     strategy = PostFactory.get_post_strategy("user")
-    strategy.post_data(data.model_dump())
+    return strategy.post_data(data.model_dump())
+
+
+@app.post("/follow", response={200: FollowSchema})
+def add_follower(request, data: FollowSchema):
+    """Use for add new follower to the database."""
+    strategy = PostFactory.get_post_strategy("follow")
+    return strategy.post_data(data.model_dump())
 
 
 @app.post("/review", response={200: ReviewPostSchema})
@@ -122,6 +169,13 @@ def create_review(request, data: ReviewPostSchema):
 def add_upvote(request, data: UpvotePostSchema):
     """Use for add new upvote."""
     strategy = PostFactory.get_post_strategy("upvote")
+    return strategy.post_data(data.model_dump())
+
+
+@app.post("/note", response={200: NotePostSchema})
+def add_note(request, data: NotePostSchema):
+    """Use for add new Note object."""
+    strategy = PostFactory.get_post_strategy("note")
     return strategy.post_data(data.model_dump())
 
 

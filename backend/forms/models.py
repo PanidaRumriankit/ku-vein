@@ -73,6 +73,7 @@ class CourseReview(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='reviews')
     reviews = models.TextField(default=None)
+    instructor = models.CharField(max_length=40, default=None, null=True)
 
     class Meta:
         app_label = 'forms'
@@ -103,26 +104,37 @@ class UpvoteStat(models.Model):
         unique_together = ('review_stat', 'user')
 
 
-class Summary(models.Model):
+class Note(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
-
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    sum_text = models.TextField(default=None)
+    note_file = models.FileField(upload_to='note_files/', default=None)
 
     class Meta:
         app_label = 'forms'
-        db_table = 'Summary'
+        db_table = 'Note'
         unique_together = ('course', 'user')
 
 
 class QA(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
+    question_text = models.TextField(default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    comment = models.TextField(default=None)
 
     class Meta:
+        app_label = 'forms'
         db_table = 'QA'
+
+
+class Comment(models.Model):
+    question = models.ForeignKey(QA, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    comment = models.CharField(max_length=255, default=None)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'Comment'
+        unique_together = ('user', 'comment')
 
 
 class BookMark(models.Model):

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import GetDjangoApiData from "../constants/getcourses";
@@ -9,12 +9,9 @@ import { useEffect, useState } from 'react';
 export function handleSearch(term, searchParams, pathname, replace) {
   const params = new URLSearchParams(searchParams);
 
-  if (term)
-  {
+  if (term) {
     params.set('query', term);
-  }
-  else
-  {
+  } else {
     params.delete('query');
   }
 
@@ -25,29 +22,54 @@ export default function Search({ onCourseSelect, page }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const { theme, resolvedTheme } = useTheme();
+  const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const query = searchParams.get('query') || '';
-
   const loadOptions = async (inputValue) => {
     const apiData = await GetDjangoApiData();
 
-    const filteredData = apiData.filter((course) =>
-      course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
-      course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
-    );
+    if (!selectedFaculty) {
+      if (inputValue) {
+        const filteredCourses = apiData.filter(course =>
+          course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
+          course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
+        );
 
-    return filteredData.map((course) => ({
-      value: course.courses_id,
-      label: `${course.courses_id}\t-\t${course.courses_name}`,
-      courses_type: course.courses_type,
-      faculty: course.faculties || "Undefined"
-    }));
+        return filteredCourses.map(course => ({
+          value: course.courses_id,
+          label: `${course.courses_id} - ${course.courses_name}`,
+          courses_type: course.courses_type,
+          faculty: course.faculties,
+          isFaculty: false
+        }));
+      } else {
+        const faculties = Array.from(new Set(apiData.map(course => course.faculties || "Undefined")));
+        return faculties.map(faculty => ({
+          value: faculty,
+          label: faculty,
+          isFaculty: true
+        }));
+      }
+    } else {
+      const filteredCourses = apiData.filter(course =>
+        course.faculties === selectedFaculty &&
+        (course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
+         course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase()))
+      );
+
+      return filteredCourses.map(course => ({
+        value: course.courses_id,
+        label: `${course.courses_id} - ${course.courses_name}`,
+        courses_type: course.courses_type,
+        faculty: course.faculties,
+        isFaculty: false
+      }));
+    }
   };
 
   const customStyles = {
@@ -87,25 +109,33 @@ export default function Search({ onCourseSelect, page }) {
     }),
   };
 
+  const handleChange = async (selectedOption) => {
+    if (selectedOption.isFaculty) {
+      setSelectedFaculty(selectedOption.value);
+      await loadOptions("");
+    } else {
+      if (page === 'page') {
+        handleSearch(selectedOption.value, searchParams, pathname, replace);
+      }
+      if (onCourseSelect) {
+        onCourseSelect({
+          courses_id: selectedOption.value,
+          courses_type: selectedOption.courses_type,
+          faculty: selectedOption.faculty
+        });
+      }
+    }
+  };
+
   if (!mounted) return null;
 
   return (
     <div className="my-2 w-full max-w-5xl mx-auto">
       <AsyncSelect
+        key={selectedFaculty || "faculty-select"}
         cacheOptions
         loadOptions={loadOptions}
-        onChange={(selectedOption) => {
-          if (page === 'page') {
-            handleSearch(selectedOption ? selectedOption.value : '', searchParams, pathname, replace);
-          }
-          if (onCourseSelect) {
-            onCourseSelect(selectedOption ? {
-              courses_id: selectedOption.value,
-              courses_type: selectedOption.courses_type,
-              faculty: selectedOption.faculty
-            } : null);
-          }
-        }}
+        onChange={handleChange}
         defaultOptions
         placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
         styles={customStyles}

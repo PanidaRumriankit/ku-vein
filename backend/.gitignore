@@ -134,3 +134,8 @@ cython_debug/
 
 # Certificate
 ca.pem
+
+# Log file
+*.log
+
+database/

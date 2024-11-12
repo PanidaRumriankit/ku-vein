@@ -5,7 +5,9 @@ import logging
 from datetime import datetime
 from abc import ABC, abstractmethod
 from ninja.responses import Response
-from .models import CourseReview, UserData, CourseData, ReviewStat, UpvoteStat
+from .models import (CourseReview, UserData,
+                     CourseData, ReviewStat,
+                     UpvoteStat, FollowData, Note)
 
 logger = logging.getLogger("user_logger")
 
@@ -25,15 +27,16 @@ class UserDataPost(PostStrategy):
     def post_data(self, data: dict):
         """Add the data to the UserData."""
         try:
-            if not UserData.objects.filter(email=data['email']):
-                UserData.objects.create(
-                    user_name=f"user_{UserData.objects.count()}",
-                    user_type="student", email=data['email'])
-                logger.debug(f"created user: user_{UserData.objects.count()} "
-                             f"{data['email']}")
-                return Response({"success":
-                                 "The User is successfully created."},
-                                status=201)
+            UserData.objects.get(email=data['email'])
+
+        except UserData.DoesNotExist:
+            UserData.objects.create(
+                user_name=f"user_{UserData.objects.count()}",
+                user_type="student", email=data['email'])
+            logger.debug(f"created user: user_{UserData.objects.count()}"
+                         f" {data['email']}")
+            return Response({"success": "The User is successfully created."},
+                            status=201)
 
         except KeyError:
             return Response({"error": "email is missing "
@@ -67,15 +70,20 @@ class ReviewPost(PostStrategy):
             return Response({"error": "pen_name or academic_year are missing"},
                             status=400)
 
-        review_instance = CourseReview.objects.create(user=self.user,
-                                                      course=self.course,
-                                                      reviews=data['reviews'])
-        ReviewStat.objects.create(review=review_instance,
-                                  rating=data['rating'],
-                                  academic_year=data['academic_year'],
-                                  pen_name=data['pen_name'],
-                                  date_data=datetime.now().date(),
-                                  grade=data['grade'])
+        review_instance = CourseReview.objects.create(
+            user=self.user,
+            course=self.course,
+            reviews=data['reviews'],
+            instructor=data['instructor']
+        )
+        ReviewStat.objects.create(
+            review=review_instance,
+            rating=data['rating'],
+            academic_year=data['academic_year'],
+            pen_name=data['pen_name'],
+            date_data=datetime.now().date(),
+            grade=data['grade']
+        )
 
         return Response({"success": "The Review is successfully created."},
                         status=201)
@@ -83,18 +91,21 @@ class ReviewPost(PostStrategy):
     def get_instance(self, data: dict):
         """Get the course and user instance."""
         try:
-            self.user = UserData.objects.filter(email=data['email']).first()
-            self.course = CourseData.objects.filter(
+            self.user = UserData.objects.get(email=data['email'])
+            self.course = CourseData.objects.get(
                 course_id=data['course_id'],
                 faculty=data['faculty'],
-                course_type=data['course_type']).first()
+                course_type=data['course_type'])
         except KeyError:
             return Response({"error": "User data or Course Data are missing "
                                       "from the response body."}, status=400)
 
-        if not self.user or not self.course:
-            return Response({"error": "This user or This course "
-                                      "isn't in the database."}, status=401)
+        except CourseData.DoesNotExist:
+            return Response({"error": "This course isn't "
+                                      "in the database."}, status=401)
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't "
+                                      "in the database."}, status=401)
 
 
 class UpvotePost(PostStrategy):
@@ -113,49 +124,146 @@ class UpvotePost(PostStrategy):
         if isinstance(error_check, Response):
             return error_check
 
-        unlike = self.is_exist()
+        return self.add_or_delete()
 
-        if isinstance(unlike, Response):
-            return unlike
+    def add_or_delete(self):
+        """
+        Check is the user already like or not.
+
+        If already like. Then, unlike course review by delete the object.
+        Else create new upvote objects.
+        """
+        exist = UpvoteStat.objects.filter(review_stat=self.review_stat,
+                                          user=self.user)
+        if exist.count():
+            exist.delete()
+            return Response({"success": "Successfully Unlike the Review."},
+                            status=201)
 
         UpvoteStat.objects.create(review_stat=self.review_stat, user=self.user)
 
         return Response({"success": "Successfully Like the Review."},
                         status=201)
 
-    def is_exist(self):
-        """Check is the user already like or not."""
-        exist = UpvoteStat.objects.filter(review_stat=self.review_stat, user=self.user)
-        if exist.count():
-            exist.delete()
-            return Response({"success": "Successfully Unlike the Review."},
-                            status=201)
-
     def get_instance(self, data: dict):
         """Get the review_stat and user instance."""
         try:
-            self.user = UserData.objects.filter(email=data['email']).first()
-            self.course = CourseData.objects.filter(
-                course_id=data['course_id'],
-                faculty=data['faculty'],
-                course_type=data['course_type']
-            ).first()
+            self.user = UserData.objects.get(email=data['email'])
 
-            review = CourseReview.objects.filter(
-                course=self.course
-            ).first()
+            review = CourseReview.objects.get(
+                review_id=data['review_id']
+            )
 
-            self.review_stat = ReviewStat.objects.filter(
+            self.review_stat = ReviewStat.objects.get(
                 review=review
+            )
+
+        except KeyError:
+            return Response({"error": "User data or Review Data are missing "
+                                      "from the response body."}, status=400)
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't "
+                                      "in the database."}, status=401)
+        except CourseReview.DoesNotExist:
+            return Response({"error": "This review isn't "
+                                      "in the database."}, status=401)
+        except ReviewStat.DoesNotExist:
+            return Response({"error": "This review stat isn't "
+                                      "in the database."}, status=401)
+
+
+class FollowPost(PostStrategy):
+    """Class for created new FollowData."""
+
+    def __init__(self):
+        """Contain user, course, and review_stat instance."""
+        self.user = None
+        self.target_user = None
+
+    def post_data(self, data: dict):
+        """Add new follower to the database."""
+        try:
+            self.user = UserData.objects.filter(
+                user_id=data['current_user_id']
+            ).first()
+
+            self.target_user = UserData.objects.filter(
+                user_id=data['target_user_id']
             ).first()
 
         except KeyError:
-            return Response({"error": "User data or Course Data are missing "
+            return Response({"error": "current_user_id "
+                                      "or target_user_id are missing "
                                       "from the response body."}, status=400)
 
-        if not self.user or not self.course:
-            return Response({"error": "This user or This course isn't "
+        if not self.user:
+            return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
+        elif not self.target_user:
+            return Response({"error": "Target user isn't "
+                                      "in the database."}, status=401)
+
+        return self.add_or_delete()
+
+    def add_or_delete(self):
+        """
+        Check is the user already follow or not.
+
+        If already follow. Then,unfollow delete the object.
+        Else create new follower objects.
+        """
+        exist = FollowData.objects.filter(this_user=self.target_user,
+                                          follow_by=self.user)
+        if exist.count():
+            exist.delete()
+            return Response({"success": "Successfully"
+                                        " Unfollow the user."},
+                            status=201)
+
+        FollowData.objects.create(this_user=self.target_user,
+                                  follow_by=self.user)
+
+        return Response({"success": "Successfully add follower data."},
+                        status=201)
+
+
+class NotePost(PostStrategy):
+    """Class for created new Note object."""
+
+    def post_data(self, data: dict):
+        """Add new note to the database."""
+        try:
+            course = CourseData.objects.get(
+                course_id=data['course_id'],
+                faculty=data['faculty'],
+                course_type=data['course_type']
+            )
+
+            user = UserData.objects.get(email=data['email'])
+
+            if 'file' not in data or data['file'] is None:
+                return Response({"error": "File is missing."}, status=400)
+
+            Note.objects.create(
+                course=course,
+                user=user,
+                note_file=data['file']
+            )
+            return Response({"success": "Note"
+                                        " created successfully."},
+                            status=201)
+
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+
+        except CourseData.DoesNotExist:
+            return Response({"error": "This course"
+                                      " isn't in the database."}, status=401)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't"
+                                      " in the database."}, status=401)
 
 
 class PostFactory:
@@ -165,6 +273,8 @@ class PostFactory:
         "review": ReviewPost,
         "user": UserDataPost,
         "upvote": UpvotePost,
+        "follow": FollowPost,
+        "note": NotePost
     }
 
     @classmethod
