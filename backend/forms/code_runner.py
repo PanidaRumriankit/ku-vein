@@ -15,17 +15,17 @@ from forms.db_query import InterQuery
 from forms.db_management import TableManagement, DatabaseManagement, DatabaseBackup
 
 if __name__ == "__main__":
-    t = TableManagement()
-    t.drop_all_tables()
-    print(t.get_table_name())
+    # t = TableManagement()
+    # t.drop_all_tables()
+    # print(t.get_table_name())
 
     # After migrate uncomment this
-    # d = DatabaseBackup()
-    # d.exist_data_loader()
-    # d.insert_data_to_remote()
-    #
-    # da = DatabaseManagement()
-    # da.add_course_data_to_sub("inter")
+    d = DatabaseBackup()
+    d.exist_data_loader("inter")
+    d.insert_data_to_remote("inter")
+
+    da = DatabaseManagement()
+    da.add_course_data_to_sub("inter")
 
 
 

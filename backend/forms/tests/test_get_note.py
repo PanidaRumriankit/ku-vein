@@ -34,13 +34,14 @@ class NoteQueryTests(TestCase):
 
     def test_get_data(self):
         """It should return correct key."""
+        note = note_setup(self.course, self.user)
+
         filter_key = {
             'course_id': self.course[0].course_id,
-            'faculty': self.course[0].faculty,
+            'faculty': note.faculty,
             'course_type': self.course[0].course_type,
             'email': self.user[0].email
         }
-        note_setup(self.course, self.user)
 
         note_data = self.note_query.get_data(filter_key)
 
@@ -57,19 +58,20 @@ class NoteQueryTests(TestCase):
 
     def test_output_correct_value(self):
         """It should output correct value."""
+        note = note_setup(self.course, self.user)
+
         filter_key = {
             'course_id': self.course[0].course_id,
-            'faculty': self.course[0].faculty,
+            'faculty': note.faculty,
             'course_type': self.course[0].course_type,
             'email': self.user[0].email
         }
-        note_setup(self.course, self.user)
 
         note_data = self.note_query.get_data(filter_key)
         self.assertIn('note_files', note_data['pdf_file'])
         self.assertTrue(note_data['pdf_file'].endswith('.pdf'))
         self.assertEqual(note_data['courses_id'], self.course[0].course_id)
-        self.assertEqual(note_data['faculties'], self.course[0].faculty)
+        self.assertEqual(note_data['faculties'], note.faculty)
         self.assertEqual(note_data['courses_type'], self.course[0].course_type)
         self.assertEqual(note_data['u_id'], self.user[0].user_id)
         self.assertEqual(note_data['username'], self.user[0].user_name)

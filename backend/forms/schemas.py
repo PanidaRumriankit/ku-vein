@@ -3,7 +3,7 @@
 from typing import Optional
 from ninja import ModelSchema, Schema
 from .models import CourseData, UserData, CourseReview
-from .models import ReviewStat, Note, QA, BookMark
+from .models import ReviewStat, Note, QA
 from .models import Inter, Normal, Special
 
 
@@ -153,6 +153,10 @@ class ReviewPostSchema(Schema):
     pen_name: str
     grade: str
     instructor: Optional[str] = None
+    effort: int
+    attendance: int
+    scoring_criteria: str
+    class_type: str
 
 
 class UpvotePostSchema(Schema):
@@ -216,16 +220,3 @@ class QASchema(ModelSchema):
         model = QA
         fields = '__all__'
 
-
-class BookMarkSchema(ModelSchema):
-    """
-    Schema for BookMark model, representing bookmarked courses by users.
-
-    Includes all fields in the BookMark model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = BookMark
-        fields = '__all__'
