@@ -7,7 +7,6 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 
 class CourseData(models.Model):
     course_id = models.CharField(max_length=20, default=None)
-    faculty = models.CharField(max_length=100, default=None)
     course_type = models.CharField(max_length=20, default=None)
     course_name = models.TextField(default=None)
 
@@ -75,6 +74,7 @@ class CourseReview(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='reviews')
     reviews = models.TextField(default=None)
+    faculty = models.CharField(max_length=100, default=None)
     instructor = models.CharField(max_length=40, default=None, null=True)
 
     class Meta:
@@ -114,6 +114,7 @@ class Note(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    faculty = models.CharField(max_length=100, default=None)
     note_file = models.FileField(upload_to='note_files/', default=None)
 
     class Meta:
@@ -125,6 +126,7 @@ class Note(models.Model):
 class QA(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
     question_text = models.TextField(default=None)
+    faculty = models.CharField(max_length=100, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
 
     class Meta:
