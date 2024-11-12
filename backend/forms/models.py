@@ -13,7 +13,7 @@ class CourseData(models.Model):
     class Meta:
         app_label = 'forms'
         db_table = 'CourseData'  # Specify the exact table name in MySQL
-        unique_together = ('course_id', 'faculty', 'course_type')
+        unique_together = ('course_id', 'course_type')
 
 
 class Inter(models.Model):
