@@ -54,6 +54,7 @@ class UserData(models.Model):
     profile_color = models.CharField(max_length=7, default="#ffffff")
 
     class Meta:
+        app_label = 'forms'
         db_table = 'UserData'
 
 
@@ -120,10 +121,21 @@ class QA_Question(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
     question_text = models.TextField(default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    posted_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'forms'
         db_table = 'QAQuestion'
+
+
+class QA_Question_Upvote(models.Model):
+    question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'QAQuestionUpvote'
+        unique_together = ('question', 'user')
 
 
 class QA_Answer(models.Model):
@@ -131,10 +143,21 @@ class QA_Answer(models.Model):
     question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=255, default=None)
+    posted_time = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         app_label = 'forms'
         db_table = 'QAAnswer'
+
+
+class QA_Answer_Upvote(models.Model):
+    answer = models.ForeignKey(QA_Answer, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'QAAnswerUpvote'
+        unique_together = ('answer', 'user')
 
 
 class BookMark(models.Model):
