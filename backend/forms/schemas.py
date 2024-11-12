@@ -153,6 +153,10 @@ class ReviewPostSchema(Schema):
     pen_name: str
     grade: str
     instructor: Optional[str] = None
+    effort: int
+    attendance: int
+    scoring_criteria: str
+    class_type: str
 
 
 class UpvotePostSchema(Schema):

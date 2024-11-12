@@ -37,7 +37,7 @@ class NotePostTests(TestCase):
         """Test missing email key in response body."""
         test_data = {
             "course_id": self.course_data[0]['course_id'],
-            "faculty":  self.course_data[0]['faculty'],
+            "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -52,7 +52,7 @@ class NotePostTests(TestCase):
         """Test missing course_id key in response body."""
         test_data = {
             "email": self.user[0].email,
-            "faculty": self.course_data[0]['faculty'],
+            "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -83,7 +83,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
-            "faculty": self.course_data[0]['faculty'],
+            "faculty": "banana",
             "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
@@ -98,7 +98,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
-            "faculty": self.course_data[0]['faculty'],
+            "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
         }
         response = self.note_post.post_data(test_data)
@@ -112,7 +112,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "course_id": "69",
-            "faculty": self.course_data[0]['faculty'],
+            "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -128,7 +128,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": "iwanttorest@gmail.com",
             "course_id": self.course_data[0]['course_id'],
-            "faculty": self.course_data[0]['faculty'],
+            "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -148,7 +148,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
-            "faculty": self.course_data[0]['faculty'],
+            "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -164,7 +164,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
-            "faculty": self.course_data[0]['faculty'],
+            "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }

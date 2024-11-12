@@ -30,7 +30,11 @@ class ReviewPostTests(TestCase):
             "academic_year": 2024,
             "pen_name": "Solaire of Astora",
             "grade": "A",
-            "instructor": None
+            "instructor": None,
+            "effort": 4,
+            "attendance": 3,
+            "scoring_criteria": "work-base",
+            "class_type": "hybrid",
         }
 
         response = self.review_post.post_data(review_data)
@@ -49,7 +53,11 @@ class ReviewPostTests(TestCase):
             "academic_year": 2024,
             "pen_name": "Solaire of Astora",
             "grade": "A",
-            "instructor": None
+            "instructor": None,
+            "effort": 3,
+            "attendance": 1,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
         }
 
         response = self.review_post.post_data(review_data)
@@ -70,7 +78,11 @@ class ReviewPostTests(TestCase):
             "rating": 4.6,
             "academic_year": 2024,
             "grade": "B",
-            "instructor": None
+            "instructor": None,
+            "effort": 4,
+            "attendance": 2,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
         }
 
         response = self.review_post.post_data(review_data)
@@ -90,7 +102,11 @@ class ReviewPostTests(TestCase):
             "rating": 4.6,
             "pen_name": "Lucatiel of Mirrah",
             "grade": "B",
-            "instructor": None
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "onsite-base",
+            "class_type": "hybrid",
         }
 
         response = self.review_post.post_data(review_data)
@@ -110,7 +126,11 @@ class ReviewPostTests(TestCase):
             "academic_year": 2024,
             "pen_name": "Artorias",
             "grade": "A",
-            "instructor": None
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "exam-base",
+            "class_type": "hybrid",
         }
         response = self.review_post.post_data(test_data)
         self.assertEqual(response.status_code, 401)
@@ -129,7 +149,11 @@ class ReviewPostTests(TestCase):
             "rating": 4.8,
             "academic_year": 2024,
             "pen_name": "Artorias",
-            "grade": "A"
+            "grade": "A",
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "exam-base",
+            "class_type": "hybrid",
         }
         response = self.review_post.post_data(test_data)
         self.assertEqual(response.status_code, 401)
@@ -150,7 +174,11 @@ class ReviewPostTests(TestCase):
             "academic_year": 2024,
             "pen_name": "Lucatiel of Mirrah",
             "grade": "B",
-            "instructor": None
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
         }
         response = self.review_post.post_data(test_data)
         self.assertEqual(response.status_code, 201)
@@ -170,7 +198,11 @@ class ReviewPostTests(TestCase):
             "academic_year": 2024,
             "pen_name": "",
             "grade": "A",
-            "instructor": None
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "work-base",
+            "class_type": "onsite",
         }
 
         response = self.review_post.post_data(test_data)
@@ -194,7 +226,11 @@ class ReviewPostTests(TestCase):
             "academic_year": 0,
             "pen_name": "Solaire of Astora",
             "grade": "A",
-            "instructor": None
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "work-base",
+            "class_type": "online",
         }
 
         response = self.review_post.post_data(test_data)
