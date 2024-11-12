@@ -144,8 +144,8 @@ class Comment(models.Model):
 
 
 class BookMark(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
     user = models.ForeignKey(UserData, on_delete=models.PROTECT)
@@ -157,8 +157,8 @@ class BookMark(models.Model):
 
 
 class History(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
     user = models.ForeignKey(UserData, on_delete=models.PROTECT)
