@@ -55,8 +55,10 @@ class TableManagement:
                            "auth_user_groups", "auth_group", "auth_permission",
                            "django_admin_log", "auth_user",
                            "django_content_type", "django_migrations",
-                           "django_session", "BookMark", "Comment",
-                           "QA", "Note", "UpvoteStat",
+                           "django_session", "History", "BookMark", "Comment",
+                           "QAQuestionUpvote", "QAAnswerUpvote",
+                           "QA", "QAAnswer", "QAQuestion",
+                           "Note", "UpvoteStat", "History",
                            "ReviewStat", "CourseReview",
                            "FollowData", "UserData", "Inter", "Normal",
                            "Special", "CourseData"]
@@ -87,6 +89,7 @@ class TableManagement:
         try:
 
             for table_name in self.table_name:
+                print(table_name)
                 self.cursor.execute(f"DROP TABLE IF EXISTS "
                                     f"{table_name}")
 
@@ -230,20 +233,20 @@ class DatabaseBackup:
                           ensure_ascii=False, indent=4)
             print("Data saved to database/backup/logs.json")
 
-    def exist_data_loader(self):
+    def exist_data_loader(self, course_type: str):
         """Combine all data in the folder and separate by course programs."""
-        with open("./database/scraped_data/inter2.json",
+        with open(f"./database/scraped_data/{course_type}2.json",
                   "r", encoding="UTF-8") as file:
-            inter2 = json.load(file)
-        with open("./database/scraped_data/inter1.json",
+            second_semester = json.load(file)
+        with open(f"./database/scraped_data/{course_type}1.json",
                   "r", encoding="UTF-8") as file:
-            inter1 = json.load(file)
+            first_semester = json.load(file)
 
         all_faculty = {}
-        for key, vals in inter2.items():
+        for key, vals in second_semester.items():
             all_faculty[key] = vals
 
-        for key, vals in inter1.items():
+        for key, vals in first_semester.items():
             all_faculty[key] = vals
 
         self.data = all_faculty
