@@ -57,7 +57,7 @@ export default function QuestionCard({item}) {
 
   return (
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
-      <fieldset className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-lg">
+      <fieldset className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-lg cursor-pointer hover:shadow-xl">
           <div className="flex justify-between">
             <h3 className="text-xl font-semibold">{item.title}</h3>
             <div className="flex items-center cursor-pointer hover:shadow-lg">
