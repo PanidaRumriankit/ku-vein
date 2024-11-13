@@ -1,6 +1,6 @@
 "use client"
 
-import {useRouter} from "next/navigation";
+import {useRouter, usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import ReportButton from "./reportbutton.jsx";
@@ -15,12 +15,13 @@ import Button from "@mui/material/Button";
 
 export default function QuestionCard({item}) {
   const router = useRouter();
+  const pathname = usePathname();
   const {data: session} = useSession();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
-  const [isbookmarked, setIsBookmarked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
@@ -57,11 +58,14 @@ export default function QuestionCard({item}) {
 
   return (
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
-      <fieldset className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-lg cursor-pointer hover:shadow-xl">
+      <fieldset
+        className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-lg cursor-pointer hover:shadow-xl"
+        onClick={() => router.push(`${pathname}/${item.qanda_id}`)}
+      >
           <div className="flex justify-between">
-            <h3 className="text-xl font-semibold">{item.title}</h3>
-            <div className="flex items-center cursor-pointer hover:shadow-lg">
-              {isbookmarked ? <TurnedInIcon onClick={() => setIsBookmarked(false)}/> : <TurnedInNotIcon onClick={() => setIsBookmarked(true)}/>}
+            <h3 className="text-xl font-semibold break-all">{item.title}</h3>
+            <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {e.stopPropagation(); setIsBookmarked(!isBookmarked)}}>
+              {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
             </div>
           </div>
           <br/>
@@ -76,13 +80,13 @@ export default function QuestionCard({item}) {
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2 -mb-4">
-            <div className="text-left text-2xl flex space-x-4">
+            <div className="text-left text-2xl flex space-x-4" onClick={(e) => {e.stopPropagation()}}>
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
                 <ThumbUpTwoToneIcon/>    {upvoteCount}
               </Button>
             </div>
-            <div className="text-right">
+            <div className="text-right" onClick={(e) => e.stopPropagation()}>
               <ReportButton/>
               <ShareButton/>
             </div>

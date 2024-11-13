@@ -64,7 +64,7 @@ const usersDropdown = [
 
 const question = [
   {
-    id: 1,
+    qanda_id: 1,
     title: "จริงรึเปล่าที่เขาบอกว่าข้าวไข่ดาว 2 ฟองมกราคา 19 บาท",
     description: "This is the first question",
     isBookmarked: true,
@@ -74,8 +74,8 @@ const question = [
     username: "John Doe",
   },
   {
-    id: 2,
-    title: "Question 2",
+    qanda_id: 2,
+    title: "1234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567891234567890123456789123456789123456789",
     description: "This is the second question",
     isBookmarked: false,
     isAnswered: false,
@@ -84,7 +84,7 @@ const question = [
     username: "Jane Doe",
   },
   {
-    id: 3,
+    qanda_id: 3,
     title: "Question 3",
     description: "This is the third question",
     isBookmarked: false,
@@ -94,7 +94,7 @@ const question = [
     username: "Apple"
   },
   {
-    id: 4,
+    qanda_id: 4,
     title: "Question 4",
     description: "This is the fourth question",
     isBookmarked: false,
@@ -107,7 +107,7 @@ const question = [
 
 const answer = [
   {
-    id: 1,
+    ans_id: 1,
     questionId: 1,
     description: "This is the first answer",
     isCorrect: false,
@@ -115,7 +115,7 @@ const answer = [
     updatedAt: new Date(),
   },
   {
-    id: 2,
+    ans_id: 2,
     questionId: 2,
     description: "This is the second answer",
     isCorrect: false,
@@ -123,7 +123,7 @@ const answer = [
     updatedAt: new Date(),
   },
   {
-    id: 3,
+    ans_id: 3,
     questionId: 3,
     description: "This is the third answer",
     isCorrect: false,
@@ -131,7 +131,7 @@ const answer = [
     updatedAt: new Date(),
   },
   {
-    id: 4,
+    ans_id: 4,
     questionId: 4,
     description: "This is the fourth answer",
     isCorrect: false,
@@ -139,7 +139,7 @@ const answer = [
     updatedAt: new Date(),
   },
   {
-    id: 5,
+    ans_id: 5,
     questionId: 1,
     description: "This is the fifth answer",
     isCorrect: false,
@@ -147,7 +147,7 @@ const answer = [
     updatedAt: new Date(),
   },
   {
-    id: 6,
+    ans_id: 6,
     questionId: 2,
     description: "This is the sixth answer",
     isCorrect: false,
@@ -155,7 +155,7 @@ const answer = [
     updatedAt: new Date(),
   },
   {
-    id: 7,
+    ans_id: 7,
     questionId: 3,
     description: "This is the seventh answer",
     isCorrect: false,
@@ -163,7 +163,7 @@ const answer = [
     updatedAt: new Date(),
   },
   {
-    id: 8,
+    ans_id: 8,
     questionId: 4,
     description: "This is the eighth answer",
     isCorrect: false,

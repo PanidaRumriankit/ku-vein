@@ -1,14 +1,17 @@
 "use client" 
 
 import {useEffect, useState} from "react";
-import CourseNavigationBar from "../../../components/coursenavigation";
-import QuestionCard from "../../../components/qandacard";
-import GetQuestion from "../../../constants/getquestion";
-import {question} from "../../../constants/index";
+import {useParams, useRouter} from "next/navigation";
+import {question, answer} from "../../../../constants/index";
+import QuestionCard from "../../../../components/qandacard";
 
-export default function QuestionAndAnswerPage({params}) {
-  const courseId = params.id;
+export default function EachQuestionPage() {
+  const router = useRouter();
+  const params = useParams();
+  const questionId = params.qanda_id;
   const [questions, setQuestions] = useState([]);
+
+  console.log('params:', params.id);
 
   // useEffect(() => {
   //   const fetchQuestions = async () => {
@@ -22,11 +25,6 @@ export default function QuestionAndAnswerPage({params}) {
   return (
     <div className="text-black flex flex-col items-center
                     min-h-screen bg-white dark:bg-black dark:text-white">
-      <div className="w-full max-w-5xl">
-        <div className="justify-start">
-          <CourseNavigationBar courseId={params.id}/>
-        </div>
-      </div>
 
       <div className="flex flex-col items-center">
         <div className="w-full max-w-5xl">
