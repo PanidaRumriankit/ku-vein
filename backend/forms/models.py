@@ -88,7 +88,7 @@ class ReviewStat(models.Model):
     rating = models.FloatField(default=0.0)
     academic_year = models.IntegerField(default=0)
     pen_name = models.CharField(max_length=100, default=None)
-    date_data = models.DateField(default=None)
+    date_data = models.DateTimeField(default=None)
     grade = models.CharField(max_length=2, default=None)
     effort = models.IntegerField(default=None)
     attendance = models.IntegerField(default=None)
@@ -114,6 +114,7 @@ class Note(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    date_data = models.DateTimeField(default=None)
     faculty = models.CharField(max_length=100, default=None)
     note_file = models.FileField(upload_to='note_files/', default=None)
 
