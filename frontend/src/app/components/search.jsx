@@ -44,7 +44,7 @@ export default function Search({ onCourseSelect, page }) {
 
     return filteredData.map((course) => ({
       value: course.courses_id,
-      label: `${course.courses_id} | ${course.courses_name}`,
+      label: `${course.courses_id.padEnd(12, ' ')}| ${course.courses_name}`,
       courses_type: course.courses_type,
     }));
   };
@@ -71,10 +71,15 @@ export default function Search({ onCourseSelect, page }) {
       backgroundColor: state.isFocused ? (theme === 'dark' ? "#3E3E3E" : "#F0F0F0") : (theme === 'dark' ? "#2C2C2C" : "#FFFFFF"),
       color: theme === 'dark' ? "#FFFFFF" : "#000000",
       cursor: 'pointer',
+      fontFamily: 'Inter, sans-serif',
+      // Optional: use specific font weights or sizes as needed
+      fontSize: '14px',
+      fontFeatureSettings: '"tnum" on, "lnum" on', // Aligns numerals
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: theme === 'dark' ? "#FFFFFF" : "#000000"
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
+      fontFamily: 'Inter, sans-serif',
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -82,9 +87,10 @@ export default function Search({ onCourseSelect, page }) {
     }),
     input: (provided) => ({
       ...provided,
-      color: theme === 'dark' ? "#FFFFFF" : "#000000"
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
     }),
   };
+  
 
   if (!mounted) return null;
 
@@ -93,13 +99,6 @@ export default function Search({ onCourseSelect, page }) {
       <AsyncSelect
         cacheOptions
         loadOptions={loadOptions}
-        formatOptionLabel={(option) => (
-          <div className="flex justify-between w-full">
-            <span className="flex-1 text-left">{option.courses_id}</span>
-            <span className="flex-1 text-left">| {option.courses_name}</span>
-          </div>
-        )}
-        getOptionValue={(option) => option.value}
         onChange={(selectedOption) => {
           if (page === 'page') {
             handleSearch(selectedOption ? selectedOption.value : '', searchParams, pathname, replace);
