@@ -2,7 +2,6 @@
 
 import {inter} from "./fonts/fonts";
 import "./globals.css";
-import axios from 'axios';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import {ThemeSwitcher} from "./components/theme";
 import {ThemeProvider} from 'next-themes';
@@ -27,11 +26,11 @@ export default function RootLayout({children}) {
   );
 }
 
-
 function RootLayoutContent({children}) {
   const {data: session, status} = useSession();
   const [error, setError] = useState(null);
 
+  // Check for session errors
   useEffect(() => {
     if (status === 'error') {
       console.error('Session error:', session);
@@ -43,24 +42,41 @@ function RootLayoutContent({children}) {
     }
   }, [status, session]);
 
+  // Create user in database
+  useEffect(() => {
+    const CreateUser = async () => {
+      try {
+        const response = await fetch(userURL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email: session.user.email }),
+        });
+    
+        if (response.status === 409) {
+          // 409 Conflict indicates the user already exists
+          console.log('User already exists.');
+          return;
+        } else if (!response.ok) {
+          console.error('Error creating user:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Network error:', error);
+      }
+    };
+
+    if (status === "authenticated") {
+      CreateUser();
+    }
+  }, [status, session]);
+
   if (status === 'loading') {
     return <div>Loading...</div>;
   }
 
   if (error) {
     return <div>Error: {error}</div>;
-  }
-
-  if (status === "authenticated") {
-    let user = session.user;
-    // create user api
-    axios({
-    method: 'post',
-    url: userURL,
-    data: {
-      email: user.email
-    }
-    });
   }
 
   return (

@@ -76,6 +76,7 @@ class ReviewPost(PostStrategy):
             user=self.user,
             course=self.course,
             reviews=data['reviews'],
+            faculty=data['faculty'],
             instructor=data['instructor']
         )
         ReviewStat.objects.create(
@@ -84,7 +85,11 @@ class ReviewPost(PostStrategy):
             academic_year=data['academic_year'],
             pen_name=data['pen_name'],
             date_data=datetime.now().date(),
-            grade=data['grade']
+            grade=data['grade'],
+            effort=data['effort'],
+            attendance=data['attendance'],
+            scoring_criteria=data['scoring_criteria'],
+            class_type=data['class_type'],
         )
 
         return Response({"success": "The Review is successfully created."},
@@ -96,7 +101,6 @@ class ReviewPost(PostStrategy):
             self.user = UserData.objects.get(email=data['email'])
             self.course = CourseData.objects.get(
                 course_id=data['course_id'],
-                faculty=data['faculty'],
                 course_type=data['course_type'])
         except KeyError:
             return Response({"error": "User data or Course Data are missing "
@@ -237,7 +241,6 @@ class NotePost(PostStrategy):
         try:
             course = CourseData.objects.get(
                 course_id=data['course_id'],
-                faculty=data['faculty'],
                 course_type=data['course_type']
             )
 
@@ -249,6 +252,7 @@ class NotePost(PostStrategy):
             Note.objects.create(
                 course=course,
                 user=user,
+                faculty=data['faculty'],
                 note_file=data['file']
             )
             return Response({"success": "Note "

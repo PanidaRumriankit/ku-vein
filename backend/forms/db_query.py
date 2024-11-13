@@ -52,7 +52,7 @@ class SortReview(QueryFilterStrategy):
             reviews_id=F('review__review_id'),
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
-            faculties=F('review__course__faculty'),
+            faculties=F('review__faculty'),
             username=F('review__user__user_name'),
             review_text=F('review__reviews'),
             ratings=F('rating'),
@@ -77,7 +77,6 @@ class InterQuery(QueryStrategy):
         inter_data = Inter.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculties=F('course__faculty'),
             courses_type=F('course__course_type')
         )
 
@@ -92,7 +91,6 @@ class SpecialQuery(QueryStrategy):
         special_data = Special.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculties=F('course__faculty'),
             courses_type=F('course__course_type')
         )
 
@@ -107,7 +105,6 @@ class NormalQuery(QueryStrategy):
         normal_data = Normal.objects.select_related('course').values(
             courses_id=F('course__course_id'),
             courses_name=F('course__course_name'),
-            faculties=F('course__faculty'),
             courses_type=F('course__course_type')
         )
 
@@ -122,7 +119,6 @@ class CourseQuery(QueryStrategy):
         course_data = CourseData.objects.select_related('course').values(
             courses_id=F('course_id'),
             courses_name=F('course_name'),
-            faculties=F('faculty'),
             courses_type=F('course_type')
         )
 
@@ -239,7 +235,6 @@ class NoteQuery(QueryFilterStrategy):
         try:
             course = CourseData.objects.get(
                 course_id=filter_key['course_id'],
-                faculty=filter_key['faculty'],
                 course_type=filter_key['course_type']
             )
             user = UserData.objects.get(email=filter_key['email'])
@@ -250,7 +245,7 @@ class NoteQuery(QueryFilterStrategy):
             ).values(
                 courses_id=F('course__course_id'),
                 courses_name=F('course__course_name'),
-                faculties=F('course__faculty'),
+                faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
                 username=F('user__user_name'),
