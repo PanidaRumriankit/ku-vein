@@ -5,7 +5,7 @@ from typing import Union
 from abc import ABC, abstractmethod
 
 from django.conf import settings
-from django.db.models import F, Count
+from django.db.models import F, Count, Avg
 from ninja.responses import Response
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
@@ -43,6 +43,8 @@ class SortReview(QueryFilterStrategy):
     def get_data(self, order_by: str, filter_by: str = None):
         """Get the sorted data from the database."""
         self.sort_by(self.order[order_by], filter_by)
+        self.find_avg(filter_by)
+        self.find_mode(filter_by)
         return list(self.sorted_data)
 
     def sort_by(self, condition: str, course_id: str = None) -> None:
@@ -59,7 +61,10 @@ class SortReview(QueryFilterStrategy):
             name=F('pen_name'),
             date=F('date_data'),
             grades=F('grade'),
-            professor=F('review__instructor')
+            professor=F('review__instructor'),
+            criteria=F('scoring_criteria'),
+            type=F('class_type'),
+
         ).annotate(
             upvote=Count('upvotestat')
         ).order_by(condition)
@@ -67,6 +72,54 @@ class SortReview(QueryFilterStrategy):
         if course_id:
             self.sorted_data = self.sorted_data.filter(courses_id=course_id)
 
+    def find_avg(self, course_id: str = None):
+        """Set the avg data to self.sorted_data."""
+        if course_id:
+            list_for_calculate = self.sorted_data.values(
+                'effort',
+                'attendance',
+                'rating'
+            )
+
+            effort_list = [key['effort'] for key in list_for_calculate]
+            attendance_list = [key['attendance'] for key in list_for_calculate]
+            rating_list = [key['rating'] for key in list_for_calculate]
+
+            avg = {
+                    'avg_effort': sum(effort_list)/len(effort_list),
+                    'avg_attend': sum(attendance_list)/len(attendance_list),
+                    'avg_rating': sum(rating_list)/len(rating_list),
+            }
+
+            for add_avg in self.sorted_data:
+                for key, val in avg.items():
+                    add_avg[key] = val
+
+    def find_mode(self, course_id: str = None):
+        """Find the most repeat values for statistic."""
+        if course_id:
+            list_for_calculate = self.sorted_data.values(
+                'grades',
+                'criteria',
+                'type'
+            )
+
+            grade_dict = {key['grades']: 0 for key in list_for_calculate}
+            criteria_dict = {key['criteria']: 0 for key in list_for_calculate}
+            type_dict = {key['type']: 0 for key in list_for_calculate}
+
+            for count in list_for_calculate:
+                grade_dict[count['grades']] += 1
+                criteria_dict[count['criteria']] += 1
+                type_dict[count['type']] += 1
+
+            mode = {'mode_grade': max(grade_dict.items(), key=lambda x: x[1])[0],
+                    'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
+                    'mode_type': max(type_dict.items(), key=lambda x: x[1])[0]}
+
+            for add_mode in self.sorted_data:
+                for key, val in mode.items():
+                    add_mode[key] = val
 
 class InterQuery(QueryStrategy):
     """Class for sent the Inter Table data."""
