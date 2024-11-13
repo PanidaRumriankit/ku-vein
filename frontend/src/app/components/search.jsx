@@ -12,9 +12,7 @@ export function handleSearch(term, searchParams, pathname, replace) {
   if (term)
   {
     params.set('query', term);
-  }
-  else
-  {
+  } else {
     params.delete('query');
   }
 
@@ -72,9 +70,8 @@ export default function Search({ onCourseSelect, page }) {
       color: theme === 'dark' ? "#FFFFFF" : "#000000",
       cursor: 'pointer',
       fontFamily: 'Inter, sans-serif',
-      // Optional: use specific font weights or sizes as needed
       fontSize: '14px',
-      fontFeatureSettings: '"tnum" on, "lnum" on', // Aligns numerals
+      fontFeatureSettings: '"tnum" on, "lnum" on',
     }),
     singleValue: (provided) => ({
       ...provided,
