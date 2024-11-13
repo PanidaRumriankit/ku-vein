@@ -294,40 +294,50 @@ def clean_time_data(q):
 class QuestionQuery(QueryStrategy):
     """Class for sending all the questions in the Q&A data."""
 
-    def get_data(self, *args, **kwargs):
+    def get_data(self, mode, *args, **kwargs):
         """Get the data from the database and return to the frontend."""
         question_data = []
-        for question in QA_Question.objects.select_related().all():
-            question_data += [self.get_qa_data(question)]
+        for question in self.sorted_qa_data(mode):
+            question_data += [self.to_dict(question)]
 
         return Response(question_data, status=200)
 
-    def get_qa_data(self, question):
+    def to_dict(self, question):
         convo_cnt = question.qa_answer_set.count()
         q_data = {
                     'questions_id': question.question_id,
                     'questions_text': question.question_text,
                     'users': question.user.user_id,
                     'num_convo': convo_cnt,
+                    'upvote': question.qa_question_upvote_set.count(),
                     'post_time': question.posted_time,
                  }
         clean_time_data(q_data)
         return q_data
+    
+    def sorted_qa_data(self, mode):
+        sort_mode = {'latest': '-posted_time',
+                     'oldest': 'posted_time',
+                     'upvote': 'upvote'}
+        
+        return QA_Question.objects.select_related().all().order_by(sort_mode[mode])
 
 
 class AnswerQuery(QueryFilterStrategy):
     """Class for sending all the answers for a question in the Q&A data."""
 
-    def get_data(self, question_id):
+    def get_data(self, question_id, mode):
         """Get the data from the database and return to the frontend."""
         try:
             question = QA_Question.objects.select_related().get(question_id=question_id)
-            answer_set = question.qa_answer_set.all()
+            answer_set =  self.sorted_qa_data(question, mode)
             answer_data = answer_set.values(
                 answers_id=F('answer_id'),
                 text=F('answer_text'),
                 users=F('user'),
                 post_time=F('posted_time'),
+            ).annotate(
+                upvote=Count('qa_answer_upvote_set')
             )
 
             answer_data = list(answer_data)
@@ -338,6 +348,13 @@ class AnswerQuery(QueryFilterStrategy):
             return Response({"error": "This question isn't in the database."}, status=400)
 
         return Response(answer_data, status=200)
+    
+    def sorted_qa_data(self, question, mode):
+        sort_mode = {'latest': '-posted_time',
+                     'oldest': 'posted_time',
+                     'upvote': 'upvote'}
+        
+        return question.qa_answer_set.all().order_by(sort_mode[mode])
 
 
 class QueryFactory:
