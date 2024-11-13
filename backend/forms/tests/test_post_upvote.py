@@ -1,7 +1,7 @@
 import json
 
 from ..db_query import SortReview
-from ..db_post import UpvotePost
+from ..db_post import ReviewUpvotePost
 from django.test import TestCase
 from .set_up import user_set_up, review_set_up, course_set_up
 
@@ -29,7 +29,7 @@ class UpvotePostTests(TestCase):
 
     def setUp(self):
         """Set up reusable instances for tests."""
-        self.upvote = UpvotePost()
+        self.upvote = ReviewUpvotePost()
         self.sort = SortReview()
         course_set_up()
         self.user = user_set_up()
@@ -47,7 +47,7 @@ class UpvotePostTests(TestCase):
     def test_post_missing_user_data_response(self):
         """Missing UserData should return error response."""
         response = self.upvote.post_data({
-            "review_id": self.review[0].review_id
+            "id": self.review[0].review_id
         })
 
         self.assertEqual(response.status_code, 400)
@@ -58,7 +58,7 @@ class UpvotePostTests(TestCase):
     def test_post_review_not_in_db_response(self):
         """Course that not in the database shouldn't be able to have a like."""
         response = self.upvote.post_data({
-            "email": "solaire@gmail.com", "review_id": "69"
+            "email": "solaire@gmail.com", "id": "69"
         })
 
         self.assertEqual(response.status_code, 401)
@@ -69,7 +69,7 @@ class UpvotePostTests(TestCase):
     def test_post_user_not_in_db_response(self):
         """User that not in the database shouldn't be able to like the review."""
         response = self.upvote.post_data({
-            "email": "antonia@gmail.com", "review_id": self.review[0].review_id
+            "email": "antonia@gmail.com", "id": self.review[0].review_id
         })
 
         self.assertEqual(response.status_code, 401)
@@ -80,7 +80,7 @@ class UpvotePostTests(TestCase):
     def test_post_success_like_response(self):
         """Successfully like should return 201."""
         response = self.upvote.post_data({
-            "email": "solaire@gmail.com", "review_id": self.review[0].review_id
+            "email": "solaire@gmail.com", "id": self.review[0].review_id
         })
 
         self.assertEqual(response.status_code, 201)
@@ -89,7 +89,7 @@ class UpvotePostTests(TestCase):
 
     def test_post_success_unlike_response(self):
         """Successfully unlike should return 201."""
-        test_data = { "email": "solaire@gmail.com", "review_id": self.review[0].review_id}
+        test_data = { "email": "solaire@gmail.com", "id": self.review[0].review_id}
 
         self.upvote.post_data(test_data)
         response = self.upvote.post_data(test_data)
@@ -100,11 +100,11 @@ class UpvotePostTests(TestCase):
     def test_post_upvote(self):
         """Successfully like should be increase number of upvote."""
         test_data = [
-            {"email": "solaire@gmail.com", "review_id": self.review[0].review_id},
+            {"email": "solaire@gmail.com", "id": self.review[0].review_id},
 
-            {"email": "logan@gmail.com", "review_id": self.review[0].review_id},
+            {"email": "logan@gmail.com", "id": self.review[0].review_id},
 
-            {"email": "laurentius@gmail.com", "review_id": self.review[0].review_id},
+            {"email": "laurentius@gmail.com", "id": self.review[0].review_id},
         ]
 
         self.assertEqual(0, self.sort.get_data("earliest")[0]['upvote'])
@@ -118,7 +118,7 @@ class UpvotePostTests(TestCase):
 
     def test_unlike_review(self):
         """Remove the like if same user POST again."""
-        test_data =  {"email": "solaire@gmail.com", "review_id": self.review[0].review_id}
+        test_data =  {"email": "solaire@gmail.com", "id": self.review[0].review_id}
 
         for i in range(2):
             self.upvote.post_data(test_data)
@@ -129,13 +129,13 @@ class UpvotePostTests(TestCase):
         """POST request should affect only one review."""
         test_data = [
             {"email": "solaire@gmail.com",
-             "review_id": self.review[0].review_id},
+             "id": self.review[0].review_id},
 
             {"email": "logan@gmail.com",
-             "review_id": self.review[0].review_id},
+             "id": self.review[0].review_id},
 
             {"email": "laurentius@gmail.com",
-             "review_id": self.review[0].review_id},
+             "id": self.review[0].review_id},
         ]
 
         for i in range(len(test_data)):

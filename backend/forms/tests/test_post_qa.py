@@ -3,7 +3,7 @@ import json
 
 from ..models import UserData
 from ..db_post import QuestionPost, AnswerPost
-from .set_up import user_set_up, qa_setup
+from .set_up import qa_setup
 from django.test import TestCase
 
 

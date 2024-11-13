@@ -212,6 +212,12 @@ def note_setup(course, user):
 
     return note
 
+def get_time_data(q: QA_Question | QA_Answer):
+    """This function is used to clean datetime formatting."""
+    post_time = q.posted_time
+    return (f'{post_time.day:02d} {post_time.month:02d} {post_time.year}',
+            f'{post_time.hour:02d}:{post_time.minute:02d}')
+
 def qa_setup():
     test_user = UserData.objects.create(**{
         "user_name": "Solaire of Astora",
@@ -228,17 +234,27 @@ def qa_setup():
     ]
     for i,q in enumerate(qa_data):
         _q = QA_Question.objects.create(**q)
-        answer = {"question_id": _q.question_id,
-                  "user": test_user,
-                  "answer_text": f"Test answer {i}"}
-        QA_Answer.objects.create(**answer)
-
+        _a = {"question_id": _q.question_id,
+              "user": test_user,
+              "answer_text": f"Test answer {i}"}
+        _a = QA_Answer.objects.create(**_a)
+        q_date, q_time = get_time_data(_q)
         question = {
             "questions_id": _q.question_id,
             "questions_text": _q.question_text,
-            "users": _q.user.user_id
+            "users": _q.user.user_id,
+            "num_convo": _q.qa_answer_set.count(),
+            "post_time": q_time,
+            "post_date": q_date,
             }
-        answer = {"text": answer['answer_text']}
+        a_date, a_time = get_time_data(_a)
+        answer = {
+            "answers_id": _a.answer_id,
+            "text": _a.answer_text,
+            "users": _a.user.user_id,
+            "post_time": a_time,
+            "post_date": a_date,
+            }
         questions += [question]
         answers += [answer]
     return questions, answers
