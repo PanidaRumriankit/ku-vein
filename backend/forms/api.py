@@ -181,13 +181,13 @@ def add_note(request, data: NotePostSchema):
 
 
 @app.get("/qa")
-def get_answer(request, question_id=None):
+def get_answer(request, question_id=None, mode='latest'):
     """Get all Answers to a Q&A question."""
     if question_id is None:
         strategy = QueryFactory.get_query_strategy("qa_question")
     else:
         strategy = QueryFactory.get_query_strategy("qa_answer")
-    return strategy.get_data(question_id)
+    return strategy.get_data(question_id, mode)
 
 
 @app.post("/qa")
