@@ -1,18 +1,19 @@
 """Models module for make query for the frontend."""
 
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class CourseData(models.Model):
     course_id = models.CharField(max_length=20, default=None)
-    faculty = models.CharField(max_length=100, default=None)
     course_type = models.CharField(max_length=20, default=None)
     course_name = models.TextField(default=None)
 
     class Meta:
         app_label = 'forms'
         db_table = 'CourseData'  # Specify the exact table name in MySQL
-        unique_together = ('course_id', 'faculty', 'course_type')
+        unique_together = ('course_id', 'course_type')
 
 
 class Inter(models.Model):
@@ -73,6 +74,7 @@ class CourseReview(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='reviews')
     reviews = models.TextField(default=None)
+    faculty = models.CharField(max_length=100, default=None)
     instructor = models.CharField(max_length=40, default=None, null=True)
 
     class Meta:
@@ -88,6 +90,10 @@ class ReviewStat(models.Model):
     pen_name = models.CharField(max_length=100, default=None)
     date_data = models.DateField(default=None)
     grade = models.CharField(max_length=2, default=None)
+    effort = models.IntegerField(default=None)
+    attendance = models.IntegerField(default=None)
+    scoring_criteria = models.CharField(max_length=20, default=None)
+    class_type = models.CharField(max_length=20, default=None)
 
     class Meta:
         app_label = 'forms'
@@ -108,6 +114,7 @@ class Note(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    faculty = models.CharField(max_length=100, default=None)
     note_file = models.FileField(upload_to='note_files/', default=None)
 
     class Meta:
@@ -119,6 +126,7 @@ class Note(models.Model):
 class QA(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
     question_text = models.TextField(default=None)
+    faculty = models.CharField(max_length=100, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
 
     class Meta:
@@ -138,10 +146,26 @@ class Comment(models.Model):
 
 
 class BookMark(models.Model):
-    review = models.ForeignKey(CourseReview, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    object_id = models.PositiveIntegerField(default=None)
+    instance = GenericForeignKey('content_type', 'object_id')
+    data_type = models.CharField(max_length=20, default=None)
     user = models.ForeignKey(UserData, on_delete=models.PROTECT)
 
     class Meta:
         app_label = 'forms'
         db_table = 'BookMark'
-        unique_together = ('review', 'user')
+        unique_together = ('content_type', 'object_id', 'user')
+
+
+class History(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    object_id = models.PositiveIntegerField(default=None)
+    instance = GenericForeignKey('content_type', 'object_id')
+    data_type = models.CharField(max_length=20, default=None)
+    user = models.ForeignKey(UserData, on_delete=models.PROTECT)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'History'
+        unique_together = ('content_type', 'object_id', 'user')

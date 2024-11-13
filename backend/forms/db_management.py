@@ -55,8 +55,10 @@ class TableManagement:
                            "auth_user_groups", "auth_group", "auth_permission",
                            "django_admin_log", "auth_user",
                            "django_content_type", "django_migrations",
-                           "django_session", "BookMark", "Comment",
-                           "QA", "Note", "UpvoteStat",
+                           "django_session", "History", "BookMark", "Comment",
+                           "QAQuestionUpvote", "QAAnswerUpvote",
+                           "QA", "QAAnswer", "QAQuestion", "Summary",
+                           "Note", "UpvoteStat", "History",
                            "ReviewStat", "CourseReview",
                            "FollowData", "UserData", "Inter", "Normal",
                            "Special", "CourseData"]
@@ -87,6 +89,7 @@ class TableManagement:
         try:
 
             for table_name in self.table_name:
+                print(table_name)
                 self.cursor.execute(f"DROP TABLE IF EXISTS "
                                     f"{table_name}")
 
@@ -230,42 +233,38 @@ class DatabaseBackup:
                           ensure_ascii=False, indent=4)
             print("Data saved to database/backup/logs.json")
 
-    def exist_data_loader(self):
+    def exist_data_loader(self, course_type: str):
         """Combine all data in the folder and separate by course programs."""
-        with open("./database/scraped_data/inter2.json",
+        with open(f"./database/scraped_data/{course_type}2.json",
                   "r", encoding="UTF-8") as file:
-            inter2 = json.load(file)
-        with open("./database/scraped_data/inter1.json",
+            second_semester = json.load(file)
+        with open(f"./database/scraped_data/{course_type}1.json",
                   "r", encoding="UTF-8") as file:
-            inter1 = json.load(file)
+            first_semester = json.load(file)
 
-        all_faculty = {second: {} for second in inter2.keys()}
-        first_term = {first: {} for first in inter1.keys()}
-        all_faculty.update(first_term)
+        all_faculty = {}
+        for key, vals in second_semester.items():
+            all_faculty[key] = vals
 
-        for key, vals in inter2.items():
-            all_faculty[key].update(vals)
-
-        for key, vals in inter1.items():
-            all_faculty[key].update(vals)
+        for key, vals in first_semester.items():
+            all_faculty[key] = vals
 
         self.data = all_faculty
 
-    def insert_data_to_remote(self):
+    def insert_data_to_remote(self, course_type):
         """Insert the backup database to the database server."""
         self.connect()
 
         try:
-
-            for faculty, course_data in self.data.items():
-                for course_id, course_name in course_data.items():
-                    self.cursor.execute(
-                        "INSERT INTO CourseData (course_id, faculty,\
-                            course_type, course_name) "
-                        "VALUES (%s, %s, %s, %s)", (course_id, faculty,
-                                                    "inter", course_name)
-                    )
-                    print(faculty, course_id, "inter", course_name)
+            print(self.data)
+            for course_id, course_name in self.data.items():
+                self.cursor.execute(
+                    "INSERT INTO CourseData (course_id,\
+                        course_type, course_name) "
+                    "VALUES (%s, %s, %s)", (course_id,
+                                                course_type, course_name)
+                )
+                print(course_id, course_type, course_name)
                 print("Inserting...\n")
 
             self.con.connection.commit()

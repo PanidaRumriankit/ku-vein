@@ -21,8 +21,8 @@ if __name__ == "__main__":
 
     # After migrate uncomment this
     # d = DatabaseBackup()
-    # d.exist_data_loader()
-    # d.insert_data_to_remote()
+    # d.exist_data_loader("inter")
+    # d.insert_data_to_remote("inter")
     #
     # da = DatabaseManagement()
     # da.add_course_data_to_sub("inter")

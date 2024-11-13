@@ -13,20 +13,20 @@ def course_set_up():
     course = []
 
     test_data = [
-        {"course_id": "1", "faculty": "Miracle",
-         "course_type": "Priest", "course_name": "Basic Miracle 1"},
+        {"course_id": "1", "course_type": "Priest",
+         "course_name": "Basic Miracle 1"},
 
-        {"course_id": "2", "faculty": "Sorcery",
-         "course_type": "Sorcerer", "course_name": "Soul Arrow Mastery"},
+        {"course_id": "2", "course_type": "Sorcerer",
+         "course_name": "Soul Arrow Mastery"},
 
-        {"course_id": "3", "faculty": "Pyromancy",
-         "course_type": "Pyromancer", "course_name": "Flame Manipulation"},
+        {"course_id": "3", "course_type": "Pyromancer",
+         "course_name": "Flame Manipulation"},
 
-        {"course_id": "4", "faculty": "Hexes",
-         "course_type": "Hexer", "course_name": "Dark Orb Fundamentals"},
+        {"course_id": "4", "course_type": "Hexer",
+         "course_name": "Dark Orb Fundamentals"},
 
-        {"course_id": "5", "faculty": "Faith",
-         "course_type": "Knight", "course_name": "Sacred Oath"},
+        {"course_id": "5", "course_type": "Knight",
+         "course_name": "Sacred Oath"},
     ]
 
     for insert_data in test_data:
@@ -50,8 +50,44 @@ def review_set_up():
             "rating": 4.5,
             "academic_year": 2024,
             "pen_name": "Solaire of Astora",
-            "grade": "A"
+            "grade": "A",
+            "effort": 2,
+            "attendance": 4,
+            "scoring_criteria": "work-base",
+            "class_type": "onsite",
         },
+
+        {
+            "email": "logan@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "The teachings here have rekindled my faith. A truly divine experience, perfect for those seeking enlightenment.",
+            "rating": 4.7,
+            "academic_year": 2024,
+            "pen_name": "Organ",
+            "grade": "B",
+            "effort": 3,
+            "attendance": 4,
+            "scoring_criteria": "project-base",
+            "class_type": "online",
+        },
+        {
+            "email": "laurentius@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "A serene and impactful course. The knowledge shared here has strengthened my resolve and my bond with the Light.",
+            "rating": 4.6,
+            "academic_year": 2024,
+            "pen_name": "lala",
+            "grade": "B",
+            "effort": 4,
+            "attendance": 5,
+            "scoring_criteria": "work-base",
+            "class_type": "online",
+        },
+
         {
             "email": "logan@gmail.com",
             "course_id": "2",
@@ -62,7 +98,11 @@ def review_set_up():
             "rating": 4.8,
             "academic_year": 2024,
             "pen_name": "Big Hat Logan",
-            "grade": "A"
+            "grade": "A",
+            "effort": 3,
+            "attendance": 3,
+            "scoring_criteria": "exam-base",
+            "class_type": "online",
         },
         {
             "email": "laurentius@gmail.com",
@@ -74,7 +114,11 @@ def review_set_up():
             "rating": 4.2,
             "academic_year": 2024,
             "pen_name": "Laurentius",
-            "grade": "B+"
+            "grade": "B+",
+            "effort": 3,
+            "attendance": 4,
+            "scoring_criteria": "exam-base",
+            "class_type": "hybrid",
         },
         {
             "email": "aslatiel@gmail.com",
@@ -86,7 +130,11 @@ def review_set_up():
             "rating": 4.6,
             "academic_year": 2024,
             "pen_name": "Lucatiel of Mirrah",
-            "grade": "B"
+            "grade": "B",
+            "effort": 4,
+            "attendance": 1,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
         },
         {
             "email": "siegmeyer@gmail.com",
@@ -98,19 +146,23 @@ def review_set_up():
             "rating": 4.3,
             "academic_year": 2024,
             "pen_name": "Siegmeyer of Catarina",
-            "grade": "B"
+            "grade": "B",
+            "effort": 4,
+            "attendance": 3,
+            "scoring_criteria": "work-base",
+            "class_type": "online",
         }
     ]
 
     for add_user in review_data:
         user = UserData.objects.filter(email=add_user['email']).first()
         course = CourseData.objects.filter(course_id=add_user['course_id'],
-                                           faculty=add_user['faculty'],
                                            course_type=add_user['course_type']
                                            ).first()
 
         review_instance = CourseReview.objects.create(user=user,
                                                       course=course,
+                                                      faculty=add_user['faculty'],
                                                       reviews=add_user['re'
                                                                        'views']
                                                       )
@@ -120,7 +172,13 @@ def review_set_up():
                              academic_year=add_user['academic_year'],
                              pen_name=add_user['pen_name'],
                              date_data=datetime.now().date(),
-                             grade=add_user['grade']))
+                             grade=add_user['grade'],
+                             effort=add_user['effort'],
+                             attendance=add_user['attendance'],
+                             scoring_criteria=add_user['scoring_criteria'],
+                             class_type=add_user['class_type']
+                      )
+        )
 
     return review, review_data
 
@@ -213,6 +271,7 @@ def note_setup(course, user):
     note = Note.objects.create(
         user=user[0],
         course=course[0],
+        faculty="pyromancer",
         note_file=note_file
     )
 
