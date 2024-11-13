@@ -111,6 +111,7 @@ class UpvoteStat(models.Model):
 
 
 class Note(models.Model):
+    note_id = models.AutoField(primary_key=True)
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
@@ -121,7 +122,6 @@ class Note(models.Model):
     class Meta:
         app_label = 'forms'
         db_table = 'Note'
-        unique_together = ('course', 'user')
 
 
 class QA(models.Model):
