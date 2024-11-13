@@ -2,12 +2,11 @@
 
 import {useEffect, useState} from "react";
 import CourseNavigationBar from "../../../components/coursenavigation";
-import QuestionCard from "../../../components/qandacard";
+import QuestionCard from "../../../components/questioncard";
 import GetQuestion from "../../../constants/getquestion";
 import {question} from "../../../constants/index";
 
 export default function QuestionAndAnswerPage({params}) {
-  const courseId = params.id;
   const [questions, setQuestions] = useState([]);
 
   // useEffect(() => {
@@ -22,7 +21,7 @@ export default function QuestionAndAnswerPage({params}) {
   return (
     <div className="text-black flex flex-col items-center
                     min-h-screen bg-white dark:bg-black dark:text-white">
-        <div className="w-full max-w-5xl justify-start">
+      <div className="w-full max-w-5xl justify-start">
           <CourseNavigationBar courseId={params.id}/>
       </div>
       <div className="flex flex-col items-center w-full max-w-5xl">
