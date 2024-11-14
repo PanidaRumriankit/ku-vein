@@ -13,11 +13,11 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import Button from "@mui/material/Button";
 
 
-export default function AnswerCard({item}) {
+export default function QuestionText({item}) {
   const router = useRouter();
   const pathname = usePathname();
   const {data: session} = useSession();
-  const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
+  const [upvoteCount, setUpvoteCount] = useState(0);
   const [isVoted, setIsVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -59,17 +59,16 @@ export default function AnswerCard({item}) {
   return (
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
       <fieldset
-        className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800"
+        className="border border-2 border-blue-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-xl"
       >
-          {/* <div className="flex justify-between">
-            <h3 className="text-xl font-semibold break-all">{item.title}</h3>
-            <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {e.stopPropagation(); setIsBookmarked(!isBookmarked)}}>
+          <div className="flex justify-between">
+            <h3 className="text-xl font-semibold text-[#44b3ab] break-all">{item.title}</h3>
+            <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {setIsBookmarked(!isBookmarked)}}>
               {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
             </div>
-          </div> */}
-          {/* <br/> */}
-          <p className="text-lg">{item.description}</p>
+          </div>
           <br/>
+          <p className="text-lg mb-4">{item.description}</p>
           <div
             className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-right">
@@ -87,7 +86,7 @@ export default function AnswerCard({item}) {
                 <ThumbUpTwoToneIcon/>    {upvoteCount}
               </Button>
             </div>
-            <div className="text-right">
+            <div className="text-right" >
               <ReportButton/>
               <ShareButton/>
             </div>

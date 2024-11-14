@@ -5,15 +5,16 @@ import {useParams, useRouter} from "next/navigation";
 import {question, answer} from "../../../../constants/index";
 import QuestionCard from "../../../../components/questioncard";
 import AnswerCard from "../../../../components/answercard";
+import QuestionText from "../../../../components/questiontext";
 import CourseNavigationBar from "../../../../components/coursenavigation";
 
 export default function EachQuestionPage() {
   const router = useRouter();
   const params = useParams();
-  const questionId = params.qanda_id;
+  const questionId = parseInt(params.qanda_id, 10);
   const [questions, setQuestions] = useState([]);
 
-  // console.log('params:', params.id);
+  console.log('questionID:', questionId);
 
   // useEffect(() => {
   //   const fetchQuestions = async () => {
@@ -31,13 +32,17 @@ export default function EachQuestionPage() {
           <CourseNavigationBar courseId={params.id}/>
       </div>
       <div className="flex flex-col items-center w-full max-w-5xl">
-          {answer.length > 0 ? (
-            answer.map((item, index) => (
-              <AnswerCard item={item} key={index}/>
-            ))
-          ) : (
-            <p className="text-green-400 text-center">No Q&A currently</p>
-          )}
+        <QuestionText item={question[questionId - 1]}/>
+        <div className="flex w-1/2 justify-start font-bold my-4">
+          <h1>Answers</h1>
+        </div>
+        {answer.length > 0 ? (
+          answer.map((item, index) => (
+            <AnswerCard item={item} key={index}/>
+          ))
+        ) : (
+          <p className="text-green-400 text-center">No Q&A currently</p>
+        )}
         </div>
       </div>
   );
