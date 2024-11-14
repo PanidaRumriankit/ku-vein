@@ -8,6 +8,7 @@ import AnswerCard from "../../../../components/answercard";
 import QuestionText from "../../../../components/questiontext";
 import CourseNavigationBar from "../../../../components/coursenavigation";
 import Sorting from "../../../../components/sorting";
+import AddAnswer from "../../../../components/addanswer";
 
 export default function EachQuestionPage() {
   const router = useRouter();
@@ -49,7 +50,8 @@ export default function EachQuestionPage() {
         ) : (
           <p className="text-green-400 text-center">No Q&A currently</p>
         )}
-        </div>
+        <AddAnswer />
       </div>
+    </div>
   );
 }

@@ -8,11 +8,11 @@ import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
 import {reviewURL} from '../constants/backurl.js'
 
-export default function AddReview() {
+export default function AddQuestion() {
   const {data: session} = useSession();
   const [postData, setPostData] = useState({
     email: '',
-    qanda_id: '',
+    question_id: '',
     title: '',
     description: '',
     isBookmarked: false,
@@ -117,7 +117,7 @@ export default function AddReview() {
               <button
                 className="bg-[#4ECDC4] px-4 py-2 rounded text-white hover:bg-[#44b3ab]"
                 onClick={() => {
-                  AddingReview();
+                  AddingQuestion();
                   close();
                 }}
               >
