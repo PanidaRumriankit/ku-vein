@@ -37,14 +37,17 @@ export default function CourseLayout({children, params}) {
           <Search page='page'/>
         </div>
 
-        <div className="p-2 align-left border-box border-4">
-
+        <div className="p-2 align-left border-box border-4 border-gray-300 rounded
+                        dark:border-gray-400">
           <div className="flex flex-wrap">
             {/*Change the color and course name later*/}
-            <div
-              className="p-2 bg-red-400 border-red-400 border-solid border rounded text-black">{courseId}</div>
-            <div
-              className="p-2 text-black dark:text-white">{courseName}</div>
+            <div className="p-2 bg-red-400 border-red-400 border-solid
+                            border rounded text-black">
+              {courseId}
+            </div>
+            <div className="p-2 text-black dark:text-white">
+              {courseName}
+            </div>
           </div>
 
           <div className="mt-4">
@@ -52,7 +55,8 @@ export default function CourseLayout({children, params}) {
               <div>ความพึงพอใจ</div>
               <div>
                 <Rating name="read-only" value={3} readOnly
-                        emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
+                        emptyIcon={<StarIcon
+                          style={{opacity: 0.55, color: 'gray'}}/>}/>
               </div>
             </div>
 
