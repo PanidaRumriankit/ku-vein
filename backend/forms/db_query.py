@@ -82,18 +82,20 @@ class ReviewFilter(QueryFilterStrategy):
 
     def get_data(self, filter_by: str = None):
         """Get the sorted data from the database."""
-        self.sort_by(filter_by)
+        self.filter_course(filter_by)
         self.find_avg()
         self.find_mode()
         return list(self.sorted_data)
 
-    def sort_by(self, course_id: str = None) -> None:
+    def filter_course(self, course_id: str) -> None:
         """Return the sorted data."""
-        self.sorted_data = ReviewStat.objects.filter(
-            courses_id=course_id
-        ).values(
+        self.sorted_data = ReviewStat.objects.values(
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
+            faculties=F('review__faculty')
+
+        ).filter(
+            courses_id=course_id
         )
 
 
@@ -131,7 +133,7 @@ class ReviewFilter(QueryFilterStrategy):
             'attendance',
             'scoring_criteria',
             'rating',
-            'faculty'
+            'faculties'
         )
 
         grade_dict = {key['grade']: 0 for key in list_for_calculate}
@@ -139,15 +141,15 @@ class ReviewFilter(QueryFilterStrategy):
         attend_dict = {key['attendance']: 0 for key in list_for_calculate}
         criteria_dict = {key['scoring_criteria']: 0 for key in list_for_calculate}
         rating_dict = {key['rating']: 0 for key in list_for_calculate}
-        faculty_dict = {key['faculty']: 0 for key in list_for_calculate}
+        faculty_dict = {key['faculties']: 0 for key in list_for_calculate}
 
         for count in list_for_calculate:
-            grade_dict[count['grades']] += 1
-            type_dict[count['type']] += 1
+            grade_dict[count['grade']] += 1
+            type_dict[count['class_type']] += 1
             attend_dict[count['attendance']] += 1
-            criteria_dict[count['criteria']] += 1
+            criteria_dict[count['scoring_criteria']] += 1
             rating_dict[count['rating']] += 1
-            faculty_dict[count['faculty']] += 1
+            faculty_dict[count['faculties']] += 1
 
         mode = {
             'mode_grade': max(grade_dict.items(), key=lambda x: x[1])[0],
