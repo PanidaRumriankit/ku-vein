@@ -1,16 +1,17 @@
 """This module use for contain the class for database query."""
 
 import os
-from typing import Union
 from abc import ABC, abstractmethod
+from typing import Any
+from typing import Union
 
 from django.conf import settings
-from django.db.models import F, Count, Avg
+from django.db.models import F, Count
 from ninja.responses import Response
+
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
                      Note, UpvoteStat, CourseReview)
-from typing import Any
 
 
 class QueryStrategy(ABC):
@@ -43,8 +44,11 @@ class SortReview(QueryFilterStrategy):
     def get_data(self, order_by: str, filter_by: str = None):
         """Get the sorted data from the database."""
         self.sort_by(self.order[order_by], filter_by)
-        self.find_avg(filter_by)
-        self.find_mode(filter_by)
+        try:
+            self.find_avg(filter_by)
+            self.find_mode(filter_by)
+        except (ValueError, ZeroDivisionError):
+            pass
         return list(self.sorted_data)
 
     def sort_by(self, condition: str, course_id: str = None) -> None:
