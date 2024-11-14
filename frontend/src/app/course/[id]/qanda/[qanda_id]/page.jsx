@@ -7,11 +7,13 @@ import QuestionCard from "../../../../components/questioncard";
 import AnswerCard from "../../../../components/answercard";
 import QuestionText from "../../../../components/questiontext";
 import CourseNavigationBar from "../../../../components/coursenavigation";
+import Sorting from "../../../../components/sorting";
 
 export default function EachQuestionPage() {
   const router = useRouter();
   const params = useParams();
   const questionId = parseInt(params.qanda_id, 10);
+  const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
   const [questions, setQuestions] = useState([]);
 
   console.log('questionID:', questionId);
@@ -30,6 +32,10 @@ export default function EachQuestionPage() {
                     min-h-screen bg-white dark:bg-black dark:text-white">
       <div className="w-full max-w-5xl justify-start">
           <CourseNavigationBar courseId={params.id}/>
+          <div className="justify-end mt-4">
+            <Sorting selectedKeys={selectedKeys}
+                    setSelectedKeys={setSelectedKeys}/>
+          </div>
       </div>
       <div className="flex flex-col items-center w-full max-w-5xl">
         <QuestionText item={question[questionId - 1]}/>
