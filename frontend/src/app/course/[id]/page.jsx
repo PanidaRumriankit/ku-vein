@@ -21,6 +21,7 @@ export default function CoursePage({params}) {
 
     fetchReviews();
   }, [params.id, selectedKeys]);
+  
   return (
     <div className="text-black flex flex-col items-center
     min-h-screen bg-white dark:bg-black dark:text-white">

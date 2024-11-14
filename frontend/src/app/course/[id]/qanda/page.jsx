@@ -6,6 +6,7 @@ import QuestionCard from "../../../components/questioncard";
 import GetQuestion from "../../../constants/getquestion";
 import {question} from "../../../constants/index";
 import Sorting from "../../../components/sorting";
+import AddQuestion from "../../../components/addquestion";
 
 export default function QuestionAndAnswerPage({params}) {
   const [questions, setQuestions] = useState([]);
@@ -38,6 +39,9 @@ export default function QuestionAndAnswerPage({params}) {
         ) : (
           <p className="text-green-400 text-center">No Q&A currently</p>
         )}
+      </div>
+      <div className="fixed bottom-4 right-4 z-40">
+        <AddQuestion />
       </div>
     </div>
   );
