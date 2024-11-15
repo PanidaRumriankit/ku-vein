@@ -114,12 +114,12 @@ class ReviewFilter(QueryFilterStrategy):
         avg = {}
 
         if effort_list:
-            avg['avg_effort'] = sum(effort_list) / len(effort_list)
+            avg['avg_effort'] = round(sum(effort_list) / len(effort_list), 1)
         else:
             avg['avg_effort'] = 0.0
 
         if rating_list:
-            avg['avg_rating'] = sum(rating_list) / len(rating_list)
+            avg['avg_rating'] = round(sum(rating_list) / len(rating_list), 1)
         else:
             avg['avg_rating'] = 0.0
 
