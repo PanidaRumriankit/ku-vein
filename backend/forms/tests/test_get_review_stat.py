@@ -35,7 +35,6 @@ class EarliestReviewTests(TestCase):
 
     def test_mode_data(self):
         """Should return correct Mode data."""
-        print(self.get_review)
         self.assertEqual("work-base", self.get_review['mode_criteria'])
         self.assertEqual("B", self.get_review['mode_grade'])
         self.assertEqual("online", self.get_review['mode_class_type'])
