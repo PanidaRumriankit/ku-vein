@@ -38,6 +38,14 @@ class EarliestReviewTests(TestCase):
         for key in expected_keys:
             self.assertIn(key, self.get_review[0])
 
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+                len(self.earliest.get_data(
+                     "earliest", "1")
+                )
+        )
 
 class LatestReviewTests(TestCase):
     """Test cases for LatestReview."""
@@ -75,6 +83,14 @@ class LatestReviewTests(TestCase):
         for key in expected_keys:
             self.assertIn(key, self.get_review[0])
 
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+            len(self.latest.get_data(
+                "latest", "1")
+            )
+        )
 
 class UpvoteReviewTests(TestCase):
     """Test cases for UpvoteReview."""
@@ -108,3 +124,12 @@ class UpvoteReviewTests(TestCase):
 
         for key in expected_keys:
             self.assertIn(key, self.get_review[0])
+
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+            len(self.upvote.get_data(
+                "upvote", "1")
+            )
+        )

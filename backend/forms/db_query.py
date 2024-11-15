@@ -40,12 +40,12 @@ class SortReview(QueryFilterStrategy):
         self.order = {"earliest": "review__review_id",
                       "latest": "-review__review_id", "upvote": "-upvote"}
 
-    def get_data(self, order_by: str):
+    def get_data(self, order_by: str, filter_by: str = None):
         """Get the sorted data from the database."""
-        self.sort_by(self.order[order_by])
+        self.sort_by(self.order[order_by], filter_by)
         return list(self.sorted_data)
 
-    def sort_by(self, condition: str) -> None:
+    def sort_by(self, condition: str, course_id: str) -> None:
         """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
@@ -66,6 +66,9 @@ class SortReview(QueryFilterStrategy):
         ).annotate(
             upvote=Count('upvotestat')
         ).order_by(condition)
+
+        if course_id:
+            self.sorted_data = self.sorted_data.filter(courses_id=course_id)
 
 
 class ReviewFilter(QueryFilterStrategy):
