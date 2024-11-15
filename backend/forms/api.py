@@ -65,9 +65,10 @@ def get_sorted_data(request, sort=None, course_id=None):
     try:
         if not sort:
             strategy = QueryFactory.get_query_strategy("filter_sort")
+            return Response(strategy.get_data(filter_by=course_id))
         else:
             strategy = QueryFactory.get_query_strategy("sort")
-        return Response(strategy.get_data(order_by=sort, filter_by=course_id))
+            return Response(strategy.get_data(order_by=sort))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
