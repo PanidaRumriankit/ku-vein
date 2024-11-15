@@ -58,15 +58,28 @@ def get_course_data(request, course_type=None):
 @app.get("/review")
 def get_sorted_data(request, sort, course_id=None):
     """Use for send sorted data to frontend."""
-    if not sort:
-        return Response({"error": "Sort parameter is missing"}, status=400)
 
-    elif sort not in ["earliest", "latest", "upvote"]:
+    if sort not in ["earliest", "latest", "upvote"]:
         return Response({"error": "Invalid Sort parameter"}, status=400)
 
     try:
         strategy = QueryFactory.get_query_strategy("sort")
         return Response(strategy.get_data(order_by=sort, filter_by=course_id))
+
+    except ValueError as e:
+        return Response({"error": str(e)}, status=400)
+
+
+@app.get("/review/stats")
+def get_sorted_data(request, course_id):
+    """Use for send review stats data to frontend."""
+
+    if not course_id:
+        return Response({"error": "Missing course_id parameter"}, status=400)
+
+    try:
+        strategy = QueryFactory.get_query_strategy("filter_sort")
+        return Response(strategy.get_data(filter_by=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
