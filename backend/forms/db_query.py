@@ -82,7 +82,6 @@ class ReviewFilter(QueryFilterStrategy):
         """Initialize method for SortReview."""
         self.sorted_data = None
 
-
     def get_data(self, filter_by: str = None):
         """Get the sorted data from the database."""
         self.filter_course(filter_by)
