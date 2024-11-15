@@ -382,13 +382,14 @@ class QueryFactory:
 
     strategy_map = {
         "sort": SortReview,
+        "filter_sort": ReviewFilter,
         "inter": InterQuery,
         "special": SpecialQuery,
         "normal": NormalQuery,
         "none": CourseQuery,
         "user": UserQuery,
         "note": NoteQuery,
-        "upvote": UpvoteQuery
+        "upvote": UpvoteQuery,
     }
 
     @classmethod
