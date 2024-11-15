@@ -16,7 +16,7 @@ class EarliestReviewTests(TestCase):
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertIsInstance(self.get_review, list)
+        self.assertIsInstance(self.get_review, dict)
 
     def test_contain_data(self):
         """Test to check is GET method return all demand field."""
@@ -27,15 +27,23 @@ class EarliestReviewTests(TestCase):
         ]
 
         for key in expected_keys:
-            self.assertIn(key, self.get_review[0])
+            self.assertIn(key, self.get_review)
+
+    def test_total_review(self):
+        """Should count all the review."""
+        self.assertEqual(3, self.get_review['total_review'])
 
     def test_mode_data(self):
         """Should return correct Mode data."""
-        self.assertEqual("work-base", self.get_review[0]['mode_criteria'])
-        self.assertEqual("B", self.get_review[0]['mode_grade'])
-        self.assertEqual("online", self.get_review[0]['mode_class_type'])
+        print(self.get_review)
+        self.assertEqual("work-base", self.get_review['mode_criteria'])
+        self.assertEqual("B", self.get_review['mode_grade'])
+        self.assertEqual("online", self.get_review['mode_class_type'])
+        self.assertEqual(4, self.get_review['mode_attendance'])
+        self.assertEqual(4.5, self.get_review['mode_rating'])
+        self.assertEqual("Miracle", self.get_review['mode_faculty'])
 
     def test_avg_data(self):
         """Should return correct Avg data."""
-        self.assertAlmostEqual(self.get_review[0]['avg_effort'], (2 + 3 + 4) / 3)
-        self.assertAlmostEqual(self.get_review[0]['avg_rating'], (4.6 + 4.7 + 4.5) / 3)
+        self.assertAlmostEqual(self.get_review['avg_effort'], (2 + 3 + 4) / 3)
+        self.assertAlmostEqual(self.get_review['avg_rating'], (4.6 + 4.7 + 4.5) / 3)

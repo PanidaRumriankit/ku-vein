@@ -85,7 +85,7 @@ class ReviewFilter(QueryFilterStrategy):
         self.filter_course(filter_by)
         self.find_avg()
         self.find_mode()
-        return list(self.sorted_data)
+        return self.sorted_data[0]
 
     def filter_course(self, course_id: str) -> None:
         """Return the sorted data."""
@@ -96,6 +96,8 @@ class ReviewFilter(QueryFilterStrategy):
 
         ).filter(
             courses_id=course_id
+        ).annotate(
+            total_review=Count('review')
         )
 
 
