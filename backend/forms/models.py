@@ -118,6 +118,7 @@ class Note(models.Model):
     date_data = models.DateTimeField(default=None)
     faculty = models.CharField(max_length=100, default=None)
     note_file = models.FileField(upload_to='note_files/', default=None)
+    pen_name = models.CharField(max_length=100, default=None)
 
     class Meta:
         app_label = 'forms'
@@ -151,7 +152,7 @@ class BookMark(models.Model):
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
-    user = models.ForeignKey(UserData, on_delete=models.PROTECT)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'forms'
@@ -164,7 +165,8 @@ class History(models.Model):
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
-    user = models.ForeignKey(UserData, on_delete=models.PROTECT)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'
