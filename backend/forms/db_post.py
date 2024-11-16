@@ -330,7 +330,8 @@ class PostFactory:
         "user": UserDataPost,
         "upvote": UpvotePost,
         "follow": FollowPost,
-        "note": NotePost
+        "note": NotePost,
+        "book": BookMarkPost
     }
 
     @classmethod
