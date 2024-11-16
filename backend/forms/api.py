@@ -7,7 +7,7 @@ from decouple import config
 
 from .schemas import (ReviewPostSchema, UserDataSchema,
                       UpvotePostSchema, FollowSchema,
-                      UserDataEditSchema, NotePostSchema)
+                      UserDataEditSchema, NotePostSchema, BookMarkSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -150,6 +150,16 @@ def is_upvote(request, email: str, review_id: int):
     return Response(strategy.get_data({"email": email, "review_id": review_id}))
 
 
+@app.get("/book")
+def get_bookmark_data(request, email: str):
+    """Use for send the note data to the frontend"""
+    if not email:
+        return Response({"error": "Missing email parameter."},
+                        status=401)
+    strategy = QueryFactory.get_query_strategy("book")
+    return Response(strategy.get_data(email))
+
+
 @app.put("/user")
 def change_username(request, data: UserDataEditSchema):
     """Change username for the user."""
@@ -189,6 +199,13 @@ def add_upvote(request, data: UpvotePostSchema):
 def add_note(request, data: NotePostSchema):
     """Use for add new Note object."""
     strategy = PostFactory.get_post_strategy("note")
+    return strategy.post_data(data.model_dump())
+
+
+@app.post("/book", response={200: BookMarkSchema})
+def add_bookmark(request, data: BookMarkSchema):
+    """Use for add new bookmark object."""
+    strategy = PostFactory.get_post_strategy("book")
     return strategy.post_data(data.model_dump())
 
 
