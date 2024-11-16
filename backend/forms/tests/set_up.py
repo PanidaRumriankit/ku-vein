@@ -5,7 +5,8 @@ from django.utils import timezone
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
-                      Note)
+                      Note, BookMark)
+from django.contrib.contenttypes.models import ContentType
 
 
 def course_set_up():
@@ -278,3 +279,18 @@ def note_setup(course, user):
 
     return note
 
+def book_setup(review, user):
+    """Set up function for BookMark feature using a generator."""
+    table = {"review": CourseReview, "note": Note, "qa": None}
+
+    content_type = ContentType.objects.get_for_model(table['review'])
+    book = []
+    for i in range(len(review)):
+        book.append(BookMark.objects.create(
+            content_type=content_type,
+            object_id=review[i].review_id,
+            data_type="review",
+            user=user[0]
+        ))
+
+    return book
