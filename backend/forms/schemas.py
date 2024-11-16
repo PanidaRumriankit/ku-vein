@@ -220,3 +220,8 @@ class QASchema(ModelSchema):
         model = QA
         fields = '__all__'
 
+class BookMarkSchema(Schema):
+    """"""
+    email : str
+    id : int
+    data_type : str
