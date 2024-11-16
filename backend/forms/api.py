@@ -78,7 +78,7 @@ def get_sorted_data(request, course_id):
         return Response({"error": "Missing course_id parameter"}, status=400)
 
     try:
-        strategy = QueryFactory.get_query_strategy("filter_sort")
+        strategy = QueryFactory.get_query_strategy("review-stat")
         return Response(strategy.get_data(filter_by=course_id))
 
     except ValueError as e:
