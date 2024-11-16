@@ -1,6 +1,6 @@
 from ..db_query import StatQuery
 from django.test import TestCase
-from .set_up import course_set_up, review_set_up, user_set_up, upvote_set_up
+from .set_up import course_set_up, review_set_up, user_set_up
 
 
 class EarliestReviewTests(TestCase):
