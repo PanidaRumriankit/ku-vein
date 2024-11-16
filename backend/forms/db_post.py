@@ -279,7 +279,7 @@ class BookMarkPost(PostStrategy):
 
     def __init__(self):
         """Initialize method for BookMarkPost."""
-        self.table = {"review":ReviewStat, "note": Note, "qa": None}
+        self.table = {"review":CourseReview, "note": Note, "qa": None}
 
     def post_data(self, data: dict):
         """Create a new Bookmark object in the database."""
@@ -290,24 +290,35 @@ class BookMarkPost(PostStrategy):
             content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
             user = UserData.objects.get(email=data['email'])
 
-            object_id = self.table[data['data_type']].objects.get(pk=data['id'])
-
             BookMark.objects.create(
                 content_type=content_type,
                 user=user,
-                object_id=object_id,
+                object_id=data['id'],
                 data_type=data['data_type']
             )
-            return Response({"success": "Bookmark created successfully."}, status=201)
+            return Response({"success": "Bookmark created"
+                                        " successfully."},
+                            status=201)
 
         except KeyError:
-            return Response({"error": "Required data is missing from the request body."}, status=400)
+            return Response({"error": "Required data is"
+                                      " missing from the request body."},
+                            status=400)
 
         except UserData.DoesNotExist:
-            return Response({"error": "The specified user does not exist."}, status=404)
+            return Response({"error": "The specified"
+                                      " user does not exist."},
+                            status=404)
 
         except ContentType.DoesNotExist:
-            return Response({"error": "Content type not found for the specified model."}, status=404)
+            return Response({"error": "Content type not"
+                                      " found for the specified model."},
+                            status=404)
+
+        except CourseReview.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " review does not exist."},
+                            status=404)
 
 
 
