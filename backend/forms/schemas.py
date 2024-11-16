@@ -221,7 +221,22 @@ class QASchema(ModelSchema):
         fields = '__all__'
 
 class BookMarkSchema(Schema):
-    """"""
+    """
+    Schema for handling POST requests to add the bookmark.
+
+      Attributes:
+        email (str): The email address of the user uploading the note.
+        id (int): id of the Review or Note or Q&A objects
+        data_type (str): Type of this data (review, note, qa)
+
+    Example:
+        {
+            "email": "user@example.com",
+            "id": 15,
+            "data_type": "qa",
+
+        }
+    """
     email : str
     id : int
     data_type : str
