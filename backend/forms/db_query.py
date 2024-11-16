@@ -72,7 +72,7 @@ class SortReview(QueryFilterStrategy):
             self.sorted_data = self.sorted_data.filter(courses_id=course_id)
 
 
-class ReviewFilter(QueryFilterStrategy):
+class StatQuery(QueryFilterStrategy):
     """
     Class for sent CourseReview sorted by condition.
 
@@ -406,7 +406,7 @@ class QueryFactory:
 
     strategy_map = {
         "sort": SortReview,
-        "filter_sort": ReviewFilter,
+        "review-stat": StatQuery,
         "inter": InterQuery,
         "special": SpecialQuery,
         "normal": NormalQuery,
