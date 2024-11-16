@@ -150,9 +150,9 @@ class ReviewPostSchema(Schema):
     reviews: str
     rating: float
     academic_year: int
-    pen_name: str
+    pen_name: Optional[str] = None
     grade: str
-    instructor: Optional[str] = None
+    instructor: str
     effort: int
     attendance: int
     scoring_criteria: str
@@ -205,6 +205,7 @@ class NotePostSchema(Schema):
     faculty: str
     course_type: str
     file : str
+    pen_name: Optional[str] = None
 
 
 class QASchema(ModelSchema):

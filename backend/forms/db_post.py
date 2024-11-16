@@ -250,11 +250,15 @@ class NotePost(PostStrategy):
             if 'file' not in data or data['file'] is None:
                 return Response({"error": "File is missing."}, status=400)
 
+            if not data['pen_name']:
+                data['pen_name'] = user.user_name
+
             Note.objects.create(
                 course=course,
                 user=user,
                 faculty=data['faculty'],
                 note_file=data['file'],
+                pen_name=data['pen_name'],
                 date_data=timezone.now()
             )
             return Response({"success": "Note"
