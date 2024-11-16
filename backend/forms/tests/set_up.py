@@ -274,7 +274,8 @@ def note_setup(course, user):
         course=course[0],
         faculty="pyromancer",
         note_file=note_file,
-        date_data=timezone.now()
+        date_data=timezone.now(),
+        pen_name="Yes"
     )
 
     return note
