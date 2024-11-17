@@ -1,6 +1,8 @@
 """This module use for post and update database."""
 
 import logging
+import base64
+import os
 
 from datetime import datetime
 from abc import ABC, abstractmethod
@@ -9,8 +11,9 @@ from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
                      UpvoteStat, FollowData,
                      Note, BookMark)
-from django.contrib.contenttypes.models import ContentType
+from django.conf import settings
 from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger("user_logger")
 
@@ -253,11 +256,21 @@ class NotePost(PostStrategy):
             if not data['pen_name']:
                 data['pen_name'] = user.user_name
 
+            try:
+                file_data = base64.b64decode(data['file_data'])
+            except Exception as e:
+                return Response({"error": f"Invalid file data: {str(e)}"}, status=400)
+
+            file_path = os.path.join(settings.MEDIA_ROOT,
+                                     'note_files', data['file_data'][:15])
+            with open(file_path, "wb") as f:
+                f.write(file_data)
+
             Note.objects.create(
                 course=course,
                 user=user,
                 faculty=data['faculty'],
-                note_file=data['file'],
+                note_file=file_path,
                 pen_name=data['pen_name'],
                 date_data=timezone.now()
             )
