@@ -5,11 +5,12 @@ from typing import Union
 from abc import ABC, abstractmethod
 
 from django.conf import settings
-from django.db.models import F, Count, Avg
+from django.db.models import F, Count
 from ninja.responses import Response
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
-                     Note, UpvoteStat, CourseReview)
+                     Note, UpvoteStat, CourseReview,
+                     BookMark)
 from typing import Any
 
 
@@ -43,11 +44,9 @@ class SortReview(QueryFilterStrategy):
     def get_data(self, order_by: str, filter_by: str = None):
         """Get the sorted data from the database."""
         self.sort_by(self.order[order_by], filter_by)
-        self.find_avg(filter_by)
-        self.find_mode(filter_by)
         return list(self.sorted_data)
 
-    def sort_by(self, condition: str, course_id: str = None) -> None:
+    def sort_by(self, condition: str, course_id: str) -> None:
         """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
@@ -72,54 +71,104 @@ class SortReview(QueryFilterStrategy):
         if course_id:
             self.sorted_data = self.sorted_data.filter(courses_id=course_id)
 
-    def find_avg(self, course_id: str = None):
+
+class StatQuery(QueryFilterStrategy):
+    """
+    Class for sent CourseReview sorted by condition.
+
+    Filter by course_id.
+    """
+
+    def __init__(self):
+        """Initialize method for SortReview."""
+        self.sorted_data = None
+
+    def get_data(self, filter_by: str = None):
+        """Get the sorted data from the database."""
+        self.filter_course(filter_by)
+        self.find_avg()
+        self.find_mode()
+        return self.sorted_data[0]
+
+    def filter_course(self, course_id: str) -> None:
+        """Return the sorted data."""
+        self.sorted_data = ReviewStat.objects.values(
+            courses_id=F('review__course__course_id'),
+            courses_name=F('review__course__course_name'),
+            faculties=F('review__faculty')
+
+        ).filter(
+            courses_id=course_id
+        ).annotate(
+            total_review=Count('review')
+        )
+
+
+    def find_avg(self):
         """Set the avg data to self.sorted_data."""
-        if course_id:
-            list_for_calculate = self.sorted_data.values(
-                'effort',
-                'attendance',
-                'rating'
-            )
+        list_for_calculate = self.sorted_data.values(
+            'effort',
+            'rating'
+        )
 
-            effort_list = [key['effort'] for key in list_for_calculate]
-            attendance_list = [key['attendance'] for key in list_for_calculate]
-            rating_list = [key['rating'] for key in list_for_calculate]
+        effort_list = [key['effort'] for key in list_for_calculate]
+        rating_list = [key['rating'] for key in list_for_calculate]
 
-            avg = {
-                    'avg_effort': sum(effort_list)/len(effort_list),
-                    'avg_attend': sum(attendance_list)/len(attendance_list),
-                    'avg_rating': sum(rating_list)/len(rating_list),
-            }
+        avg = {}
 
-            for add_avg in self.sorted_data:
-                for key, val in avg.items():
-                    add_avg[key] = val
+        if effort_list:
+            avg['avg_effort'] = round(sum(effort_list) / len(effort_list), 1)
+        else:
+            avg['avg_effort'] = 0.0
 
-    def find_mode(self, course_id: str = None):
+        if rating_list:
+            avg['avg_rating'] = round(sum(rating_list) / len(rating_list), 1)
+        else:
+            avg['avg_rating'] = 0.0
+
+        for add_avg in self.sorted_data:
+            for key, val in avg.items():
+                add_avg[key] = val
+
+    def find_mode(self):
         """Find the most repeat values for statistic."""
-        if course_id:
-            list_for_calculate = self.sorted_data.values(
-                'grades',
-                'criteria',
-                'type'
-            )
+        list_for_calculate = self.sorted_data.values(
+            'grade',
+            'class_type',
+            'attendance',
+            'scoring_criteria',
+            'rating',
+            'faculties'
+        )
 
-            grade_dict = {key['grades']: 0 for key in list_for_calculate}
-            criteria_dict = {key['criteria']: 0 for key in list_for_calculate}
-            type_dict = {key['type']: 0 for key in list_for_calculate}
+        grade_dict = {key['grade']: 0 for key in list_for_calculate}
+        type_dict = {key['class_type']: 0 for key in list_for_calculate}
+        attend_dict = {key['attendance']: 0 for key in list_for_calculate}
+        criteria_dict = {key['scoring_criteria']: 0 for key in list_for_calculate}
+        rating_dict = {key['rating']: 0 for key in list_for_calculate}
+        faculty_dict = {key['faculties']: 0 for key in list_for_calculate}
 
-            for count in list_for_calculate:
-                grade_dict[count['grades']] += 1
-                criteria_dict[count['criteria']] += 1
-                type_dict[count['type']] += 1
+        for count in list_for_calculate:
+            grade_dict[count['grade']] += 1
+            type_dict[count['class_type']] += 1
+            attend_dict[count['attendance']] += 1
+            criteria_dict[count['scoring_criteria']] += 1
+            rating_dict[count['rating']] += 1
+            faculty_dict[count['faculties']] += 1
 
-            mode = {'mode_grade': max(grade_dict.items(), key=lambda x: x[1])[0],
-                    'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
-                    'mode_type': max(type_dict.items(), key=lambda x: x[1])[0]}
+        mode = {
+            'mode_grade': max(grade_dict.items(), key=lambda x: x[1])[0],
+            'mode_class_type': max(type_dict.items(), key=lambda x: x[1])[0],
+            'mode_attendance': max(attend_dict.items(), key=lambda x: x[1])[0],
+            'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
+            'mode_rating': max(rating_dict.items(), key=lambda x: x[1])[0],
+            'mode_faculty': max(faculty_dict.items(), key=lambda x: x[1])[0],
+        }
 
-            for add_mode in self.sorted_data:
-                for key, val in mode.items():
-                    add_mode[key] = val
+        for add_mode in self.sorted_data:
+            for key, val in mode.items():
+                add_mode[key] = val
+
 
 class InterQuery(QueryStrategy):
     """Class for sent the Inter Table data."""
@@ -283,7 +332,7 @@ class NoteQuery(QueryFilterStrategy):
     """Class for sent Note value to the frontend."""
 
     def get_data(self, filter_key: dict):
-        """Get the user data from the database and return it to fronend."""
+        """Get the user data from the database and return it to frontend."""
         try:
             course = CourseData.objects.get(
                 course_id=filter_key['course_id'],
@@ -300,8 +349,8 @@ class NoteQuery(QueryFilterStrategy):
                 faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
-                username=F('user__user_name'),
-                pdf_file=F('note_file')
+                pdf_file=F('note_file'),
+                name=F('pen_name')
             ).first()
 
             relative_path = note['pdf_file']
@@ -331,18 +380,41 @@ class NoteQuery(QueryFilterStrategy):
                                       " in the database."}, status=401)
 
 
+class BookMarkQuery(QueryFilterStrategy):
+    """Class for sent BookMark values to the frontend."""
+
+    def get_data(self, email: str):
+        """Get the BookMark from the database filter by user."""
+        try:
+             user = UserData.objects.get(email=email)
+             book = BookMark.objects.filter(
+                 user=user
+             ).values(
+                 'object_id',
+                 'data_type'
+             )
+
+             return list(book)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't"
+                                      " in the database."}, status=401)
+
+
 class QueryFactory:
     """Factory class to handle query strategy selection."""
 
     strategy_map = {
         "sort": SortReview,
+        "review-stat": StatQuery,
         "inter": InterQuery,
         "special": SpecialQuery,
         "normal": NormalQuery,
         "none": CourseQuery,
         "user": UserQuery,
         "note": NoteQuery,
-        "upvote": UpvoteQuery
+        "upvote": UpvoteQuery,
+        "book": BookMarkQuery
     }
 
     @classmethod
