@@ -262,13 +262,11 @@ def note_setup(course, user):
     path = os.path.join(settings.MEDIA_ROOT,
                  'note_files', 'yes_indeed.pdf')
 
-    with open(path, "rb") as f:
-        test_pdf = f.read()
-
     note = Note.objects.create(
         user=user[0],
         course=course[0],
         faculty="pyromancer",
+        file_name='yes_indeed.pdf',
         note_file=path,
         date_data=timezone.now(),
         pen_name="Yes"
