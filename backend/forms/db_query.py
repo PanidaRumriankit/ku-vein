@@ -349,6 +349,7 @@ class NoteQuery(QueryFilterStrategy):
                 faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
+                pdf_name=F('file_name'),
                 pdf_path=F('note_file'),
                 name=F('pen_name')
             ).first()

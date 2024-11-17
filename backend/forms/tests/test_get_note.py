@@ -41,8 +41,8 @@ class NoteQueryTests(TestCase):
         self.assertIn('courses_type', note_data)
         self.assertIn('u_id', note_data)
         self.assertIn('name', note_data)
-        self.assertIn('pdf_file', note_data)
-
+        self.assertIn('pdf_path', note_data)
+        self.assertIn('pdf_name', note_data)
 
 
     def test_output_correct_value(self):
