@@ -257,12 +257,13 @@ class NotePost(PostStrategy):
                 data['pen_name'] = user.user_name
 
             try:
-                file_data = base64.b64decode(data['file_data'])
+                file_data = base64.b64decode(data['file'])
             except Exception as e:
                 return Response({"error": f"Invalid file data: {str(e)}"}, status=400)
 
             file_path = os.path.join(settings.MEDIA_ROOT,
-                                     'note_files', data['file_data'][:15])
+                                     'note_files', data['file_name'])
+
             with open(file_path, "wb") as f:
                 f.write(file_data)
 
