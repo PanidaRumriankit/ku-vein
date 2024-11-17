@@ -20,17 +20,6 @@ class NoteQueryTests(TestCase):
         self.course, self.course_data = course_set_up()
         self.user = user_set_up()
 
-    def tearDown(self):
-        """Clean up any files created during the test."""
-        note = Note.objects.first()
-        if note and note.note_file:
-            file_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, note.note_file.name))
-
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-
-            else:
-                print(f"File not found at path: {file_path}")
 
     def test_get_data(self):
         """It should return correct key."""
