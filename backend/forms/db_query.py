@@ -325,8 +325,7 @@ class AnswerQuery(QueryFilterStrategy):
         """Get the data from the database and return to the frontend."""
         try:
             question = QA_Question.objects.select_related().get(question_id=question_id)
-            answer_set =  self.sorted_qa_data(question, mode)
-            answer_data = answer_set.values(
+            answer_data = question.qa_answer_set.all().values(
                 answers_id=F('answer_id'),
                 text=F('answer_text'),
                 users=F('user'),
@@ -334,8 +333,8 @@ class AnswerQuery(QueryFilterStrategy):
             ).annotate(
                 upvote=Count('qa_answer_upvote_set')
             )
+            answer_data = self.sorted_qa_data(answer_data, mode)
 
-            answer_data = list(answer_data)
             for d in answer_data:
                 clean_time_data(d)
 
@@ -344,12 +343,12 @@ class AnswerQuery(QueryFilterStrategy):
 
         return Response(answer_data, status=200)
     
-    def sorted_qa_data(self, question, mode):
+    def sorted_qa_data(self, answer, mode):
         sort_mode = {'latest': '-posted_time',
                      'oldest': 'posted_time',
                      'upvote': 'upvote'}
         
-        return question.qa_answer_set.all().order_by(sort_mode[mode])
+        return list(question.qa_answer_set.all().order_by(sort_mode[mode]))
 
 
 class QueryFactory:
