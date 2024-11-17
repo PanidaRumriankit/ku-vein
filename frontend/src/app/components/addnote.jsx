@@ -15,7 +15,8 @@ import {useSession} from "next-auth/react";
 import {useState} from "react";
 
 export default function AddNote({courseId}) {
-  const [selectedFile, setSelectedFile] = useState();
+  const [selectedFile, setSelectedFile] = useState('');
+  const [selectedFileName, setSelectedFileName] = useState('');
   const [base64File, setBase64File] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -35,6 +36,8 @@ export default function AddNote({courseId}) {
     }
 
     setSelectedFile(file);
+    const fileName = file.name.replace(/\.pdf$/i, '');
+    setSelectedFileName(fileName);
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -77,6 +80,7 @@ export default function AddNote({courseId}) {
       "\nfaculty:", Array.from(selectedFaculty)[0],
       "\ncourse_type:", selectedCourseType,
       "\nfile:", base64File,
+      "\nfile_name", selectedFileName,
       "\npen_name:", selectedPenName || "",);
 
     try {
@@ -93,6 +97,7 @@ export default function AddNote({courseId}) {
           faculty: Array.from(selectedFaculty)[0],
           course_type: selectedCourseType,
           file: base64File,
+          file_name: selectedFileName,
           pen_name: selectedPenName || "",
         }),
       });
