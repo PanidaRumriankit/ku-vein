@@ -183,10 +183,6 @@ class NotePostTests(TestCase):
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
-        print("please eat")
-        file_path = os.path.join(settings.MEDIA_ROOT,
-                     'note_files', test_data['file_name'])
-        print(file_path + "\n")
         self.note_post.post_data(test_data)
 
         note = Note.objects.first()
