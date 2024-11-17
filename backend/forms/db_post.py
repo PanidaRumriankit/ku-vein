@@ -261,8 +261,19 @@ class NotePost(PostStrategy):
             except Exception as e:
                 return Response({"error": f"Invalid file data: {str(e)}"}, status=400)
 
+            file_name = data['file_name'] + '.pdf'
             file_path = os.path.join(settings.MEDIA_ROOT,
-                                     'note_files', data['file_name'])
+                                     'note_files', file_name)
+
+            counter = 1
+            while True:
+                try:
+                    with open(file_path, 'r'):
+                        file_name = data['file_name'] + f'({counter}).pdf'
+                        file_path = os.path.join(settings.MEDIA_ROOT, 'note_files', file_name)
+                        counter += 1
+                except FileNotFoundError:
+                    break
 
             with open(file_path, "wb") as f:
                 f.write(file_data)
@@ -271,6 +282,7 @@ class NotePost(PostStrategy):
                 course=course,
                 user=user,
                 faculty=data['faculty'],
+                file_name=file_name,
                 note_file=file_path,
                 pen_name=data['pen_name'],
                 date_data=timezone.now()
