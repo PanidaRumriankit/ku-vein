@@ -89,7 +89,7 @@ class ReviewStat(models.Model):
     rating = models.FloatField(default=0.0)
     academic_year = models.IntegerField(default=0)
     pen_name = models.CharField(max_length=100, default=None)
-    date_data = models.DateField(default=None)
+    date_data = models.DateTimeField(default=None)
     grade = models.CharField(max_length=2, default=None)
     effort = models.IntegerField(default=None)
     attendance = models.IntegerField(default=None)
@@ -112,16 +112,18 @@ class UpvoteStat(models.Model):
 
 
 class Note(models.Model):
+    note_id = models.AutoField(primary_key=True)
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    date_data = models.DateTimeField(default=None)
     faculty = models.CharField(max_length=100, default=None)
     note_file = models.FileField(upload_to='note_files/', default=None)
+    pen_name = models.CharField(max_length=100, default=None)
 
     class Meta:
         app_label = 'forms'
         db_table = 'Note'
-        unique_together = ('course', 'user')
 
 
 class QA_Question(models.Model):
@@ -173,7 +175,7 @@ class BookMark(models.Model):
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
-    user = models.ForeignKey(UserData, on_delete=models.PROTECT)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'forms'
@@ -186,7 +188,8 @@ class History(models.Model):
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
-    user = models.ForeignKey(UserData, on_delete=models.PROTECT)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'

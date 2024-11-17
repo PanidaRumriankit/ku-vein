@@ -150,9 +150,9 @@ class ReviewPostSchema(Schema):
     reviews: str
     rating: float
     academic_year: int
-    pen_name: str
+    pen_name: Optional[str] = None
     grade: str
-    instructor: Optional[str] = None
+    instructor: str
     effort: int
     attendance: int
     scoring_criteria: str
@@ -206,6 +206,7 @@ class NotePostSchema(Schema):
     faculty: str
     course_type: str
     file : str
+    pen_name: Optional[str] = None
 
 
 class QuestionCreateSchema(Schema):
@@ -248,3 +249,23 @@ class AnswerCreateSchema(Schema):
     answer_text: str
     user_id: str
 
+class BookMarkSchema(Schema):
+    """
+    Schema for handling POST requests to add the bookmark.
+
+      Attributes:
+        email (str): The email address of the user uploading the note.
+        id (int): id of the Review or Note or Q&A objects
+        data_type (str): Type of this data (review, note, qa)
+
+    Example:
+        {
+            "email": "user@example.com",
+            "id": 15,
+            "data_type": "qa",
+
+        }
+    """
+    email : str
+    id : int
+    data_type : str

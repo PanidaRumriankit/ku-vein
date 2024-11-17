@@ -51,7 +51,7 @@ class NoteQueryTests(TestCase):
         self.assertIn('faculties', note_data)
         self.assertIn('courses_type', note_data)
         self.assertIn('u_id', note_data)
-        self.assertIn('username', note_data)
+        self.assertIn('name', note_data)
         self.assertIn('pdf_file', note_data)
 
 
@@ -74,4 +74,4 @@ class NoteQueryTests(TestCase):
         self.assertEqual(note_data['faculties'], note.faculty)
         self.assertEqual(note_data['courses_type'], self.course[0].course_type)
         self.assertEqual(note_data['u_id'], self.user[0].user_id)
-        self.assertEqual(note_data['username'], self.user[0].user_name)
+        self.assertEqual(note_data['name'], 'Yes')

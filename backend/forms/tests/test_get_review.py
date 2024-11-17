@@ -14,10 +14,11 @@ class EarliestReviewTests(TestCase):
         course_set_up()
         user_set_up()
         self.review, self.data = review_set_up()
+        self.get_review = self.earliest.get_data("earliest")
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertIsInstance(self.earliest.get_data("earliest"), list)
+        self.assertIsInstance(self.get_review, list)
 
     def test_order_by_earliest(self):
         """Data should order by first to last."""
@@ -26,6 +27,25 @@ class EarliestReviewTests(TestCase):
                          [item['courses_id']
                           for item in self.earliest.get_data("earliest")])
 
+    def test_contain_data(self):
+        """Test to check is GET method return all demand field."""
+        expected_keys = [
+            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
+            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
+            'criteria', 'type', 'upvote'
+        ]
+
+        for key in expected_keys:
+            self.assertIn(key, self.get_review[0])
+
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+                len(self.earliest.get_data(
+                     "earliest", "1")
+                )
+        )
 
 class LatestReviewTests(TestCase):
     """Test cases for LatestReview."""
@@ -36,6 +56,8 @@ class LatestReviewTests(TestCase):
         course_set_up()
         user_set_up()
         self.review, self.data = review_set_up()
+        self.get_review = self.latest.get_data("latest")
+
 
     def test_correct_data_format(self):
         """Data should return as a list."""
@@ -50,6 +72,25 @@ class LatestReviewTests(TestCase):
                          [item['courses_id']
                           for item in self.latest.get_data("latest")])
 
+    def test_contain_data(self):
+        """Test to check is GET method return all demand field."""
+        expected_keys = [
+            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
+            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
+            'criteria', 'type', 'upvote'
+        ]
+
+        for key in expected_keys:
+            self.assertIn(key, self.get_review[0])
+
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+            len(self.latest.get_data(
+                "latest", "1")
+            )
+        )
 
 class UpvoteReviewTests(TestCase):
     """Test cases for UpvoteReview."""
@@ -60,6 +101,7 @@ class UpvoteReviewTests(TestCase):
         course_set_up()
         self.user = user_set_up()
         self.review, self.data = review_set_up()
+        self.get_review = self.upvote.get_data("upvote")
 
     def test_correct_data_format(self):
         """Data should return as a list."""
@@ -68,6 +110,26 @@ class UpvoteReviewTests(TestCase):
     def test_order_by_upvote(self):
         """Data should order by highest to lowest."""
         upvote_set_up(self.review, self.user)
-        self.assertEqual([5, 4, 3, 2, 1],
+        self.assertEqual([5, 4, 3, 2, 1, 0, 0],
                          [item['upvote']
                           for item in self.upvote.get_data("upvote")])
+
+    def test_contain_data(self):
+        """Test to check is GET method return all demand field."""
+        expected_keys = [
+            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
+            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
+            'criteria', 'type', 'upvote'
+        ]
+
+        for key in expected_keys:
+            self.assertIn(key, self.get_review[0])
+
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+            len(self.upvote.get_data(
+                "upvote", "1")
+            )
+        )

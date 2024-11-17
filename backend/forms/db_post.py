@@ -9,7 +9,12 @@ from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
                      UpvoteStat, FollowData, Note,
                      QA_Question, QA_Answer,
-                     QA_Question_Upvote, QA_Answer_Upvote)
+                     QA_Question_Upvote, QA_Answer_Upvote,
+                     UpvoteStat, FollowData,
+                     Note, BookMark)
+
+from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 
 logger = logging.getLogger("user_logger")
 
@@ -84,7 +89,7 @@ class ReviewPost(PostStrategy):
             rating=data['rating'],
             academic_year=data['academic_year'],
             pen_name=data['pen_name'],
-            date_data=datetime.now().date(),
+            date_data=timezone.now(),
             grade=data['grade'],
             effort=data['effort'],
             attendance=data['attendance'],
@@ -249,11 +254,16 @@ class NotePost(PostStrategy):
             if 'file' not in data or data['file'] is None:
                 return Response({"error": "File is missing."}, status=400)
 
+            if not data['pen_name']:
+                data['pen_name'] = user.user_name
+
             Note.objects.create(
                 course=course,
                 user=user,
                 faculty=data['faculty'],
-                note_file=data['file']
+                note_file=data['file'],
+                pen_name=data['pen_name'],
+                date_data=timezone.now()
             )
             return Response({"success": "Note "
                                         "created successfully."},
@@ -400,6 +410,55 @@ class AnswerUpvotePost(PostStrategy):
                         status=201)
     
 
+
+class BookMarkPost(PostStrategy):
+    """Class for created new Bookmark objects"""
+
+    def __init__(self):
+        """Initialize method for BookMarkPost."""
+        self.table = {"review":CourseReview, "note": Note, "qa": None}
+
+    def post_data(self, data: dict):
+        """Create a new Bookmark object in the database."""
+        try:
+            if data['data_type'] not in self.table or not self.table[data['data_type']]:
+                return Response({"error": "Invalid data_type provided."}, status=400)
+
+            content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
+            user = UserData.objects.get(email=data['email'])
+
+            BookMark.objects.create(
+                content_type=content_type,
+                user=user,
+                object_id=data['id'],
+                data_type=data['data_type']
+            )
+            return Response({"success": "Bookmark created"
+                                        " successfully."},
+                            status=201)
+
+        except KeyError:
+            return Response({"error": "Required data is"
+                                      " missing from the request body."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " user does not exist."},
+                            status=404)
+
+        except ContentType.DoesNotExist:
+            return Response({"error": "Content type not"
+                                      " found for the specified model."},
+                            status=404)
+
+        except CourseReview.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " review does not exist."},
+                            status=404)
+
+
+
 class PostFactory:
     """Factory class to handle query strategy selection."""
 
@@ -412,7 +471,9 @@ class PostFactory:
         "follow": FollowPost,
         "note": NotePost,
         "question": QuestionPost,
-        "answer": AnswerPost
+        "answer": AnswerPost,
+        "note": NotePost,
+        "book": BookMarkPost,
     }
 
     @classmethod

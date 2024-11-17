@@ -1,12 +1,13 @@
 """Set up function for every feature."""
 
-from datetime import datetime
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
                       Note,
-                      QA_Question, QA_Answer)
+                      QA_Question, QA_Answer, BookMark)
+from django.contrib.contenttypes.models import ContentType
 
 
 def course_set_up():
@@ -52,11 +53,43 @@ def review_set_up():
             "academic_year": 2024,
             "pen_name": "Solaire of Astora",
             "grade": "A",
-            "effort": 4,
+            "effort": 2,
             "attendance": 4,
             "scoring_criteria": "work-base",
             "class_type": "onsite",
         },
+
+        {
+            "email": "logan@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "The teachings here have rekindled my faith. A truly divine experience, perfect for those seeking enlightenment.",
+            "rating": 4.7,
+            "academic_year": 2024,
+            "pen_name": "Organ",
+            "grade": "B",
+            "effort": 3,
+            "attendance": 4,
+            "scoring_criteria": "project-base",
+            "class_type": "online",
+        },
+        {
+            "email": "laurentius@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "A serene and impactful course. The knowledge shared here has strengthened my resolve and my bond with the Light.",
+            "rating": 4.6,
+            "academic_year": 2024,
+            "pen_name": "lala",
+            "grade": "B",
+            "effort": 4,
+            "attendance": 5,
+            "scoring_criteria": "work-base",
+            "class_type": "online",
+        },
+
         {
             "email": "logan@gmail.com",
             "course_id": "2",
@@ -140,7 +173,7 @@ def review_set_up():
                       create(review=review_instance, rating=add_user['rating'],
                              academic_year=add_user['academic_year'],
                              pen_name=add_user['pen_name'],
-                             date_data=datetime.now().date(),
+                             date_data=timezone.now(),
                              grade=add_user['grade'],
                              effort=add_user['effort'],
                              attendance=add_user['attendance'],
@@ -234,10 +267,29 @@ def note_setup(course, user):
         user=user[0],
         course=course[0],
         faculty="pyromancer",
-        note_file=note_file
+        note_file=note_file,
+        date_data=timezone.now(),
+        pen_name="Yes"
     )
 
     return note
+
+def book_setup(review, user):
+    """Set up function for BookMark feature using a generator."""
+    table = {"review": CourseReview, "note": Note, "qa": None}
+
+    content_type = ContentType.objects.get_for_model(table['review'])
+    book = []
+    for i in range(len(review)):
+        book.append(BookMark.objects.create(
+            content_type=content_type,
+            object_id=review[i].review_id,
+            data_type="review",
+            user=user[0]
+        ))
+
+    return book
+
 
 def get_time_data(q: QA_Question | QA_Answer):
     """This function is used to clean datetime formatting."""

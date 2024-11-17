@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import GetDjangoApiData from "../constants/getcourses";
@@ -9,7 +9,8 @@ import { useEffect, useState } from 'react';
 export function handleSearch(term, searchParams, pathname, replace) {
   const params = new URLSearchParams(searchParams);
 
-  if (term) {
+  if (term)
+  {
     params.set('query', term);
   } else {
     params.delete('query');
@@ -22,54 +23,28 @@ export default function Search({ onCourseSelect, page }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [selectedFaculty, setSelectedFaculty] = useState(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  const query = searchParams.get('query') || '';
+
   const loadOptions = async (inputValue) => {
     const apiData = await GetDjangoApiData();
 
-    if (!selectedFaculty) {
-      if (inputValue) {
-        const filteredCourses = apiData.filter(course =>
-          course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
-          course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
-        );
+    const filteredData = apiData.filter((course) =>
+      course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
+      course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
+    );
 
-        return filteredCourses.map(course => ({
-          value: course.courses_id,
-          label: `${course.courses_id} - ${course.courses_name}`,
-          courses_type: course.courses_type,
-          faculty: course.faculties,
-          isFaculty: false
-        }));
-      } else {
-        const faculties = Array.from(new Set(apiData.map(course => course.faculties || "Undefined")));
-        return faculties.map(faculty => ({
-          value: faculty,
-          label: faculty,
-          isFaculty: true
-        }));
-      }
-    } else {
-      const filteredCourses = apiData.filter(course =>
-        course.faculties === selectedFaculty &&
-        (course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
-         course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase()))
-      );
-
-      return filteredCourses.map(course => ({
-        value: course.courses_id,
-        label: `${course.courses_id} - ${course.courses_name}`,
-        courses_type: course.courses_type,
-        faculty: course.faculties,
-        isFaculty: false
-      }));
-    }
+    return filteredData.map((course) => ({
+      value: course.courses_id,
+      label: `${course.courses_id.padEnd(12, ' ')}| ${course.courses_name}`,
+      courses_type: course.courses_type,
+    }));
   };
 
   const customStyles = {
@@ -94,10 +69,14 @@ export default function Search({ onCourseSelect, page }) {
       backgroundColor: state.isFocused ? (theme === 'dark' ? "#3E3E3E" : "#F0F0F0") : (theme === 'dark' ? "#2C2C2C" : "#FFFFFF"),
       color: theme === 'dark' ? "#FFFFFF" : "#000000",
       cursor: 'pointer',
+      fontFamily: 'Inter, sans-serif',
+      fontSize: '14px',
+      fontFeatureSettings: '"tnum" on, "lnum" on',
     }),
     singleValue: (provided) => ({
       ...provided,
-      color: theme === 'dark' ? "#FFFFFF" : "#000000"
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
+      fontFamily: 'Inter, sans-serif',
     }),
     placeholder: (provided) => ({
       ...provided,
@@ -105,37 +84,29 @@ export default function Search({ onCourseSelect, page }) {
     }),
     input: (provided) => ({
       ...provided,
-      color: theme === 'dark' ? "#FFFFFF" : "#000000"
+      color: theme === 'dark' ? "#FFFFFF" : "#000000",
     }),
   };
-
-  const handleChange = async (selectedOption) => {
-    if (selectedOption.isFaculty) {
-      setSelectedFaculty(selectedOption.value);
-      await loadOptions("");
-    } else {
-      if (page === 'page') {
-        handleSearch(selectedOption.value, searchParams, pathname, replace);
-      }
-      if (onCourseSelect) {
-        onCourseSelect({
-          courses_id: selectedOption.value,
-          courses_type: selectedOption.courses_type,
-          faculty: selectedOption.faculty
-        });
-      }
-    }
-  };
+  
 
   if (!mounted) return null;
 
   return (
     <div className="my-2 w-full max-w-5xl mx-auto">
       <AsyncSelect
-        key={selectedFaculty || "faculty-select"}
         cacheOptions
         loadOptions={loadOptions}
-        onChange={handleChange}
+        onChange={(selectedOption) => {
+          if (page === 'page') {
+            handleSearch(selectedOption ? selectedOption.value : '', searchParams, pathname, replace);
+          }
+          if (onCourseSelect) {
+            onCourseSelect(selectedOption ? {
+              courses_id: selectedOption.value,
+              courses_type: selectedOption.courses_type,
+            } : null);
+          }
+        }}
         defaultOptions
         placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
         styles={customStyles}
