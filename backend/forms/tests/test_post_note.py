@@ -30,6 +30,17 @@ class NotePostTests(TestCase):
         self.fake_pdf = base64.b64encode(test_pdf).decode('utf-8')
 
 
+    def tearDown(self):
+        """Clean up any files created during the test."""
+        for i in range(6):
+            if i == 0:
+                file_path = os.path.join(settings.MEDIA_ROOT, 'note_files', 'please_work.pdf')
+            else:
+                file_path = os.path.join(settings.MEDIA_ROOT, 'note_files', f'please_work({i}).pdf')
+
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+
     def test_response_missing_email(self):
         """Test missing email key in response body."""
         test_data = {
@@ -37,7 +48,7 @@ class NotePostTests(TestCase):
             "faculty": "banana",
             "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
@@ -54,7 +65,7 @@ class NotePostTests(TestCase):
             "faculty": "banana",
             "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
@@ -71,7 +82,7 @@ class NotePostTests(TestCase):
             "course_id": self.course_data[0]['course_id'],
             "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
@@ -88,7 +99,7 @@ class NotePostTests(TestCase):
             "pen_name": "Yes",
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "file": self.fake_pdf
         }
         response = self.note_post.post_data(test_data)
@@ -105,7 +116,7 @@ class NotePostTests(TestCase):
             "pen_name": "Yes",
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "course_type": self.course_data[0]['course_type'],
         }
         response = self.note_post.post_data(test_data)
@@ -121,7 +132,7 @@ class NotePostTests(TestCase):
             "course_id": "69",
             "pen_name": "Yes",
             "faculty": "banana",
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -139,7 +150,7 @@ class NotePostTests(TestCase):
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
             "pen_name": "Yes",
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -161,7 +172,7 @@ class NotePostTests(TestCase):
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
             "pen_name": "Yes",
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -179,7 +190,7 @@ class NotePostTests(TestCase):
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
             "pen_name": "Yes",
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -197,3 +208,25 @@ class NotePostTests(TestCase):
                       ).replace("\\", "|").split("|"))
 
         self.assertTrue(note.note_file.name.endswith('.pdf'))
+
+    def test_same_name_note(self):
+        """Name should be change if this name already exist."""
+        test_data = {
+            "email": self.user[0].email,
+            "course_id": self.course_data[0]['course_id'],
+            "faculty": "banana",
+            "pen_name": "Yes",
+            "file_name": "please_work",
+            "course_type": self.course_data[0]['course_type'],
+            "file": self.fake_pdf
+        }
+        for i in range(5):
+            self.note_post.post_data(test_data)
+
+            if not i:
+                self.assertEqual("please_work.pdf",
+                                 Note.objects.first().file_name)
+            else:
+                self.assertEqual(f"please_work({i}).pdf",
+                                 Note.objects.all()[i].file_name)
+
