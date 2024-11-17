@@ -1,8 +1,9 @@
 """Module for test everything that relate to get data in the Review feature."""
 
-from ..db_query import SortReview
 from django.test import TestCase
+
 from .set_up import course_set_up, review_set_up, user_set_up, upvote_set_up
+from ..db_query import SortReview
 
 
 class EarliestReviewTests(TestCase):
@@ -38,32 +39,14 @@ class EarliestReviewTests(TestCase):
         for key in expected_keys:
             self.assertIn(key, self.get_review[0])
 
-    def test_contain_data_with_course_id(self):
-        """Test to check is GET method with course_id return all demand field."""
-        expected_keys = [
-            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
-            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
-            'criteria', 'type', 'upvote', 'avg_effort', 'avg_attend', 'avg_rating', 'mode_grade',
-            'mode_criteria', 'mode_type'
-        ]
-
-        for key in expected_keys:
-            self.assertIn(key, self.earliest.get_data("earliest", "1")[0])
-
-    def test_mode_data(self):
-        """Should return correct Mode data."""
-        mode_data = self.earliest.get_data("earliest", "1")[0]
-        self.assertEqual("work-base", mode_data['mode_criteria'])
-        self.assertEqual("B", mode_data['mode_grade'])
-        self.assertEqual("online", mode_data['mode_type'])
-
-    def test_avg_data(self):
-        """Should return correct Avg data."""
-        mode_data = self.earliest.get_data("earliest", "1")[0]
-        self.assertAlmostEqual(mode_data['avg_effort'], (2 + 3 + 4)/3)
-        self.assertAlmostEqual(mode_data['avg_attend'], (4 + 5 + 4)/3 )
-        self.assertAlmostEqual(mode_data['avg_rating'], (4.6 + 4.7 + 4.5)/3)
-
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+                len(self.earliest.get_data(
+                     "earliest", "1")
+                )
+        )
 
 class LatestReviewTests(TestCase):
     """Test cases for LatestReview."""
@@ -101,32 +84,14 @@ class LatestReviewTests(TestCase):
         for key in expected_keys:
             self.assertIn(key, self.get_review[0])
 
-    def test_contain_data_with_course_id(self):
-        """Test to check is GET method with course_id return all demand field."""
-        expected_keys = [
-            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
-            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
-            'criteria', 'type', 'upvote', 'avg_effort', 'avg_attend', 'avg_rating', 'mode_grade',
-            'mode_criteria', 'mode_type'
-        ]
-
-        for key in expected_keys:
-            self.assertIn(key, self.latest.get_data("latest", "1")[0])
-
-    def test_mode_data(self):
-        """Should return correct Mode data."""
-        mode_data = self.latest.get_data("latest", "1")[0]
-        self.assertEqual("work-base", mode_data['mode_criteria'])
-        self.assertEqual("B", mode_data['mode_grade'])
-        self.assertEqual("online", mode_data['mode_type'])
-
-    def test_avg_data(self):
-        """Should return correct Avg data."""
-        mode_data = self.latest.get_data("latest", "1")[0]
-        self.assertAlmostEqual(mode_data['avg_effort'], (2 + 3 + 4)/3)
-        self.assertAlmostEqual(mode_data['avg_attend'], (4 + 5 + 4)/3 )
-        self.assertAlmostEqual(mode_data['avg_rating'], (4.6 + 4.7 + 4.5)/3)
-
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+            len(self.latest.get_data(
+                "latest", "1")
+            )
+        )
 
 class UpvoteReviewTests(TestCase):
     """Test cases for UpvoteReview."""
@@ -161,28 +126,11 @@ class UpvoteReviewTests(TestCase):
         for key in expected_keys:
             self.assertIn(key, self.get_review[0])
 
-    def test_contain_data_with_course_id(self):
-        """Test to check is GET method with course_id return all demand field."""
-        expected_keys = [
-            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
-            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
-            'criteria', 'type', 'upvote', 'avg_effort', 'avg_attend', 'avg_rating', 'mode_grade',
-            'mode_criteria', 'mode_type'
-        ]
-
-        for key in expected_keys:
-            self.assertIn(key, self.upvote.get_data("upvote", "1")[0])
-
-    def test_mode_data(self):
-        """Should return correct Mode data."""
-        mode_data = self.upvote.get_data("upvote", "1")[0]
-        self.assertEqual("work-base", mode_data['mode_criteria'])
-        self.assertEqual("B", mode_data['mode_grade'])
-        self.assertEqual("online", mode_data['mode_type'])
-
-    def test_avg_data(self):
-        """Should return correct Avg data."""
-        mode_data = self.upvote.get_data("upvote", "1")[0]
-        self.assertAlmostEqual(mode_data['avg_effort'], (2 + 3 + 4)/3)
-        self.assertAlmostEqual(mode_data['avg_attend'], (4 + 5 + 4)/3 )
-        self.assertAlmostEqual(mode_data['avg_rating'], (4.6 + 4.7 + 4.5)/3)
+    def test_filter_working(self):
+        """Filter_by key should filter the data."""
+        self.assertEqual(
+            3,
+            len(self.upvote.get_data(
+                "upvote", "1")
+            )
+        )

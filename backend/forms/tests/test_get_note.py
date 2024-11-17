@@ -1,13 +1,13 @@
 """Test case for get the Note data."""
 
 import os
-import json
 
-from ..models import Note
-from ..db_query import NoteQuery
-from django.test import TestCase
 from django.conf import settings
+from django.test import TestCase
+
 from .set_up import user_set_up, course_set_up, note_setup
+from ..db_query import NoteQuery
+from ..models import Note
 
 
 class NoteQueryTests(TestCase):
@@ -51,7 +51,7 @@ class NoteQueryTests(TestCase):
         self.assertIn('faculties', note_data)
         self.assertIn('courses_type', note_data)
         self.assertIn('u_id', note_data)
-        self.assertIn('username', note_data)
+        self.assertIn('name', note_data)
         self.assertIn('pdf_file', note_data)
 
 
@@ -74,4 +74,4 @@ class NoteQueryTests(TestCase):
         self.assertEqual(note_data['faculties'], note.faculty)
         self.assertEqual(note_data['courses_type'], self.course[0].course_type)
         self.assertEqual(note_data['u_id'], self.user[0].user_id)
-        self.assertEqual(note_data['username'], self.user[0].user_name)
+        self.assertEqual(note_data['name'], 'Yes')

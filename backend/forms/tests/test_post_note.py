@@ -1,14 +1,15 @@
 """Test case for create Note feature."""
 
-import os
 import json
+import os
 
-from django.test import TestCase
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
-from ..models import Note
-from ..db_post import NotePost
+from django.test import TestCase
+
 from .set_up import user_set_up, course_set_up
+from ..db_post import NotePost
+from ..models import Note
 
 
 class NotePostTests(TestCase):
@@ -38,6 +39,7 @@ class NotePostTests(TestCase):
         test_data = {
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
+            "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -53,6 +55,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "faculty": "banana",
+            "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -68,6 +71,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
+            "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -82,6 +86,7 @@ class NotePostTests(TestCase):
         """Test missing course_type key in response body."""
         test_data = {
             "email": self.user[0].email,
+            "pen_name": "Yes",
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
             "file": self.fake_pdf
@@ -97,6 +102,7 @@ class NotePostTests(TestCase):
         """Test missing file key in response body."""
         test_data = {
             "email": self.user[0].email,
+            "pen_name": "Yes",
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
@@ -112,6 +118,7 @@ class NotePostTests(TestCase):
         test_data = {
             "email": self.user[0].email,
             "course_id": "69",
+            "pen_name": "Yes",
             "faculty": "banana",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
@@ -129,6 +136,7 @@ class NotePostTests(TestCase):
             "email": "iwanttorest@gmail.com",
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
+            "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -149,6 +157,7 @@ class NotePostTests(TestCase):
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
+            "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }
@@ -165,6 +174,7 @@ class NotePostTests(TestCase):
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
             "faculty": "banana",
+            "pen_name": "Yes",
             "course_type": self.course_data[0]['course_type'],
             "file": self.fake_pdf
         }

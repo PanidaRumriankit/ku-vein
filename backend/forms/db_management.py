@@ -1,9 +1,11 @@
 """This module focus on contact with MySQL server."""
 
 import json
-import pymysql
 from datetime import datetime
+
+import pymysql
 from decouple import config
+
 from .models import CourseData, Inter
 
 
@@ -54,8 +56,9 @@ class TableManagement:
                            "auth_user_user_permissions",
                            "auth_user_groups", "auth_group", "auth_permission",
                            "django_admin_log", "auth_user",
+                           "History", "BookMark",
                            "django_content_type", "django_migrations",
-                           "django_session", "History", "BookMark", "Comment",
+                           "django_session", "Comment",
                            "QAQuestionUpvote", "QAAnswerUpvote",
                            "QA", "QAAnswer", "QAQuestion", "Summary",
                            "Note", "UpvoteStat", "History",

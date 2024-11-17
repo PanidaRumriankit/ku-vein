@@ -1,11 +1,11 @@
 import json
 
+from django.test import TestCase
+
+from .set_up import (user_set_up, review_set_up,
+                     course_set_up)
 from ..db_query import UpvoteQuery
 from ..models import UpvoteStat
-from django.test import TestCase
-from .set_up import (user_set_up, review_set_up,
-                     course_set_up, upvote_set_up)
-
 
 TEST_DATA = [
 

@@ -1,11 +1,13 @@
 """Set up function for every feature."""
 
-from datetime import datetime
+from django.contrib.contenttypes.models import ContentType
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils import timezone
+
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
-                      Note)
+                      Note, BookMark)
 
 
 def course_set_up():
@@ -171,7 +173,7 @@ def review_set_up():
                       create(review=review_instance, rating=add_user['rating'],
                              academic_year=add_user['academic_year'],
                              pen_name=add_user['pen_name'],
-                             date_data=datetime.now().date(),
+                             date_data=timezone.now(),
                              grade=add_user['grade'],
                              effort=add_user['effort'],
                              attendance=add_user['attendance'],
@@ -272,8 +274,25 @@ def note_setup(course, user):
         user=user[0],
         course=course[0],
         faculty="pyromancer",
-        note_file=note_file
+        note_file=note_file,
+        date_data=timezone.now(),
+        pen_name="Yes"
     )
 
     return note
 
+def book_setup(review, user):
+    """Set up function for BookMark feature using a generator."""
+    table = {"review": CourseReview, "note": Note, "qa": None}
+
+    content_type = ContentType.objects.get_for_model(table['review'])
+    book = []
+    for i in range(len(review)):
+        book.append(BookMark.objects.create(
+            content_type=content_type,
+            object_id=review[i].review_id,
+            data_type="review",
+            user=user[0]
+        ))
+
+    return book
