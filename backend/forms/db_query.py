@@ -1,17 +1,18 @@
 """This module use for contain the class for database query."""
 
 import os
-from typing import Union
 from abc import ABC, abstractmethod
+from typing import Any
+from typing import Union
 
 from django.conf import settings
 from django.db.models import F, Count
 from ninja.responses import Response
+
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
                      Note, UpvoteStat, CourseReview,
                      BookMark)
-from typing import Any
 
 
 class QueryStrategy(ABC):
@@ -41,12 +42,12 @@ class SortReview(QueryFilterStrategy):
         self.order = {"earliest": "review__review_id",
                       "latest": "-review__review_id", "upvote": "-upvote"}
 
-    def get_data(self, order_by: str, filter_by: str = None):
+    def get_data(self, filter_key: dict = None):
         """Get the sorted data from the database."""
-        self.sort_by(self.order[order_by], filter_by)
+        self.sort_by(self.order[filter_key["order_by"]], filter_key)
         return list(self.sorted_data)
 
-    def sort_by(self, condition: str, course_id: str) -> None:
+    def sort_by(self, condition: str, filter_key: dict) -> None:
         """Return the sorted data."""
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
@@ -68,8 +69,13 @@ class SortReview(QueryFilterStrategy):
             upvote=Count('upvotestat')
         ).order_by(condition)
 
-        if course_id:
-            self.sorted_data = self.sorted_data.filter(courses_id=course_id)
+        if filter_key["course_id"]:
+            self.sorted_data = self.sorted_data.filter(
+                courses_id=filter_key["course_id"])
+
+        if filter_key["review_id"]:
+            self.sorted_data = self.sorted_data.filter(
+                reviews_id=filter_key["review_id"])
 
 
 class StatQuery(QueryFilterStrategy):

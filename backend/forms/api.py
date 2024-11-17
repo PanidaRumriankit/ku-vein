@@ -1,17 +1,17 @@
 """This module use for send the data from Django to Next.js."""
+from decouple import config
+from google.auth.transport import requests
+from google.oauth2 import id_token
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
-from google.oauth2 import id_token
-from google.auth.transport import requests
-from decouple import config
 
+from .db_management import DatabaseBackup
+from .db_post import PostFactory
+from .db_put import PutFactory
+from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, UserDataSchema,
                       UpvotePostSchema, FollowSchema,
                       UserDataEditSchema, NotePostSchema, BookMarkSchema)
-from .db_management import DatabaseBackup
-from .db_post import PostFactory
-from .db_query import QueryFactory, InterQuery
-from .db_put import PutFactory
 
 app = NinjaExtraAPI()
 
@@ -56,15 +56,18 @@ def get_course_data(request, course_type=None):
 
 
 @app.get("/review")
-def get_sorted_data(request, sort, course_id=None):
+def get_sorted_data(request, sort="latest", course_id=None, review_id=None):
     """Use for send sorted data to frontend."""
+    filter_key = {"order_by": sort, "course_id": course_id,
+                  "review_id": review_id}
 
     if sort not in ["earliest", "latest", "upvote"]:
         return Response({"error": "Invalid Sort parameter"}, status=400)
 
     try:
         strategy = QueryFactory.get_query_strategy("sort")
-        return Response(strategy.get_data(order_by=sort, filter_by=course_id))
+        return Response(strategy.get_data(order_by=sort,
+                                          filter_key=filter_key))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -113,14 +116,16 @@ def get_user(request, email=None, user_id=None):
 
     try:
         strategy = QueryFactory.get_query_strategy("user")
-        return Response(strategy.get_data({"email": email, "user_id": user_id}))
+        return Response(
+            strategy.get_data({"email": email, "user_id": user_id}))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
 
 @app.get("/note")
-def get_note_data(request, email: str, course_id: str, faculty: str, course_type: str):
+def get_note_data(request, email: str, course_id: str, faculty: str,
+                  course_type: str):
     """Use for send the note data to the frontend"""
     if not email and not course_id and not faculty and not course_type:
         return Response({"error": "Missing parameter."}, status=401)
@@ -147,7 +152,8 @@ def is_upvote(request, email: str, review_id: int):
                         status=401)
 
     strategy = QueryFactory.get_query_strategy("upvote")
-    return Response(strategy.get_data({"email": email, "review_id": review_id}))
+    return Response(
+        strategy.get_data({"email": email, "review_id": review_id}))
 
 
 @app.get("/book")

@@ -14,7 +14,7 @@ export default function CoursePage({params}) {
   useEffect(() => {
     const fetchReviews = async () => {
       const key = Array.from(selectedKeys)[0]
-      const data = await MakeFilterApiRequest(key, params.id);
+      const data = await MakeFilterApiRequest(key, params.id, "course");
       console.log(typeof key, key);
       setReviews(data);
     };
