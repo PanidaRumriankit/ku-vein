@@ -16,6 +16,7 @@ import {useState} from "react";
 
 export default function AddNote({courseId}) {
   const [selectedFile, setSelectedFile] = useState();
+  const [base64File, setBase64File] = useState(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [selectedCourseType, setSelectedCourseType] = useState('inter');
@@ -26,7 +27,15 @@ export default function AddNote({courseId}) {
   const route = useRouter();
 
   const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+    const file = e.target.files[0];
+    setSelectedFile(file);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setBase64File(reader.result.split(',')[1]);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handlePenNameChange = (e) => {
@@ -39,128 +48,138 @@ export default function AddNote({courseId}) {
   };
 
   const handlePDFUpload = async () => {
-    if (!session?.email || !(session.idToken || session.accessToken)) return;
-    const email = session.email;
-    console.log("email", email);
-    console.log("course id", courseId, typeof courseId);
-    console.log("faculty", Array.from(selectedFaculty)[0], typeof Array.from(selectedFaculty)[0]);
-    console.log("courseType", selectedCourseType, typeof selectedCourseType);
-    console.log("file", selectedFile, typeof selectedFile);
-
-    setError('');
-    setMessage('');
-
-    if (!selectedFile) {
-      setError('Please select a PDF file.');
+    if (!session?.email || !(session.idToken || session.accessToken)) {
+      setError('Unauthorized: Please log in first.');
       return;
     }
-    const formData = new FormData();
-    formData.append("email", session.email);
-    formData.append("courseId", courseId);
-    formData.append("faculty", Array.from(selectedFaculty)[0]);
-    formData.append("file", selectedFile);
+
+    if (!base64File) {
+      setError('Please select a PDF file to upload.');
+      return;
+    }
 
     try {
       const response = await fetch(noteURL, {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${session.idToken || session.accessToken}`,
-          'Content-Type': 'application/json',
-          "email": session.email,
+          "Content-Type": "application/json",
         },
-        body: formData,
+        body: JSON.stringify({
+          "email": session.email,
+          "course_id": courseId,
+          "faculty": Array.from(selectedFaculty)[0],
+          "course_type": selectedCourseType,
+          "file": base64File
+        }),
       });
 
+      const responseText = await response.text();
+
       if (!response.ok) {
-        const error = await response.json();
-        console.error("Error", error);
+        console.error("Raw Response:", responseText);
+        try {
+          const errorData = JSON.parse(responseText);
+          setError(errorData.message || "Server responded with an error.");
+        } catch (err) {
+          setError("An unexpected error occurred on the server.");
+        }
       } else {
-        const data = await response.json();
-        setMessage(data.message || "Successfully uploaded");
-        setSelectedFile(null);
-        route.refresh();
+        try {
+          const data = JSON.parse(responseText);
+          setMessage(data.message || "File uploaded successfully.");
+          setSelectedFile(null);
+          setBase64File(null);
+          route.refresh();
+        } catch (err) {
+          console.error("Failed to parse response as JSON:", err);
+          setMessage("Upload successful, but received an unexpected response format.");
+        }
       }
-    } catch (e) {
-      console.error('Error pdf upload:', e);
-      setError(e.message);
+    } catch (error) {
+      console.error('Error during PDF upload:', error);
+      setError(error.message || 'An unexpected error occurred.');
     }
   };
 
-  if (!session) return null;
+    if (!session) return null;
 
-  return (
-    <div>
-      {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 z-50"></div>
-      )}
+    return (
+      <div>
+        {isOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 z-50"></div>
+        )}
 
-      <Popup
-        trigger={
-          <div className="fixed bottom-4 right-4 z-50">
-            <button
-              className="bg-[#4ECDC4] p-4 rounded-full shadow-lg text-white hover:bg-[#44b3ab]"
-              onClick={() => setIsOpen(true)}
-            >
-              <AddIcon/>
-            </button>
-          </div>
-        }
-        modal
-        nested
-        contentStyle={{
-          border: 'none', padding: '0',
-          background: 'none'
-        }}
-        onClose={() => setIsOpen(false)} // Close modal
-      >
-        <div
-          className="text-black modal bg-white dark:bg-gray-600 dark:text-white p-6 rounded-lg shadow-lg border border-gray-300 z-30"
+        <Popup
+          trigger={
+            <div className="fixed bottom-4 right-4 z-50">
+              <button
+                className="bg-[#4ECDC4] p-4 rounded-full shadow-lg text-white hover:bg-[#44b3ab]"
+                onClick={() => setIsOpen(true)}
+              >
+                <AddIcon/>
+              </button>
+            </div>
+          }
+          modal
+          nested
+          contentStyle={{
+            border: 'none', padding: '0',
+            background: 'none'
+          }}
+          onClose={() => setIsOpen(false)} // Close modal
         >
-          <p>id {courseId}</p>
-          <div className='flex flex-wrap mt-4 font-bold mb-5'>
-            <h1 className='mr-12'>นามปากกา</h1>
-            <input type='text'
-                   placeholder='นามปากกา'
-                   className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
-                   onChange={handlePenNameChange}
-            />
-          </div>
-          <div className="w-full flex">
-            <Stack direction="row" spacing={1}>
-              {courseType.map((item) => (
-                <Chip
-                  label={item.thai}
-                  key={item.eng}
-                  onClick={() => handleChipClick(item.eng)}
-                  color={selectedCourseType === item.eng ? "success" : "default"}
-                  className="text-black dark:text-white mt-2 w-70 left-0"
-                />
-              ))}
-            </Stack>
-            <FacultyDropDown setSelectedKeys={setSelectedFaculty}
-                             selectedKeys={selectedFaculty}
-                             className="w-30 right-0"/>
-          </div>
+          <div
+            className="text-black modal bg-white dark:bg-gray-600 dark:text-white p-6 rounded-lg shadow-lg border border-gray-300 z-30"
+          >
+            <div className="flex flex-wrap">
+              <p>วิชา {courseId}</p>
+              <FacultyDropDown setSelectedKeys={setSelectedFaculty}
+                               selectedKeys={selectedFaculty}/>
+            </div>
 
-          <div className="flex w-full">
-            <input type="file" accept="application/pdf"
-                   onChange={handleFileChange}
-                   className="w-70 justify-start"/>
-            <Button
-              type="light"
-              onClick={handlePDFUpload}
-              disabled={!selectedFile}
-              color="primary"
-              className="w-30 justify-end"
-            >
-              Upload
-            </Button>
-          </div>
+            <div className='flex flex-wrap font-bold'>
+              <h1 className='mr-12'>นามปากกา</h1>
+              <input type='text'
+                     placeholder='นามปากกา'
+                     className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
+                     onChange={handlePenNameChange}
+              />
+            </div>
 
-          {error && <p className="text-red-600 font-bold">{error}</p>}
-          {message && <p className="text-green-500 font-bold">{message}</p>}
-        </div>
-      </Popup>
-    </div>
-  );
-}
+            <div className="w-full my-5">
+              <Stack direction="row" spacing={1}>
+                {courseType.map((item) => (
+                  <Chip
+                    label={item.thai}
+                    key={item.eng}
+                    onClick={() => handleChipClick(item.eng)}
+                    color={selectedCourseType === item.eng ? "success" : "default"}
+                    className="text-black dark:text-white mt-2 w-auto"
+                  />
+                ))}
+              </Stack>
+            </div>
+
+            <div className="flex flex-wrap w-full">
+              <input type="file" accept="application/pdf"
+                     onChange={handleFileChange}
+                     className="w-70 justify-start"/>
+              <Button
+                type="light"
+                onClick={handlePDFUpload}
+                disabled={!selectedFile}
+                color="primary"
+                className="w-30 justify-end"
+              >
+                Upload
+              </Button>
+            </div>
+
+            {error && <p className="text-red-600 font-bold">{error}</p>}
+            {message && <p className="text-green-500 font-bold">{message}</p>}
+          </div>
+        </Popup>
+      </div>
+    );
+  }
