@@ -186,3 +186,35 @@ class NotePostTests(TestCase):
         self.assertEqual(note.user.user_name, self.user[0].user_name)
         self.assertTrue(note.note_file.name.startswith('note_files/'))
         self.assertTrue(note.note_file.name.endswith('.pdf'))
+        self.assertTrue(note.anonymous)
+
+    def test_post_not_anonymous(self):
+        """Anonymous should be false if pen_name is None."""
+        test_data = {
+            "email": self.user[0].email,
+            "course_id": self.course_data[0]['course_id'],
+            "faculty": "banana",
+            "pen_name": None,
+            "course_type": self.course_data[0]['course_type'],
+            "file": self.fake_pdf
+        }
+        self.note_post.post_data(test_data)
+
+        note = Note.objects.first()
+
+        self.assertFalse(note.anonymous)
+
+    def test_post_same_pen_name_and_user_name(self):
+        test_data = {
+            "email": self.user[0].email,
+            "course_id": self.course_data[0]['course_id'],
+            "faculty": "banana",
+            "pen_name": self.user[0].user_name,
+            "course_type": self.course_data[0]['course_type'],
+            "file": self.fake_pdf
+        }
+        self.note_post.post_data(test_data)
+
+        note = Note.objects.first()
+
+        self.assertFalse(note.anonymous)

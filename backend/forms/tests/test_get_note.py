@@ -51,8 +51,9 @@ class NoteQueryTests(TestCase):
         self.assertIn('faculties', note_data)
         self.assertIn('courses_type', note_data)
         self.assertIn('u_id', note_data)
-        self.assertIn('name', note_data)
         self.assertIn('pdf_file', note_data)
+        self.assertIn('name', note_data)
+        self.assertIn('is_anonymous', note_data)
 
 
 
