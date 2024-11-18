@@ -3,6 +3,7 @@
 import Chip from "@mui/material/Chip";
 import Stack from "@mui/material/Stack";
 import AddIcon from "@mui/icons-material/Add";
+import Checkbox from '@mui/material/Checkbox';
 import {Button} from "@nextui-org/button";
 import Popup from "reactjs-popup";
 
@@ -18,11 +19,17 @@ export default function AddNote({courseId}) {
   const [selectedFile, setSelectedFile] = useState('');
   const [selectedFileName, setSelectedFileName] = useState('');
   const [base64File, setBase64File] = useState(null);
+
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
   const [selectedCourseType, setSelectedCourseType] = useState('inter');
+
   const [selectedFaculty, setSelectedFaculty] = useState(new Set(['คณะเกษตร']));
+
   const [selectedPenName, setSelectedPenName] = useState('');
+  const [isPenName, setIsPenName] = useState(false);
+
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
   const route = useRouter();
@@ -32,7 +39,7 @@ export default function AddNote({courseId}) {
 
     if (!file) {
       console.warn("No file selected.");
-      return; // Exit early if no file is selected
+      return;
     }
 
     setSelectedFile(file);
@@ -49,6 +56,14 @@ export default function AddNote({courseId}) {
 
   const handlePenNameChange = (e) => {
     setSelectedPenName(e.target.value);
+  }
+
+  const handleIsPenNameChange = () => {
+    setIsPenName(!isPenName);
+    if (isPenName) {
+      console.log("Pen name state", isPenName);
+      setSelectedPenName("");
+    }
   }
 
   const handleChipClick = (courseTypeEng) => {
@@ -109,6 +124,7 @@ export default function AddNote({courseId}) {
       } else {
         const data = await response.json();
         console.log('Success:', data);
+        route.refresh();
       }
     } catch (err) {
       console.error('Error:', err);
@@ -157,7 +173,11 @@ export default function AddNote({courseId}) {
                    placeholder='นามปากกา'
                    className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
                    onChange={handlePenNameChange}
+                   value={selectedPenName}
+                   disabled={!isPenName}
             />
+            <Checkbox checked={isPenName}
+                      onChange={handleIsPenNameChange}/>
           </div>
 
           <div className="w-full my-5">
