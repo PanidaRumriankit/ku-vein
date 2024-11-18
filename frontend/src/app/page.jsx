@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchReviews = async () => {
-      const key = Array.from(selectedKeys)[0]
+      const key = Array.from(selectedKeys)[0];
       const data = await MakeApiRequest(key);
       console.log(typeof key, key);
       setReviews(data);
