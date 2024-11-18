@@ -44,7 +44,7 @@ class SortReview(QueryFilterStrategy):
     def get_data(self, order_by: str, filter_by: str = None):
         """Get the sorted data from the database."""
         self.sort_by(self.order[order_by], filter_by)
-        return list(self.sorted_data)
+        return Response(list(self.sorted_data), status=200)
 
     def sort_by(self, condition: str, course_id: str) -> None:
         """Return the sorted data."""
@@ -88,7 +88,7 @@ class StatQuery(QueryFilterStrategy):
         self.filter_course(filter_by)
         self.find_avg()
         self.find_mode()
-        return self.sorted_data[0]
+        return Response(self.sorted_data[0], status=200)
 
     def filter_course(self, course_id: str) -> None:
         """Return the sorted data."""
@@ -181,7 +181,7 @@ class InterQuery(QueryStrategy):
             courses_type=F('course__course_type')
         )
 
-        return list(inter_data)
+        return Response(list(inter_data), status=200)
 
 
 class SpecialQuery(QueryStrategy):
@@ -195,7 +195,7 @@ class SpecialQuery(QueryStrategy):
             courses_type=F('course__course_type')
         )
 
-        return list(special_data)
+        return Response(list(special_data), status=200)
 
 
 class NormalQuery(QueryStrategy):
@@ -209,7 +209,7 @@ class NormalQuery(QueryStrategy):
             courses_type=F('course__course_type')
         )
 
-        return list(normal_data)
+        return Response(list(normal_data), status=200)
 
 
 class CourseQuery(QueryStrategy):
@@ -223,7 +223,7 @@ class CourseQuery(QueryStrategy):
             courses_type=F('course_type')
         )
 
-        return list(course_data)
+        return Response(list(course_data), status=200)
 
 
 class UserQuery(QueryFilterStrategy):
@@ -283,7 +283,7 @@ class UserQuery(QueryFilterStrategy):
         self.user['follower_count'] = len(self.user['follower'])
         self.user['following_count'] = len(self.user['following'])
 
-        return self.user
+        return Response(self.user, status=200)
 
 
 class UpvoteQuery(QueryFilterStrategy):
@@ -306,7 +306,7 @@ class UpvoteQuery(QueryFilterStrategy):
 
             UpvoteStat.objects.get(review_stat=stat, user=user)
 
-            return True
+            return Response(True, status=200)
 
         except KeyError:
             return Response({"error": "Missing review_id or"
@@ -325,7 +325,7 @@ class UpvoteQuery(QueryFilterStrategy):
                                       " isn't in the database."}, status=401)
 
         except UpvoteStat.DoesNotExist:
-            return False
+            return Response(False, status=200)
 
 
 class NoteQuery(QueryFilterStrategy):
@@ -365,7 +365,7 @@ class NoteQuery(QueryFilterStrategy):
             )
             note['pdf_file'] = absolute_note_file_path
 
-            return note
+            return Response(list(note), status=200)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
@@ -394,7 +394,7 @@ class BookMarkQuery(QueryFilterStrategy):
                  'data_type'
              )
 
-             return list(book)
+             return Response(list(book), status=200)
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't"
