@@ -16,7 +16,7 @@ import Popup from 'reactjs-popup';
 
 export default function Profile() {
   const {theme} = useTheme();
-  const [activeTab, setActiveTab] = useState('posts');
+  const [activeTab, setActiveTab] = useState('reviews');
   const {data: session} = useSession();
   const [hovered, setHovered] = useState(false);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
@@ -92,6 +92,21 @@ export default function Profile() {
       console.error('Error:', error);
     }
   }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "reviews":
+        return <p>Here are your reviews!</p>;
+      case "posts":
+        return <p>Here are your posts!</p>;
+      case "replies":
+        return <p>Here are your replies!</p>;
+      case "notes":
+        return <p>Here are your notes!</p>;
+      default:
+        return <p>Select a section to view its content.</p>;
+    }
+  };
 
   if (!putData) return null;
 
@@ -356,6 +371,9 @@ export default function Profile() {
             {tab}
           </button>
         ))}
+      </div>
+      <div className="w-full max-w-6xl mt-4 flex justify-center">
+        {renderContent()}
       </div>
     </div>
   );
