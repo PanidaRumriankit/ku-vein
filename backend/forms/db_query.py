@@ -350,11 +350,12 @@ class NoteQuery(QueryFilterStrategy):
                 faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
-                pdf_file=F('note_file'),
+                pdf_name=F('file_name'),
+                pdf_path=F('note_file'),
                 name=F('pen_name')
             ).first()
 
-            relative_path = note['pdf_file']
+            relative_path = note['pdf_path']
 
             if "/" in relative_path:
                 relative_path = relative_path.replace("/", "\\")

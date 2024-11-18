@@ -207,6 +207,7 @@ class NotePostSchema(Schema):
     faculty: str
     course_type: str
     file : str
+    file_name : str
     pen_name: Optional[str] = None
 
 

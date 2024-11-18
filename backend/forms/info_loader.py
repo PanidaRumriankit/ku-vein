@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 DAYS = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or', 'together', 'Online', 'LAB', 'ONLINE']
-BUILDING = ['VT', 'HUM', 'SC', 'ED', 'AI', 'E', 'BA', 'EC', 'ED', 'Soc']
+BUILDING = ['VT', 'HUM', 'SC', 'ED', 'AI', 'E', 'BA', 'EC', 'ED', 'Soc', 'AUDITORIUM', 'STAM']
 FORBIDDEN_WORD = NOT_COURSE_NAME + DAYS
 ROMAN_NUMBER = ['I', 'II', 'III', 'IV', 'V', 'VI']
 IS_COURSE_NAME = ['&', 'a', '-']
@@ -92,8 +92,6 @@ def is_subject_name(text: str):
         return False
     if any(is_thai(t) or t.isnumeric() for t in text):
         return False
-    # if text.isupper():
-    #     return False
     if len(text) <= 1:
         return False
     return True
@@ -127,22 +125,20 @@ def is_valid_line(lines: list[str]):
             return True
         print('reject by not subject id')
         return False
-
     return True
 
 
-def get_last_subject_id(fac: str):
+def get_last_subject_id():
     """Get the last added subject's id."""
     global RESULT_DATA
-    print(fac)
-    print(list(RESULT_DATA[fac].keys()))
+    print(list(RESULT_DATA.keys()))
     try:
-        return list(RESULT_DATA[fac].keys())[-1]
+        return list(RESULT_DATA.keys())[-1]
     except IndexError:
         pass
 
 
-def handle_line(text: list[str], fac: str):
+def handle_line(text: list[str]):
     """
     Use for handle each line.
 
@@ -157,9 +153,9 @@ def handle_line(text: list[str], fac: str):
         return
     if is_left_over_subject(first):
         subject_name = get_subject_name(text, 0)
-        subject_id = get_last_subject_id(fac)
-        RESULT_DATA[fac][subject_id] += ' ' + subject_name
-        RESULT_DATA[fac][subject_id] = RESULT_DATA[fac][subject_id].strip()
+        subject_id = get_last_subject_id()
+        RESULT_DATA[subject_id] += ' ' + subject_name
+        RESULT_DATA[subject_id] = RESULT_DATA[subject_id].strip()
         print('approve')
         return
     if not is_valid_line(text):
@@ -182,7 +178,7 @@ def handle_line(text: list[str], fac: str):
         reject.append(text)
         return
     print('approve')
-    RESULT_DATA[fac][subject_id] = subject_name.strip()
+    RESULT_DATA[subject_id] = subject_name.strip()
 
 
 def is_subject_id(text: str):
@@ -221,8 +217,6 @@ def extract_text_from_pdf(pdf_path: str,
     print(f"Start Extract Text From {filename}\n")
     global RESULT_DATA
     RESULT_DATA = {}
-    faculty = "undefined"
-    RESULT_DATA[faculty] = {}
     with pdfplumber.open(pdf_path) as pdf:
         # Loop PDF pages
         for page in pdf.pages:
@@ -235,19 +229,8 @@ def extract_text_from_pdf(pdf_path: str,
             # Inner loop. Loop each line of the page.
             for line in lines:
                 cur_line = line.split()
+                handle_line(cur_line)
 
-                if "คณะ" == cur_line[0][:3]:
-                    faculty = cur_line[0]
-                    try:
-                        if RESULT_DATA[faculty]:
-                            print(f"Continue Extract Data From"
-                                  f" {filename}...\n")
-
-                    except KeyError:
-                        RESULT_DATA[faculty] = {}
-
-                else:
-                    handle_line(cur_line, faculty)
         print("Successfully Combined Data\n")
 
 

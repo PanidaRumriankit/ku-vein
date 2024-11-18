@@ -1,13 +1,15 @@
 """Set up function for every feature."""
 
-from django.contrib.contenttypes.models import ContentType
-from django.core.files.uploadedfile import SimpleUploadedFile
+import os
+
+from django.conf import settings
 from django.utils import timezone
 
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
                       Note, BookMark)
+from django.contrib.contenttypes.models import ContentType
 
 
 def course_set_up():
@@ -256,25 +258,17 @@ def follower_setup(user):
     return follow
 
 
-def note_generator(course, user, note_content):
-    """Generator function to yield Note instances with files."""
-
-
-
 def note_setup(course, user):
     """Set up function for Note feature using a generator."""
-    note_content = "Yes, indeed"
-    note_file = SimpleUploadedFile(
-        name=f"{note_content[:10]}.pdf",
-        content=note_content.encode('utf-8'),
-        content_type="application/pdf"
-    )
+    path = os.path.join(settings.MEDIA_ROOT,
+                 'note_files', 'yes_indeed.pdf')
 
     note = Note.objects.create(
         user=user[0],
         course=course[0],
         faculty="pyromancer",
-        note_file=note_file,
+        file_name='yes_indeed.pdf',
+        note_file=path,
         date_data=timezone.now(),
         pen_name="Yes"
     )

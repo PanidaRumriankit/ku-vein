@@ -117,7 +117,8 @@ class Note(models.Model):
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     date_data = models.DateTimeField(default=None)
     faculty = models.CharField(max_length=100, default=None)
-    note_file = models.FileField(upload_to='note_files/', default=None)
+    file_name = models.CharField(max_length=255, default=None)
+    note_file = models.FileField(upload_to='note_files/', default=None, max_length=255)
     pen_name = models.CharField(max_length=100, default=None)
 
     class Meta:
