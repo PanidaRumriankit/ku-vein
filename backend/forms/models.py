@@ -76,6 +76,7 @@ class CourseReview(models.Model):
     reviews = models.TextField(default=None)
     faculty = models.CharField(max_length=100, default=None)
     instructor = models.CharField(max_length=40, default=None, null=True)
+    anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'
@@ -119,6 +120,7 @@ class Note(models.Model):
     faculty = models.CharField(max_length=100, default=None)
     note_file = models.FileField(upload_to='note_files/', default=None)
     pen_name = models.CharField(max_length=100, default=None)
+    anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'
@@ -166,7 +168,6 @@ class History(models.Model):
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'

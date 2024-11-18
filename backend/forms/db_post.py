@@ -63,9 +63,10 @@ class ReviewPost(PostStrategy):
             return error_check
 
         try:
+            anonymous = True
             if not data['pen_name']:
                 data['pen_name'] = self.user.user_name
-
+                anonymous = False
             if not data['academic_year']:
                 data['academic_year'] = datetime.now().year
 
@@ -78,7 +79,8 @@ class ReviewPost(PostStrategy):
             course=self.course,
             reviews=data['reviews'],
             faculty=data['faculty'],
-            instructor=data['instructor']
+            instructor=data['instructor'],
+            anonymous=anonymous
         )
         ReviewStat.objects.create(
             review=review_instance,
@@ -250,8 +252,10 @@ class NotePost(PostStrategy):
             if 'file' not in data or data['file'] is None:
                 return Response({"error": "File is missing."}, status=400)
 
+            anonymous = True
             if not data['pen_name']:
                 data['pen_name'] = user.user_name
+                anonymous = False
 
             Note.objects.create(
                 course=course,
@@ -259,7 +263,8 @@ class NotePost(PostStrategy):
                 faculty=data['faculty'],
                 note_file=data['file'],
                 pen_name=data['pen_name'],
-                date_data=timezone.now()
+                date_data=timezone.now(),
+                anonymous=anonymous
             )
             return Response({"success": "Note"
                                         " created successfully."},

@@ -63,6 +63,7 @@ class SortReview(QueryFilterStrategy):
             professor=F('review__instructor'),
             criteria=F('scoring_criteria'),
             type=F('class_type'),
+            is_anonymous=F('review__anonymous')
 
         ).annotate(
             upvote=Count('upvotestat')
@@ -350,7 +351,8 @@ class NoteQuery(QueryFilterStrategy):
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
                 pdf_file=F('note_file'),
-                name=F('pen_name')
+                name=F('pen_name'),
+                is_anonymous=F('anonymous')
             ).first()
 
             relative_path = note['pdf_file']
