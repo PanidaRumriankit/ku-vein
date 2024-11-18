@@ -294,15 +294,7 @@ class BookMarkPost(PostStrategy):
             content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
             user = UserData.objects.get(email=data['email'])
 
-            BookMark.objects.create(
-                content_type=content_type,
-                user=user,
-                object_id=data['id'],
-                data_type=data['data_type']
-            )
-            return Response({"success": "Bookmark created"
-                                        " successfully."},
-                            status=201)
+            return self.add_or_delete(content_type, user, data)
 
         except KeyError:
             return Response({"error": "Required data is"
@@ -323,6 +315,36 @@ class BookMarkPost(PostStrategy):
             return Response({"error": "The specified"
                                       " review does not exist."},
                             status=404)
+
+    @staticmethod
+    def add_or_delete(content_type, user: UserData, data: dict):
+        """
+        Check is the user already bookmark or not.
+
+        If already bookmark. Then, delete the object.
+        Else create new BookMark objects.
+        """
+        exist = BookMark.objects.filter(content_type=content_type,
+                                        object_id=data['id'],
+                                        user=user,
+                                        data_type=data['data_type']
+                                        )
+        if exist.count():
+            exist.delete()
+            return Response({"success": "Successfully"
+                                        " remove the bookmark."},
+                            status=201)
+
+        BookMark.objects.create(
+            content_type=content_type,
+            user=user,
+            object_id=data['id'],
+            data_type=data['data_type']
+        )
+
+        return Response({"success": "Bookmark created"
+                                    " successfully."},
+                        status=201)
 
 
 
