@@ -2,15 +2,25 @@
 
 import logging
 
+import base64
+import os
+
 from datetime import datetime
 from abc import ABC, abstractmethod
+from datetime import datetime
+
+from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 from ninja.responses import Response
+
 from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
                      UpvoteStat, FollowData,
                      Note, BookMark)
-from django.contrib.contenttypes.models import ContentType
+
+from django.conf import settings
 from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger("user_logger")
 
@@ -253,11 +263,34 @@ class NotePost(PostStrategy):
             if not data['pen_name']:
                 data['pen_name'] = user.user_name
 
+            try:
+                file_data = base64.b64decode(data['file'])
+            except Exception as e:
+                return Response({"error": f"Invalid file data: {str(e)}"}, status=400)
+
+            file_name = data['file_name'] + '.pdf'
+            file_path = os.path.join(settings.MEDIA_ROOT,
+                                     'note_files', file_name)
+
+            counter = 1
+            while True:
+                try:
+                    with open(file_path, 'r'):
+                        file_name = data['file_name'] + f'({counter}).pdf'
+                        file_path = os.path.join(settings.MEDIA_ROOT, 'note_files', file_name)
+                        counter += 1
+                except FileNotFoundError:
+                    break
+
+            with open(file_path, "wb") as f:
+                f.write(file_data)
+
             Note.objects.create(
                 course=course,
                 user=user,
                 faculty=data['faculty'],
-                note_file=data['file'],
+                file_name=file_name,
+                note_file=file_path,
                 pen_name=data['pen_name'],
                 date_data=timezone.now()
             )

@@ -83,7 +83,7 @@ export default function ReviewCard({item, page = null}) {
         {page === "page" && (
           <legend
             style={{backgroundColor: color, borderColor: color}}
-            className="p-2 border-solid border rounded text-black font-bold dark:text-white"
+            className="hover: cursor-pointer p-2 border-solid border rounded text-black font-bold dark:text-white"
             onClick={handleLegendClick}
           >
             {item.courses_id} | {item.courses_name}
@@ -92,7 +92,7 @@ export default function ReviewCard({item, page = null}) {
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0}}/>}/>
+                    emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
             {item.professor &&
               <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
@@ -110,7 +110,7 @@ export default function ReviewCard({item, page = null}) {
             <div className="text-left">
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon/> {upvoteCount}
+                <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
               </Button>
             </div>
             <div className="text-right">

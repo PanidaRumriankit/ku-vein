@@ -1,22 +1,13 @@
 "use client"
 
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import {usePathname, useRouter, useSearchParams} from "next/navigation";
 import GetDjangoApiData from "../constants/getcourses";
 import AsyncSelect from 'react-select/async';
-import { useTheme } from "next-themes";
-import { useEffect, useState } from 'react';
+import {useTheme} from "next-themes";
+import {useEffect, useState} from 'react';
 
-export function handleSearch(term, searchParams, pathname, replace) {
-  const params = new URLSearchParams(searchParams);
-
-  if (term)
-  {
-    params.set('query', term);
-  } else {
-    params.delete('query');
-  }
-
-  replace(`${pathname}?${params.toString()}`);
+export function handleSearch(term, replace) {
+  replace(`/course/${term}`);
 }
 
 export default function Search({ onCourseSelect, page }) {
@@ -98,7 +89,7 @@ export default function Search({ onCourseSelect, page }) {
         loadOptions={loadOptions}
         onChange={(selectedOption) => {
           if (page === 'page') {
-            handleSearch(selectedOption ? selectedOption.value : '', searchParams, pathname, replace);
+            handleSearch(selectedOption ? selectedOption.value : '', replace);
           }
           if (onCourseSelect) {
             onCourseSelect(selectedOption ? {
