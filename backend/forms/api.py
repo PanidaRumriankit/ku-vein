@@ -1,17 +1,17 @@
 """This module use for send the data from Django to Next.js."""
+from decouple import config
+from google.auth.transport import requests
+from google.oauth2 import id_token
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
-from google.oauth2 import id_token
-from google.auth.transport import requests
-from decouple import config
 
+from .db_management import DatabaseBackup
+from .db_post import PostFactory
+from .db_put import PutFactory
+from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, UserDataSchema,
                       UpvotePostSchema, FollowSchema,
                       UserDataEditSchema, NotePostSchema, BookMarkSchema)
-from .db_management import DatabaseBackup
-from .db_post import PostFactory
-from .db_query import QueryFactory, InterQuery
-from .db_put import PutFactory
 
 app = NinjaExtraAPI()
 

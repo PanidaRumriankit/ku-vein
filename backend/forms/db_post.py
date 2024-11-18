@@ -1,16 +1,23 @@
 """This module use for post and update database."""
 
 import logging
+
 import base64
 import os
 
 from datetime import datetime
 from abc import ABC, abstractmethod
+from datetime import datetime
+
+from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 from ninja.responses import Response
+
 from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
                      UpvoteStat, FollowData,
                      Note, BookMark)
+
 from django.conf import settings
 from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
