@@ -34,10 +34,17 @@ def verify_google_token(auth: str, email: str) -> bool:
         return False
 
 def check_response(data):
+    """
+    Use for return data.
+
+    If it isn't response instance.
+    It will create Response object and return.
+    """
     if isinstance(data, Response):
         return data
     else:
         return Response(data, status=200)
+
 
 @app.get("/course")
 def get_course_data(request, course_type=None):
