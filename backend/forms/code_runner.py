@@ -11,14 +11,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
 
+from forms.models import BookMark
 from forms.db_query import InterQuery
-from forms.db_management import TableManagement, DatabaseManagement, DatabaseBackup
 
 if __name__ == "__main__":
-    t = TableManagement()
-    t.drop_all_tables()
-    print(t.get_table_name())
-
+    print(BookMark.objects.all())
     # After migrate uncomment this
     # d = DatabaseBackup()
     # d.exist_data_loader("inter")

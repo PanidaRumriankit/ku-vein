@@ -33,6 +33,18 @@ def verify_google_token(auth: str, email: str) -> bool:
     except ValueError:
         return False
 
+def check_response(data):
+    """
+    Use for return data.
+
+    If it isn't response instance.
+    It will create Response object and return.
+    """
+    if isinstance(data, Response):
+        return data
+    else:
+        return Response(data, status=200)
+
 
 @app.get("/course")
 def get_course_data(request, course_type=None):
@@ -49,32 +61,29 @@ def get_course_data(request, course_type=None):
 
     try:
         strategy = QueryFactory.get_query_strategy(query_type)
-        return Response(strategy.get_data())
+        return check_response(strategy.get_data())
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
 
 @app.get("/review")
-def get_sorted_data(request, sort="latest", course_id=None, review_id=None):
+def get_sorted_data(request, sort, course_id=None):
     """Use for send sorted data to frontend."""
-    filter_key = {"order_by": sort, "course_id": course_id,
-                  "review_id": review_id}
 
     if sort not in ["earliest", "latest", "upvote"]:
         return Response({"error": "Invalid Sort parameter"}, status=400)
 
     try:
         strategy = QueryFactory.get_query_strategy("sort")
-        return Response(strategy.get_data(order_by=sort,
-                                          filter_key=filter_key))
+        return check_response(strategy.get_data(order_by=sort, filter_by=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
 
 @app.get("/review/stats")
-def get_sorted_data(request, course_id):
+def get_stat_data(request, course_id):
     """Use for send review stats data to frontend."""
 
     if not course_id:
@@ -82,7 +91,7 @@ def get_sorted_data(request, course_id):
 
     try:
         strategy = QueryFactory.get_query_strategy("review-stat")
-        return Response(strategy.get_data(filter_by=course_id))
+        return check_response(strategy.get_data(filter_by=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -116,16 +125,14 @@ def get_user(request, email=None, user_id=None):
 
     try:
         strategy = QueryFactory.get_query_strategy("user")
-        return Response(
-            strategy.get_data({"email": email, "user_id": user_id}))
+        return check_response(strategy.get_data({"email": email, "user_id": user_id}))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
 
 @app.get("/note")
-def get_note_data(request, email: str, course_id: str, faculty: str,
-                  course_type: str):
+def get_note_data(request, email: str, course_id: str, faculty: str, course_type: str):
     """Use for send the note data to the frontend"""
     if not email and not course_id and not faculty and not course_type:
         return Response({"error": "Missing parameter."}, status=401)
@@ -135,7 +142,7 @@ def get_note_data(request, email: str, course_id: str, faculty: str,
 
     try:
         strategy = QueryFactory.get_query_strategy("note")
-        return Response(strategy.get_data(filter_key))
+        return check_response(strategy.get_data(filter_key))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -152,8 +159,7 @@ def is_upvote(request, email: str, review_id: int):
                         status=401)
 
     strategy = QueryFactory.get_query_strategy("upvote")
-    return Response(
-        strategy.get_data({"email": email, "review_id": review_id}))
+    return check_response(strategy.get_data({"email": email, "review_id": review_id}))
 
 
 @app.get("/book")
@@ -163,7 +169,7 @@ def get_bookmark_data(request, email: str):
         return Response({"error": "Missing email parameter."},
                         status=401)
     strategy = QueryFactory.get_query_strategy("book")
-    return Response(strategy.get_data(email))
+    return check_response(strategy.get_data(email))
 
 
 @app.put("/user")

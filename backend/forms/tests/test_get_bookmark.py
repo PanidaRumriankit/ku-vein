@@ -1,6 +1,7 @@
-from ..db_query import BookMarkQuery
 from django.test import TestCase
+
 from .set_up import course_set_up, review_set_up, user_set_up, book_setup
+from ..db_query import BookMarkQuery
 
 
 class EarliestReviewTests(TestCase):

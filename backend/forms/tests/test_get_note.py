@@ -1,13 +1,9 @@
 """Test case for get the Note data."""
 
-import os
-import json
-
-from ..models import Note
-from ..db_query import NoteQuery
 from django.test import TestCase
-from django.conf import settings
+
 from .set_up import user_set_up, course_set_up, note_setup
+from ..db_query import NoteQuery
 
 
 class NoteQueryTests(TestCase):
@@ -20,17 +16,6 @@ class NoteQueryTests(TestCase):
         self.course, self.course_data = course_set_up()
         self.user = user_set_up()
 
-    def tearDown(self):
-        """Clean up any files created during the test."""
-        note = Note.objects.first()
-        if note and note.note_file:
-            file_path = os.path.normpath(os.path.join(settings.MEDIA_ROOT, note.note_file.name))
-
-            if os.path.isfile(file_path):
-                os.remove(file_path)
-
-            else:
-                print(f"File not found at path: {file_path}")
 
     def test_get_data(self):
         """It should return correct key."""
@@ -52,8 +37,8 @@ class NoteQueryTests(TestCase):
         self.assertIn('courses_type', note_data)
         self.assertIn('u_id', note_data)
         self.assertIn('name', note_data)
-        self.assertIn('pdf_file', note_data)
-
+        self.assertIn('pdf_path', note_data)
+        self.assertIn('pdf_name', note_data)
 
 
     def test_output_correct_value(self):

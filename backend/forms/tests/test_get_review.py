@@ -1,8 +1,9 @@
 """Module for test everything that relate to get data in the Review feature."""
 
-from ..db_query import SortReview
 from django.test import TestCase
+
 from .set_up import course_set_up, review_set_up, user_set_up, upvote_set_up
+from ..db_query import SortReview
 
 
 class EarliestReviewTests(TestCase):
