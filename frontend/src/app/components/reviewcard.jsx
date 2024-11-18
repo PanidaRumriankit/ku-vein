@@ -2,6 +2,7 @@
 
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
+import BookmarkButton from "./bookmarkbutton.jsx";
 
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import Rating from '@mui/material/Rating';
@@ -21,7 +22,7 @@ function RandomColor() {
   return colorPallet[index];
 }
 
-export default function ReviewCard({item, page = null}) {
+export default function ReviewCard({item, page = null, bookmark = false}) {
   const router = useRouter();
   const color = RandomColor();
   const {data: session} = useSession();
@@ -30,6 +31,7 @@ export default function ReviewCard({item, page = null}) {
   const [isLoading, setIsLoading] = useState(false);
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
+  console.log('Bookmark:', bookmark);
 
   const handleUpvote = async () => {
     if (isLoading || !email || !idToken) return;
@@ -116,6 +118,7 @@ export default function ReviewCard({item, page = null}) {
             <div className="text-right">
               <ReportButton/>
               <ShareButton/>
+              <BookmarkButton id={item.reviews_id} type="review" bookmark={bookmark}/>
             </div>
           </div>
         </div>

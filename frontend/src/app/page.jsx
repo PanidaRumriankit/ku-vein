@@ -6,12 +6,16 @@ import Sorting from "./components/sorting";
 import ReviewCard from "./components/reviewcard";
 import MakeApiRequest from "./constants/getreview"
 import AddReviews from "./components/addreviews";
+import GetBookmarks from "./constants/getbookmarks";
 
 import {useState, useEffect} from "react";
+import {useSession} from "next-auth/react";
 
 export default function Home() {
+  const {data: session} = useSession();
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
   const [reviews, setReviews] = useState([]);
+  const [bookmarkReview, setBookmarkReview] = useState([]);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -23,6 +27,19 @@ export default function Home() {
 
     fetchReviews();
   }, [selectedKeys]);
+
+  const fetchBookmarks = async () => {
+    const response = await GetBookmarks(session.email);
+    setBookmarkReview(response.filter((bookmark) => bookmark.data_type === "review"));
+    console.log('Received bookmarks review:', bookmarkReview);
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchBookmarks();
+    }
+
+  }, [session]);
 
   return (
     <div
@@ -46,9 +63,20 @@ export default function Home() {
         <Sorting selectedKeys={selectedKeys}
                  setSelectedKeys={setSelectedKeys}/>
         {reviews.length > 0 ? (
-          reviews.map((item, index) => (
-            <ReviewCard item={item} key={index} page={"page"}/>
-          ))
+          reviews.map((item, index) => {
+            const isBookmarked = bookmarkReview.some(
+              (bookmark) => bookmark.review_id === item.review_id
+            );
+            console.log('isBookmarked:', isBookmarked);
+            return (
+              <ReviewCard
+                item={item}
+                key={index}
+                page="page"
+                bookmark={isBookmarked}
+              />
+            );
+          })
         ) : (
           <p className="text-green-400 text-center">No review currently</p>
         )}
