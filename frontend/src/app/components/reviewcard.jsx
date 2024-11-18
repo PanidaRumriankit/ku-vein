@@ -8,7 +8,7 @@ import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
 import {upvoteURL} from "../constants/backurl.js"
-import {colorPallet} from "../constants";
+import {colorPallet, facultyColor} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
 
 import {Button} from "@nextui-org/button";
@@ -23,7 +23,7 @@ function RandomColor() {
 
 export default function ReviewCard({item, page = null}) {
   const router = useRouter();
-  const color = RandomColor();
+  const color = facultyColor[item.faculties] || RandomColor();
   const {data: session} = useSession();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
@@ -92,7 +92,8 @@ export default function ReviewCard({item, page = null}) {
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
+                    emptyIcon={<StarIcon
+                      style={{opacity: 0.55, color: 'gray'}}/>}/>
             {item.professor &&
               <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
@@ -110,7 +111,8 @@ export default function ReviewCard({item, page = null}) {
             <div className="text-left">
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
+                <ThumbUpTwoToneIcon
+                  color={isVoted ? "primary" : ""}/> {upvoteCount}
               </Button>
             </div>
             <div className="text-right">
