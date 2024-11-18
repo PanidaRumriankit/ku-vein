@@ -67,6 +67,10 @@ class ReviewPost(PostStrategy):
             if not data['pen_name']:
                 data['pen_name'] = self.user.user_name
                 anonymous = False
+
+            elif data['pen_name'] == self.user.user_name:
+                anonymous = False
+
             if not data['academic_year']:
                 data['academic_year'] = datetime.now().year
 
@@ -255,6 +259,9 @@ class NotePost(PostStrategy):
             anonymous = True
             if not data['pen_name']:
                 data['pen_name'] = user.user_name
+                anonymous = False
+
+            elif data['pen_name'] == user.user_name:
                 anonymous = False
 
             Note.objects.create(
