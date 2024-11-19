@@ -322,7 +322,9 @@ class QuestionPost(PostStrategy):
         try:
             user = UserData.objects.get(user_id=data['user_id'])
             QA_Question.objects.create(question_text=data['question_text'],
-                                       user=user)
+                                       user=user,
+                                       faculty=data['faculty'],
+                                       is_anonymous=data['is_anonymous'])
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
@@ -384,7 +386,8 @@ class AnswerPost(PostStrategy):
             question = QA_Question.objects.get(question_id=data['question_id'])
             QA_Answer.objects.create(question=question,
                                      user=user,
-                                     answer_text=data['answer_text'])
+                                     answer_text=data['answer_text'],
+                                     is_anonymous=data['is_anonymous'])
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
