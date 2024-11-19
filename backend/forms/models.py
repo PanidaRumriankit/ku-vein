@@ -1,8 +1,8 @@
 """Models module for make query for the frontend."""
 
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 
 class CourseData(models.Model):
@@ -133,6 +133,7 @@ class QA_Question(models.Model):
     faculty = models.CharField(max_length=100, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     posted_time = models.DateTimeField(auto_now_add=True)
+    is_anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'
@@ -155,6 +156,7 @@ class QA_Answer(models.Model):
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=255, default=None)
     posted_time = models.DateTimeField(auto_now_add=True)
+    is_anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'
