@@ -335,16 +335,7 @@ class NoteQuery(QueryFilterStrategy):
     def get_data(self, filter_key: dict):
         """Get the user data from the database and return it to frontend."""
         try:
-            course = CourseData.objects.get(
-                course_id=filter_key['course_id'],
-                course_type=filter_key['course_type']
-            )
-            user = UserData.objects.get(email=filter_key['email'])
-
-            note = Note.objects.filter(
-                course=course,
-                user=user
-            ).values(
+            note = Note.objects.values(
                 courses_id=F('course__course_id'),
                 courses_name=F('course__course_name'),
                 faculties=F('faculty'),
@@ -366,6 +357,20 @@ class NoteQuery(QueryFilterStrategy):
                 relative_path
             )
             note['pdf_file'] = absolute_note_file_path
+
+            if filter_key['course_id']:
+                course = CourseData.objects.get(
+                    course_id=filter_key['course_id'],
+                    course_type=filter_key['course_type']
+                )
+                note = note.objects.filter(course=course)
+
+            if filter_key['faculty']:
+                note =  note.objects.filter(faculty=filter_key['faculty'])
+
+            if filter_key['email']:
+                user = UserData.objects.get(email=filter_key['email'])
+                note = note.objects.filter(user=user)
 
             return note
 
