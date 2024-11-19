@@ -10,6 +10,7 @@ import StarIcon from '@mui/icons-material/Star';
 import {upvoteURL} from "../constants/backurl.js"
 import {colorPallet, facultyColor} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
+import EditDelete from "../components/editdelete"
 
 import {Button} from "@nextui-org/button";
 import {useRouter} from "next/navigation";
@@ -78,7 +79,8 @@ export default function ReviewCard({item, page = null}) {
   }, [session, email, item]);
 
   return (
-    <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
+    <div
+      className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
         {page === "page" && (
           <legend
@@ -118,6 +120,7 @@ export default function ReviewCard({item, page = null}) {
             <div className="text-right">
               <ReportButton/>
               <ShareButton/>
+              <EditDelete/>
             </div>
           </div>
         </div>
