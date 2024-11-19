@@ -308,6 +308,7 @@ def qa_setup():
     qa_data = [
         {
             "question_text": "Test question",
+            "faculty": None,
             "user": test_user
         }
     ]
