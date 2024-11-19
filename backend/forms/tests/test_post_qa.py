@@ -20,7 +20,9 @@ class QuestionPostTest(TestCase):
         self.Apost = AnswerPost()
         self.question = {
             "question_text": "Test question",
-            "user_id": self.user.user_id
+            "faculty": "test",
+            "user_id": self.user.user_id,
+            "is_anonymous": False
         }
 
     def test_post_question(self):
@@ -52,7 +54,8 @@ class AnswerPostTest(TestCase):
         self.answer = {
             'question_id': self.questions[0]['questions_id'],
             'answer_text': 'Test answer',
-            'user_id': self.user.user_id
+            'user_id': self.user.user_id,
+            "is_anonymous": False
         }
 
     def test_post_answer(self):

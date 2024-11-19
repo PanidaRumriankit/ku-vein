@@ -1,15 +1,19 @@
 """Set up function for every feature."""
 
 import os
+from datetime import datetime
 
 from django.conf import settings
 from django.utils import timezone
 
+from ..db_query import clean_time_data, QuestionQuery, AnswerQuery
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
                       Note,
-                      QA_Question, QA_Answer, BookMark)
+                      QA_Question, QA_Answer,
+                      QA_Question_Upvote, QA_Answer_Upvote,
+                      BookMark)
 from django.contrib.contenttypes.models import ContentType
 
 
@@ -291,12 +295,17 @@ def book_setup(review, user):
 
     return book
 
-
-def get_time_data(q: QA_Question | QA_Answer):
-    """This function is used to clean datetime formatting."""
-    post_time = q.posted_time
-    return (f'{post_time.day:02d} {post_time.month:02d} {post_time.year}',
-            f'{post_time.hour:02d}:{post_time.minute:02d}')
+def question_to_dict(question):
+        convo_cnt = question.qa_answer_set.count()
+        q_data = {
+                    'questions_id': question.question_id,
+                    'questions_text': question.question_text,
+                    'users': question.user.user_id,
+                    'num_convo': convo_cnt,
+                    'upvote': question.qa_question_upvote_set.count(),
+                    'post_time': question.posted_time,
+                 }
+        return clean_time_data(q_data)
 
 def qa_setup():
     test_user = UserData.objects.create(**{
@@ -308,34 +317,36 @@ def qa_setup():
     answers = []
     qa_data = [
         {
-            "question_text": "Test question",
-            "faculty": None,
-            "user": test_user
-        }
+            "question_text": "Test question 1",
+            "faculty": "tests",
+            "user": test_user,
+            "posted_time": datetime(2024, 12, 30, 23, 59, 57),
+            "is_anonymous": False
+        },
+        {
+            "question_text": "Test question 2",
+            "faculty": "tests",
+            "user": test_user,
+            "posted_time": datetime(2024, 12, 30, 23, 59, 58),
+            "is_anonymous": False
+        },
     ]
     for i,q in enumerate(qa_data):
         _q = QA_Question.objects.create(**q)
         _a = {"question_id": _q.question_id,
               "user": test_user,
-              "answer_text": f"Test answer {i}"}
+              "answer_text": f"Test answer {i}",
+              "posted_time": datetime(2024, 12, 31, 0, 0, i),
+              "is_anonymous": False
+              }
         _a = QA_Answer.objects.create(**_a)
-        q_date, q_time = get_time_data(_q)
-        question = {
-            "questions_id": _q.question_id,
-            "questions_text": _q.question_text,
-            "users": _q.user.user_id,
-            "num_convo": _q.qa_answer_set.count(),
-            "post_time": q_time,
-            "post_date": q_date,
-            }
-        a_date, a_time = get_time_data(_a)
-        answer = {
-            "answers_id": _a.answer_id,
-            "text": _a.answer_text,
-            "users": _a.user.user_id,
-            "post_time": a_time,
-            "post_date": a_date,
-            }
+        answer = AnswerQuery.get_query_set(_q)
+        for a in answer:
+            clean_time_data(a)
+        for u in range(i):
+            QA_Question_Upvote.objects.create(question=_q, user=test_user)
+            QA_Answer_Upvote.objects.create(answer=_a, user=test_user)
+        question = question_to_dict(_q)
         questions += [question]
         answers += [answer]
     return questions, answers
