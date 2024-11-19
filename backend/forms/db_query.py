@@ -1,18 +1,19 @@
 """This module use for contain the class for database query."""
 
 import os
-from typing import Union
 from abc import ABC, abstractmethod
+from typing import Any
+from typing import Union
 
 from django.conf import settings
 from django.db.models import F, Count
 from ninja.responses import Response
+
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
                      QA_Question, QA_Answer,
                      Note, UpvoteStat, CourseReview,
                      BookMark)
-from typing import Any
 
 
 class QueryStrategy(ABC):

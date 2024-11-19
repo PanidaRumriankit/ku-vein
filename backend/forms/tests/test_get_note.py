@@ -1,13 +1,13 @@
 """Test case for get the Note data."""
 
 import os
-import json
 
-from ..models import Note
-from ..db_query import NoteQuery
-from django.test import TestCase
 from django.conf import settings
+from django.test import TestCase
+
 from .set_up import user_set_up, course_set_up, note_setup
+from ..db_query import NoteQuery
+from ..models import Note
 
 
 class NoteQueryTests(TestCase):

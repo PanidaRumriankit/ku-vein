@@ -1,10 +1,16 @@
 """This module is for receive json data from the frontend to use in backend."""
 
 from typing import Optional
+
 from ninja import ModelSchema, Schema
+
 from .models import CourseData, UserData, CourseReview
+<<<<<<< HEAD
 from .models import ReviewStat, Note, BookMark
+=======
+>>>>>>> main
 from .models import Inter, Normal, Special
+from .models import ReviewStat, Note, QA
 
 
 class CourseDataSchema(ModelSchema):

@@ -4,6 +4,7 @@ import os
 
 from django.conf import settings
 from django.utils import timezone
+
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,

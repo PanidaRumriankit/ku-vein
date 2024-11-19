@@ -1,10 +1,14 @@
 """This module use for send the data from Django to Next.js."""
+from decouple import config
+from google.auth.transport import requests
+from google.oauth2 import id_token
 from ninja.responses import Response
 from ninja_extra import NinjaExtraAPI
-from google.oauth2 import id_token
-from google.auth.transport import requests
-from decouple import config
 
+from .db_management import DatabaseBackup
+from .db_post import PostFactory
+from .db_put import PutFactory
+from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, UserDataSchema,
                       UpvotePostSchema, FollowSchema,
                       UserDataEditSchema, NotePostSchema, BookMarkSchema,
@@ -13,6 +17,7 @@ from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
 from .db_put import PutFactory
+                      UserDataEditSchema, NotePostSchema, BookMarkSchema)
 
 app = NinjaExtraAPI()
 
@@ -34,6 +39,18 @@ def verify_google_token(auth: str, email: str) -> bool:
     except ValueError:
         return False
 
+def check_response(data):
+    """
+    Use for return data.
+
+    If it isn't response instance.
+    It will create Response object and return.
+    """
+    if isinstance(data, Response):
+        return data
+    else:
+        return Response(data, status=200)
+
 
 @app.get("/course")
 def get_course_data(request, course_type=None):
@@ -50,7 +67,7 @@ def get_course_data(request, course_type=None):
 
     try:
         strategy = QueryFactory.get_query_strategy(query_type)
-        return Response(strategy.get_data())
+        return check_response(strategy.get_data())
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -65,14 +82,14 @@ def get_sorted_data(request, sort, course_id=None):
 
     try:
         strategy = QueryFactory.get_query_strategy("sort")
-        return Response(strategy.get_data(order_by=sort, filter_by=course_id))
+        return check_response(strategy.get_data(order_by=sort, filter_by=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
 
 
 @app.get("/review/stats")
-def get_sorted_data(request, course_id):
+def get_stat_data(request, course_id):
     """Use for send review stats data to frontend."""
 
     if not course_id:
@@ -80,7 +97,7 @@ def get_sorted_data(request, course_id):
 
     try:
         strategy = QueryFactory.get_query_strategy("review-stat")
-        return Response(strategy.get_data(filter_by=course_id))
+        return check_response(strategy.get_data(filter_by=course_id))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -114,7 +131,7 @@ def get_user(request, email=None, user_id=None):
 
     try:
         strategy = QueryFactory.get_query_strategy("user")
-        return Response(strategy.get_data({"email": email, "user_id": user_id}))
+        return check_response(strategy.get_data({"email": email, "user_id": user_id}))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -131,7 +148,7 @@ def get_note_data(request, email: str, course_id: str, faculty: str, course_type
 
     try:
         strategy = QueryFactory.get_query_strategy("note")
-        return Response(strategy.get_data(filter_key))
+        return check_response(strategy.get_data(filter_key))
 
     except ValueError as e:
         return Response({"error": str(e)}, status=400)
@@ -148,7 +165,7 @@ def is_upvote(request, email: str, review_id: int):
                         status=401)
 
     strategy = QueryFactory.get_query_strategy("upvote")
-    return Response(strategy.get_data({"email": email, "review_id": review_id}))
+    return check_response(strategy.get_data({"email": email, "review_id": review_id}))
 
 
 @app.get("/book")
@@ -158,7 +175,7 @@ def get_bookmark_data(request, email: str):
         return Response({"error": "Missing email parameter."},
                         status=401)
     strategy = QueryFactory.get_query_strategy("book")
-    return Response(strategy.get_data(email))
+    return check_response(strategy.get_data(email))
 
 
 @app.put("/user")
