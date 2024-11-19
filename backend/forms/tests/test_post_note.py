@@ -217,12 +217,16 @@ class NotePostTests(TestCase):
           "course_id": self.course_data[0]['course_id'],
           "faculty": "banana",
           "pen_name": None,
+          "file_name": "please_work",
           "course_type": self.course_data[0]['course_type'],
           "file": self.fake_pdf
         }
+
         self.note_post.post_data(test_data)
 
         note = Note.objects.first()
+
+        print(note)
 
         self.assertFalse(note.anonymous)
 
@@ -233,6 +237,7 @@ class NotePostTests(TestCase):
             "faculty": "banana",
             "pen_name": self.user[0].user_name,
             "course_type": self.course_data[0]['course_type'],
+            "file_name": "please_work",
             "file": self.fake_pdf
         }
         self.note_post.post_data(test_data)

@@ -336,29 +336,7 @@ class NoteQuery(QueryFilterStrategy):
     def get_data(self, filter_key: dict):
         """Get the user data from the database and return it to frontend."""
         try:
-            note = Note.objects.values(
-                courses_id=F('course__course_id'),
-                courses_name=F('course__course_name'),
-                faculties=F('faculty'),
-                courses_type=F('course__course_type'),
-                u_id=F('user__user_id'),
-                name=F('pen_name'),
-                is_anonymous=F('anonymous')
-                pdf_name=F('file_name'),
-                pdf_path=F('note_file'),
-            ).first()
-
-            relative_path = note['pdf_path']
-
-            if "/" in relative_path:
-                relative_path = relative_path.replace("/", "\\")
-
-            absolute_note_file_path = os.path.join(
-                settings.BASE_DIR,
-                'media',
-                relative_path
-            )
-            note['pdf_file'] = absolute_note_file_path
+            note = Note.objects.all()
 
             if filter_key['course_id']:
                 course = CourseData.objects.get(
@@ -374,7 +352,32 @@ class NoteQuery(QueryFilterStrategy):
                 user = UserData.objects.get(email=filter_key['email'])
                 note = note.objects.filter(user=user)
 
-            return note
+            note = note.values(
+                courses_id=F('course__course_id'),
+                courses_name=F('course__course_name'),
+                faculties=F('faculty'),
+                courses_type=F('course__course_type'),
+                u_id=F('user__user_id'),
+                name=F('pen_name'),
+                is_anonymous=F('anonymous'),
+                pdf_name=F('file_name'),
+                pdf_path=F('note_file'),
+            )
+
+            for update_path in note:
+                relative_path = update_path['pdf_path']
+
+                if "/" in relative_path:
+                    relative_path = relative_path.replace("/", "\\")
+
+                absolute_note_file_path = os.path.join(
+                    settings.BASE_DIR,
+                    'media',
+                    relative_path
+                )
+                update_path['pdf_file'] = absolute_note_file_path
+
+            return list(note)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
