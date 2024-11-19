@@ -1,16 +1,20 @@
-import {useState} from "react";
-import {Popover, PopoverTrigger, PopoverContent, Button} from "@nextui-org/react";
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@nextui-org/react";
 import ShareTwoToneIcon from '@mui/icons-material/ShareTwoTone';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import XIcon from '@mui/icons-material/X';
 import LinkRoundedIcon from '@mui/icons-material/LinkRounded';
 
 export default function ShareButton() {
-  const [isOpen, setIsOpen] = useState(false);
   return (
     <Popover placement="buttom">
       <PopoverTrigger>
-        <Button onClick={() => {setIsOpen(true)}} variant="light">
+        <Button variant="light"
+                isIconOnly>
           <ShareTwoToneIcon/>
         </Button>
       </PopoverTrigger>
