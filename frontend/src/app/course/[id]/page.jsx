@@ -6,6 +6,7 @@ import CourseNavigationBar from "../../components/coursenavigation";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
 
 import {useEffect, useState} from "react";
+import AddReviews from "../../components/addreviews";
 
 export default function CoursePage({params}) {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -42,6 +43,9 @@ export default function CoursePage({params}) {
           <p className="text-green-400 text-center">No review currently</p>
         )}
 
+        <div className="fixed bottom-4 right-4 z-40">
+          <AddReviews/>
+        </div>
       </div>
     </div>
   );
