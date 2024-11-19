@@ -226,7 +226,7 @@ class NotePostTests(TestCase):
 
         self.assertFalse(note.anonymous)
 
-        def test_post_same_pen_name_and_user_name(self):
+    def test_post_same_pen_name_and_user_name(self):
         test_data = {
             "email": self.user[0].email,
             "course_id": self.course_data[0]['course_id'],
@@ -240,6 +240,7 @@ class NotePostTests(TestCase):
         note = Note.objects.first()
 
         self.assertFalse(note.anonymous)
+
 
     def test_same_name_note(self):
         """Name should be change if this name already exist."""
