@@ -5,12 +5,9 @@ from typing import Optional
 from ninja import ModelSchema, Schema
 
 from .models import CourseData, UserData, CourseReview
-<<<<<<< HEAD
 from .models import ReviewStat, Note, BookMark
-=======
->>>>>>> main
 from .models import Inter, Normal, Special
-from .models import ReviewStat, Note, QA
+from .models import ReviewStat, Note, QA_Question, QA_Answer
 
 
 class CourseDataSchema(ModelSchema):
@@ -233,6 +230,8 @@ class QuestionCreateSchema(Schema):
 
     user_id: str
     question_text: str
+    faculty: str
+    is_anonymous: bool
 
 
 class AnswerCreateSchema(Schema):
@@ -255,6 +254,8 @@ class AnswerCreateSchema(Schema):
     question_id: str
     answer_text: str
     user_id: str
+    is_anonymous: bool
+
 
 class BookMarkSchema(Schema):
     """
