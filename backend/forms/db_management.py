@@ -1,9 +1,11 @@
 """This module focus on contact with MySQL server."""
 
 import json
-import pymysql
 from datetime import datetime
+
+import pymysql
 from decouple import config
+
 from .models import CourseData, Inter
 
 

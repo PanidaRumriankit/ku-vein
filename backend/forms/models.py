@@ -1,8 +1,8 @@
 """Models module for make query for the frontend."""
 
-from django.db import models
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 
 class CourseData(models.Model):
@@ -118,7 +118,8 @@ class Note(models.Model):
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     date_data = models.DateTimeField(default=None)
     faculty = models.CharField(max_length=100, default=None)
-    note_file = models.FileField(upload_to='note_files/', default=None)
+    file_name = models.CharField(max_length=255, default=None)
+    note_file = models.FileField(upload_to='note_files/', default=None, max_length=255)
     pen_name = models.CharField(max_length=100, default=None)
     anonymous = models.BooleanField(default=False)
 

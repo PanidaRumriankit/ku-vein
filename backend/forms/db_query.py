@@ -1,17 +1,18 @@
 """This module use for contain the class for database query."""
 
 import os
-from typing import Union
 from abc import ABC, abstractmethod
+from typing import Any
+from typing import Union
 
 from django.conf import settings
 from django.db.models import F, Count
 from ninja.responses import Response
+
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
                      Note, UpvoteStat, CourseReview,
                      BookMark)
-from typing import Any
 
 
 class QueryStrategy(ABC):
@@ -341,12 +342,13 @@ class NoteQuery(QueryFilterStrategy):
                 faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
-                pdf_file=F('note_file'),
                 name=F('pen_name'),
                 is_anonymous=F('anonymous')
+                pdf_name=F('file_name'),
+                pdf_path=F('note_file'),
             ).first()
 
-            relative_path = note['pdf_file']
+            relative_path = note['pdf_path']
 
             if "/" in relative_path:
                 relative_path = relative_path.replace("/", "\\")
