@@ -15,7 +15,7 @@ class ReviewPostTests(TestCase):
     def setUp(self):
         """Set up reusable instances for tests."""
         self.review_post = ReviewPost()
-        user_set_up()
+        self.user = user_set_up()
         course_set_up()
 
     def test_error_response_from_missing_user_data(self):
@@ -240,3 +240,56 @@ class ReviewPostTests(TestCase):
 
         self.assertEqual(datetime.now().year,
                          ReviewStat.objects.first().academic_year)
+
+    def test_anonymous_true(self):
+        """If there are pen_name anonymous should be true."""
+        test_data = {
+            "email": "solaire@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "Praise the Sun! The teachings"
+                       " on miracles here are both uplifting and inspiring.",
+            "rating": 4.5,
+            "academic_year": 0,
+            "pen_name": "Yes",
+            "grade": "A",
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "work-base",
+            "class_type": "online",
+        }
+
+        self.review_post.post_data(test_data)
+        review = CourseReview.objects.first()
+
+        self.assertTrue(review.anonymous)
+
+    def test_anonymous_same_pen_name_user_name(self):
+        """If pen_name same with user_name anonymous is false"""
+        test_data = {
+            "email": "solaire@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "Praise the Sun! The teachings"
+                       " on miracles here are both uplifting and inspiring.",
+            "rating": 4.5,
+            "academic_year": 0,
+            "pen_name": self.user[0].user_name,
+            "grade": "A",
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "work-base",
+            "class_type": "online",
+        }
+
+        self.review_post.post_data(test_data)
+        review = CourseReview.objects.first()
+
+        self.assertFalse(review.anonymous)
+
+
+
