@@ -8,10 +8,13 @@ from ninja_extra import NinjaExtraAPI
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_put import PutFactory
+from .db_delete import DeleteFactory
 from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, UserDataSchema,
                       UpvotePostSchema, FollowSchema,
-                      UserDataEditSchema, NotePostSchema, BookMarkSchema)
+                      UserDataEditSchema, NotePostSchema,
+                      BookMarkSchema, ReviewDeleteSchema,
+                      NoteDeleteSchema)
 
 app = NinjaExtraAPI()
 
@@ -219,6 +222,19 @@ def add_bookmark(request, data: BookMarkSchema):
     """Use for add new bookmark object."""
     strategy = PostFactory.get_post_strategy("book")
     return strategy.post_data(data.model_dump())
+
+
+@app.delete("/review", response={200: ReviewDeleteSchema})
+def delete_review(request, data: ReviewDeleteSchema):
+    """Delete the review objects."""
+    strategy = DeleteFactory.get_delete_strategy("review")
+    return strategy.delete_data(data.model_dump())
+
+@app.delete("/note", response={200: NoteDeleteSchema})
+def delete_review(request, data: NoteDeleteSchema):
+    """Delete the note objects."""
+    strategy = DeleteFactory.get_delete_strategy("note")
+    return strategy.delete_data(data.model_dump())
 
 
 def backup(request):
