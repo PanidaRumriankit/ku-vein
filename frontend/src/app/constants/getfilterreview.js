@@ -1,17 +1,19 @@
 import {reviewURL} from "./backurl.js";
 
-export default async function MakeFilterApiRequest(sort, filter, filter_by) {
+export default async function MakeFilterApiRequest(sort, filter, option) {
   // Construct the URL with the sort and filter parameters
   const sortBy = encodeURIComponent(sort.toLowerCase())
   const filterBy = encodeURIComponent(filter.toLowerCase())
 
   let url;
-  if (filter_by === "course") {
+  if (option === "course") {
     url = `${reviewURL}?sort=${sortBy}&course_id=${filterBy}`;
-  } else if (filter_by === "review") {
+  } else if (option === "review") {
     url = `${reviewURL}?sort=${sortBy}&review_id=${filterBy}`;
+  } else if (option === "stats") {
+    url = `${reviewURL}/stats?course_id=${filterBy}`;
   } else {
-    console.error("Invalid filter_by:", filter_by);
+    console.error("Invalid option:", option);
     return [];
   }
 
