@@ -26,7 +26,7 @@ class CourseReviewDelete(DeleteStrategy):
             delete_target = CourseReview.objects.get(review_id=review_id)
             delete_target.delete()
             return Response({"success": "Delete"
-                                        " Review Successfully."}, status=401)
+                                        " Review Successfully."}, status=200)
 
         except CourseReview.DoesNotExist:
             return Response({"error": "This review"
@@ -41,7 +41,7 @@ class NoteDelete(DeleteStrategy):
             delete_target = Note.objects.get(note_id=note_id)
             delete_target.delete()
             return Response({"success": "Delete"
-                                        " Note Successfully."}, status=401)
+                                        " Note Successfully."}, status=200)
 
         except Note.DoesNotExist:
             return Response({"error": "This Note"
