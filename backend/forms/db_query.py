@@ -131,6 +131,7 @@ class StatQuery(QueryFilterStrategy):
             for key, val in avg.items():
                 add_avg[key] = val
 
+
     def find_mode(self):
         """Find the most repeat values for statistic."""
         list_for_calculate = self.sorted_data.values(
@@ -158,7 +159,7 @@ class StatQuery(QueryFilterStrategy):
             faculty_dict[count['faculties']] += 1
 
         mode = {
-            'mode_grade': max(grade_dict.items(), key=lambda x: x[1])[0],
+            'total_grade': grade_dict,
             'mode_class_type': max(type_dict.items(), key=lambda x: x[1])[0],
             'mode_attendance': max(attend_dict.items(), key=lambda x: x[1])[0],
             'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
