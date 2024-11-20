@@ -12,7 +12,7 @@ from ninja.responses import Response
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
                      Note, UpvoteStat, CourseReview,
-                     BookMark)
+                     BookMark, History)
 
 
 class QueryStrategy(ABC):
@@ -413,6 +413,31 @@ class BookMarkQuery(QueryFilterStrategy):
                                       " in the database."}, status=401)
 
 
+class HistoryQuery(QueryFilterStrategy):
+    """Class for sent History values to the frontend."""
+
+    def get_data(self, email: str, anonymous: bool):
+        """Get the History from the database filter by user."""
+        try:
+            user = UserData.objects.get(email=email)
+
+            if anonymous:
+                history = History.objects.filter(
+                    user=user, anonymous=anonymous
+                ).values(
+                    'object_id',
+                    'data_type'
+                )
+            else:
+                history = History.objects.all()
+
+            return list(history)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't"
+                                      " in the database."}, status=401)
+
+
 class QueryFactory:
     """Factory class to handle query strategy selection."""
 
@@ -426,7 +451,8 @@ class QueryFactory:
         "user": UserQuery,
         "note": NoteQuery,
         "upvote": UpvoteQuery,
-        "book": BookMarkQuery
+        "book": BookMarkQuery,
+        "history": HistoryQuery
     }
 
     @classmethod
