@@ -2,6 +2,8 @@
 
 from abc import ABC, abstractmethod
 from typing import Any
+
+from ninja.responses import Response
 from .models import (ReviewStat, Note,
                      CourseReview)
 
@@ -20,5 +22,27 @@ class CourseReviewDelete(DeleteStrategy):
 
     def delete_data(self, review_id):
         """Delete CourseReview and ReviewStat objects"""
-        delete_target = CourseReview.objects.get(review_id=review_id)
-        delete_target.delete()
+        try:
+            delete_target = CourseReview.objects.get(review_id=review_id)
+            delete_target.delete()
+            return Response({"success": "Delete"
+                                        " Review Successfully."}, status=401)
+
+        except CourseReview.DoesNotExist:
+            return Response({"error": "This review"
+                                      " isn't in the database."}, status=401)
+
+class NoteDelete(DeleteStrategy):
+    """Class for delete Note objects."""
+
+    def delete_data(self, note_id):
+        """Delete Note objects"""
+        try:
+            delete_target = Note.objects.get(note_id=note_id)
+            delete_target.delete()
+            return Response({"success": "Delete"
+                                        " Note Successfully."}, status=401)
+
+        except Note.DoesNotExist:
+            return Response({"error": "This Note"
+                                      " isn't in the database."}, status=401)
