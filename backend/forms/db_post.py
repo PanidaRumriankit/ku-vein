@@ -111,7 +111,8 @@ class ReviewPost(PostStrategy):
         HistoryPost().post_data({
             "email": data['email'],
             "id": review_instance.review_id,
-            "data_type": "review"
+            "data_type": "review",
+            "anonymous": anonymous
         })
 
         return Response({"success": "The Review is successfully created."},
@@ -314,7 +315,8 @@ class NotePost(PostStrategy):
             HistoryPost().post_data({
                 "email": data['email'],
                 "id": note.note_id,
-                "data_type": "note"
+                "data_type": "note",
+                "anonymous": anonymous
             })
 
             return Response({"success": "Note"
@@ -428,7 +430,8 @@ class HistoryPost(PostStrategy):
                 content_type=content_type,
                 user=user,
                 object_id=data['id'],
-                data_type=data['data_type']
+                data_type=data['data_type'],
+                anonymous=data['anonymous']
             )
 
         except KeyError:

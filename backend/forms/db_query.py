@@ -423,7 +423,7 @@ class HistoryQuery(QueryFilterStrategy):
 
             if other_user:
                 history = History.objects.filter(
-                    user=user, instance__anonymous=False
+                    user=user, anonymous=False
                 ).values(
                     'object_id',
                     'data_type'
