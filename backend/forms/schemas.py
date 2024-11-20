@@ -231,7 +231,7 @@ class QuestionCreateSchema(Schema):
     user_id: str
     question_text: str
     faculty: str
-    is_anonymous: bool
+    is_anonymous: bool = False
 
 
 class AnswerCreateSchema(Schema):
@@ -254,7 +254,7 @@ class AnswerCreateSchema(Schema):
     question_id: str
     answer_text: str
     user_id: str
-    is_anonymous: bool
+    is_anonymous: bool = False
 
 
 class BookMarkSchema(Schema):
