@@ -226,8 +226,6 @@ class NotePostTests(TestCase):
 
         note = Note.objects.first()
 
-        print(note)
-
         self.assertFalse(note.anonymous)
 
     def test_post_same_pen_name_and_user_name(self):
