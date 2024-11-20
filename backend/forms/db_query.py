@@ -416,14 +416,14 @@ class BookMarkQuery(QueryFilterStrategy):
 class HistoryQuery(QueryFilterStrategy):
     """Class for sent History values to the frontend."""
 
-    def get_data(self, email: str, anonymous: bool):
+    def get_data(self, email: str, other_user: bool):
         """Get the History from the database filter by user."""
         try:
             user = UserData.objects.get(email=email)
 
-            if anonymous:
+            if other_user:
                 history = History.objects.filter(
-                    user=user, anonymous=anonymous
+                    user=user, anonymous=False
                 ).values(
                     'object_id',
                     'data_type'
