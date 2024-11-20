@@ -380,7 +380,7 @@ class PostFactory:
             query (str): The query parameter to choose the strategy.
 
         Returns:
-            QueryStrategy: The corresponding query strategy class.
+            PostStrategy: The corresponding post strategy class.
 
         Raises:
             ValueError: If the query stringdoesn't match any available
