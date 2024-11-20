@@ -132,7 +132,8 @@ def get_user(request, email=None, user_id=None):
 
 
 @app.get("/note")
-def get_note_data(request, email: str, course_id: str, faculty: str, course_type: str):
+def get_note_data(request, email: str = None, course_id: str = None,
+                  course_type: str = None, faculty: str = None):
     """Use for send the note data to the frontend"""
     if not email and not course_id and not faculty and not course_type:
         return Response({"error": "Missing parameter."}, status=401)
