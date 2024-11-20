@@ -108,6 +108,12 @@ class ReviewPost(PostStrategy):
             class_type=data['class_type'],
         )
 
+        HistoryPost().post_data({
+            "email": data['email'],
+            "id": review_instance.review_id,
+            "data_type": "review"
+        })
+
         return Response({"success": "The Review is successfully created."},
                         status=201)
 
@@ -294,16 +300,23 @@ class NotePost(PostStrategy):
             with open(file_path, "wb") as f:
                 f.write(file_data)
 
-            Note.objects.create(
-                course=course,
-                user=user,
-                faculty=data['faculty'],
-                file_name=file_name,
-                note_file=file_path,
-                pen_name=data['pen_name'],
-                date_data=timezone.now(),
-                anonymous=anonymous
+            note = Note.objects.create(
+                    course=course,
+                    user=user,
+                    faculty=data['faculty'],
+                    file_name=file_name,
+                    note_file=file_path,
+                    pen_name=data['pen_name'],
+                    date_data=timezone.now(),
+                    anonymous=anonymous
             )
+
+            HistoryPost().post_data({
+                "email": data['email'],
+                "id": note.note_id,
+                "data_type": "note"
+            })
+
             return Response({"success": "Note"
                                         " created successfully."},
                             status=201)
@@ -418,33 +431,29 @@ class HistoryPost(PostStrategy):
                 data_type=data['data_type']
             )
 
-            return Response({"success": "History created"
-                                        " successfully."},
-                            status=201)
-
         except KeyError:
-            return Response({"error": "Required data is"
+            return Response({"error": "History required data is"
                                       " missing from the request body."},
                             status=400)
 
         except UserData.DoesNotExist:
             return Response({"error": "The specified"
-                                      " user does not exist."},
+                                      " user does not exist. (History)"},
                             status=404)
 
         except ContentType.DoesNotExist:
             return Response({"error": "Content type not"
-                                      " found for the specified model."},
+                                      " found for the specified model. (History)"},
                             status=404)
 
         except CourseReview.DoesNotExist:
             return Response({"error": "The specified"
-                                      " review does not exist."},
+                                      " review does not exist. (History)"},
                             status=404)
 
         except Note.DoesNotExist:
             return Response({"error": "The specified"
-                                      " note does not exist."},
+                                      " note does not exist. (History)"},
                             status=404)
 
 
