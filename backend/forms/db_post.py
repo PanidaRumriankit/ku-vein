@@ -16,7 +16,7 @@ from ninja.responses import Response
 from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
                      UpvoteStat, FollowData,
-                     Note, BookMark)
+                     Note, BookMark, History)
 
 from django.conf import settings
 from django.utils import timezone
@@ -359,6 +359,11 @@ class BookMarkPost(PostStrategy):
                                       " review does not exist."},
                             status=404)
 
+        except Note.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " note does not exist."},
+                            status=404)
+
     @staticmethod
     def add_or_delete(content_type, user: UserData, data: dict):
         """
@@ -389,6 +394,58 @@ class BookMarkPost(PostStrategy):
                                     " successfully."},
                         status=201)
 
+
+class HistoryPost(PostStrategy):
+    """Class for save the objects to the history."""
+
+    def __init__(self):
+        """Initialize method for HistoryPost."""
+        self.table = {"review":CourseReview, "note": Note, "qa": None}
+
+    def post_data(self, data: dict):
+        """Create a new History object in the database."""
+        try:
+            if data['data_type'] not in self.table or not self.table[data['data_type']]:
+                return Response({"error": "Invalid data_type provided."}, status=400)
+
+            content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
+            user = UserData.objects.get(email=data['email'])
+
+            BookMark.objects.create(
+                content_type=content_type,
+                user=user,
+                object_id=data['id'],
+                data_type=data['data_type']
+            )
+
+            return Response({"success": "History created"
+                                        " successfully."},
+                            status=201)
+
+        except KeyError:
+            return Response({"error": "Required data is"
+                                      " missing from the request body."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " user does not exist."},
+                            status=404)
+
+        except ContentType.DoesNotExist:
+            return Response({"error": "Content type not"
+                                      " found for the specified model."},
+                            status=404)
+
+        except CourseReview.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " review does not exist."},
+                            status=404)
+
+        except Note.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " note does not exist."},
+                            status=404)
 
 
 class PostFactory:
