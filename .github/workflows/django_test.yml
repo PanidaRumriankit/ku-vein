@@ -39,6 +39,7 @@ jobs:
         MYSQLUSER: django
         MYSQLPASS: django_password
       run: |
+        pythom backend/manage.py makemigrations --merge
         python backend/manage.py migrate
     - name: Set Environments
       run: |
