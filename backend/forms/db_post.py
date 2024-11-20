@@ -411,7 +411,7 @@ class HistoryPost(PostStrategy):
             content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
             user = UserData.objects.get(email=data['email'])
 
-            BookMark.objects.create(
+            History.objects.create(
                 content_type=content_type,
                 user=user,
                 object_id=data['id'],
