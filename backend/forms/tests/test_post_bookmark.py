@@ -1,3 +1,5 @@
+"""Module for test POST BookMark feature."""
+
 import json
 
 from django.test import TestCase
