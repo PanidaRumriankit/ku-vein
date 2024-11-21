@@ -65,6 +65,7 @@ class SortReview(QueryFilterStrategy):
             professor=F('review__instructor'),
             criteria=F('scoring_criteria'),
             type=F('class_type'),
+            is_anonymous=F('review__anonymous')
 
         ).annotate(
             upvote=Count('upvotestat')
@@ -132,6 +133,7 @@ class StatQuery(QueryFilterStrategy):
             for key, val in avg.items():
                 add_avg[key] = val
 
+
     def find_mode(self):
         """Find the most repeat values for statistic."""
         list_for_calculate = self.sorted_data.values(
@@ -159,7 +161,7 @@ class StatQuery(QueryFilterStrategy):
             faculty_dict[count['faculties']] += 1
 
         mode = {
-            'mode_grade': max(grade_dict.items(), key=lambda x: x[1])[0],
+            'total_grade': grade_dict,
             'mode_class_type': max(type_dict.items(), key=lambda x: x[1])[0],
             'mode_attendance': max(attend_dict.items(), key=lambda x: x[1])[0],
             'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
@@ -336,39 +338,48 @@ class NoteQuery(QueryFilterStrategy):
     def get_data(self, filter_key: dict):
         """Get the user data from the database and return it to frontend."""
         try:
-            course = CourseData.objects.get(
-                course_id=filter_key['course_id'],
-                course_type=filter_key['course_type']
-            )
-            user = UserData.objects.get(email=filter_key['email'])
+            note = Note.objects.all()
 
-            note = Note.objects.filter(
-                course=course,
-                user=user
-            ).values(
+            if filter_key['course_id']:
+                course = CourseData.objects.get(
+                    course_id=filter_key['course_id'],
+                    course_type=filter_key['course_type']
+                )
+                note = note.objects.filter(course=course)
+
+            if filter_key['faculty']:
+                note =  note.objects.filter(faculty=filter_key['faculty'])
+
+            if filter_key['email']:
+                user = UserData.objects.get(email=filter_key['email'])
+                note = note.objects.filter(user=user)
+
+            note = note.values(
                 courses_id=F('course__course_id'),
                 courses_name=F('course__course_name'),
                 faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
+                name=F('pen_name'),
+                is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
                 pdf_path=F('note_file'),
-                name=F('pen_name')
-            ).first()
-
-            relative_path = note['pdf_path']
-
-            if "/" in relative_path:
-                relative_path = relative_path.replace("/", "\\")
-
-            absolute_note_file_path = os.path.join(
-                settings.BASE_DIR,
-                'media',
-                relative_path
             )
-            note['pdf_file'] = absolute_note_file_path
 
-            return note
+            for update_path in note:
+                relative_path = update_path['pdf_path']
+
+                if "/" in relative_path:
+                    relative_path = relative_path.replace("/", "\\")
+
+                absolute_note_file_path = os.path.join(
+                    settings.BASE_DIR,
+                    'media',
+                    relative_path
+                )
+                update_path['pdf_file'] = absolute_note_file_path
+
+            return list(note)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"

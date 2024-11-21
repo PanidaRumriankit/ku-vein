@@ -162,6 +162,16 @@ class ReviewPostSchema(Schema):
     class_type: str
 
 
+class ReviewDeleteSchema(ModelSchema):
+    """Schema for delete the CourseReview"""
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = CourseReview
+        fields = ['review_id']
+
+
 class UpvotePostSchema(Schema):
     """Schema for increase the upvote number."""
     email: str
@@ -211,6 +221,16 @@ class NotePostSchema(Schema):
     file : str
     file_name : str
     pen_name: Optional[str] = None
+
+
+class NoteDeleteSchema(ModelSchema):
+    """Schema for delete Note"""
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = Note
+        fields = ['note_id']
 
 
 class QuestionCreateSchema(Schema):
