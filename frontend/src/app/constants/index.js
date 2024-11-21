@@ -128,6 +128,15 @@ const courseType = [
   }
 ]
 
+const gradeColors = {
+  A: "#4CAF50",
+  B: "#8BC34A",
+  C: "#FFC107",
+  D: "#FF9800",
+  F: "#F44336",
+  W: "#9E9E9E",
+};
+
 export {
   notifications,
   usersDropdown,
@@ -136,4 +145,5 @@ export {
   courseType,
   facultyColor,
   faculties,
+  gradeColors,
 };
