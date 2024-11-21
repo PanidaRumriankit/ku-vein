@@ -429,7 +429,12 @@ class HistoryQuery(QueryFilterStrategy):
                     'data_type'
                 )
             else:
-                history = History.objects.all()
+                history = History.objects.filter(
+                    user=user
+                ).values(
+                    'object_id',
+                    'data_type'
+                )
 
             return list(history)
 
