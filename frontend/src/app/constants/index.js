@@ -130,12 +130,20 @@ const courseType = [
 
 const gradeColors = {
   A: "#4CAF50",
+  "B+": "#9CCC65",
   B: "#8BC34A",
+  "C+": "#FFD54F",
   C: "#FFC107",
+  "D+": "#FFB74D",
   D: "#FF9800",
   F: "#F44336",
   W: "#9E9E9E",
 };
+
+// Example usage:
+const grade = "B+";
+const gradeColor = gradeColors[grade]; // "#9CCC65"
+
 
 export {
   notifications,
