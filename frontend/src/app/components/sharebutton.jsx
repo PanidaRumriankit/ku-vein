@@ -4,12 +4,19 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@nextui-org/react";
+
 import ShareTwoToneIcon from '@mui/icons-material/ShareTwoTone';
+import LinkRoundedIcon from '@mui/icons-material/LinkRounded';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import XIcon from '@mui/icons-material/X';
-import LinkRoundedIcon from '@mui/icons-material/LinkRounded';
 
-export default function ShareButton() {
+export default function ShareButton({reviewId}) {
+  const url = '/review/' + reviewId;
+
+  // TODO fix the url
+  const handleCopy = (e) => {
+    navigator.clipboard.writeText(url)
+  }
   return (
     <Popover placement="buttom">
       <PopoverTrigger>
@@ -26,8 +33,9 @@ export default function ShareButton() {
           <div className="my-2">
             <XIcon/> X
           </div>
-          <div className="my-2">
-            <LinkRoundedIcon/> Copy link
+          <div className="my-2 cursor-pointer" onClick={handleCopy}>
+            <LinkRoundedIcon/>
+            Copy link
           </div>
         </div>
       </PopoverContent>
