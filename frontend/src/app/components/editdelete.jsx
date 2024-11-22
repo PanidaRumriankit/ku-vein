@@ -10,14 +10,13 @@ import {
 } from "@nextui-org/react";
 
 import {useSession} from "next-auth/react";
-
+import {useState} from 'react'
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardControlKeyIcon from '@mui/icons-material/KeyboardControlKey';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-import {useState} from 'react'
 import {reviewURL} from "../constants/backurl";
 
 export default function EditDelete({userMail, reviewId}) {
@@ -48,6 +47,7 @@ export default function EditDelete({userMail, reviewId}) {
 
       if (response.ok) {
         console.log("Success");
+        window.location.reload();
       } else {
         console.error("Error deleting:", await response.text());
       }
