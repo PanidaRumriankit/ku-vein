@@ -26,7 +26,8 @@ from forms.api import (CourseController, ReviewController,
                          UserController, FollowController,
                          NoteController, UpvoteController,
                          BookMarkController,
-                         QAController)
+                         QAController,
+                         HistoryController)
 
 api = NinjaExtraAPI()
 
@@ -35,6 +36,7 @@ api.register_controllers(
     UserController, FollowController,
     NoteController, UpvoteController,
     BookMarkController, QAController,
+    HistoryController,
 )
 
 urlpatterns = [
