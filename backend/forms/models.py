@@ -169,6 +169,7 @@ class History(models.Model):
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'
