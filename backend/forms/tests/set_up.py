@@ -147,6 +147,7 @@ def review_set_up():
             "class_type": "online",
             "anonymous": False,
         },
+
         {
             "email": "laurentius@gmail.com",
             "course_id": "3",
@@ -164,6 +165,7 @@ def review_set_up():
             "class_type": "hybrid",
             "anonymous": True,
         },
+
         {
             "email": "aslatiel@gmail.com",
             "course_id": "4",
@@ -181,6 +183,7 @@ def review_set_up():
             "class_type": "onsite",
             "anonymous": False,
         },
+
         {
             "email": "siegmeyer@gmail.com",
             "course_id": "5",

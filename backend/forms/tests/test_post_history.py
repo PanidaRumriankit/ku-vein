@@ -97,9 +97,11 @@ class HistoryPostTests(TestCase):
             "faculty": "Yes",
             "course_type": self.course[0].course_type,
             "file": fake_pdf,
-            "file_name": "please_work.pdf",
+            "file_name": "please_work",
             "pen_name": "onegai"
         }
+
+        self.note_post.post_data(note_data)
 
         note = Note.objects.get(user__email=note_data['email'])
         result_data = self.history.objects.values(
