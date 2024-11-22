@@ -270,8 +270,6 @@ def test_auth(request):
         return Response({"error": "Malformed or invalid token"}, status=401)
 
 
-
-
 @api_controller("/qa")
 class QAController(ControllerBase):
     """Controller for handling Upvote endpoints."""
