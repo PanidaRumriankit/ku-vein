@@ -28,6 +28,7 @@ export default function ReviewCard({item, page = null}) {
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formattedDate, setFormattedDate] = useState("");
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
@@ -77,6 +78,17 @@ export default function ReviewCard({item, page = null}) {
     setUpvoteCount(item.upvote || 0);
   }, [session, email, item]);
 
+  useEffect(() => {
+    if (item.date) {
+      const formatted = new Date(item.date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+      setFormattedDate(formatted);
+    }
+  }, [item.date]);
+
   return (
     <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
@@ -103,7 +115,7 @@ export default function ReviewCard({item, page = null}) {
             className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-left">เกรด: {item.grades}</p>
             <p
-              className="text-right">{item.date} โดย: {item.name || item.username}</p>
+              className="text-right">{formattedDate} โดย: {item.name || item.username}</p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">

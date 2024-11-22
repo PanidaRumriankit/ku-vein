@@ -1,3 +1,5 @@
+"""Module for test GET BookMark feature."""
+
 from django.test import TestCase
 
 from .set_up import course_set_up, review_set_up, user_set_up, book_setup
