@@ -13,6 +13,8 @@ import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
 import Popup from 'reactjs-popup';
+import MakeApiRequest from "../constants/getreview";
+import ReviewCard from "../components/reviewcard";
 
 export default function Profile() {
   const {theme} = useTheme();
@@ -23,33 +25,43 @@ export default function Profile() {
   const [editOpen, setEditOpen] = useState(false);
   const [putData, setPutData] = useState(null);
   const [colorBg, setColorBg] = useState('');
+  const [reviews, setReviews] = useState([]);
 
   const handleColorClick = () => setColorPickerOpen(true);
   const closeColorPicker = () => setColorPickerOpen(false);
   const openEditDialog = () => setEditOpen(true);
   const closeEditDialog = () => setEditOpen(false);
 
+  const fetchData = async () => {
+    const userData = await GetUserData(session.user.email, "email");
+    console.log('userData: ', userData);
+    setPutData({
+      user_id: userData.id,
+      user_name: userData.username,
+      user_type: "student",
+      email: session.email,
+      description: userData.desc,
+      profile_color: userData.pf_color,
+      follower_count: userData.follower_count,
+      following_count: userData.following_count,
+      following: userData.following,
+      follower: userData.follower,
+    });
+    setColorBg(userData.pf_color);
+  }
+
+  const fetchReviews = async () => {
+    setReviews(await MakeApiRequest('latest'));
+  };
+
+  const getFilteredReviews = () => {
+    return reviews.filter((review) => review.username === putData.user_name);
+  };
+
   useEffect(() => {
     if (session) {
-      async function FetchData() {
-        const userData = await GetUserData(session.user.email, "email");
-        console.log('userData: ', userData);
-        setPutData({
-          user_id: userData.id,
-          user_name: userData.username,
-          user_type: "student",
-          email: session.email,
-          description: userData.desc,
-          profile_color: userData.pf_color,
-          follower_count: userData.follower_count,
-          following_count: userData.following_count,
-          following: userData.following,
-          follower: userData.follower,
-        });
-        setColorBg(userData.pf_color);
-      }
-
-      FetchData();
+      fetchData();
+      fetchReviews();
     }
   }, [session]);
 
@@ -96,7 +108,18 @@ export default function Profile() {
   const renderContent = () => {
     switch (activeTab) {
       case "reviews":
-        return <p>Here are your reviews!</p>;
+        const filteredReviews = getFilteredReviews();
+        return (
+          <>
+            {filteredReviews.length > 0 ? (
+              filteredReviews.map((item, index) => (
+                <ReviewCard item={item} key={index} page={"page"} />
+              ))
+            ) : (
+              <p className="text-green-400 text-center">No review currently</p>
+            )}
+          </>
+        );
       case "posts":
         return <p>Here are your posts!</p>;
       case "replies":
