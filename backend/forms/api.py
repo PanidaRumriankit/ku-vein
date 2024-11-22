@@ -272,7 +272,7 @@ def test_auth(request):
 
 @api_controller("/qa")
 class QAController(ControllerBase):
-    """Controller for handling Upvote endpoints."""
+    """Controller for handling qa endpoints."""
 
     @http_get("")
     def get_qa(request, question_id: int|None=None, mode: str='latest'):
