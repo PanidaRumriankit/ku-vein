@@ -11,7 +11,7 @@ from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
-                     QA_Question, QA_Answer,
+                     QA_Question,
                      Note, UpvoteStat, CourseReview,
                      BookMark)
 
@@ -414,6 +414,7 @@ class QuestionQuery(QueryStrategy):
         return Response(question_data, status=200)
     
     def get_query_set(self):
+        """Get queryset with all required attributes to sort."""
         return  QA_Question.objects.select_related().values(
                     questions_id=F('question_id'),
                     questions_text=F('question_text'),
@@ -424,7 +425,8 @@ class QuestionQuery(QueryStrategy):
                     upvote=Count('qa_question_upvote')
                 )
     
-    def sorted_qa_data(self, data, mode) -> dict:
+    def sorted_qa_data(self, data, mode) -> list[dict]:
+        """Sort a queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
                      'oldest': 'posted_time',
                      'upvote': '-upvote'}
@@ -453,6 +455,7 @@ class AnswerQuery(QueryFilterStrategy):
     
     @classmethod
     def get_query_set(cls, question):
+        """Get queryset to sort (classmethod because I need this for testing, too)."""
         return question.qa_answer_set.all().values(
                     answers_id=F('answer_id'),
                     text=F('answer_text'),
@@ -462,33 +465,13 @@ class AnswerQuery(QueryFilterStrategy):
                     upvote=Count('qa_answer_upvote')
                 )
 
-    def sorted_qa_data(self, answer, mode) -> dict:
+    def sorted_qa_data(self, answer, mode) -> list[dict]:
+        """Sort queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
                      'oldest': 'posted_time',
                      'upvote': '-upvote'}
         
         return answer.order_by(sort_mode[mode])
-
-
-class BookMarkQuery(QueryFilterStrategy):
-    """Class for sent BookMark values to the frontend."""
-
-    def get_data(self, email: str):
-        """Get the BookMark from the database filter by user."""
-        try:
-             user = UserData.objects.get(email=email)
-             book = BookMark.objects.filter(
-                 user=user
-             ).values(
-                 'object_id',
-                 'data_type'
-             )
-
-             return list(book)
-
-        except UserData.DoesNotExist:
-            return Response({"error": "This user isn't"
-                                      " in the database."}, status=401)
 
 
 class BookMarkQuery(QueryFilterStrategy):
