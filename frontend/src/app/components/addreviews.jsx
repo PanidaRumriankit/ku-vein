@@ -5,6 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Search from './search';
+import SearchFaculty from './searchfaculty';
 import Rating from '@mui/material/Rating';
 import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
@@ -53,13 +54,13 @@ export default function AddReview() {
     attendance: 3,
     scoring_criteria: '',
     class_type: '',
-    anonymous: true,
     // link: null,
   });
   const [hoveredEffort, setHoveredEffort] = useState(3);
   const [clickedEffort, setClickedEffort] = useState(3);
   const [hoveredAttendance, setHoveredAttendance] = useState(3);
   const [clickedAttendance, setClickedAttendance] = useState(3);
+  const [anonymous, setAnonymous] = useState(false);
 
   async function AddingReview() {
     try {
@@ -80,6 +81,7 @@ export default function AddReview() {
       if (response.ok) {
         const rs = await response.json();
         console.log('Success:', rs);
+        window.location.reload();
       } else {
         console.log('Error:', response.status, response.text());
       }
@@ -126,6 +128,8 @@ export default function AddReview() {
     return true;
   };
 
+  console.log("postData: ", postData);
+
   return (
     <div className="fixed bottom-4 right-4">
       <Popup
@@ -147,7 +151,10 @@ export default function AddReview() {
             <Search onCourseSelect={(course) => setPostData({
               ...postData,
               course_id: course.courses_id,
-              faculty: course.faculty,
+            }) } />
+            <SearchFaculty onFacultySelect={(faculty) => setPostData({
+              ...postData,
+              faculty: faculty.name,
             }) } />
             <textarea
               type="text"
@@ -331,8 +338,8 @@ export default function AddReview() {
                       type="radio"
                       name="identity"
                       value="ระบุตัวตน"
-                      checked={postData.anonymous === false}
-                      onChange={() => setPostData({ ...postData, anonymous: false })}
+                      checked={anonymous === false}
+                      onClick={() => setAnonymous(false)}
                       className="form-radio text-[#4ECDC4]"
                     />
                     <span>ระบุตัวตน</span>
@@ -343,15 +350,15 @@ export default function AddReview() {
                       type="radio"
                       name="identity"
                       value="ไม่ระบุตัวตน"
-                      checked={postData.anonymous === true}
-                      onChange={() => setPostData({ ...postData, anonymous: true })}
+                      checked={anonymous === true}
+                      onClick={() => setAnonymous(true)}
                       className="form-radio text-[#4ECDC4]"
                     />
                     <span>ไม่ระบุตัวตน</span>
                   </label>
                 </div>
                 {/* Input field for ไม่ระบุตัวตน */}
-                {postData.anonymous && (
+                {anonymous && (
                   <div className='flex flex-wrap mt-4'>
                     <h1 className='mr-8'>นามปากกา</h1>
                     <input
@@ -378,10 +385,6 @@ export default function AddReview() {
                 }`}
                 disabled={!isFormValid()}
                 onClick={() => {
-                  if (!postData.anonymous) {
-                    const user_id = data.user_id;
-                    setPostData((prevData) => ({ ...prevData, link: `/user/${user_id}` }));
-                  }
                   AddingReview();
                   close();
                 }}
