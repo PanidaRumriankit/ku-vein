@@ -188,7 +188,7 @@ export default function UserProfile() {
             </Popup>
           </div>
 
-          {/* Follow and Edit Profile Buttons */}
+          {/* Follow Buttons */}
           <div className="flex justify-end gap-4 -mt-40 mr-12">
             <button
               className={`px-8 py-2 rounded ${

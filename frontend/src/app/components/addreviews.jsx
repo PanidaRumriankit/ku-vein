@@ -5,11 +5,36 @@ import AddIcon from '@mui/icons-material/Add';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Search from './search';
+import SearchFaculty from './searchfaculty';
 import Rating from '@mui/material/Rating';
 import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
 import {reviewURL} from '../constants/backurl.js'
 import StarIcon from '@mui/icons-material/Star';
+
+const labels = {
+  1: 'ไม่พึงพอใจมาก',
+  2: 'ไม่พึงพอใจ',
+  3: 'เฉย ๆ',
+  4: 'พึงพอใจ',
+  5: 'พึงพอใจมาก',
+};
+
+const effortless = {
+  1: 'น้อย',
+  2: 'น้อยมาก',
+  3: 'ปานกลาง',
+  4: 'ยาก',
+  5: 'ยากมาก',
+};
+
+const attendent = {
+  1: 'ไม่เช็ค',
+  2: 'เช็คบางครั้ง',
+  3: 'เช็คปานกลาง',
+  4: 'เช็คบ่อย',
+  5: 'เช็คทุกครั้ง',
+};
 
 export default function AddReview() {
   const {data: session} = useSession();
@@ -25,15 +50,17 @@ export default function AddReview() {
     academic_year: new Date().getFullYear() + 543,
     pen_name: '',
     instructor: '',
+    effort: 3,
+    attendance: 3,
+    scoring_criteria: '',
+    class_type: '',
+    // link: null,
   });
-
-  const labels = {
-    1: 'Very dissatisfied',
-    2: 'Dissatisfied',
-    3: 'Neutral',
-    4: 'Satisfied',
-    5: 'Very satisfied',
-  };
+  const [hoveredEffort, setHoveredEffort] = useState(3);
+  const [clickedEffort, setClickedEffort] = useState(3);
+  const [hoveredAttendance, setHoveredAttendance] = useState(3);
+  const [clickedAttendance, setClickedAttendance] = useState(3);
+  const [anonymous, setAnonymous] = useState(false);
 
   async function AddingReview() {
     try {
@@ -52,8 +79,9 @@ export default function AddReview() {
         return;
       }
       if (response.ok) {
-        const data = await response.json();
-        console.log('Success:', data);
+        const rs = await response.json();
+        console.log('Success:', rs);
+        window.location.reload();
       } else {
         console.log('Error:', response.status, response.text());
       }
@@ -78,6 +106,30 @@ export default function AddReview() {
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
 
+  const isFormValid = () => {
+    const {
+      email,
+      course_id,
+      reviews,
+      academic_year,
+      instructor,
+      pen_name,
+      anonymous
+    } = postData;
+
+    if (!email || !course_id || !reviews || !academic_year || !instructor) {
+      return false;
+    }
+
+    if (anonymous && !pen_name) {
+      return false;
+    }
+
+    return true;
+  };
+
+  console.log("postData: ", postData);
+
   return (
     <div className="fixed bottom-4 right-4">
       <Popup
@@ -90,7 +142,7 @@ export default function AddReview() {
         }
         modal
         nested
-        contentStyle={{border: 'none', padding: '0', background: 'none'}}
+        contentStyle={{border: 'none', padding: '0', background: 'none', height: '90%', width: '60%', overflow: 'auto'}}
       >
         {close => (
           <div
@@ -99,7 +151,10 @@ export default function AddReview() {
             <Search onCourseSelect={(course) => setPostData({
               ...postData,
               course_id: course.courses_id,
-              faculty: course.faculty,
+            }) } />
+            <SearchFaculty onFacultySelect={(faculty) => setPostData({
+              ...postData,
+              faculty: faculty.name,
             }) } />
             <textarea
               type="text"
@@ -130,6 +185,105 @@ export default function AddReview() {
                 <div
                   className='ml-2'>{labels[hover !== -1 ? hover : postData.rating]}</div>
               )}
+            </div>
+            <div className="flex flex-wrap mt-4 font-bold items-center">
+              <h1 className="mr-[3rem]">ความยาก</h1>
+              {[1, 2, 3, 4, 5].map((effort) => (
+                <h1
+                  key={effort}
+                  className={`ml-4 text-lg hover:cursor-pointer ${
+                    postData.effort === effort ? 'text-[#4ECDC4]' : 'text-gray-400 hover:text-[#4ECDC4]'
+                  }`}
+                  onMouseEnter={() => setHoveredEffort(effort)}
+                  onMouseLeave={() => setHoveredEffort(clickedEffort)}
+                  onClick={() =>
+                  {
+                    setPostData((prevData) => ({
+                      ...prevData,
+                      effort
+                    }));
+                    setClickedEffort(effort);
+                    setHoveredEffort(effort);
+                  }}
+                >
+                  {effort}
+                </h1>
+              ))}
+              {hoveredEffort && (
+                  <span className="ml-4 font-normal">
+                    {effortless[hoveredEffort]}
+                  </span>
+              )}
+            </div>
+            <div className="flex flex-wrap mt-4 font-bold items-center">
+              <h1 className="mr-10">การเช็คชื่อ</h1>
+              {[1, 2, 3, 4, 5].map((attendance) => (
+                <h1
+                  key={attendance}
+                  className={`ml-4 text-lg hover:cursor-pointer ${
+                    postData.attendance === attendance ? 'text-[#4ECDC4]' : 'text-gray-400 hover:text-[#4ECDC4]'
+                  }`}
+                  onClick={() => {
+                    setPostData((prevData) => ({
+                    ...prevData,
+                    attendance
+                    }));
+                    setClickedAttendance(attendance);
+                    setHoveredAttendance(attendance);
+                  }}
+                  onMouseEnter={() => setHoveredAttendance(attendance)}
+                  onMouseLeave={() => setHoveredAttendance(clickedAttendance)}
+                >
+                  {attendance}
+                </h1>
+              ))}
+              {hoveredAttendance && (
+                  <span className="ml-4 font-normal">
+                    {attendent[hoveredAttendance]}
+                  </span>
+              )}
+            </div>
+            <div className="flex flex-wrap mt-4 font-bold">
+              <h1 className="mr-16">เรียนแบบ</h1>
+              {['onsite', 'online', 'hybrid'].map((type) => (
+                <button
+                  key={type}
+                  className={`px-4 py-2 mr-4 rounded text-sm font-bold outline ${
+                    postData.class_type === type
+                      ? 'bg-[#44b3ab] text-white outline-[#44b3ab]'
+                      : 'bg-transparent text-[#44b3ab] outline-[#44b3ab] hover:bg-[#4ECDC4] hover:text-white hover:outline-[#4ECDC4]'
+                  }`}
+                  onClick={() =>
+                    setPostData((prevData) => ({
+                      ...prevData,
+                      class_type: type,
+                    }))
+                  }
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-wrap mt-4 font-bold">
+              <h1 className="mr-[5.25rem]">เกณฑ์</h1>
+              {['work-based', 'exam-based', 'project-based', 'balance'].map((criteria) => (
+                <button
+                  key={criteria}
+                  className={`px-4 py-2 mr-4 rounded text-sm font-bold outline ${
+                    postData.scoring_criteria === criteria
+                      ? 'bg-[#44b3ab] text-white outline-[#44b3ab]'
+                      : 'bg-transparent text-[#44b3ab] outline-[#44b3ab] hover:bg-[#4ECDC4] hover:text-white hover:outline-[#4ECDC4]'
+                  }`}
+                  onClick={() =>
+                    setPostData((prevData) => ({
+                      ...prevData,
+                      scoring_criteria: criteria,
+                    }))
+                  }
+                >
+                  {criteria.charAt(0).toUpperCase() + criteria.slice(1)}
+                </button>
+              ))}
             </div>
             <div className="flex flex-wrap mt-4 font-bold">
               <h1 className="mr-12">เกรดที่ได้</h1>
@@ -162,7 +316,7 @@ export default function AddReview() {
               />
             </div>
             <div className='flex flex-wrap mt-4 font-bold'>
-              <h1 className='mr-18'>อาจารย์</h1>
+              <h1 className='mr-[4.5rem]'>อาจารย์</h1>
               <input type='text'
                      placeholder='อาจารย์'
                      className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
@@ -175,21 +329,61 @@ export default function AddReview() {
               />
             </div>
             <div className='flex flex-wrap mt-4 font-bold'>
-              <h1 className='mr-12'>นามปากกา</h1>
-              <input type='text'
-                     placeholder='นามปากกา'
-                     className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
-                     required
-                     value={postData.pen_name}
-                     onChange={(e) => setPostData({
-                       ...postData,
-                       pen_name: e.target.value
-                     })}
-              />
+              <h1 className='mr-14'>โพสต์แบบ</h1>
+              <div className="flex flex-col">
+                <div className="flex items-center space-x-4">
+                  {/* ระบุตัวตน Option */}
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      name="identity"
+                      value="ระบุตัวตน"
+                      checked={anonymous === false}
+                      onClick={() => setAnonymous(false)}
+                      className="form-radio text-[#4ECDC4]"
+                    />
+                    <span>ระบุตัวตน</span>
+                  </label>
+                  {/* ไม่ระบุตัวตน Option */}
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="radio"
+                      name="identity"
+                      value="ไม่ระบุตัวตน"
+                      checked={anonymous === true}
+                      onClick={() => setAnonymous(true)}
+                      className="form-radio text-[#4ECDC4]"
+                    />
+                    <span>ไม่ระบุตัวตน</span>
+                  </label>
+                </div>
+                {/* Input field for ไม่ระบุตัวตน */}
+                {anonymous && (
+                  <div className='flex flex-wrap mt-4'>
+                    <h1 className='mr-8'>นามปากกา</h1>
+                    <input
+                      type='text'
+                      placeholder='นามปากกา'
+                      className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
+                      required
+                      value={postData.pen_name}
+                      onChange={(e) => setPostData({
+                        ...postData,
+                        pen_name: e.target.value
+                      })}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
+
+
             <div className="flex justify-end mt-4">
               <button
-                className="bg-[#4ECDC4] px-4 py-2 rounded text-white hover:bg-[#44b3ab]"
+                className={`px-4 py-2 rounded text-white ${
+                  isFormValid() ? 'bg-[#4ECDC4] hover:bg-[#44b3ab]' : 'bg-gray-300 cursor-not-allowed'
+                }`}
+                disabled={!isFormValid()}
                 onClick={() => {
                   AddingReview();
                   close();
