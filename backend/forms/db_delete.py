@@ -20,10 +20,10 @@ class DeleteStrategy(ABC):
 class CourseReviewDelete(DeleteStrategy):
     """Class for delete CourseReview objects."""
 
-    def delete_data(self, review_id):
+    def delete_data(self, data):
         """Delete CourseReview and ReviewStat objects"""
         try:
-            delete_target = CourseReview.objects.get(review_id=review_id)
+            delete_target = CourseReview.objects.get(review_id=data['review_id'])
             delete_target.delete()
             return Response({"success": "Delete"
                                         " Review Successfully."}, status=200)
@@ -35,10 +35,10 @@ class CourseReviewDelete(DeleteStrategy):
 class NoteDelete(DeleteStrategy):
     """Class for delete Note objects."""
 
-    def delete_data(self, note_id):
+    def delete_data(self, data):
         """Delete Note objects"""
         try:
-            delete_target = Note.objects.get(note_id=note_id)
+            delete_target = Note.objects.get(note_id=data['note_id'])
             delete_target.delete()
             return Response({"success": "Delete"
                                         " Note Successfully."}, status=200)

@@ -20,7 +20,7 @@ class CourseReviewDeleteTests(TestCase):
 
     def test_response_review_not_in_database(self):
         """If review isn't in database it should return 401."""
-        response = self.delete.delete_data(69)
+        response = self.delete.delete_data({"review_id": 69})
         self.assertEqual(response.status_code, 401)
         self.assertEqual(json.loads(response.content),
                          {"error": "This review"
@@ -29,7 +29,7 @@ class CourseReviewDeleteTests(TestCase):
     def test_response_delete_success(self):
         """If delete successfully it should return 200."""
         response = self.delete.delete_data(
-            CourseReview.objects.first().review_id
+             {"review_id":  CourseReview.objects.first().review_id}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content),
@@ -45,7 +45,7 @@ class CourseReviewDeleteTests(TestCase):
         self.assertIsNotNone(review)
         self.assertIsNotNone(ReviewStat.objects.get(review=review))
 
-        self.delete.delete_data(review_id)
+        self.delete.delete_data({"review_id": review_id})
         with self.assertRaises(CourseReview.DoesNotExist):
             CourseReview.objects.get(review_id=review_id)
 
@@ -65,7 +65,7 @@ class NoteDeleteTests(TestCase):
 
     def test_response_review_not_in_database(self):
         """If Note isn't in database it should return 401."""
-        response = self.delete.delete_data(69)
+        response = self.delete.delete_data({"note_id": 69})
         self.assertEqual(response.status_code, 401)
         self.assertEqual(json.loads(response.content),
                          {"error": "This Note"
@@ -74,7 +74,7 @@ class NoteDeleteTests(TestCase):
     def test_response_delete_success(self):
         """If delete successfully it should return 200."""
         response = self.delete.delete_data(
-            Note.objects.first().note_id
+            {"note_id": Note.objects.first().note_id}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content),
@@ -85,7 +85,7 @@ class NoteDeleteTests(TestCase):
         """Data should return as a list."""
         note_id = Note.objects.first().note_id
         self.assertIsNotNone(Note.objects.get(note_id=note_id))
-        self.delete.delete_data(note_id)
+        self.delete.delete_data({"note_id": note_id})
         with self.assertRaises(Note.DoesNotExist):
             Note.objects.get(note_id=note_id)
 
