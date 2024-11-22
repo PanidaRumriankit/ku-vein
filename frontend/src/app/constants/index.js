@@ -140,11 +140,6 @@ const gradeColors = {
   W: "#9E9E9E",
 };
 
-// Example usage:
-const grade = "B+";
-const gradeColor = gradeColors[grade]; // "#9CCC65"
-
-
 export {
   notifications,
   usersDropdown,
