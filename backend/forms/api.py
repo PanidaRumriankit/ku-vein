@@ -246,6 +246,20 @@ class BookMarkController(ControllerBase):
         return strategy.post_data(data.model_dump())
 
 
+@api_controller("/history")
+class HistoryController(ControllerBase):
+    """Controller for handling History endpoints."""
+
+    @http_get("")
+    def get_bookmark_data(self, request, target_user: str, is_other_user: bool):
+        """Use for send the note data to the frontend"""
+        if not target_user:
+            return Response({"error": "Missing email parameter."},
+                            status=401)
+        strategy = QueryFactory.get_query_strategy("history")
+        return check_response(strategy.get_data(target_user, is_other_user))
+
+
 @app.get("/database/cou")
 def test_auth(request):
     """For test API authentication only."""
