@@ -120,7 +120,7 @@ export default function ReviewCard({item, page = null}) {
             <div className="text-right">
               <ReportButton/>
               <ShareButton/>
-              <EditDelete/>
+              <EditDelete userMail={email} reviewId={item.reviews_id}/>
             </div>
           </div>
         </div>
