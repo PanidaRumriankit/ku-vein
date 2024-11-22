@@ -275,7 +275,7 @@ class QAController(ControllerBase):
     """Controller for handling qa endpoints."""
 
     @http_get("")
-    def get_qa(request, question_id: int|None=None, mode: str='latest'):
+    def get_qa(self, request, question_id: int|None=None, mode: str='latest'):
         """Get all Answers to a Q&A question."""
         if question_id is None:
             strategy = QueryFactory.get_query_strategy("qa_question")
@@ -284,13 +284,13 @@ class QAController(ControllerBase):
         return strategy.get_data(question_id=question_id, mode=mode)
 
     @http_post("")
-    def add_question(request, data: QuestionCreateSchema):
+    def add_question(self, request, data: QuestionCreateSchema):
         """Use for creating new question for Q&A."""
         strategy = PostFactory.get_post_strategy("question")
         return strategy.post_data(data.model_dump())
 
     @http_post("/answer")
-    def add_answer(request, data: AnswerCreateSchema):
+    def add_answer(self, request, data: AnswerCreateSchema):
         """Use for creating new answer for Q&A."""
         strategy = PostFactory.get_post_strategy("answer")
         return strategy.post_data(data.model_dump())
