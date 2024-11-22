@@ -7,6 +7,8 @@ import { useSession } from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
 import { followURL } from '../../constants/backurl';
+import MakeApiRequest from "../../constants/getreview";
+import ReviewCard from "../../components/reviewcard";
 
 export default function UserProfile() {
   const router = useRouter();
@@ -19,6 +21,15 @@ export default function UserProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [followerCount, setFollowerCount] = useState(0);
+  const [reviews, setReviews] = useState([]);
+
+  const fetchReviews = async () => {
+    setReviews(await MakeApiRequest('latest'));
+  };
+
+  const getFilteredReviews = () => {
+    return reviews.filter((review) => (review.username === userData.user_name && review.is_anonymous === false));
+  };
 
   useEffect(() => {
     if (session && user_id) {
@@ -54,6 +65,7 @@ export default function UserProfile() {
         setFollowerCount(data.follower_count);
       }
       FetchData();
+      fetchReviews();
     }
   }, [session, user_id, router]);
 
@@ -117,7 +129,18 @@ export default function UserProfile() {
   const renderContent = () => {
     switch (activeTab) {
       case "reviews":
-        return <p>Here are your reviews!</p>;
+        const filteredReviews = getFilteredReviews();
+        return (
+          <>
+            {filteredReviews.length > 0 ? (
+              filteredReviews.map((item, index) => (
+                <ReviewCard item={item} key={index} page={"page"} />
+              ))
+            ) : (
+              <p className="text-green-400 text-center">No review currently</p>
+            )}
+          </>
+        );
       case "posts":
         return <p>Here are your posts!</p>;
       case "replies":
