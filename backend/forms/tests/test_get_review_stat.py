@@ -1,9 +1,10 @@
-from ..db_query import StatQuery
 from django.test import TestCase
+
 from .set_up import course_set_up, review_set_up, user_set_up
+from ..db_query import StatQuery
 
 
-class EarliestReviewTests(TestCase):
+class StatTests(TestCase):
     """Test cases for EarliestReview."""
 
     def setUp(self):
@@ -22,7 +23,7 @@ class EarliestReviewTests(TestCase):
         """Test to check is GET method return all demand field."""
         expected_keys = [
             'courses_id', 'courses_name', 'avg_effort', 'avg_rating',
-            'mode_grade', 'mode_class_type', 'mode_attendance',
+            'total_grade', 'mode_class_type', 'mode_attendance',
             'mode_criteria', 'mode_rating', 'mode_faculty'
         ]
 
@@ -36,7 +37,7 @@ class EarliestReviewTests(TestCase):
     def test_mode_data(self):
         """Should return correct Mode data."""
         self.assertEqual("work-base", self.get_review['mode_criteria'])
-        self.assertEqual("B", self.get_review['mode_grade'])
+        self.assertEqual( {'A': 1, 'B': 2}, self.get_review['total_grade'])
         self.assertEqual("online", self.get_review['mode_class_type'])
         self.assertEqual(4, self.get_review['mode_attendance'])
         self.assertEqual(4.5, self.get_review['mode_rating'])

@@ -1,21 +1,27 @@
+"""Module for test POST BookMark feature."""
+
 import json
+
+from django.test import TestCase
+
+from .set_up import (user_set_up, review_set_up,
+                     course_set_up, note_setup)
 
 from ..db_post import BookMarkPost
 from ..models import BookMark
-from django.test import TestCase
-from .set_up import (user_set_up, review_set_up,
-                     course_set_up)
+
 
 class BookMarkPostTests(TestCase):
     """Test cases for BookMark create object."""
 
     def setUp(self):
         """Set up reusable instances for tests."""
-        self.bookmark = BookMark()
+        self.bookmark = BookMark
         self.bookmark_post = BookMarkPost()
-        course_set_up()
+        self.course = course_set_up()
         self.user = user_set_up()
         self.review, self.data = review_set_up()
+        self.note = note_setup(self.course[0], self.user)
 
     def test_response_post_data_missing_data(self):
         """Test creating a bookmark with missing data."""
@@ -74,3 +80,105 @@ class BookMarkPostTests(TestCase):
         self.assertEqual(self.review[0].review_id, result_data['object_id'])
         self.assertEqual(self.review[0].review, BookMark.objects.first().instance)
         self.assertEqual('review', result_data['data_type'])
+
+    def test_remove_bookmark(self):
+        """If post same data it should got remove."""
+        test_data =  {
+                "email": self.user[0].email,
+                "id": self.review[1].review_id,
+                "data_type": "review"
+            }
+
+        expected_data = {
+            'object_id': self.review[1].review_id,
+            'data_type': 'review',
+            'user__email': self.user[0].email
+        }
+
+        self.bookmark_post.post_data(
+            test_data
+        )
+
+        self.assertEqual(
+        self.bookmark.objects.values(
+            'object_id',
+            'data_type',
+            'user__email'
+        ).first(),
+        expected_data
+        )
+
+        self.bookmark_post.post_data(
+            test_data
+        )
+
+        self.assertEqual([],
+                         list(self.bookmark.objects.all()))
+
+        self.bookmark_post.post_data(
+            test_data
+        )
+
+        self.bookmark_post.post_data(
+            {
+                "email": self.user[0].email,
+                "id": self.review[0].review_id,
+                "data_type": "review"
+            }
+        )
+
+        self.bookmark_post.post_data(
+            {
+                "email": self.user[0].email,
+                "id": self.review[0].review_id,
+                "data_type": "review"
+            }
+        )
+
+        self.assertEqual(
+            self.bookmark.objects.values(
+                'object_id',
+                'data_type',
+                'user__email'
+            ).first(),
+            expected_data
+        )
+
+    def test_remove_different_type(self):
+        self.bookmark_post.post_data(
+            {
+                "email": self.user[0].email,
+                "id": self.review[1].review_id,
+                "data_type": "review"
+            }
+        )
+
+        self.bookmark_post.post_data(
+            {
+                "email": self.user[0].email,
+                "id": self.note.note_id,
+                "data_type": "note"
+            }
+        )
+
+        self.bookmark_post.post_data(
+            {
+                "email": self.user[0].email,
+                "id": self.note.note_id,
+                "data_type": "note"
+            }
+        )
+
+        result_data = self.bookmark.objects.values(
+            'object_id',
+            'data_type',
+            'user__email'
+        ).first()
+
+        expected_data = {
+            'object_id': self.review[1].review_id,
+            'data_type': 'review',
+            'user__email': self.user[0].email
+        }
+
+        self.assertEqual(result_data, expected_data)

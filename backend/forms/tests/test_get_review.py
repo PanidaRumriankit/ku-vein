@@ -1,8 +1,9 @@
 """Module for test everything that relate to get data in the Review feature."""
 
-from ..db_query import SortReview
 from django.test import TestCase
+
 from .set_up import course_set_up, review_set_up, user_set_up, upvote_set_up
+from ..db_query import SortReview
 
 
 class EarliestReviewTests(TestCase):
@@ -110,7 +111,7 @@ class UpvoteReviewTests(TestCase):
     def test_order_by_upvote(self):
         """Data should order by highest to lowest."""
         upvote_set_up(self.review, self.user)
-        self.assertEqual([5, 4, 3, 2, 1, 0, 0],
+        self.assertEqual([5, 4, 3, 2, 1, 0, 0, 0, 0],
                          [item['upvote']
                           for item in self.upvote.get_data("upvote")])
 

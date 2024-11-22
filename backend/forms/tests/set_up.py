@@ -1,7 +1,11 @@
 """Set up function for every feature."""
 
-from django.core.files.uploadedfile import SimpleUploadedFile
+import os
+
+from django.conf import settings
 from django.utils import timezone
+
+from ..db_post import HistoryPost
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
@@ -56,6 +60,41 @@ def review_set_up():
             "attendance": 4,
             "scoring_criteria": "work-base",
             "class_type": "onsite",
+            "anonymous": False,
+        },
+
+        {
+            "email": "solaire@gmail.com",
+            "course_id": "2",
+            "course_type": "Sorcerer",
+            "faculty": "Magic",
+            "reviews": "Nice! Magic",
+            "rating": 4.0,
+            "academic_year": 2024,
+            "pen_name": "Knight of Light",
+            "grade": "A",
+            "effort": 3,
+            "attendance": 2,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
+            "anonymous": True,
+        },
+
+        {
+            "email": "solaire@gmail.com",
+            "course_id": "3",
+            "course_type": "Pyromancer",
+            "faculty": "Magic",
+            "reviews": "BURNNN",
+            "rating": 3.0,
+            "academic_year": 2022,
+            "pen_name": "Knight of Light",
+            "grade": "B+",
+            "effort": 3,
+            "attendance": 2,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
+            "anonymous": True,
         },
 
         {
@@ -72,6 +111,7 @@ def review_set_up():
             "attendance": 4,
             "scoring_criteria": "project-base",
             "class_type": "online",
+            "anonymous": True,
         },
         {
             "email": "laurentius@gmail.com",
@@ -87,6 +127,7 @@ def review_set_up():
             "attendance": 5,
             "scoring_criteria": "work-base",
             "class_type": "online",
+            "anonymous": True,
         },
 
         {
@@ -104,7 +145,9 @@ def review_set_up():
             "attendance": 3,
             "scoring_criteria": "exam-base",
             "class_type": "online",
+            "anonymous": False,
         },
+
         {
             "email": "laurentius@gmail.com",
             "course_id": "3",
@@ -120,7 +163,9 @@ def review_set_up():
             "attendance": 4,
             "scoring_criteria": "exam-base",
             "class_type": "hybrid",
+            "anonymous": True,
         },
+
         {
             "email": "aslatiel@gmail.com",
             "course_id": "4",
@@ -136,7 +181,9 @@ def review_set_up():
             "attendance": 1,
             "scoring_criteria": "exam-base",
             "class_type": "onsite",
+            "anonymous": False,
         },
+
         {
             "email": "siegmeyer@gmail.com",
             "course_id": "5",
@@ -152,6 +199,7 @@ def review_set_up():
             "attendance": 3,
             "scoring_criteria": "work-base",
             "class_type": "online",
+            "anonymous": False,
         }
     ]
 
@@ -165,7 +213,8 @@ def review_set_up():
                                                       course=course,
                                                       faculty=add_user['faculty'],
                                                       reviews=add_user['re'
-                                                                       'views']
+                                                                       'views'],
+                                                      anonymous=add_user['anonymous']
                                                       )
 
         review.append(ReviewStat.objects.
@@ -180,6 +229,13 @@ def review_set_up():
                              class_type=add_user['class_type']
                       )
         )
+
+        HistoryPost().post_data({
+            "email": add_user['email'],
+            "id": review_instance.review_id,
+            "data_type": "review",
+            "anonymous": add_user['anonymous']
+        })
 
     return review, review_data
 
@@ -255,25 +311,17 @@ def follower_setup(user):
     return follow
 
 
-def note_generator(course, user, note_content):
-    """Generator function to yield Note instances with files."""
-
-
-
 def note_setup(course, user):
     """Set up function for Note feature using a generator."""
-    note_content = "Yes, indeed"
-    note_file = SimpleUploadedFile(
-        name=f"{note_content[:10]}.pdf",
-        content=note_content.encode('utf-8'),
-        content_type="application/pdf"
-    )
+    path = os.path.join(settings.MEDIA_ROOT,
+                 'note_files', 'yes_indeed.pdf')
 
     note = Note.objects.create(
         user=user[0],
         course=course[0],
         faculty="pyromancer",
-        note_file=note_file,
+        file_name='yes_indeed.pdf',
+        note_file=path,
         date_data=timezone.now(),
         pen_name="Yes"
     )

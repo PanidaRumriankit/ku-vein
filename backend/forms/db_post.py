@@ -2,15 +2,25 @@
 
 import logging
 
+import base64
+import os
+
 from datetime import datetime
 from abc import ABC, abstractmethod
+from datetime import datetime
+
+from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
 from ninja.responses import Response
+
 from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
                      UpvoteStat, FollowData,
-                     Note, BookMark)
-from django.contrib.contenttypes.models import ContentType
+                     Note, BookMark, History)
+
+from django.conf import settings
 from django.utils import timezone
+from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger("user_logger")
 
@@ -63,8 +73,12 @@ class ReviewPost(PostStrategy):
             return error_check
 
         try:
+            anonymous = True
             if not data['pen_name']:
                 data['pen_name'] = self.user.user_name
+
+            if data['pen_name'] == self.user.user_name:
+                anonymous = False
 
             if not data['academic_year']:
                 data['academic_year'] = datetime.now().year
@@ -78,7 +92,8 @@ class ReviewPost(PostStrategy):
             course=self.course,
             reviews=data['reviews'],
             faculty=data['faculty'],
-            instructor=data['instructor']
+            instructor=data['instructor'],
+            anonymous=anonymous
         )
         ReviewStat.objects.create(
             review=review_instance,
@@ -92,6 +107,13 @@ class ReviewPost(PostStrategy):
             scoring_criteria=data['scoring_criteria'],
             class_type=data['class_type'],
         )
+
+        HistoryPost().post_data({
+            "email": data['email'],
+            "id": review_instance.review_id,
+            "data_type": "review",
+            "anonymous": anonymous
+        })
 
         return Response({"success": "The Review is successfully created."},
                         status=201)
@@ -250,17 +272,53 @@ class NotePost(PostStrategy):
             if 'file' not in data or data['file'] is None:
                 return Response({"error": "File is missing."}, status=400)
 
+            anonymous = True
             if not data['pen_name']:
                 data['pen_name'] = user.user_name
 
-            Note.objects.create(
-                course=course,
-                user=user,
-                faculty=data['faculty'],
-                note_file=data['file'],
-                pen_name=data['pen_name'],
-                date_data=timezone.now()
+            if data['pen_name'] == user.user_name:
+                anonymous = False
+
+            try:
+                file_data = base64.b64decode(data['file'])
+            except Exception as e:
+                return Response({"error": f"Invalid file data: {str(e)}"}, status=400)
+
+            file_name = data['file_name'] + '.pdf'
+            file_path = os.path.join(settings.MEDIA_ROOT,
+                                     'note_files', file_name)
+
+            counter = 1
+            while True:
+                try:
+                    with open(file_path, 'r'):
+                        file_name = data['file_name'] + f'({counter}).pdf'
+                        file_path = os.path.join(settings.MEDIA_ROOT, 'note_files', file_name)
+                        counter += 1
+                except FileNotFoundError:
+                    break
+
+            with open(file_path, "wb") as f:
+                f.write(file_data)
+
+            note = Note.objects.create(
+                    course=course,
+                    user=user,
+                    faculty=data['faculty'],
+                    file_name=file_name,
+                    note_file=file_path,
+                    pen_name=data['pen_name'],
+                    date_data=timezone.now(),
+                    anonymous=anonymous
             )
+
+            HistoryPost().post_data({
+                "email": data['email'],
+                "id": note.note_id,
+                "data_type": "note",
+                "anonymous": anonymous
+            })
+
             return Response({"success": "Note"
                                         " created successfully."},
                             status=201)
@@ -294,15 +352,7 @@ class BookMarkPost(PostStrategy):
             content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
             user = UserData.objects.get(email=data['email'])
 
-            BookMark.objects.create(
-                content_type=content_type,
-                user=user,
-                object_id=data['id'],
-                data_type=data['data_type']
-            )
-            return Response({"success": "Bookmark created"
-                                        " successfully."},
-                            status=201)
+            return self.add_or_delete(content_type, user, data)
 
         except KeyError:
             return Response({"error": "Required data is"
@@ -324,6 +374,90 @@ class BookMarkPost(PostStrategy):
                                       " review does not exist."},
                             status=404)
 
+        except Note.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " note does not exist."},
+                            status=404)
+
+    @staticmethod
+    def add_or_delete(content_type, user: UserData, data: dict):
+        """
+        Check is the user already bookmark or not.
+
+        If already bookmark. Then, delete the object.
+        Else create new BookMark objects.
+        """
+        exist = BookMark.objects.filter(content_type=content_type,
+                                        object_id=data['id'],
+                                        user=user,
+                                        data_type=data['data_type']
+                                        )
+        if exist.count():
+            exist.delete()
+            return Response({"success": "Successfully"
+                                        " remove the bookmark."},
+                            status=201)
+
+        BookMark.objects.create(
+            content_type=content_type,
+            user=user,
+            object_id=data['id'],
+            data_type=data['data_type']
+        )
+
+        return Response({"success": "Bookmark created"
+                                    " successfully."},
+                        status=201)
+
+
+class HistoryPost(PostStrategy):
+    """Class for save the objects to the history."""
+
+    def __init__(self):
+        """Initialize method for HistoryPost."""
+        self.table = {"review":CourseReview, "note": Note, "qa": None}
+
+    def post_data(self, data: dict):
+        """Create a new History object in the database."""
+        try:
+            if data['data_type'] not in self.table or not self.table[data['data_type']]:
+                return Response({"error": "Invalid data_type provided."}, status=400)
+
+            content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
+            user = UserData.objects.get(email=data['email'])
+
+            History.objects.create(
+                content_type=content_type,
+                user=user,
+                object_id=data['id'],
+                data_type=data['data_type'],
+                anonymous=data['anonymous']
+            )
+
+        except KeyError:
+            return Response({"error": "History required data is"
+                                      " missing from the request body."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " user does not exist. (History)"},
+                            status=404)
+
+        except ContentType.DoesNotExist:
+            return Response({"error": "Content type not"
+                                      " found for the specified model. (History)"},
+                            status=404)
+
+        except CourseReview.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " review does not exist. (History)"},
+                            status=404)
+
+        except Note.DoesNotExist:
+            return Response({"error": "The specified"
+                                      " note does not exist. (History)"},
+                            status=404)
 
 
 class PostFactory:
@@ -347,7 +481,7 @@ class PostFactory:
             query (str): The query parameter to choose the strategy.
 
         Returns:
-            QueryStrategy: The corresponding query strategy class.
+            PostStrategy: The corresponding post strategy class.
 
         Raises:
             ValueError: If the query stringdoesn't match any available
