@@ -47,7 +47,7 @@ export default function EditDelete({userMail, reviewId}) {
 
       if (response.ok) {
         console.log("Success");
-        window.location.reload();
+        // window.location.reload();
       } else {
         console.error("Error deleting:", await response.text());
       }
