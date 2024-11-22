@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils import timezone
 
 from ..db_query import clean_time_data, QuestionQuery, AnswerQuery
+from ..db_post import HistoryPost
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
@@ -64,6 +65,41 @@ def review_set_up():
             "attendance": 4,
             "scoring_criteria": "work-base",
             "class_type": "onsite",
+            "anonymous": False,
+        },
+
+        {
+            "email": "solaire@gmail.com",
+            "course_id": "2",
+            "course_type": "Sorcerer",
+            "faculty": "Magic",
+            "reviews": "Nice! Magic",
+            "rating": 4.0,
+            "academic_year": 2024,
+            "pen_name": "Knight of Light",
+            "grade": "A",
+            "effort": 3,
+            "attendance": 2,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
+            "anonymous": True,
+        },
+
+        {
+            "email": "solaire@gmail.com",
+            "course_id": "3",
+            "course_type": "Pyromancer",
+            "faculty": "Magic",
+            "reviews": "BURNNN",
+            "rating": 3.0,
+            "academic_year": 2022,
+            "pen_name": "Knight of Light",
+            "grade": "B+",
+            "effort": 3,
+            "attendance": 2,
+            "scoring_criteria": "exam-base",
+            "class_type": "onsite",
+            "anonymous": True,
         },
 
         {
@@ -80,6 +116,7 @@ def review_set_up():
             "attendance": 4,
             "scoring_criteria": "project-base",
             "class_type": "online",
+            "anonymous": True,
         },
         {
             "email": "laurentius@gmail.com",
@@ -95,6 +132,7 @@ def review_set_up():
             "attendance": 5,
             "scoring_criteria": "work-base",
             "class_type": "online",
+            "anonymous": True,
         },
 
         {
@@ -112,7 +150,9 @@ def review_set_up():
             "attendance": 3,
             "scoring_criteria": "exam-base",
             "class_type": "online",
+            "anonymous": False,
         },
+
         {
             "email": "laurentius@gmail.com",
             "course_id": "3",
@@ -128,7 +168,9 @@ def review_set_up():
             "attendance": 4,
             "scoring_criteria": "exam-base",
             "class_type": "hybrid",
+            "anonymous": True,
         },
+
         {
             "email": "aslatiel@gmail.com",
             "course_id": "4",
@@ -144,7 +186,9 @@ def review_set_up():
             "attendance": 1,
             "scoring_criteria": "exam-base",
             "class_type": "onsite",
+            "anonymous": False,
         },
+
         {
             "email": "siegmeyer@gmail.com",
             "course_id": "5",
@@ -160,6 +204,7 @@ def review_set_up():
             "attendance": 3,
             "scoring_criteria": "work-base",
             "class_type": "online",
+            "anonymous": False,
         }
     ]
 
@@ -173,7 +218,8 @@ def review_set_up():
                                                       course=course,
                                                       faculty=add_user['faculty'],
                                                       reviews=add_user['re'
-                                                                       'views']
+                                                                       'views'],
+                                                      anonymous=add_user['anonymous']
                                                       )
 
         review.append(ReviewStat.objects.
@@ -188,6 +234,13 @@ def review_set_up():
                              class_type=add_user['class_type']
                       )
         )
+
+        HistoryPost().post_data({
+            "email": add_user['email'],
+            "id": review_instance.review_id,
+            "data_type": "review",
+            "anonymous": add_user['anonymous']
+        })
 
     return review, review_data
 
