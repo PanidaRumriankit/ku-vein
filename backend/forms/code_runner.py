@@ -1,7 +1,7 @@
 import os
 import sys
-import django
 
+import django
 
 # Add the parent directory to the Python path
 sys.path.append(
@@ -11,18 +11,33 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
 
-from forms.models import BookMark
-from forms.db_query import InterQuery
-
 if __name__ == "__main__":
-    print(BookMark.objects.all())
-    # After migrate uncomment this
-    # d = DatabaseBackup()
-    # d.exist_data_loader("inter")
-    # d.insert_data_to_remote("inter")
-    #
-    # da = DatabaseManagement()
-    # da.add_course_data_to_sub("inter")
 
+    def drop_table():
+        t = TableManagement()
+        t.drop_all_tables()
 
+    def add_demo_datas():
+        d = DatabaseBackup()
+        d.exist_data_loader("inter")
+        d.insert_data_to_remote("inter")
+        
+        da = DatabaseManagement()
+        da.add_course_data_to_sub("inter")
 
+    choice_handler = {1: drop_table,
+                      2: add_demo_datas}
+
+    text = (
+            "1. Drop all tables.\n"
+            "2. Add demo datas."
+            )
+
+    while(True):
+        try:
+            print(text)
+            choice = int(input())
+            func = choice_handler.get(choice)
+            break
+        except KeyError:
+            print("No")

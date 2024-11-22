@@ -111,7 +111,7 @@ class UpvoteReviewTests(TestCase):
     def test_order_by_upvote(self):
         """Data should order by highest to lowest."""
         upvote_set_up(self.review, self.user)
-        self.assertEqual([5, 4, 3, 2, 1, 0, 0],
+        self.assertEqual([5, 4, 3, 2, 1, 0, 0, 0, 0],
                          [item['upvote']
                           for item in self.upvote.get_data("upvote")])
 
