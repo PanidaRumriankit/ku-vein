@@ -7,10 +7,7 @@ import os
 
 from datetime import datetime
 from abc import ABC, abstractmethod
-from datetime import datetime
 
-from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
 from ninja.responses import Response
 
 from .models import (CourseReview, UserData,
@@ -18,8 +15,7 @@ from .models import (CourseReview, UserData,
                      UpvoteStat, FollowData, Note,
                      QA_Question, QA_Answer,
                      QA_Question_Upvote, QA_Answer_Upvote,
-                     UpvoteStat, FollowData,
-                     Note, BookMark)
+                     BookMark)
 
 from django.conf import settings
 from django.utils import timezone
@@ -539,7 +535,6 @@ class PostFactory:
         "note": NotePost,
         "question": QuestionPost,
         "answer": AnswerPost,
-        "note": NotePost,
         "book": BookMarkPost,
     }
 
