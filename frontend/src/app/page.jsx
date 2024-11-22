@@ -7,7 +7,7 @@ import ReviewCard from "./components/reviewcard";
 import MakeApiRequest from "./constants/getreview"
 import AddReviews from "./components/addreviews";
 
-import {useState, useEffect} from "react";
+import {useEffect, useState} from "react";
 
 export default function Home() {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
@@ -17,11 +17,12 @@ export default function Home() {
     const fetchReviews = async () => {
       const key = Array.from(selectedKeys)[0]
       const data = await MakeApiRequest(key);
-      console.log(typeof key, key);
+      // Uncomment when you want to know the sorting key type and value
+      // console.log(typeof key, key);
       setReviews(data);
     };
 
-    fetchReviews();
+    fetchReviews().then(() => {console.log("Fetch success")});
   }, [selectedKeys]);
 
   return (

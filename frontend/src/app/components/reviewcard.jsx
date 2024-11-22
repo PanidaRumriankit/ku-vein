@@ -75,7 +75,7 @@ export default function ReviewCard({item, page = null}) {
         setIsVoted(voteStatus);
       }
     };
-    fetchData();
+    fetchData().then();
     setUpvoteCount(item.upvote || 0);
   }, [session, email, item]);
 

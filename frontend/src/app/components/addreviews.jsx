@@ -120,14 +120,12 @@ export default function AddReview() {
       return false;
     }
 
-    if (anonymous && !pen_name) {
-      return false;
-    }
+    return !(anonymous && !pen_name);
 
-    return true;
+
   };
 
-  console.log("postData: ", postData);
+  // console.log("postData: ", postData);
 
   return (
     <div className="fixed bottom-4 right-4">
