@@ -1,3 +1,5 @@
+"use client";
+
 import {useEffect} from "react";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
 
@@ -8,7 +10,7 @@ export default function ReviewPage({params}) {
       const data = await MakeFilterApiRequest("latest", params.id, "review");
     };
 
-    fetchReviews();
+    fetchReviews().then(() => {console.log("Fetch Success")});
   }, [params.id]);
 
   return (
