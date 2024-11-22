@@ -1,12 +1,12 @@
 // user/[user_id]
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useSession } from "next-auth/react";
+import {useParams, useRouter} from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
-import { followURL } from '../../constants/backurl';
+import {followURL} from '../../constants/backurl';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -188,7 +188,7 @@ export default function UserProfile() {
             </Popup>
           </div>
 
-          {/* Follow and Edit Profile Buttons */}
+          {/* Follow Buttons */}
           <div className="flex justify-end gap-4 -mt-40 mr-12">
             <button
               className={`px-8 py-2 rounded ${

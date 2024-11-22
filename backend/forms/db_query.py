@@ -95,7 +95,12 @@ class StatQuery(QueryFilterStrategy):
         self.filter_course(filter_by)
         self.find_avg()
         self.find_mode()
-        return self.sorted_data[0]
+        if not self.sorted_data:
+            return dict(self.sorted_data)
+
+        output = list(self.sorted_data)[0]
+        output.pop('faculties')
+        return output
 
     def filter_course(self, course_id: str) -> None:
         """Return the sorted data."""
@@ -164,14 +169,26 @@ class StatQuery(QueryFilterStrategy):
             rating_dict[count['rating']] += 1
             faculty_dict[count['faculties']] += 1
 
-        mode = {
-            'total_grade': grade_dict,
-            'mode_class_type': max(type_dict.items(), key=lambda x: x[1])[0],
-            'mode_attendance': max(attend_dict.items(), key=lambda x: x[1])[0],
-            'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
-            'mode_rating': max(rating_dict.items(), key=lambda x: x[1])[0],
-            'mode_faculty': max(faculty_dict.items(), key=lambda x: x[1])[0],
-        }
+        if list_for_calculate:
+
+            mode = {
+                'total_grade': grade_dict,
+                'mode_class_type': max(type_dict.items(), key=lambda x: x[1])[0],
+                'mode_attendance': max(attend_dict.items(), key=lambda x: x[1])[0],
+                'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
+                'mode_rating': max(rating_dict.items(), key=lambda x: x[1])[0],
+                'mode_faculty': max(faculty_dict.items(), key=lambda x: x[1])[0],
+            }
+
+        else:
+            mode = {
+                'total_grade': None,
+                'mode_class_type': None,
+                'mode_attendance': None,
+                'mode_criteria': None,
+                'mode_rating': None,
+                'mode_faculty': None,
+            }
 
         for add_mode in self.sorted_data:
             for key, val in mode.items():

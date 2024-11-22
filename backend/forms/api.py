@@ -194,7 +194,7 @@ class NoteController(ControllerBase):
 
 
     @http_delete("", response={200: NoteDeleteSchema})
-    def delete_review(self, request, data: NoteDeleteSchema):
+    def delete_note(self, request, data: NoteDeleteSchema):
         """Delete the note objects."""
         strategy = DeleteFactory.get_delete_strategy("note")
         return strategy.delete_data(data.model_dump())
