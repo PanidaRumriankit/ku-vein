@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
