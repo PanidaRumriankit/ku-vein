@@ -131,7 +131,7 @@ export default function ReviewCard({item, page = null}) {
             </div>
             <div className="text-right">
               <ReportButton/>
-              <ShareButton/>
+              <ShareButton reviewId={item.reviews_id}/>
               <EditDelete userMail={email} reviewId={item.reviews_id}/>
             </div>
           </div>

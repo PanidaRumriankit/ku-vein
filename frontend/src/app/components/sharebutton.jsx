@@ -11,11 +11,10 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import XIcon from '@mui/icons-material/X';
 
 export default function ShareButton({reviewId}) {
-  const url = '/review/' + reviewId;
-
   // TODO fix the url
   const handleCopy = (e) => {
-    navigator.clipboard.writeText(url)
+    const url = window.location.host + '/review/' + reviewId;
+    navigator.clipboard.writeText(url).then(() => console.log("Copied"));
   }
   return (
     <Popover placement="buttom">
