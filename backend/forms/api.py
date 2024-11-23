@@ -142,16 +142,16 @@ class UserController(ControllerBase):
     """Controller for handling User endpoints."""
 
     @http_get("")
-    def get_user(self, request, email=None, user_id=None):
+    def get_user(self, request, email=None, user_id=None, user_name=None):
         """Use for send the username and user id to the frontend."""
-        if not email and not user_id:
+        if not email and not user_id and not user_name:
             return Response({"error": "Data for parameter is missing"},
                             status=400)
 
         try:
             strategy = QueryFactory.get_query_strategy("user")
             return check_response(
-                strategy.get_data({"email": email, "user_id": user_id}))
+                strategy.get_data({"email": email, "user_id": user_id, "user_name": user_name}))
 
         except ValueError as e:
             return Response({"error": str(e)}, status=400)
@@ -177,9 +177,6 @@ class NoteController(ControllerBase):
     def get_note_data(self, request, email: str = None, course_id: str = None,
                       course_type: str = None, faculty: str = None):
         """Use for send the note data to the frontend"""
-        if not email and not course_id and not faculty and not course_type:
-            return Response({"error": "Missing parameter."}, status=401)
-
         filter_key = {"email": email, "course_id": course_id,
                       "faculty": faculty, "course_type": course_type}
 
