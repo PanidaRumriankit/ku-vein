@@ -22,6 +22,7 @@ class QuestionPostTest(TestCase):
             "question_text": "Test question",
             "faculty": "test",
             "user_id": self.user.user_id,
+            "pen_name": self.user.user_name,
             "is_anonymous": False
         }
 
