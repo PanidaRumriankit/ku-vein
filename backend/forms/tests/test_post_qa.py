@@ -56,6 +56,7 @@ class AnswerPostTest(TestCase):
             'question_id': self.questions[0]['questions_id'],
             'answer_text': 'Test answer',
             'user_id': self.user.user_id,
+            "pen_name": self.user.user_name,
             "is_anonymous": False
         }
 
