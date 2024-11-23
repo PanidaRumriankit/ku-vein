@@ -176,7 +176,7 @@ class ReviewUpvotePost(PostStrategy):
             self.user = UserData.objects.get(email=data['email'])
 
             review = CourseReview.objects.get(
-                review_id=data['id']
+                review_id=data['review_id']
             )
 
             self.review_stat = ReviewStat.objects.get(
