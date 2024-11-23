@@ -10,7 +10,7 @@ import {
 } from "@nextui-org/react";
 
 import {useSession} from "next-auth/react";
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardControlKeyIcon from '@mui/icons-material/KeyboardControlKey';
@@ -18,18 +18,32 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
 import {reviewURL} from "../constants/backurl";
+import GetUserData from "../constants/getuser";
 
-export default function EditDelete({userMail, reviewId}) {
+export default function EditDelete({userName, reviewId}) {
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
+  const [currentUser, setCurrentUser] = useState(null);
 
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
   const iconClasses = "text-xl text-black flex-shrink-0 dark:text-white";
   const textClasses = "text-lg text-black dark:text-white";
+
+  useEffect(() => {
+    if (session) {
+      async function fetchdata() {
+        const userData = await GetUserData(session.user.email, "email");
+        setCurrentUser(userData.username);
+      }
+
+      fetchdata().then(() => {console.log("Current User", currentUser)});
+    }
+  }, [currentUser, session]);
+
   const handleDelete = async () => {
-    if (!email || !idToken || email !== userMail) return;
+    if (!email || !idToken || currentUser !== userName) return;
 
     try {
       console.log("reviewID", reviewId)
@@ -55,7 +69,7 @@ export default function EditDelete({userMail, reviewId}) {
       console.error("Error upvoting review:", error);
     }
   };
-  if (!session || session?.email !== userMail) return;
+  if (!session || session?.email !== userName) return;
 
   return (
     <Dropdown>
