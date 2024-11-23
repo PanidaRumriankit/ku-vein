@@ -2,7 +2,6 @@
 
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
-import {colorPallet} from "../constants";
 import PopupProfile from "./popupprofile.jsx";
 
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
@@ -12,11 +11,12 @@ import StarIcon from '@mui/icons-material/Star';
 import {upvoteURL} from "../constants/backurl.js"
 import {colorPallet, facultyColor} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
+import GetUserData from '../constants/getuser';
 import EditDelete from "../components/editdelete"
 
 import { Button } from "@nextui-org/button";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useTheme } from "next-themes";
 
@@ -27,6 +27,7 @@ function RandomColor() {
 
 export default function ReviewCard({ item, page = null }) {
   const router = useRouter();
+  const { data: session } = useSession();
   const { theme } = useTheme();
   const color = facultyColor[item.faculties] || RandomColor();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
@@ -34,7 +35,8 @@ export default function ReviewCard({ item, page = null }) {
   const [isHovered, setIsHovered] = useState(false);
   const [formattedDate, setFormattedDate] = useState("");
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
-  const [isClickable, setIsClickable] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
@@ -83,6 +85,21 @@ export default function ReviewCard({ item, page = null }) {
     fetchData().then();
     setUpvoteCount(item.upvote || 0);
   }, [session, email, item]);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const data = await GetUserData(item.username, "user_name");
+      setUserId(data.id);
+      console.log("User id:", data.id);
+    };
+    fetchUserId();
+  }, [item.username]);
+
+  useEffect(() => {
+    if (userId) {
+      console.log("User id2:", userId.toString(), typeof userId.toString());
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (item.date) {
@@ -141,7 +158,7 @@ export default function ReviewCard({ item, page = null }) {
                 onMouseLeave={handleMouseLeave}
                 onClick={() => {
                   if (!item.is_anonymous) {
-                    router.push(`/user/1`)}
+                    router.push(`/user/${userId}`);}
                   }}
               >
                 {item.username}
@@ -160,7 +177,7 @@ export default function ReviewCard({ item, page = null }) {
                     boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                   }}
                 >
-                  <PopupProfile />
+                  <PopupProfile userId={userId.toString()}/>
                 </div>
               )}
             </p>

@@ -3,8 +3,7 @@
 import { useEffect, useState } from 'react';
 import GetUserData from '../constants/getuser';
 
-export default function PopupProfile() {
-  const userId = "2";
+export default function PopupProfile({userId}) {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -12,6 +11,7 @@ export default function PopupProfile() {
       try {
         const data = await GetUserData(userId, "user_id");
         console.log('Fetched data:', data);
+        console.log('Fetched userId:', userId);
         if (data) {
           setUserData({
             user_id: data.id,
@@ -28,6 +28,12 @@ export default function PopupProfile() {
     }
     FetchData();
   }, [userId]);
+
+  useEffect(() => {
+    if (userData) {
+      console.log('Popup:', userData);
+    }
+  }, [userData]);
 
   if (!userData) {
     return <p>Loading...</p>;
