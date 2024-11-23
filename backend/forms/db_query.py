@@ -108,7 +108,7 @@ class StatQuery(QueryFilterStrategy):
 
                 return dict(course)
 
-            except CourseData.DoesNotExist:
+            except (CourseData.DoesNotExist, TypeError):
                 return Response({"error": "This course"
                                           " isn't in the database."}, status=401)
 
