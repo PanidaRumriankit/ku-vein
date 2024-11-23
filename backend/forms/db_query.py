@@ -381,7 +381,6 @@ class NoteQuery(QueryFilterStrategy):
             if filter_key['course_id']:
                 course = CourseData.objects.get(
                     course_id=filter_key['course_id'],
-                    course_type=filter_key['course_type']
                 )
                 note = note.filter(course=course)
 

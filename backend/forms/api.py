@@ -175,10 +175,10 @@ class NoteController(ControllerBase):
 
     @http_get("")
     def get_note_data(self, request, email: str = None, course_id: str = None,
-                      course_type: str = None, faculty: str = None):
+                      faculty: str = None):
         """Use for send the note data to the frontend"""
         filter_key = {"email": email, "course_id": course_id,
-                      "faculty": faculty, "course_type": course_type}
+                      "faculty": faculty}
 
         try:
             strategy = QueryFactory.get_query_strategy("note")
