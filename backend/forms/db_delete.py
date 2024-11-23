@@ -1,10 +1,11 @@
 """This module use for contain the class for database delete."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from typing import Any
 
 from ninja.responses import Response
-from .models import (ReviewStat, Note,
+
+from .models import (Note,
                      CourseReview)
 
 

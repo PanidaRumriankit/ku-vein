@@ -1,12 +1,13 @@
 """Module for test update and create data for the Review feature."""
 
 import json
-
 from datetime import datetime
-from ..models import CourseReview, ReviewStat
-from ..db_post import ReviewPost
+
 from django.test import TestCase
+
 from .set_up import course_set_up, user_set_up
+from ..db_post import ReviewPost
+from ..models import CourseReview, ReviewStat
 
 
 class ReviewPostTests(TestCase):

@@ -3,14 +3,14 @@ from decouple import config
 from google.auth.transport import requests
 from google.oauth2 import id_token
 from ninja.responses import Response
-from ninja_extra import NinjaExtraAPI
 from ninja_extra import (ControllerBase, api_controller, http_put,
                          http_get, http_post, http_delete)
+from ninja_extra import NinjaExtraAPI
 
+from .db_delete import DeleteFactory
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_put import PutFactory
-from .db_delete import DeleteFactory
 from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, UserDataSchema,
                       UpvotePostSchema, FollowSchema,
@@ -37,6 +37,7 @@ def verify_google_token(auth: str, email: str) -> bool:
 
     except ValueError:
         return False
+
 
 def check_response(data):
     """
@@ -92,15 +93,18 @@ class ReviewController(ControllerBase):
     """Controller for handling Review endpoints."""
 
     @http_get("")
-    def get_sorted_data(self, request, sort, course_id=None):
+    def get_sorted_data(self, request, sort="latest", course_id=None, review_id=None):
         """Use for send sorted data to frontend."""
+        filter_key = {"sort": sort, "course_id": course_id,
+                      "review_id": review_id}
 
         if sort not in ["earliest", "latest", "upvote"]:
             return Response({"error": "Invalid Sort parameter"}, status=400)
 
         try:
             strategy = QueryFactory.get_query_strategy("sort")
-            return check_response(strategy.get_data(order_by=sort, filter_by=course_id))
+            return check_response(
+                strategy.get_data(filter_key=filter_key))
 
         except ValueError as e:
             return Response({"error": str(e)}, status=400)
@@ -111,20 +115,19 @@ class ReviewController(ControllerBase):
         strategy = PostFactory.get_post_strategy("review")
         return strategy.post_data(data.model_dump())
 
-
     @http_delete("", response={200: ReviewDeleteSchema})
     def delete_review(self, request, data: ReviewDeleteSchema):
         """Delete the review objects."""
         strategy = DeleteFactory.get_delete_strategy("review")
         return strategy.delete_data(data.model_dump())
 
-
     @http_get("/stats")
     def get_stat_data(self, request, course_id):
         """Use for send review stats data to frontend."""
 
         if not course_id:
-            return Response({"error": "Missing course_id parameter"}, status=400)
+            return Response({"error": "Missing course_id parameter"},
+                            status=400)
 
         try:
             strategy = QueryFactory.get_query_strategy("review-stat")
@@ -139,14 +142,16 @@ class UserController(ControllerBase):
     """Controller for handling User endpoints."""
 
     @http_get("")
-    def get_user(self, request, email=None, user_id=None):
+    def get_user(self, request, email=None, user_id=None, user_name=None):
         """Use for send the username and user id to the frontend."""
-        if not email and not user_id:
-            return Response({"error": "Data for parameter is missing"}, status=400)
+        if not email and not user_id and not user_name:
+            return Response({"error": "Data for parameter is missing"},
+                            status=400)
 
         try:
             strategy = QueryFactory.get_query_strategy("user")
-            return check_response(strategy.get_data({"email": email, "user_id": user_id}))
+            return check_response(
+                strategy.get_data({"email": email, "user_id": user_id, "user_name": user_name}))
 
         except ValueError as e:
             return Response({"error": str(e)}, status=400)
@@ -170,11 +175,8 @@ class NoteController(ControllerBase):
 
     @http_get("")
     def get_note_data(self, request, email: str = None, course_id: str = None,
-                  course_type: str = None, faculty: str = None):
+                      course_type: str = None, faculty: str = None):
         """Use for send the note data to the frontend"""
-        if not email and not course_id and not faculty and not course_type:
-            return Response({"error": "Missing parameter."}, status=401)
-
         filter_key = {"email": email, "course_id": course_id,
                       "faculty": faculty, "course_type": course_type}
 
@@ -185,13 +187,11 @@ class NoteController(ControllerBase):
         except ValueError as e:
             return Response({"error": str(e)}, status=400)
 
-
     @http_post("", response={200: NotePostSchema})
     def add_note(self, request, data: NotePostSchema):
         """Use for add new Note object."""
         strategy = PostFactory.get_post_strategy("note")
         return strategy.post_data(data.model_dump())
-
 
     @http_delete("", response={200: NoteDeleteSchema})
     def delete_note(self, request, data: NoteDeleteSchema):
@@ -215,8 +215,8 @@ class UpvoteController(ControllerBase):
                             status=401)
 
         strategy = QueryFactory.get_query_strategy("upvote")
-        return check_response(strategy.get_data({"email": email, "review_id": review_id}))
-
+        return check_response(
+            strategy.get_data({"email": email, "review_id": review_id}))
 
     @http_post("", response={200: UpvotePostSchema})
     def add_upvote(self, request, data: UpvotePostSchema):
@@ -238,12 +238,25 @@ class BookMarkController(ControllerBase):
         strategy = QueryFactory.get_query_strategy("book")
         return check_response(strategy.get_data(email))
 
-
     @http_post("", response={200: BookMarkSchema})
     def add_bookmark(self, request, data: BookMarkSchema):
         """Use for add new bookmark object."""
         strategy = PostFactory.get_post_strategy("book")
         return strategy.post_data(data.model_dump())
+
+
+@api_controller("/history")
+class HistoryController(ControllerBase):
+    """Controller for handling History endpoints."""
+
+    @http_get("")
+    def get_bookmark_data(self, request, target_user: str, is_other_user: bool):
+        """Use for send the note data to the frontend"""
+        if not target_user:
+            return Response({"error": "Missing email parameter."},
+                            status=401)
+        strategy = QueryFactory.get_query_strategy("history")
+        return check_response(strategy.get_data(target_user, is_other_user))
 
 
 @app.get("/database/cou")

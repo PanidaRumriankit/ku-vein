@@ -6,8 +6,13 @@ import {colorPallet} from "../constants";
 import PopupProfile from "./popupprofile.jsx";
 
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
-import Rating from "@mui/material/Rating";
-import StarIcon from "@mui/icons-material/Star";
+import Rating from '@mui/material/Rating';
+import StarIcon from '@mui/icons-material/Star';
+
+import {upvoteURL} from "../constants/backurl.js"
+import {colorPallet, facultyColor} from "../constants";
+import MakeApiRequest from '../constants/getupvotestatus';
+import EditDelete from "../components/editdelete"
 
 import { Button } from "@nextui-org/button";
 import { useRouter } from "next/navigation";
@@ -23,13 +28,61 @@ function RandomColor() {
 export default function ReviewCard({ item, page = null }) {
   const router = useRouter();
   const { theme } = useTheme();
-  const color = RandomColor();
+  const color = facultyColor[item.faculties] || RandomColor();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [formattedDate, setFormattedDate] = useState("");
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [isClickable, setIsClickable] = useState(false);
+  const idToken = session?.idToken || session?.accessToken;
+  const email = session?.email;
+
+  const handleUpvote = async () => {
+    if (isLoading || !email || !idToken) return;
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(upvoteURL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+          "email": email,
+        },
+        body: JSON.stringify({
+          review_id: item.reviews_id,
+          email: email
+        })
+      });
+
+      if (response.ok) {
+        setUpvoteCount(prevCount => isVoted ? prevCount - 1 : prevCount + 1);
+        setIsVoted(!isVoted);
+      } else {
+        console.log("Error upvoting:", await response.text());
+      }
+    } catch (error) {
+      console.error("Error upvoting review:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLegendClick = () => {
+    router.push(`/course/${item.courses_id}`);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session) {
+        const voteStatus = await MakeApiRequest(email, item.reviews_id);
+        setIsVoted(voteStatus);
+      }
+    };
+    fetchData().then();
+    setUpvoteCount(item.upvote || 0);
+  }, [session, email, item]);
 
   useEffect(() => {
     if (item.date) {
@@ -55,16 +108,9 @@ export default function ReviewCard({ item, page = null }) {
     setIsHovered(false);
   };
 
-  const handleLegendClick = () => {
-    router.push(`/course/${item.courses_id}`);
-  };
-
-  const onProfileClick = () => {
-    router.push(`/user/1`);
-  };
-
   return (
-    <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
+    <div
+      className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
         {page === "page" && (
           <legend
@@ -75,16 +121,12 @@ export default function ReviewCard({ item, page = null }) {
             {item.courses_id} | {item.courses_name}
           </legend>
         )}
-        <div>
-          <div className="flex justify-between items-center">
-            <Rating
-              value={item.ratings}
-              readOnly
-              emptyIcon={<StarIcon style={{ opacity: 0.55, color: "gray" }} />}
-            />
-            {item.professor && (
-              <p className="text-gray-300">ผู้สอน: {item.professor}</p>
-            )}
+        <div className="text-black dark:text-white">
+          <div className="justify-between flex">
+            <Rating value={item.ratings} readOnly
+                    emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
+            {item.professor &&
+              <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
           <br />
           <p>{item.review_text}</p>
@@ -123,17 +165,18 @@ export default function ReviewCard({ item, page = null }) {
               )}
             </p>
           </div>
-          <hr />
-          <div className="flex justify-between mt-2">
-            <div>
-              <Button variant="light">
-                <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} />{" "}
-                {upvoteCount}
+          <hr/>
+          <div className="text-gray-300 flex justify-between mt-2">
+            <div className="text-left">
+              <Button variant="light" onClick={handleUpvote}
+                      disabled={!session || isLoading}>
+                <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
               </Button>
             </div>
-            <div>
-              <ReportButton />
-              <ShareButton />
+            <div className="text-right">
+              <ReportButton/>
+              <ShareButton/>
+              <EditDelete userMail={email} reviewId={item.reviews_id}/>
             </div>
           </div>
         </div>

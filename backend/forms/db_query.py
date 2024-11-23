@@ -42,13 +42,15 @@ class SortReview(QueryFilterStrategy):
         self.order = {"earliest": "review__review_id",
                       "latest": "-review__review_id", "upvote": "-upvote"}
 
-    def get_data(self, order_by: str, filter_by: str = None):
+    def get_data(self, filter_key: dict = None):
         """Get the sorted data from the database."""
-        self.sort_by(self.order[order_by], filter_by)
+        self.sort_by(filter_key)
         return list(self.sorted_data)
 
-    def sort_by(self, condition: str, course_id: str) -> None:
+    def sort_by(self, filter_key: dict) -> None:
         """Return the sorted data."""
+        order_by = filter_key["sort"]
+
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
             courses_id=F('review__course__course_id'),
@@ -68,10 +70,15 @@ class SortReview(QueryFilterStrategy):
 
         ).annotate(
             upvote=Count('upvotestat')
-        ).order_by(condition)
+        ).order_by(self.order[order_by])
 
+        course_id = filter_key.get("course_id")
         if course_id:
             self.sorted_data = self.sorted_data.filter(courses_id=course_id)
+
+        review_id = filter_key.get("review_id")
+        if review_id:
+            self.sorted_data = self.sorted_data.filter(reviews_id=review_id)
 
 
 class StatQuery(QueryFilterStrategy):
@@ -110,7 +117,6 @@ class StatQuery(QueryFilterStrategy):
             total_review=Count('review')
         )
 
-
     def find_avg(self):
         """Set the avg data to self.sorted_data."""
         list_for_calculate = self.sorted_data.values(
@@ -137,7 +143,6 @@ class StatQuery(QueryFilterStrategy):
             for key, val in avg.items():
                 add_avg[key] = val
 
-
     def find_mode(self):
         """Find the most repeat values for statistic."""
         list_for_calculate = self.sorted_data.values(
@@ -152,7 +157,8 @@ class StatQuery(QueryFilterStrategy):
         grade_dict = {key['grade']: 0 for key in list_for_calculate}
         type_dict = {key['class_type']: 0 for key in list_for_calculate}
         attend_dict = {key['attendance']: 0 for key in list_for_calculate}
-        criteria_dict = {key['scoring_criteria']: 0 for key in list_for_calculate}
+        criteria_dict = {key['scoring_criteria']: 0 for key in
+                         list_for_calculate}
         rating_dict = {key['rating']: 0 for key in list_for_calculate}
         faculty_dict = {key['faculties']: 0 for key in list_for_calculate}
 
@@ -168,11 +174,15 @@ class StatQuery(QueryFilterStrategy):
 
             mode = {
                 'total_grade': grade_dict,
-                'mode_class_type': max(type_dict.items(), key=lambda x: x[1])[0],
-                'mode_attendance': max(attend_dict.items(), key=lambda x: x[1])[0],
-                'mode_criteria': max(criteria_dict.items(), key=lambda x: x[1])[0],
+                'mode_class_type': max(type_dict.items(), key=lambda x: x[1])[
+                    0],
+                'mode_attendance':
+                    max(attend_dict.items(), key=lambda x: x[1])[0],
+                'mode_criteria':
+                    max(criteria_dict.items(), key=lambda x: x[1])[0],
                 'mode_rating': max(rating_dict.items(), key=lambda x: x[1])[0],
-                'mode_faculty': max(faculty_dict.items(), key=lambda x: x[1])[0],
+                'mode_faculty': max(faculty_dict.items(), key=lambda x: x[1])[
+                    0],
             }
 
         else:
@@ -274,9 +284,21 @@ class UserQuery(QueryFilterStrategy):
                 desc=F('description'),
                 pf_color=F('profile_color')
             ).first()
+
+        elif filter_key['user_name']:
+            self.user = UserData.objects.filter(
+                user_name=filter_key['user_name']
+            ).values(
+                id=F('user_id'),
+                username=F('user_name'),
+                desc=F('description'),
+                pf_color=F('profile_color')
+            ).first()
+
         try:
             self.user['following'] = []
             self.user['follower'] = []
+
         except (TypeError, KeyError):
             return Response({"error": "This user isn't"
                                       " in the database."},
@@ -361,14 +383,14 @@ class NoteQuery(QueryFilterStrategy):
                     course_id=filter_key['course_id'],
                     course_type=filter_key['course_type']
                 )
-                note = note.objects.filter(course=course)
+                note = note.filter(course=course)
 
             if filter_key['faculty']:
-                note =  note.objects.filter(faculty=filter_key['faculty'])
+                note = note.filter(faculty=filter_key['faculty'])
 
             if filter_key['email']:
                 user = UserData.objects.get(email=filter_key['email'])
-                note = note.objects.filter(user=user)
+                note = note.filter(user=user)
 
             note = note.values(
                 courses_id=F('course__course_id'),
@@ -416,15 +438,15 @@ class BookMarkQuery(QueryFilterStrategy):
     def get_data(self, email: str):
         """Get the BookMark from the database filter by user."""
         try:
-             user = UserData.objects.get(email=email)
-             book = BookMark.objects.filter(
-                 user=user
-             ).values(
-                 'object_id',
-                 'data_type'
-             )
+            user = UserData.objects.get(email=email)
+            book = BookMark.objects.filter(
+                user=user
+            ).values(
+                'object_id',
+                'data_type'
+            )
 
-             return list(book)
+            return list(book)
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't"
@@ -434,12 +456,12 @@ class BookMarkQuery(QueryFilterStrategy):
 class HistoryQuery(QueryFilterStrategy):
     """Class for sent History values to the frontend."""
 
-    def get_data(self, email: str, other_user: bool):
+    def get_data(self, target_user: str, is_other_user: bool):
         """Get the History from the database filter by user."""
         try:
-            user = UserData.objects.get(email=email)
+            user = UserData.objects.get(email=target_user)
 
-            if other_user:
+            if is_other_user:
                 history = History.objects.filter(
                     user=user, anonymous=False
                 ).values(
@@ -479,7 +501,7 @@ class QueryFactory:
     }
 
     @classmethod
-    def get_query_strategy(cls, query: str)\
+    def get_query_strategy(cls, query: str) \
             -> Union[QueryStrategy, QueryFilterStrategy]:
         """
         Return the query strategy based on the query string.
