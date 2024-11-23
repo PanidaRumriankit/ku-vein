@@ -202,7 +202,7 @@ export default function AddNote({courseId}) {
               type="light"
               onClick={handlePDFUpload}
               disabled={!selectedFile}
-              color="primary"
+              color={selectedFile ? "primary": "default"}
               className="w-30 justify-end"
             >
               Upload
