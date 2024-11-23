@@ -169,7 +169,7 @@ class UserDataPutTest(TestCase):
                          "This username was taken.")
         
     def test_response_user_id_doesnt_exist(self):
-        """Data provided user_name that is already exist."""
+        """Data provided user_id that doesn't exist."""
         self.user_data['user_id'] = 1
         self.user_data['user_name'] = 'user that no one uses'
         response = self.user_put.put_data(self.user_data)
