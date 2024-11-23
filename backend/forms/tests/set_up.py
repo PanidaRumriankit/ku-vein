@@ -315,7 +315,7 @@ def follower_setup(user):
     return follow
 
 
-def note_setup(course, user):
+def note_setup(course, user) -> Note:
     """Set up function for Note feature using a generator."""
     path = os.path.join(settings.MEDIA_ROOT,
                  'note_files', 'yes_indeed.pdf')
@@ -374,6 +374,7 @@ def qa_setup():
             "faculty": "tests",
             "user": test_user,
             "posted_time": datetime(2024, 12, 30, 23, 59, 57),
+            "pen_name": "Solaire of Astora",
             "is_anonymous": False
         },
         {
@@ -381,7 +382,8 @@ def qa_setup():
             "faculty": "tests",
             "user": test_user,
             "posted_time": datetime(2024, 12, 30, 23, 59, 58),
-            "is_anonymous": False
+            "pen_name": "Wagyu Beef",
+            "is_anonymous": True
         },
     ]
     for i,q in enumerate(qa_data):
@@ -390,6 +392,7 @@ def qa_setup():
               "user": test_user,
               "answer_text": f"Test answer {i}",
               "posted_time": datetime(2024, 12, 31, 0, 0, i),
+              "pen_name": "Solaire of Astora",
               "is_anonymous": False
               }
         _a = QA_Answer.objects.create(**_a)
