@@ -123,15 +123,12 @@ class ReviewController(ControllerBase):
         """Use for create new review."""
         strategy = PostFactory.get_post_strategy("review")
         return strategy.post_data(data.model_dump())
-<<<<<<< HEAD
     
     @http_put("", response={200: ReviewPutSchema})
     def edit_review(self, request, data: ReviewPutSchema):
         """Edit review data."""
         strategy = PutFactory.get_put_strategy("review")
         return strategy.put_data(data.model_dump())
-=======
->>>>>>> refs/remotes/origin/q-and-a
 
     @http_delete("", response={200: ReviewDeleteSchema})
     def delete_review(self, request, data: ReviewDeleteSchema):
