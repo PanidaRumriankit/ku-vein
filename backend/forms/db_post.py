@@ -342,6 +342,7 @@ class QuestionPost(PostStrategy):
             QA_Question.objects.create(question_text=data['question_text'],
                                        user=user,
                                        faculty=data['faculty'],
+                                       pen_name=data['pen_name'],
                                        is_anonymous=data['is_anonymous'])
 
         except UserData.DoesNotExist:
