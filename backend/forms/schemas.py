@@ -138,7 +138,7 @@ class ReviewPostSchema(Schema):
     - course_id (str): Unique identifier for the course.
     - course_type (str): Type of the course (e.g., Inter, Special, Normal).
     - faculty (str): Faculty to which the course belongs.
-    - reviews (str): Text of the user’s review.
+    - reviews (str): Text of the user's review.
 
     These fields are for ReviewStats:
     - rating (float): User's rating for the course.
@@ -162,7 +162,25 @@ class ReviewPostSchema(Schema):
     class_type: str
 
 
-class ReviewDeleteSchema(ModelSchema):
+class ReviewPutSchema(Schema):
+    """Schema for handling incoming review edit requests from users."""
+    review_id: str
+    course_id: str
+    course_type: str
+    faculty: str
+    reviews: str
+    rating: float
+    academic_year: int
+    pen_name: str
+    grade: str
+    instructor: str
+    effort: int
+    attendance: int
+    scoring_criteria: str
+    class_type: str
+
+
+class ReviewDeleteSchema(Schema):
     """Schema for delete the CourseReview"""
 
     class Meta:
@@ -223,6 +241,13 @@ class NotePostSchema(Schema):
     pen_name: Optional[str] = None
 
 
+class NotePutSchema(Schema):
+    """Schema for Note, used for editing Note."""
+    note_id: str
+    faculty: str
+    pen_name: str
+
+
 class NoteDeleteSchema(ModelSchema):
     """Schema for delete Note"""
 
@@ -251,7 +276,17 @@ class QuestionCreateSchema(Schema):
     user_id: str
     question_text: str
     faculty: str
-    is_anonymous: bool = False
+    pen_name: str
+    is_anonymous: Optional[bool] = False
+
+
+class QuestionPutSchema(Schema):
+    """Schema for QA_Question, used for editing Questions."""
+
+    question_id: str
+    question_text: str
+    faculty: str
+    pen_name: str
 
 
 class AnswerCreateSchema(Schema):
@@ -274,7 +309,14 @@ class AnswerCreateSchema(Schema):
     question_id: str
     answer_text: str
     user_id: str
-    is_anonymous: bool = False
+    pen_name: str
+    is_anonymous: Optional[bool] = False
+
+
+class AnswerPutSchema(Schema):
+    """Schema for QA_Answer, used for editing Answer."""
+    answer_text: str
+    pen_name: str
 
 
 class BookMarkSchema(Schema):
