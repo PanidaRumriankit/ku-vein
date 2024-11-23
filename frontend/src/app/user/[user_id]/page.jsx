@@ -7,6 +7,7 @@ import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
 import {followURL} from '../../constants/backurl';
+import { user } from '@nextui-org/react';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -41,7 +42,28 @@ export default function UserProfile() {
           user_id: data.id,
           user_name: data.username,
           user_type: "student",
-          email: session.email,
+          description: data.desc,
+          profile_color: data.pf_color,
+          follower_count: data.follower_count,
+          following_count: data.following_count,
+          following: data.following,
+          follower: data.follower,
+        });
+
+        setLoading(false);
+        setFollowerCount(data.follower_count);
+      }
+      FetchData();
+    }
+
+    else if (user_id) {
+      async function FetchData() {
+        const data = await GetUserData(user_id, "user_id");
+
+        setUserData({
+          user_id: data.id,
+          user_name: data.username,
+          user_type: "student",
           description: data.desc,
           profile_color: data.pf_color,
           follower_count: data.follower_count,
@@ -67,13 +89,13 @@ export default function UserProfile() {
     }
   }, [session, userData, personalData]);
 
-  if (!session) return null;
-
   if (loading || !userData) return <p>Loading...</p>;
 
-  const idToken = session?.idToken || session?.accessToken;
-  const email = session?.email;
-
+  if (session) {
+    const idToken = session?.idToken || session?.accessToken;
+    const email = session?.email;
+  }
+  
   async function followUser() {
     if (!email || !idToken) {
       console.log("ID Token or email is missing.");
@@ -190,18 +212,22 @@ export default function UserProfile() {
 
           {/* Follow Buttons */}
           <div className="flex justify-end gap-4 -mt-40 mr-12">
-            <button
-              className={`px-8 py-2 rounded ${
-                isFollowing ? 'bg-transparent text-[#44b3ab] outline outline-[#44b3ab] hover:outline-[#4ECDC4] hover:text-[#4ECDC4]' : 'text-white bg-[#4ECDC4] hover:bg-[#44b3ab]'
-              }`}
-              onClick={() => {
-                setIsFollowing(prev => !prev);
-                setFollowerCount(prev => (isFollowing ? prev - 1 : prev + 1));
-                followUser();
-              }}
-            >
-              {isFollowing ? 'Unfollow' : 'Follow'}
-            </button>
+            {session && (
+              <button
+                className={`px-8 py-2 rounded ${
+                  isFollowing
+                    ? 'bg-transparent text-[#44b3ab] outline outline-[#44b3ab] hover:outline-[#4ECDC4] hover:text-[#4ECDC4]'
+                    : 'text-white bg-[#4ECDC4] hover:bg-[#44b3ab]'
+                }`}
+                onClick={() => {
+                  setIsFollowing((prev) => !prev);
+                  setFollowerCount((prev) => (isFollowing ? prev - 1 : prev + 1));
+                  followUser();
+                }}
+              >
+                {isFollowing ? 'Unfollow' : 'Follow'}
+              </button>
+            )}
           </div>
         </div>
       </div>

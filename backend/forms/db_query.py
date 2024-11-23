@@ -375,14 +375,14 @@ class NoteQuery(QueryFilterStrategy):
                     course_id=filter_key['course_id'],
                     course_type=filter_key['course_type']
                 )
-                note = note.objects.filter(course=course)
+                note = note.filter(course=course)
 
             if filter_key['faculty']:
-                note = note.objects.filter(faculty=filter_key['faculty'])
+                note =  note.filter(faculty=filter_key['faculty'])
 
             if filter_key['email']:
                 user = UserData.objects.get(email=filter_key['email'])
-                note = note.objects.filter(user=user)
+                note = note.filter(user=user)
 
             note = note.values(
                 courses_id=F('course__course_id'),
@@ -448,12 +448,12 @@ class BookMarkQuery(QueryFilterStrategy):
 class HistoryQuery(QueryFilterStrategy):
     """Class for sent History values to the frontend."""
 
-    def get_data(self, email: str, other_user: bool):
+    def get_data(self, target_user: str, is_other_user: bool):
         """Get the History from the database filter by user."""
         try:
-            user = UserData.objects.get(email=email)
+            user = UserData.objects.get(email=target_user)
 
-            if other_user:
+            if is_other_user:
                 history = History.objects.filter(
                     user=user, anonymous=False
                 ).values(
