@@ -285,9 +285,21 @@ class UserQuery(QueryFilterStrategy):
                 desc=F('description'),
                 pf_color=F('profile_color')
             ).first()
+
+        elif filter_key['user_name']:
+            self.user = UserData.objects.filter(
+                user_name=filter_key['user_name']
+            ).values(
+                id=F('user_id'),
+                username=F('user_name'),
+                desc=F('description'),
+                pf_color=F('profile_color')
+            ).first()
+
         try:
             self.user['following'] = []
             self.user['follower'] = []
+
         except (TypeError, KeyError):
             return Response({"error": "This user isn't"
                                       " in the database."},
@@ -370,7 +382,6 @@ class NoteQuery(QueryFilterStrategy):
             if filter_key['course_id']:
                 course = CourseData.objects.get(
                     course_id=filter_key['course_id'],
-                    course_type=filter_key['course_type']
                 )
                 note = note.filter(course=course)
 
