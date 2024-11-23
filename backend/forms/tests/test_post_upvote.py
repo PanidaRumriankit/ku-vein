@@ -3,7 +3,7 @@ import json
 from django.test import TestCase
 
 from .set_up import user_set_up, review_set_up, course_set_up
-from ..db_post import UpvotePost, ReviewUpvotePost
+from ..db_post import ReviewUpvotePost
 from ..db_query import SortReview
 
 TEST_DATA = [
