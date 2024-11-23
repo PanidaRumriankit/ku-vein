@@ -123,7 +123,7 @@ class ReviewController(ControllerBase):
         """Use for create new review."""
         strategy = PostFactory.get_post_strategy("review")
         return strategy.post_data(data.model_dump())
-    
+
     @http_put("", response={200: ReviewPutSchema})
     def edit_review(self, request, data: ReviewPutSchema):
         """Edit review data."""
