@@ -12,11 +12,16 @@ from .db_post import PostFactory
 from .db_put import PutFactory
 from .db_delete import DeleteFactory
 from .db_query import QueryFactory, InterQuery
-from .schemas import (ReviewPostSchema, UserDataSchema,
-                      UpvotePostSchema, FollowSchema,
-                      UserDataEditSchema, NotePostSchema, BookMarkSchema,
+from .schemas import (ReviewPostSchema, ReviewPutSchema,
+                      ReviewDeleteSchema,
+                      UpvotePostSchema,
+                      FollowSchema,
+                      UserDataSchema, UserDataEditSchema,
+                      NotePostSchema, NotePutSchema,
+                      NoteDeleteSchema,
+                      BookMarkSchema,
                       QuestionCreateSchema, AnswerCreateSchema,
-                      ReviewDeleteSchema, NoteDeleteSchema)
+                      QuestionPutSchema, AnswerPutSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -114,7 +119,12 @@ class ReviewController(ControllerBase):
         """Use for create new review."""
         strategy = PostFactory.get_post_strategy("review")
         return strategy.post_data(data.model_dump())
-
+    
+    @http_put("", response={200: ReviewPutSchema})
+    def edit_review(self, request, data: ReviewPutSchema):
+        """Edit review data."""
+        strategy = PutFactory.get_put_strategy("review")
+        return strategy.put_data(data.model_dump())
 
     @http_delete("", response={200: ReviewDeleteSchema})
     def delete_review(self, request, data: ReviewDeleteSchema):
@@ -162,8 +172,8 @@ class UserController(ControllerBase):
         return strategy.post_data(data.model_dump())
 
     @http_put("")
-    def change_username(self, request, data: UserDataEditSchema):
-        """Change username for the user."""
+    def edit_user(self, request, data: UserDataEditSchema):
+        """Edit data for the user."""
         strategy = PutFactory.get_put_strategy("user")
         return strategy.put_data(data.model_dump())
 
@@ -190,12 +200,17 @@ class NoteController(ControllerBase):
             return Response({"error": str(e)}, status=400)
 
 
-    @http_post("", response={200: NotePostSchema})
-    def add_note(self, request, data: NotePostSchema):
+    @http_post("", response={200: NotePutSchema})
+    def add_note(self, request, data: NotePutSchema):
         """Use for add new Note object."""
         strategy = PostFactory.get_post_strategy("note")
         return strategy.post_data(data.model_dump())
-
+    
+    @http_put("")
+    def edit_question(self, request, data: NotePutSchema):
+        """Edit Note data."""
+        strategy = PutFactory.get_post_strategy("note")
+        return strategy.post_data(data.model_dump())
 
     @http_delete("", response={200: NoteDeleteSchema})
     def delete_note(self, request, data: NoteDeleteSchema):
@@ -302,11 +317,23 @@ class QAController(ControllerBase):
         """Use for creating new question for Q&A."""
         strategy = PostFactory.get_post_strategy("question")
         return strategy.post_data(data.model_dump())
+    
+    @http_put("")
+    def edit_question(self, request, data: QuestionPutSchema):
+        """Edit QA_Questions data."""
+        strategy = PutFactory.get_post_strategy("question")
+        return strategy.post_data(data.model_dump())
 
     @http_post("/answer")
     def add_answer(self, request, data: AnswerCreateSchema):
         """Use for creating new answer for Q&A."""
         strategy = PostFactory.get_post_strategy("answer")
+        return strategy.post_data(data.model_dump())
+    
+    @http_put("/answer")
+    def edit_answer(self, request, data: AnswerPutSchema):
+        """Edit QA_Answers data."""
+        strategy = PutFactory.get_post_strategy("answer")
         return strategy.post_data(data.model_dump())
 
 
