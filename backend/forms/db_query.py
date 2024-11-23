@@ -72,17 +72,13 @@ class SortReview(QueryFilterStrategy):
             upvote=Count('upvotestat')
         ).order_by(self.order[order_by])
 
-        try:
-            course_id = filter_key["course_id"]
+        course_id = filter_key.get("course_id")
+        if course_id:
             self.sorted_data = self.sorted_data.filter(courses_id=course_id)
-        except KeyError:
-            pass
 
-        try:
-            review_id = filter_key["review_id"]
+        review_id = filter_key.get("review_id")
+        if review_id:
             self.sorted_data = self.sorted_data.filter(reviews_id=review_id)
-        except KeyError:
-            pass
 
 
 class StatQuery(QueryFilterStrategy):
@@ -378,7 +374,7 @@ class NoteQuery(QueryFilterStrategy):
                 note = note.filter(course=course)
 
             if filter_key['faculty']:
-                note =  note.filter(faculty=filter_key['faculty'])
+                note = note.filter(faculty=filter_key['faculty'])
 
             if filter_key['email']:
                 user = UserData.objects.get(email=filter_key['email'])

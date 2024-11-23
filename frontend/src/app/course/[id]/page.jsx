@@ -20,7 +20,7 @@ export default function CoursePage({params}) {
       setReviews(data);
     };
 
-    fetchReviews();
+    fetchReviews().then(r => {console.log("Fetch review success")});
   }, [params.id, selectedKeys]);
   return (
     <div className="text-black flex flex-col items-center
