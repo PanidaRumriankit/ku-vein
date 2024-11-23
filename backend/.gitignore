@@ -139,4 +139,3 @@ ca.pem
 *.log
 
 database/
-forms/migrations/
