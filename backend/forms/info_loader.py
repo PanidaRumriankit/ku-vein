@@ -1,13 +1,12 @@
 """This module use for get the course data from the university website."""
-import os
 import json
+import os
 import re
 from datetime import datetime
 
-import requests
 import pdfplumber
+import requests
 from bs4 import BeautifulSoup
-
 
 DAYS = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 NOT_COURSE_NAME = ['Pre', 'Thesis', 'Seminar', 'or', 'together', 'Online', 'LAB', 'ONLINE']

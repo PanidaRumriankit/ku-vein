@@ -4,6 +4,7 @@ import os
 from datetime import datetime
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
 from ..db_query import clean_time_data, QuestionQuery, AnswerQuery
@@ -11,11 +12,9 @@ from ..db_post import HistoryPost
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
-                      Note,
+                      Note, BookMark,
                       QA_Question, QA_Answer,
-                      QA_Question_Upvote, QA_Answer_Upvote,
-                      BookMark)
-from django.contrib.contenttypes.models import ContentType
+                      QA_Question_Upvote, QA_Answer_Upvote)
 
 
 def course_set_up():

@@ -1,13 +1,12 @@
 "use client";
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Search from './search';
 import SearchFaculty from './searchfaculty';
 import Rating from '@mui/material/Rating';
-import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
 import {reviewURL} from '../constants/backurl.js'
 import StarIcon from '@mui/icons-material/Star';
@@ -121,14 +120,12 @@ export default function AddReview() {
       return false;
     }
 
-    if (anonymous && !pen_name) {
-      return false;
-    }
+    return !(anonymous && !pen_name);
 
-    return true;
+
   };
 
-  console.log("postData: ", postData);
+  // console.log("postData: ", postData);
 
   return (
     <div className="fixed bottom-4 right-4">

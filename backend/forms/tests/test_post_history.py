@@ -6,7 +6,6 @@ from django.conf import settings
 from django.test import TestCase
 
 from .set_up import (user_set_up, course_set_up)
-
 from ..db_post import ReviewPost, NotePost, HistoryPost
 from ..models import History, CourseReview, Note
 

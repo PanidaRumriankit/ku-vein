@@ -1,5 +1,4 @@
 import json
-from http.client import responses
 
 from django.test import TestCase
 
