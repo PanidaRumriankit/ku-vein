@@ -3,6 +3,7 @@
 import os
 
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
 from ..db_post import HistoryPost
@@ -10,7 +11,6 @@ from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
                       Note, BookMark)
-from django.contrib.contenttypes.models import ContentType
 
 
 def course_set_up():

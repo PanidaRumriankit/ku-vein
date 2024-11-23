@@ -1,6 +1,6 @@
 "use client"
 
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
+import {useSearchParams} from "next/navigation";
 import {facultyColor} from "../constants/index";
 import AsyncSelect from 'react-select/async';
 import {useTheme} from "next-themes";

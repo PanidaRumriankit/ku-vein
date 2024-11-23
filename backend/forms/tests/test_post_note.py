@@ -1,14 +1,15 @@
 """Test case for create Note feature."""
 
-import os
 import base64
 import json
+import os
 
-from django.test import TestCase
 from django.conf import settings
-from ..models import Note
-from ..db_post import NotePost
+from django.test import TestCase
+
 from .set_up import user_set_up, course_set_up
+from ..db_post import NotePost
+from ..models import Note
 
 
 class NotePostTests(TestCase):

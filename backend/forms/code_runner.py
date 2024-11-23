@@ -1,7 +1,7 @@
 import os
 import sys
-import django
 
+import django
 
 # Add the parent directory to the Python path
 sys.path.append(
@@ -11,7 +11,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kuvein.settings')
 
 django.setup()
 
-from forms.db_query import InterQuery
 from forms.db_management import TableManagement, DatabaseManagement, DatabaseBackup
 
 
@@ -23,7 +22,7 @@ def add_demo_datas():
     d = DatabaseBackup()
     d.exist_data_loader("inter")
     d.insert_data_to_remote("inter")
-    
+
     da = DatabaseManagement()
     da.add_course_data_to_sub("inter")
 

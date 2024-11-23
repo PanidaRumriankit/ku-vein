@@ -1,12 +1,12 @@
 // user/[user_id]
 "use client";
 
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useSession } from "next-auth/react";
+import {useParams, useRouter} from 'next/navigation';
+import {useEffect, useState} from 'react';
+import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
-import { followURL } from '../../constants/backurl';
+import {followURL} from '../../constants/backurl';
 import { user } from '@nextui-org/react';
 
 export default function UserProfile() {
