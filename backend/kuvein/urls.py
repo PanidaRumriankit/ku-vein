@@ -21,10 +21,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from forms.api import (CourseController, ReviewController,
-                         UserController, FollowController,
-                         NoteController, UpvoteController,
-                         BookMarkController, HistoryController
-                         QAController)
+                        UserController, FollowController,
+                        NoteController, UpvoteController,
+                        BookMarkController, HistoryController,
+                        QAController)
 
 from ninja_extra import NinjaExtraAPI
 
