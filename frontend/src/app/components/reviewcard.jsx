@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
@@ -8,8 +8,9 @@ import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
 import {upvoteURL} from "../constants/backurl.js"
-import {colorPallet} from "../constants";
+import {colorPallet, facultyColor} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
+import EditDelete from "../components/editdelete"
 
 import {Button} from "@nextui-org/button";
 import {useRouter} from "next/navigation";
@@ -23,7 +24,7 @@ function RandomColor() {
 
 export default function ReviewCard({item, page = null}) {
   const router = useRouter();
-  const color = RandomColor();
+  const color = facultyColor[item.faculties] || RandomColor();
   const {data: session} = useSession();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
@@ -74,7 +75,7 @@ export default function ReviewCard({item, page = null}) {
         setIsVoted(voteStatus);
       }
     };
-    fetchData();
+    fetchData().then();
     setUpvoteCount(item.upvote || 0);
   }, [session, email, item]);
 
@@ -90,7 +91,8 @@ export default function ReviewCard({item, page = null}) {
   }, [item.date]);
 
   return (
-    <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
+    <div
+      className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
         {page === "page" && (
           <legend
@@ -104,7 +106,8 @@ export default function ReviewCard({item, page = null}) {
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
+                    emptyIcon={<StarIcon
+                      style={{opacity: 0.55, color: 'gray'}}/>}/>
             {item.professor &&
               <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
@@ -122,12 +125,14 @@ export default function ReviewCard({item, page = null}) {
             <div className="text-left">
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
+                <ThumbUpTwoToneIcon
+                  color={isVoted ? "primary" : ""}/> {upvoteCount}
               </Button>
             </div>
             <div className="text-right">
               <ReportButton/>
               <ShareButton/>
+              <EditDelete userMail={email} reviewId={item.reviews_id}/>
             </div>
           </div>
         </div>

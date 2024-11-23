@@ -1,11 +1,13 @@
+"use client";
+
 import {
+  Button,
   Modal,
-  ModalContent,
-  ModalHeader,
   ModalBody,
+  ModalContent,
   ModalFooter,
-  Textarea,
-  Button
+  ModalHeader,
+  Textarea
 } from "@nextui-org/react";
 import {useState} from "react";
 import OutlinedFlagTwoToneIcon from '@mui/icons-material/OutlinedFlagTwoTone';
@@ -16,7 +18,7 @@ export default function ReportButton() {
   return (
     <>
       <Button onClick={() => setIsOpen(true)}
-              variant="light">
+              variant="light" isIconOnly>
         <OutlinedFlagTwoToneIcon/>
       </Button>
       <Modal size="sm" isOpen={isOpen} onClose={() => setIsOpen(false)}>
