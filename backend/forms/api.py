@@ -144,7 +144,7 @@ class UserController(ControllerBase):
     @http_get("")
     def get_user(self, request, email=None, user_id=None, user_name=None):
         """Use for send the username and user id to the frontend."""
-        if not email and not user_id:
+        if not email and not user_id and not user_name:
             return Response({"error": "Data for parameter is missing"},
                             status=400)
 
