@@ -1,7 +1,7 @@
 "use client"
 
 import {useSearchParams} from "next/navigation";
-import {facultyColor} from "../constants/index";
+import {faculties} from "../constants/index";
 import AsyncSelect from 'react-select/async';
 import {useTheme} from "next-themes";
 import {useEffect, useState} from 'react';
@@ -19,13 +19,9 @@ export default function SearchFaculty({ onFacultySelect }) {
 
   const loadOptions = async (inputValue) => {
 
-    const filteredData = facultyColor.filter((faculty) =>
-      faculty.name.toLowerCase().includes(inputValue.toLowerCase())
-    );
-
-    return filteredData.map((faculty) => ({
-      value: faculty.name,
-      label: `${faculty.name}`,
+    return faculties.map((faculty) => ({
+      value: faculty,
+      label: `${faculty}`,
     }));
   };
 
