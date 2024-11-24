@@ -92,7 +92,7 @@ export default function ReviewCard({item, page = null}) {
 
   return (
     <div
-      className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
+      className="items-center mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
         {page === "page" && (
           <legend
@@ -103,7 +103,7 @@ export default function ReviewCard({item, page = null}) {
             {item.courses_id} | {item.courses_name}
           </legend>
         )}
-        <div className="text-black dark:text-white">
+        <div className="text-black dark:text-white w-full">
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
                     emptyIcon={<StarIcon
@@ -112,13 +112,15 @@ export default function ReviewCard({item, page = null}) {
               <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
           <br/>
-          <p>{item.review_text}</p>
+          <div className="w-full break-all">
+            {item.review_text}
+          </div>
           <br/>
           <div
             className="flex items-center justify-between text-gray-300 text-right">
-            <p className="text-left">เกรด: {item.grades}</p>
+            <p className="text-left w-20">เกรด: {item.grades}</p>
             <p
-              className="text-right">{formattedDate} โดย: {item.name || item.username}</p>
+              className="text-right w-80 flex-wrap break-words">{formattedDate} โดย: {item.name || item.username}</p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
