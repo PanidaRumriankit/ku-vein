@@ -403,18 +403,13 @@ class NoteQuery(QueryFilterStrategy):
                 pdf_path=F('note_file'),
             )
 
-            for update_path in note:
-                relative_path = update_path['pdf_path']
+            for item in note:
+                relative_path = item['pdf_path']
 
-                if "/" in relative_path:
-                    relative_path = relative_path.replace("/", "\\")
-
-                absolute_note_file_path = os.path.join(
-                    settings.BASE_DIR,
-                    'media',
-                    relative_path
-                )
-                update_path['pdf_file'] = absolute_note_file_path
+                if relative_path:
+                    item['pdf_url'] = os.path.join(settings.MEDIA_URL,
+                                                   relative_path)
+                    print(item['pdf_url'])
 
             return list(note)
 

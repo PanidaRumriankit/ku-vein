@@ -14,10 +14,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
-from decouple import config
 import os
+from pathlib import Path
 
+from decouple import config
+from dotenv import load_dotenv
+
+load_dotenv()
+# Google cloud services
+GS_BUCKET_NAME = config('GS_BUCKET_NAME', cast=str, default='your-bucket-name')
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config('GOOGLE_APPLICATION_CREDENTIALS')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,7 +42,6 @@ DEBUG = config('DEBUG', cast=bool, default=False)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS',
                        cast=lambda v: [s.strip() for s in v.split(',')],
                        default='*')
-
 
 # Application definition
 
@@ -68,14 +73,13 @@ MIDDLEWARE = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'forms', 'media')
 MEDIA_URL = '/media/'
 
-
 ROOT_URLCONF = 'kuvein.urls'
 
 CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", # default Next.js
-    "http://127.0.0.1:3000", # Next.js
-    "https://ku-vein.vercel.app", # Vercel frontend
+    "http://localhost:3000",  # default Next.js
+    "http://127.0.0.1:3000",  # Next.js
+    "https://ku-vein.vercel.app",  # Vercel frontend
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -146,8 +150,8 @@ DATABASES = {
 }
 
 if 'ca.pem' in os.listdir(os.path.join(BASE_DIR, 'kuvein')):
-    DATABASES['default']['OPTIONS'] = {'ssl': {'ca': os.path.join(os.path.dirname(__file__), 'ca.pem')}}
-
+    DATABASES['default']['OPTIONS'] = {
+        'ssl': {'ca': os.path.join(os.path.dirname(__file__), 'ca.pem')}}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -167,7 +171,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -178,7 +181,6 @@ TIME_ZONE = config('TIME_ZONE', cast=str, default='UTC')
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

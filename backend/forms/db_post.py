@@ -9,6 +9,7 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
+from google.cloud import storage
 from ninja.responses import Response
 
 from .models import (CourseReview, UserData,
@@ -47,7 +48,7 @@ class UserDataPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "email is missing "
-                             "from the response body."},
+                                      "from the response body."},
                             status=400)
 
 
@@ -255,6 +256,7 @@ class NotePost(PostStrategy):
 
     def post_data(self, data: dict):
         """Add new note to the database."""
+        # TODO Fix credential key for google cloud service
         try:
             course = CourseData.objects.get(
                 course_id=data['course_id'],
@@ -263,7 +265,7 @@ class NotePost(PostStrategy):
 
             user = UserData.objects.get(email=data['email'])
 
-            if 'file' not in data or data['file'] is None:
+            if 'file' not in data or not data['file']:
                 return Response({"error": "File is missing."}, status=400)
 
             anonymous = True
@@ -276,34 +278,48 @@ class NotePost(PostStrategy):
             try:
                 file_data = base64.b64decode(data['file'])
             except Exception as e:
-                return Response({"error": f"Invalid file data: {str(e)}"}, status=400)
+                return Response({"error": f"Invalid file data: {str(e)}"},
+                                status=400)
+
+            # ggc storage upload
+            storage_client = storage.Client()
+            bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
 
             file_name = data['file_name'] + '.pdf'
-            file_path = os.path.join(settings.MEDIA_ROOT,
-                                     'note_files', file_name)
 
-            counter = 1
-            while True:
-                try:
-                    with open(file_path, 'r'):
-                        file_name = data['file_name'] + f'({counter}).pdf'
-                        file_path = os.path.join(settings.MEDIA_ROOT, 'note_files', file_name)
-                        counter += 1
-                except FileNotFoundError:
-                    break
+            def upload_file_with_rename(g_bucket, _file_data,
+                                        original_filename):
+                filename, ext = os.path.splitext(original_filename)
+                counter = 1
+                blob_name = original_filename
 
-            with open(file_path, "wb") as f:
-                f.write(file_data)
+                while g_bucket.blob(blob_name).exists():
+                    blob_name = f"{filename}({counter}){ext}"
+                    counter += 1
+
+                blob = g_bucket.blob(blob_name)
+                blob.upload_from_string(_file_data,
+                                        content_type='application/pdf')  # Upload
+                return blob, blob_name
+
+            blob, file_name = upload_file_with_rename(bucket, file_data,
+                                                      file_name)
+
+            pdf_url = blob.generate_signed_url(
+                version="v4",
+                expiration=timezone.timedelta(hours=1),  # Adjust as needed
+                method="GET"
+            )
 
             note = Note.objects.create(
-                    course=course,
-                    user=user,
-                    faculty=data['faculty'],
-                    file_name=file_name,
-                    note_file=file_path,
-                    pen_name=data['pen_name'],
-                    date_data=timezone.now(),
-                    anonymous=anonymous
+                course=course,
+                user=user,
+                faculty=data['faculty'],
+                file_name=file_name,
+                pdf_url=pdf_url,
+                pen_name=data['pen_name'],
+                date_data=timezone.now(),
+                anonymous=anonymous
             )
 
             HistoryPost().post_data({
@@ -313,8 +329,7 @@ class NotePost(PostStrategy):
                 "anonymous": anonymous
             })
 
-            return Response({"success": "Note"
-                                        " created successfully."},
+            return Response({"success": "Note created successfully."},
                             status=201)
 
         except KeyError:
@@ -335,15 +350,18 @@ class BookMarkPost(PostStrategy):
 
     def __init__(self):
         """Initialize method for BookMarkPost."""
-        self.table = {"review":CourseReview, "note": Note, "qa": None}
+        self.table = {"review": CourseReview, "note": Note, "qa": None}
 
     def post_data(self, data: dict):
         """Create a new Bookmark object in the database."""
         try:
-            if data['data_type'] not in self.table or not self.table[data['data_type']]:
-                return Response({"error": "Invalid data_type provided."}, status=400)
+            if data['data_type'] not in self.table or not self.table[
+                data['data_type']]:
+                return Response({"error": "Invalid data_type provided."},
+                                status=400)
 
-            content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
+            content_type = ContentType.objects.get_for_model(
+                self.table[data['data_type']])
             user = UserData.objects.get(email=data['email'])
 
             return self.add_or_delete(content_type, user, data)
@@ -409,15 +427,18 @@ class HistoryPost(PostStrategy):
 
     def __init__(self):
         """Initialize method for HistoryPost."""
-        self.table = {"review":CourseReview, "note": Note, "qa": None}
+        self.table = {"review": CourseReview, "note": Note, "qa": None}
 
     def post_data(self, data: dict):
         """Create a new History object in the database."""
         try:
-            if data['data_type'] not in self.table or not self.table[data['data_type']]:
-                return Response({"error": "Invalid data_type provided."}, status=400)
+            if data['data_type'] not in self.table or not self.table[
+                data['data_type']]:
+                return Response({"error": "Invalid data_type provided."},
+                                status=400)
 
-            content_type = ContentType.objects.get_for_model(self.table[data['data_type']])
+            content_type = ContentType.objects.get_for_model(
+                self.table[data['data_type']])
             user = UserData.objects.get(email=data['email'])
 
             History.objects.create(

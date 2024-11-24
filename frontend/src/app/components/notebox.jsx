@@ -8,12 +8,12 @@ const pdfDataExample = {
   is_anonymous: true,
   pdf_name: "string.pdf",
   pdf_path: "/abc/string.pdf",
-  pdf_file: "/path/abc/string.pdf",
+  pdf_url: "/path/abc/string.pdf",
 };
 
 export default function NoteBox({data}) {
   const pdfName = data['pdf_name'];
-  const pdfURL = data['pdf_path'];
+  const pdfURL = data['pdf_url'];
 
   const handleDownload = () => {
     const link = document.createElement('a');
