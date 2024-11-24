@@ -119,7 +119,7 @@ class Note(models.Model):
     date_data = models.DateTimeField(default=None)
     faculty = models.CharField(max_length=100, default=None)
     file_name = models.CharField(max_length=255, default=None)
-    note_file = models.FileField(upload_to='note_files/', default=None, max_length=255)
+    pdf_url =models.CharField(max_length=1000, default=None)
     pen_name = models.CharField(max_length=100, default=None)
     anonymous = models.BooleanField(default=False)
 
