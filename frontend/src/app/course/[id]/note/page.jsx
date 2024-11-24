@@ -31,17 +31,15 @@ export default function NotePage({params}) {
         </div>
       </div>
 
-      <div className="text-blue-500 flex flex-col items-center">
-        <h2 className="text-5xl">Notes Section for {params.id}</h2>
-      </div>
-
       <div className="w-full max-w-5xl">
         {note.length > 0 ? (
           note.map((data, index) => (
             <NoteBox data={data} key={index}/>
           ))
         ) : (
-          <p className="text-green-400 text-center">No note currently</p>
+          <p className="text-green-400 text-center text-3xl">
+            ขณะนี้ไม่มีสรุปของวิชา {params.id}
+          </p>
         )}
       </div>
       <div className="text-success flex flex-col justify-end">
