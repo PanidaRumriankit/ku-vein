@@ -16,14 +16,13 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import os
 from pathlib import Path
+import json
 
 from decouple import config
-from dotenv import load_dotenv
 
-load_dotenv()
 # Google cloud services
 GS_BUCKET_NAME = config('GS_BUCKET_NAME', cast=str, default='your-bucket-name')
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = config('GOOGLE_APPLICATION_CREDENTIALS')
+GOOGLE_CREDENTIAL = config('GOOGLE_APPLICATION_CREDENTIALS', cast=json.loads)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
