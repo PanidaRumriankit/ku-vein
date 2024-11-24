@@ -38,7 +38,7 @@ export default function EditDelete({userName, reviewId}) {
         setCurrentUser(userData.username);
       }
 
-      fetchdata().then(() => {console.log("Current User", currentUser)});
+      fetchdata().then(() => {});
     }
   }, [currentUser, session]);
 
