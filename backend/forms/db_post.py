@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from google.cloud import storage
+from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
 from .models import (CourseReview, UserData,
@@ -282,7 +283,7 @@ class NotePost(PostStrategy):
                                 status=400)
 
             # ggc storage upload
-            storage_client = storage.Client()
+            storage_client = storage.Client.from_service_account_info(GOOGLE_CREDENTIAL)
             bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
 
             file_name = data['file_name'] + '.pdf'
