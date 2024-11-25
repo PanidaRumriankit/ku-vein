@@ -43,6 +43,7 @@ if __name__ == "__main__":
             print(text)
             choice = int(input())
             func = choice_handler.get(choice)
+            func()
             break
         except KeyError:
             print("No")
