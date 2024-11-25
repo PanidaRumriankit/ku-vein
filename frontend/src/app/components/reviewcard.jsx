@@ -109,7 +109,7 @@ export default function ReviewCard({item, page = null}) {
                     emptyIcon={<StarIcon
                       style={{opacity: 0.55, color: 'gray'}}/>}/>
             {item.professor &&
-              <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
+              <p className="text-gray-400">ผู้สอน: {item.professor}</p>}
           </div>
           <br/>
           <div className="w-full break-all">
@@ -117,13 +117,13 @@ export default function ReviewCard({item, page = null}) {
           </div>
           <br/>
           <div
-            className="flex items-center justify-between text-gray-300 text-right">
+            className="flex items-center justify-between text-gray-400 text-right">
             <p className="text-left w-20">เกรด: {item.grades}</p>
             <p
               className="text-right w-80 flex-wrap break-words">{formattedDate} โดย: {item.name || item.username}</p>
           </div>
           <hr/>
-          <div className="text-gray-300 flex justify-between mt-2">
+          <div className="flex justify-between mt-2">
             <div className="text-left">
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
