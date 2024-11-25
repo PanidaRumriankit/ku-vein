@@ -257,7 +257,6 @@ class NotePost(PostStrategy):
 
     def post_data(self, data: dict):
         """Add new note to the database."""
-        # TODO Fix credential key for google cloud service
         try:
             course = CourseData.objects.get(
                 course_id=data['course_id'],
@@ -306,18 +305,12 @@ class NotePost(PostStrategy):
             blob, file_name = upload_file_with_rename(bucket, file_data,
                                                       file_name)
 
-            pdf_url = blob.generate_signed_url(
-                version="v4",
-                expiration=timezone.timedelta(hours=1),  # Adjust as needed
-                method="GET"
-            )
-
             note = Note.objects.create(
                 course=course,
                 user=user,
                 faculty=data['faculty'],
                 file_name=file_name,
-                pdf_url=pdf_url,
+                pdf_url=blob,
                 pen_name=data['pen_name'],
                 date_data=timezone.now(),
                 anonymous=anonymous

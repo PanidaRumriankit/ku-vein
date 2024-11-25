@@ -1,11 +1,14 @@
 """This module use for contain the class for database query."""
 
-import os
 from abc import ABC, abstractmethod
 from typing import Any
 from typing import Union
 
+from django.conf import settings
 from django.db.models import F, Count
+from django.utils import timezone
+from google.cloud import storage
+from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
@@ -390,7 +393,7 @@ class NoteQuery(QueryFilterStrategy):
                 user = UserData.objects.get(email=filter_key['email'])
                 note = note.filter(user=user)
 
-            note = note.values(
+            note_values = note.values(
                 courses_id=F('course__course_id'),
                 courses_name=F('course__course_name'),
                 faculties=F('faculty'),
@@ -402,14 +405,21 @@ class NoteQuery(QueryFilterStrategy):
                 pdf_path=F('pdf_url'),
             )
 
-            for item in note:
-                relative_path = item['pdf_path']
+            # ggc storage upload
+            storage_client = storage.Client.from_service_account_info(GOOGLE_CREDENTIAL)
+            bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
 
-                if relative_path:
-                    item['pdf_url'] = os.path.join(relative_path)
-                    print(item['pdf_url'])
+            for note in note_values:
+                blob_name = note['pdf_name']
+                blob = bucket.blob(blob_name)
+                note["pdf_url"] = blob.generate_signed_url(
+                    version="v4",
+                    expiration=timezone.timedelta(hours=2),
+                    method="GET"
+                )
+                # print(note["pdf_url"]) # debug the url
 
-            return list(note)
+            return list(note_values)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
