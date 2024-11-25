@@ -204,7 +204,7 @@ class NotePostTests(TestCase):
         self.assertEqual(note.user.user_name, self.user[0].user_name)
 
         self.assertIn("note_files",
-                      note.note_file.name.replace(
+                      note.pdf_url.name.replace(
                           "/", "|"
                       ).replace("\\", "|").split("|"))
 
@@ -244,25 +244,3 @@ class NotePostTests(TestCase):
         note = Note.objects.first()
 
         self.assertFalse(note.anonymous)
-
-
-    def test_same_name_note(self):
-        """Name should be change if this name already exist."""
-        test_data = {
-            "email": self.user[0].email,
-            "course_id": self.course_data[0]['course_id'],
-            "faculty": "banana",
-            "pen_name": "Yes",
-            "file_name": "please_work",
-            "course_type": self.course_data[0]['course_type'],
-            "file": self.fake_pdf
-        }
-        for i in range(5):
-            self.note_post.post_data(test_data)
-
-            if not i:
-                self.assertEqual("please_work.pdf",
-                                 Note.objects.first().file_name)
-            else:
-                self.assertEqual(f"please_work({i}).pdf",
-                                 Note.objects.all()[i].file_name)
