@@ -336,9 +336,11 @@ class QuestionPost(PostStrategy):
         """Add new QA_Question to the database."""
         try:
             user = UserData.objects.get(user_id=data['user_id'])
+            course = CourseData.objects.get(course_id=data['course_id'])
             QA_Question.objects.create(question_text=data['question_text'],
                                        user=user,
                                        faculty=data['faculty'],
+                                       course=course,
                                        pen_name=data['pen_name'],
                                        is_anonymous=(user.user_name != data['pen_name']),
                                        )
@@ -346,6 +348,11 @@ class QuestionPost(PostStrategy):
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
                             status=400)
+        
+        except CourseData.DoesNotExist:
+            return Response({"error": "This course isn't in the database."},
+                            status=400)
+
         except KeyError:
             return Response({"error": "Data is missing "
                                       "from the response body."}, status=400)
