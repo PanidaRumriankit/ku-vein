@@ -207,4 +207,6 @@ export {
   facultyColor,
   faculties,
   gradeColors,
+  question,
+  answer
 };
