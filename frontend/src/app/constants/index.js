@@ -47,14 +47,6 @@ const usersDropdown = [
     label: "Profile",
   },
   {
-    key: "bookmarks",
-    label: "Bookmarks",
-  },
-  {
-    key: "setting",
-    label: "Setting",
-  },
-  {
     key: "logout",
     label: "Logout",
   },
