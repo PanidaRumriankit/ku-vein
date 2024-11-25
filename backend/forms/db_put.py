@@ -48,6 +48,9 @@ class UserDataPut(PutStrategy):
                 user_dict[key] = val
                 logger.info(f"User_id: {user.user_id} -- Changed their attribute {key} to {val}.")
 
+            if 'user_name' in data.keys():
+                self.change_pen_name_to_new_name(user)
+
         except KeyError:
             return Response({"error": "user_id attribute is missing from the data."}, status=400)
 
@@ -64,6 +67,28 @@ class UserDataPut(PutStrategy):
         return Response({"success": "The requested user's attribute has been changed.",
                          "user_data": [{key: val} for key, val in user.__dict__.items() if key[0] != '_']
                          }, status=200)
+
+    def change_pen_name_to_new_name(self, user: UserData):
+        all_note = Note.objects.filter(user=user)
+        all_review = CourseReview.objects.filter(user=user)
+        all_question = QA_Question.objects.filter(user=user)
+        all_answer = QA_Answer.objects.filter(user=user)
+
+        def update_pen_name(obj_list: list, check_attr: str, set_to: str):
+            for obj in obj_list:
+                if not getattr(obj, check_attr):
+                    obj.__dict__['pen_name'] = set_to
+                    logger.info(f"Obj {type(obj)}: Changed its attribute pen_name to {set_to}.")
+                    obj.save()
+
+        update_pen_name(all_note, 'anonymous', user.user_name)
+        update_pen_name(all_question, 'is_anonymous', user.user_name)
+        update_pen_name(all_answer, 'is_anonymous', user.user_name)
+        for review in all_review:
+            if not review.anonymous:
+                review_stat = ReviewStat.objects.get(review=review)
+                review_stat.pen_name = user.user_name
+                review_stat.save()
 
 
 class ReviewPut(PutStrategy):
