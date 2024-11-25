@@ -49,8 +49,8 @@ jobs:
     - name: Set Environments
       run: |
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
-        echo DEBUG=${{ secrets.DEBUG }} >> .env
-        echo TIME_ZONE=${{ secrets.TIME_ZONE }} >> .env
+        echo DEBUG=True >> .env
+        echo TIME_ZONE=Asia/Bangkok >> .env
         echo DJANGO_API_ENDPOINT=${{ secrets.DJANGO_API_ENDPOINT }} >> .env
         echo MYSQLHOST=172.18.0.1 >> .env
         echo MYSQLUSER=django >> .env
