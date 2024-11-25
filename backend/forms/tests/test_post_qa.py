@@ -25,7 +25,7 @@ class QuestionPostTest(TestCase):
             "user_id": self.user.user_id,
             "pen_name": self.user.user_name,
             "is_anonymous": False,
-            "course": test_course,
+            "course_id": test_course,
         }
 
     def test_post_question(self):
