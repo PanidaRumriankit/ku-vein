@@ -413,15 +413,16 @@ class NoteQuery(QueryFilterStrategy):
                 pdf_path=F('pdf_url'),
             ).annotate(
                 date=TruncDate(
-                ExpressionWrapper(
-                    F('date_data') + timedelta(hours=7),
-                    output_field=DateTimeField()
+                    ExpressionWrapper(
+                        F('date_data') + timedelta(hours=7),
+                        output_field=DateTimeField()
+                    )
                 )
             )
 
-
             # ggc storage upload
-            storage_client = storage.Client.from_service_account_info(GOOGLE_CREDENTIAL)
+            storage_client = storage.Client.from_service_account_info(
+                GOOGLE_CREDENTIAL)
             bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
 
             for note in note_values:
@@ -446,15 +447,17 @@ class NoteQuery(QueryFilterStrategy):
 
         except Note.DoesNotExist:
             return Response({"error": "This Note isn't "
-                               "in the database."}, status=401)
+                                      "in the database."}, status=401)
 
 
 def clean_time_data(q):
     """This function is used to clean datetime formatting."""
     post_time = q['post_time'] + timedelta(hours=7)
-    q['post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
+    q[
+        'post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
     q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
     return q
+
 
 class QuestionQuery(QueryFilterStrategy):
     """Class for sending all the questions in the Q&A data."""
@@ -471,16 +474,16 @@ class QuestionQuery(QueryFilterStrategy):
     @staticmethod
     def get_query_set():
         """Get queryset with all required attributes to sort."""
-        return  QA_Question.objects.select_related().values(
-                    questions_id=F('question_id'),
-                    questions_text=F('question_text'),
-                    users=F('user'),
-                    post_time=F('posted_time'),
-                    faculties=F('faculty'),
-                ).annotate(
-                    num_convo=Count('qa_answer'),
-                    upvote=Count('qa_question_upvote')
-                )
+        return QA_Question.objects.select_related().values(
+            questions_id=F('question_id'),
+            questions_text=F('question_text'),
+            users=F('user'),
+            post_time=F('posted_time'),
+            faculties=F('faculty'),
+        ).annotate(
+            num_convo=Count('qa_answer'),
+            upvote=Count('qa_question_upvote')
+        )
 
     @staticmethod
     def sorted_qa_data(data, mode) -> list[dict]:
@@ -499,7 +502,8 @@ class AnswerQuery(QueryFilterStrategy):
         """Get the data from the database and return to the frontend."""
         try:
             answer_list = []
-            question = QA_Question.objects.select_related().get(question_id=question_id)
+            question = QA_Question.objects.select_related().get(
+                question_id=question_id)
             answer_query_set = AnswerQuery.get_query_set(question)
             answer_data = self.sorted_qa_data(answer_query_set, mode)
 
@@ -507,7 +511,8 @@ class AnswerQuery(QueryFilterStrategy):
                 answer_list += [clean_time_data(d)]
 
         except QA_Question.DoesNotExist:
-            return Response({"error": "This question isn't in the database."}, status=400)
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
 
         return Response(answer_list, status=200)
 
@@ -515,13 +520,14 @@ class AnswerQuery(QueryFilterStrategy):
     def get_query_set(cls, question):
         """Get queryset to sort (classmethod because I need this for testing, too)."""
         return question.qa_answer_set.all().values(
-                    answers_id=F('answer_id'),
-                    text=F('answer_text'),
-                    users=F('user'),
-                    post_time=F('posted_time'),
-                ).annotate(
-                    upvote=Count('qa_answer_upvote')
-                )
+            answers_id=F('answer_id'),
+            text=F('answer_text'),
+            users=F('user'),
+            post_time=F('posted_time'),
+        ).annotate(
+            upvote=Count('qa_answer_upvote')
+        )
+
     @staticmethod
     def sorted_qa_data(answer, mode) -> list[dict]:
         """Sort queryset by mode argument."""
