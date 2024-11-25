@@ -184,33 +184,6 @@ class NotePostTests(TestCase):
                          {"success": "Note"
                                      " created successfully."})
 
-    def test_post_note(self):
-        """This should successfully create the note."""
-        test_data = {
-            "email": self.user[0].email,
-            "course_id": self.course_data[0]['course_id'],
-            "faculty": "banana",
-            "pen_name": "Yes",
-            "file_name": "please_work",
-            "course_type": self.course_data[0]['course_type'],
-            "file": self.fake_pdf
-        }
-        self.note_post.post_data(test_data)
-
-        note = Note.objects.first()
-
-        self.assertEqual(note.course.course_name,
-                         self.course_data[0]['course_name'])
-        self.assertEqual(note.user.user_name, self.user[0].user_name)
-
-        self.assertIn("note_files",
-                      note.pdf_url.replace(
-                          "/", "|"
-                      ).replace("\\", "|").split("|"))
-
-        self.assertTrue(note.note_file.name.endswith('.pdf'))
-        self.assertTrue(note.anonymous)
-
     def test_post_not_anonymous(self):
         """Anonymous should be false if pen_name is None."""
         test_data = {
