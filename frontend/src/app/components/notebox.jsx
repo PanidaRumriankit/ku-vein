@@ -8,12 +8,11 @@ const pdfDataExample = {
   is_anonymous: true,
   pdf_name: "string.pdf",
   pdf_path: "/abc/string.pdf",
-  pdf_url: "/path/abc/string.pdf",
 };
 
 export default function NoteBox({data}) {
   const pdfName = data['pdf_name'];
-  const pdfURL = data['pdf_url'];
+  const pdfURL = data['pdf_path'];
 
   const handleDownload = () => {
     const link = document.createElement('a');
@@ -26,9 +25,9 @@ export default function NoteBox({data}) {
     <div className="border p-4 rounded-md shadow-md bg-white">
       {/* info */}
       <p><strong>{data.faculties}</strong></p>
-      <p><strong>Type:</strong> {data.courses_type}</p>
-      <p><strong>Uploaded
-        By:</strong> {data.name} ({data.is_anonymous ? "Anonymous" : "Public"})
+      <p><strong>หลักสูตร:</strong> {data.courses_type}</p>
+      <p><strong>
+        โดย:</strong> {data.name} ({data.is_anonymous ? "Anonymous" : "Public"})
       </p>
 
       <div className="flex gap-4 mt-4">
@@ -39,7 +38,7 @@ export default function NoteBox({data}) {
           rel="noopener noreferrer"
           className="px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600"
         >
-          View PDF
+          ดู PDF
         </a>
 
         {/* download */}
@@ -47,7 +46,7 @@ export default function NoteBox({data}) {
           onClick={handleDownload}
           className="px-4 py-2 bg-green-500 text-white rounded-md shadow hover:bg-green-600"
         >
-          Download PDF
+          ดาวน์โหลด PDF
         </button>
       </div>
     </div>

@@ -5,7 +5,7 @@ import MakeFilterApiRequest from "../../constants/getfilterreview";
 import Image from "next/image";
 
 export default function ReviewPage({params}) {
-
+  // TODO add stats to the review page
   useEffect(() => {
     const fetchReviews = async () => {
       const data = await MakeFilterApiRequest("latest", params.id, "review");
