@@ -18,12 +18,14 @@ class QuestionPostTest(TestCase):
         )
         self.Qpost = QuestionPost()
         self.Apost = AnswerPost()
+        test_course = CourseData.objects.create(course_id='000000-00',course_name='test', course_type='test')
         self.question = {
             "question_text": "Test question",
             "faculty": "test",
             "user_id": self.user.user_id,
             "pen_name": self.user.user_name,
-            "is_anonymous": False
+            "is_anonymous": False,
+            "course": test_course,
         }
 
     def test_post_question(self):
