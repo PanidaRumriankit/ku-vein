@@ -1,19 +1,13 @@
 "use client"
 
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import GetDjangoApiData from "../constants/getcourses";
+import {useSearchParams} from "next/navigation";
+import {faculties} from "../constants/index";
 import AsyncSelect from 'react-select/async';
 import {useTheme} from "next-themes";
 import {useEffect, useState} from 'react';
 
-export function handleSearch(term, replace) {
-  replace(`/course/${term}`);
-}
-
-export default function Search({ onCourseSelect, page }) {
+export default function SearchFaculty({ onFacultySelect }) {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -24,17 +18,10 @@ export default function Search({ onCourseSelect, page }) {
   const query = searchParams.get('query') || '';
 
   const loadOptions = async (inputValue) => {
-    const apiData = await GetDjangoApiData();
 
-    const filteredData = apiData.filter((course) =>
-      course.courses_name.toLowerCase().includes(inputValue.toLowerCase()) ||
-      course.courses_id.toLowerCase().startsWith(inputValue.toLowerCase())
-    );
-
-    return filteredData.map((course) => ({
-      value: course.courses_id,
-      label: `${course.courses_id.padEnd(12, ' ')}| ${course.courses_name}`,
-      courses_type: course.courses_type,
+    return faculties.map((faculty) => ({
+      value: faculty,
+      label: `${faculty}`,
     }));
   };
 
@@ -88,18 +75,14 @@ export default function Search({ onCourseSelect, page }) {
         cacheOptions
         loadOptions={loadOptions}
         onChange={(selectedOption) => {
-          if (page === 'page') {
-            handleSearch(selectedOption ? selectedOption.value : '', replace);
-          }
-          if (onCourseSelect) {
-            onCourseSelect(selectedOption ? {
-              courses_id: selectedOption.value,
-              courses_type: selectedOption.courses_type,
+          if (onFacultySelect) {
+            onFacultySelect(selectedOption ? {
+              name: selectedOption.value,
             } : null);
           }
         }}
         defaultOptions
-        placeholder="ค้นหารายวิชา (ชื่อภาษาอังกฤษ/รหัสวิชา)"
+        placeholder="คณะ"
         styles={customStyles}
       />
     </div>

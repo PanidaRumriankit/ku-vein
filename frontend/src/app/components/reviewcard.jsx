@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
@@ -8,8 +8,9 @@ import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
 import {upvoteURL} from "../constants/backurl.js"
-import {colorPallet} from "../constants";
+import {colorPallet, facultyColor} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
+import EditDelete from "../components/editdelete"
 
 import {Button} from "@nextui-org/button";
 import {useRouter} from "next/navigation";
@@ -23,11 +24,12 @@ function RandomColor() {
 
 export default function ReviewCard({item, page = null}) {
   const router = useRouter();
-  const color = RandomColor();
+  const color = facultyColor[item.faculties] || RandomColor();
   const {data: session} = useSession();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formattedDate, setFormattedDate] = useState("");
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
@@ -73,17 +75,29 @@ export default function ReviewCard({item, page = null}) {
         setIsVoted(voteStatus);
       }
     };
-    fetchData();
+    fetchData().then();
     setUpvoteCount(item.upvote || 0);
   }, [session, email, item]);
 
+  useEffect(() => {
+    if (item.date) {
+      const formatted = new Date(item.date).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+      setFormattedDate(formatted);
+    }
+  }, [item.date]);
+
   return (
-    <div className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
+    <div
+      className="mx-auto my-4 w-full max-w-4xl text-black dark:text-white">
       <fieldset className="border border-gray-300 rounded-md p-4">
         {page === "page" && (
           <legend
             style={{backgroundColor: color, borderColor: color}}
-            className="p-2 border-solid border rounded text-black font-bold dark:text-white"
+            className="hover: cursor-pointer p-2 border-solid border rounded text-black font-bold dark:text-white"
             onClick={handleLegendClick}
           >
             {item.courses_id} | {item.courses_name}
@@ -92,7 +106,8 @@ export default function ReviewCard({item, page = null}) {
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0}}/>}/>
+                    emptyIcon={<StarIcon
+                      style={{opacity: 0.55, color: 'gray'}}/>}/>
             {item.professor &&
               <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
           </div>
@@ -103,19 +118,21 @@ export default function ReviewCard({item, page = null}) {
             className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-left">เกรด: {item.grades}</p>
             <p
-              className="text-right">{item.date} โดย: {item.name || item.username}</p>
+              className="text-right">{formattedDate} โดย: {item.name || item.username}</p>
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2">
             <div className="text-left">
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon/> {upvoteCount}
+                <ThumbUpTwoToneIcon
+                  color={isVoted ? "primary" : ""}/> {upvoteCount}
               </Button>
             </div>
             <div className="text-right">
               <ReportButton/>
               <ShareButton/>
+              <EditDelete userMail={email} reviewId={item.reviews_id}/>
             </div>
           </div>
         </div>

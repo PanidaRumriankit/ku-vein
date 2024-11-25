@@ -11,3 +11,5 @@ django-ninja
 django-cors-headers
 django-ninja-extra
 google-auth
+pytz
+tzdata

@@ -20,10 +20,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from forms.api import (CourseController, ReviewController,
+                        UserController, FollowController,
+                        NoteController, UpvoteController,
+                        BookMarkController, HistoryController,
+                        QAController)
 
-from forms.api import app
+from ninja_extra import NinjaExtraAPI
+
+
+api = NinjaExtraAPI()
+
+api.register_controllers(
+    CourseController, ReviewController,
+    UserController, FollowController,
+    NoteController, UpvoteController,
+    BookMarkController, QAController,
+    HistoryController,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', app.urls)
+    path('api/', api.urls)
 ]

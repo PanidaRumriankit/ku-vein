@@ -7,7 +7,6 @@ import {ThemeSwitcher} from "./components/theme";
 import {ThemeProvider} from 'next-themes';
 import {userURL} from "./constants/backurl.js";
 import UserDropdown from "./components/userdropdown";
-import NotificationDropdown from "./components/notidropdown";
 import PersonIcon from '@mui/icons-material/Person';
 import {SessionProvider, useSession, signIn, signOut} from "next-auth/react";
 import {useEffect, useState} from 'react';
@@ -91,7 +90,6 @@ function RootLayoutContent({children}) {
             <li><ThemeSwitcher/></li>
             {session ? (
               <>
-                <li><NotificationDropdown/></li>
                 <li><UserDropdown/></li>
               </>
             ) : (

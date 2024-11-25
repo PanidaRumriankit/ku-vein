@@ -1,10 +1,13 @@
 """This module is for receive json data from the frontend to use in backend."""
 
 from typing import Optional
+
 from ninja import ModelSchema, Schema
+
 from .models import CourseData, UserData, CourseReview
-from .models import ReviewStat, Note, QA, BookMark
+from .models import ReviewStat, Note, BookMark
 from .models import Inter, Normal, Special
+from .models import ReviewStat, Note, QA_Question, QA_Answer
 
 
 class CourseDataSchema(ModelSchema):
@@ -135,7 +138,7 @@ class ReviewPostSchema(Schema):
     - course_id (str): Unique identifier for the course.
     - course_type (str): Type of the course (e.g., Inter, Special, Normal).
     - faculty (str): Faculty to which the course belongs.
-    - reviews (str): Text of the user’s review.
+    - reviews (str): Text of the user's review.
 
     These fields are for ReviewStats:
     - rating (float): User's rating for the course.
@@ -150,9 +153,41 @@ class ReviewPostSchema(Schema):
     reviews: str
     rating: float
     academic_year: int
+    pen_name: Optional[str] = None
+    grade: str
+    instructor: str
+    effort: int
+    attendance: int
+    scoring_criteria: str
+    class_type: str
+
+
+class ReviewPutSchema(Schema):
+    """Schema for handling incoming review edit requests from users."""
+    review_id: str
+    course_id: str
+    course_type: str
+    faculty: str
+    reviews: str
+    rating: float
+    academic_year: int
     pen_name: str
     grade: str
-    instructor: Optional[str] = None
+    instructor: str
+    effort: int
+    attendance: int
+    scoring_criteria: str
+    class_type: str
+
+
+class ReviewDeleteSchema(Schema):
+    """Schema for delete the CourseReview"""
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = CourseReview
+        fields = ['review_id']
 
 
 class UpvotePostSchema(Schema):
@@ -196,36 +231,107 @@ class NotePostSchema(Schema):
             "file": "base64-encoded-string"
         }
     """
+
     email : str
     course_id: str
     faculty: str
     course_type: str
     file : str
+    file_name : str
+    pen_name: Optional[str] = None
 
 
-class QASchema(ModelSchema):
-    """
-    Schema for QA model, containing questions and answers related to courses.
-
-    Includes all fields in the QA model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = QA
-        fields = '__all__'
+class NotePutSchema(Schema):
+    """Schema for Note, used for editing Note."""
+    note_id: str
+    faculty: str
+    pen_name: str
 
 
-class BookMarkSchema(ModelSchema):
-    """
-    Schema for BookMark model, representing bookmarked courses by users.
-
-    Includes all fields in the BookMark model.
-    """
+class NoteDeleteSchema(ModelSchema):
+    """Schema for delete Note"""
 
     class Meta:
         """Metaclass for linking this schema to the target model."""
 
-        model = BookMark
-        fields = '__all__'
+        model = Note
+        fields = ['note_id']
+
+
+class QuestionCreateSchema(Schema):
+    """
+    Schema for QA_Question, used for creating new questions.
+
+    Attributes:
+        user_id (str): The user id of the question's creator.
+        question_text (str): The texts of the question.
+
+    Example:
+        {
+            "user_id": "1",
+            "question_text": "Is Prof.Ichi a monkey?",
+        }
+    """
+    user_id: str
+    question_text: str
+    faculty: str
+    pen_name: str
+
+
+class QuestionPutSchema(Schema):
+    """Schema for QA_Question, used for editing Questions."""
+    question_id: str
+    question_text: str
+    faculty: str
+    pen_name: str
+
+
+class AnswerCreateSchema(Schema):
+    """
+    Schema for QA_Answer, used for creating new answers to a question.
+
+    Attributes:
+        question_id (str): The question id of the answer.
+        answer_text (str): The texts of the question.
+        user_id (str): The user id of the user who answered the question.
+
+    Example:
+        {
+            "question_id": "1"
+            "answer_text": "Prof.Ichi is just a Congalala fan.",
+            "user_id": "2"
+        }
+    """
+    question_id: str
+    answer_text: str
+    user_id: str
+    pen_name: str
+
+
+class AnswerPutSchema(Schema):
+    """Schema for QA_Answer, used for editing Answer."""
+    answer_id: str
+    answer_text: str
+    pen_name: str
+
+
+class BookMarkSchema(Schema):
+    """
+    Schema for handling POST requests to add the bookmark.
+
+      Attributes:
+        email (str): The email address of the user uploading the note.
+        id (int): id of the Review or Note or Q&A objects
+        data_type (str): Type of this data (review, note, qa)
+
+    Example:
+        {
+            "email": "user@example.com",
+            "id": 15,
+            "data_type": "qa",
+
+        }
+    """
+    email : str
+    id : int
+    data_type : str
