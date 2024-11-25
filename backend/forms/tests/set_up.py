@@ -321,7 +321,7 @@ def note_setup(course, user):
         course=course[0],
         faculty="pyromancer",
         file_name='yes_indeed.pdf',
-        note_file=path,
+        pdf_url=path,
         date_data=timezone.now(),
         pen_name="Yes"
     )
