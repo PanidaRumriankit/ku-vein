@@ -356,6 +356,7 @@ def question_to_dict(question):
                     'num_convo': convo_cnt,
                     'upvote': question.qa_question_upvote_set.count(),
                     'post_time': question.posted_time,
+                    'faculties': 'tests',
                  }
         return clean_time_data(q_data)
 
