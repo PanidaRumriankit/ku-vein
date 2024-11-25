@@ -3,7 +3,7 @@ import json
 from django.test import TestCase
 
 from .set_up import user_set_up, review_set_up, course_set_up
-from ..db_post import UpvotePost
+from ..db_post import ReviewUpvotePost
 from ..db_query import SortReview
 
 TEST_DATA = [
@@ -32,7 +32,7 @@ class UpvotePostTests(TestCase):
 
     def setUp(self):
         """Set up reusable instances for tests."""
-        self.upvote = UpvotePost()
+        self.upvote = ReviewUpvotePost()
         self.sort = SortReview()
         course_set_up()
         self.user = user_set_up()

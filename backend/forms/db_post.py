@@ -3,18 +3,19 @@
 import base64
 import logging
 import os
-from abc import ABC, abstractmethod
 from datetime import datetime
+from abc import ABC, abstractmethod
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
 from ninja.responses import Response
 
 from .models import (CourseReview, UserData,
                      CourseData, ReviewStat,
-                     UpvoteStat, FollowData,
-                     Note, BookMark, History)
+                     UpvoteStat, FollowData, Note,
+                     QA_Question, QA_Answer,
+                     QA_Question_Upvote, QA_Answer_Upvote,
+                     BookMark, History)
 
 logger = logging.getLogger("user_logger")
 
@@ -94,7 +95,6 @@ class ReviewPost(PostStrategy):
             rating=data['rating'],
             academic_year=data['academic_year'],
             pen_name=data['pen_name'],
-            date_data=timezone.now(),
             grade=data['grade'],
             effort=data['effort'],
             attendance=data['attendance'],
@@ -131,7 +131,7 @@ class ReviewPost(PostStrategy):
                                       "in the database."}, status=401)
 
 
-class UpvotePost(PostStrategy):
+class ReviewUpvotePost(PostStrategy):
     """Class for created new UpvoteStat object."""
 
     def __init__(self):
@@ -302,7 +302,6 @@ class NotePost(PostStrategy):
                     file_name=file_name,
                     note_file=file_path,
                     pen_name=data['pen_name'],
-                    date_data=timezone.now(),
                     anonymous=anonymous
             )
 
@@ -328,6 +327,142 @@ class NotePost(PostStrategy):
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't"
                                       " in the database."}, status=401)
+
+
+class QuestionPost(PostStrategy):
+    """Class for creating new QA_Question object."""
+
+    def post_data(self, data: dict):
+        """Add new QA_Question to the database."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+            QA_Question.objects.create(question_text=data['question_text'],
+                                       user=user,
+                                       faculty=data['faculty'],
+                                       pen_name=data['pen_name'],
+                                       is_anonymous=(user.user_name != data['pen_name']),
+                                       )
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+
+        return Response({"success": "QA_Question created successfully."},
+                        status=201)
+
+
+class QuestionUpvotePost(PostStrategy):
+    """Class for creating new QA_Question_Upvote object."""
+    def __init__(self):
+        self.question = None
+        self.user = None
+
+    def post_data(self, data: dict):
+        try:
+            self.question = QA_Question.objects.get(question_id=data['id'])
+            self.user = UserData.objects.get(email=data['email'])
+
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+        
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+        
+        return self.add_or_delete()
+
+    def add_or_delete(self):
+        
+        if upvote := QA_Question_Upvote.objects.filter(question=self.question,
+                                                       user=self.user):
+            upvote.delete()
+            return Response({"success": "Successfully unlike the Question."},
+                            status=201)
+
+        QA_Question_Upvote.objects.create(question=self.question,
+                                            user=self.user)
+        return Response({"success": "Successfully like the Question."},
+                        status=201)
+
+
+class AnswerPost(PostStrategy):
+    """Class for creating new QA_Answer object."""
+
+    def post_data(self, data: dict):
+        """Add new QA_Answer to the database."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+            question = QA_Question.objects.get(question_id=data['question_id'])
+            QA_Answer.objects.create(question=question,
+                                     user=user,
+                                     answer_text=data['answer_text'],
+                                     pen_name=data['pen_name'],
+                                     is_anonymous=(user.user_name != data['pen_name']),
+                                     )
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
+
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+
+        return Response({"success": "QA_Answer created successfully."},
+                        status=201)
+    
+
+class AnswerUpvotePost(PostStrategy):
+    """Class for creating new QA_Answern_Upvote object."""
+
+    def __init__(self):
+        self.answer = None
+        self.user = None
+
+    def post_data(self, data: dict):
+        try:
+            self.answer = QA_Answer.objects.get(answer_id=data['id'])
+            self.user = UserData.objects.get(email=data['email'])
+
+        except QA_Answer.DoesNotExist:
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user isn't in the database."},
+                            status=400)
+        
+        except KeyError:
+            return Response({"error": "Data is missing "
+                                      "from the response body."}, status=400)
+        
+        return self.add_or_delete()
+
+    def add_or_delete(self):
+        if upvote := QA_Answer_Upvote.objects.filter(answer=self.answer,
+                                                       user=self.user):
+            upvote.delete()
+            return Response({"success": "Successfully Unlike the Answer."},
+                            status=201)
+
+        QA_Answer_Upvote.objects.create(answer=self.answer,
+                                            user=self.user)
+
+        return Response({"success": "Successfully like the Answer."},
+                        status=201)
+    
 
 
 class BookMarkPost(PostStrategy):
@@ -460,10 +595,14 @@ class PostFactory:
     strategy_map = {
         "review": ReviewPost,
         "user": UserDataPost,
-        "upvote": UpvotePost,
+        "review_upvote": ReviewUpvotePost,
+        "question_upvote": QuestionUpvotePost,
+        "answer_upvote": AnswerUpvotePost,
         "follow": FollowPost,
         "note": NotePost,
-        "book": BookMarkPost
+        "question": QuestionPost,
+        "answer": AnswerPost,
+        "book": BookMarkPost,
     }
 
     @classmethod

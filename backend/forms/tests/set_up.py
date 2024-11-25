@@ -1,16 +1,20 @@
 """Set up function for every feature."""
 
 import os
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
+from ..db_query import clean_time_data, QuestionQuery, AnswerQuery
 from ..db_post import HistoryPost
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
-                      Note, BookMark)
+                      Note, BookMark,
+                      QA_Question, QA_Answer,
+                      QA_Question_Upvote, QA_Answer_Upvote)
 
 
 def course_set_up():
@@ -307,11 +311,10 @@ def follower_setup(user):
             this_user=user[0],
             follow_by=all_follow
         ))
-
     return follow
 
 
-def note_setup(course, user):
+def note_setup(course, user) -> Note:
     """Set up function for Note feature using a generator."""
     path = os.path.join(settings.MEDIA_ROOT,
                  'note_files', 'yes_indeed.pdf')
@@ -343,3 +346,65 @@ def book_setup(review, user):
         ))
 
     return book
+
+def question_to_dict(question):
+        """Turns question into dict for testing."""
+        convo_cnt = question.qa_answer_set.count()
+        q_data = {
+                    'questions_id': question.question_id,
+                    'questions_text': question.question_text,
+                    'users': question.user.user_id,
+                    'num_convo': convo_cnt,
+                    'upvote': question.qa_question_upvote_set.count(),
+                    'post_time': question.posted_time,
+                    'faculties': 'tests',
+                 }
+        return clean_time_data(q_data)
+
+def qa_setup():
+    """Setup for qa tests."""
+    test_user = UserData.objects.create(**{
+        "user_name": "Solaire of Astora",
+        "user_type": "Knight",
+        "email": "solaire@gmail.com"
+        })
+    questions = []
+    answers = []
+    qa_data = [
+        {
+            "question_text": "Test question 1",
+            "faculty": "tests",
+            "user": test_user,
+            "posted_time": datetime(2024, 12, 30, 23, 59, 57),
+            "pen_name": "Solaire of Astora",
+            "is_anonymous": False
+        },
+        {
+            "question_text": "Test question 2",
+            "faculty": "tests",
+            "user": test_user,
+            "posted_time": datetime(2024, 12, 30, 23, 59, 58),
+            "pen_name": "Wagyu Beef",
+            "is_anonymous": True
+        },
+    ]
+    for i,q in enumerate(qa_data):
+        _q = QA_Question.objects.create(**q)
+        _a = {"question_id": _q.question_id,
+              "user": test_user,
+              "answer_text": f"Test answer {i}",
+              "posted_time": datetime(2024, 12, 31, 0, 0, i),
+              "pen_name": "Solaire of Astora",
+              "is_anonymous": False
+              }
+        _a = QA_Answer.objects.create(**_a)
+        answer = AnswerQuery.get_query_set(_q)
+        for a in answer:
+            clean_time_data(a)
+        for u in range(i):
+            QA_Question_Upvote.objects.create(question=_q, user=test_user)
+            QA_Answer_Upvote.objects.create(answer=_a, user=test_user)
+        question = question_to_dict(_q)
+        questions += [question]
+        answers += [answer]
+    return questions, answers
