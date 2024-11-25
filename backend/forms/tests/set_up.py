@@ -358,6 +358,7 @@ def question_to_dict(question):
                     'upvote': question.qa_question_upvote_set.count(),
                     'post_time': question.posted_time,
                     'faculties': 'tests',
+                    "courses": question.course.course_id,
                  }
         return clean_time_data(q_data)
 
@@ -368,6 +369,7 @@ def qa_setup():
         "user_type": "Knight",
         "email": "solaire@gmail.com"
         })
+    test_course = CourseData.objects.create(course_id='000000-00',course_name='test', course_type='test')
     questions = []
     answers = []
     qa_data = [
@@ -377,7 +379,8 @@ def qa_setup():
             "user": test_user,
             "posted_time": datetime(2024, 12, 30, 23, 59, 57),
             "pen_name": "Solaire of Astora",
-            "is_anonymous": False
+            "is_anonymous": False,
+            "course": test_course,
         },
         {
             "question_text": "Test question 2",
@@ -385,7 +388,8 @@ def qa_setup():
             "user": test_user,
             "posted_time": datetime(2024, 12, 30, 23, 59, 58),
             "pen_name": "Wagyu Beef",
-            "is_anonymous": True
+            "is_anonymous": False,
+            "course": test_course,
         },
     ]
     for i,q in enumerate(qa_data):
