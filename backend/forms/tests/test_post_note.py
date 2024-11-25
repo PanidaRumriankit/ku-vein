@@ -204,7 +204,7 @@ class NotePostTests(TestCase):
         self.assertEqual(note.user.user_name, self.user[0].user_name)
 
         self.assertIn("note_files",
-                      note.pdf_url.name.replace(
+                      note.pdf_url.replace(
                           "/", "|"
                       ).replace("\\", "|").split("|"))
 
