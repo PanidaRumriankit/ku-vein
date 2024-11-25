@@ -1,11 +1,14 @@
 """This module use for contain the class for database query."""
 
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from typing import Any
 from typing import Union
 
 from django.conf import settings
-from django.db.models import F, Count
+from django.db.models import (F, Count, ExpressionWrapper,
+                              DateTimeField)
+from django.db.models.functions import TruncDate
 from django.utils import timezone
 from google.cloud import storage
 from kuvein.settings import GOOGLE_CREDENTIAL
@@ -13,6 +16,7 @@ from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
+                     QA_Question,
                      Note, UpvoteStat, CourseReview,
                      BookMark, History)
 
@@ -63,15 +67,19 @@ class SortReview(QueryFilterStrategy):
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
-            date=F('date_data'),
             grades=F('grade'),
             professor=F('review__instructor'),
             criteria=F('scoring_criteria'),
             type=F('class_type'),
-            is_anonymous=F('review__anonymous')
-
+            is_anonymous=F('review__anonymous'),
         ).annotate(
-            upvote=Count('upvotestat')
+            upvote=Count('upvotestat'),
+            date=TruncDate(
+                ExpressionWrapper(
+                    F('date_data') + timedelta(hours=7),
+                    output_field=DateTimeField()
+                )
+            )
         ).order_by(self.order[order_by])
 
         course_id = filter_key.get("course_id")
@@ -403,7 +411,14 @@ class NoteQuery(QueryFilterStrategy):
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
                 pdf_path=F('pdf_url'),
+            ).annotate(
+                date=TruncDate(
+                ExpressionWrapper(
+                    F('date_data') + timedelta(hours=7),
+                    output_field=DateTimeField()
+                )
             )
+
 
             # ggc storage upload
             storage_client = storage.Client.from_service_account_info(GOOGLE_CREDENTIAL)
@@ -430,8 +445,91 @@ class NoteQuery(QueryFilterStrategy):
                                       " in the database."}, status=401)
 
         except Note.DoesNotExist:
-            return Response({"error": "This Note isn't"
-                                      " in the database."}, status=401)
+            return Response({"error": "This Note isn't "
+                               "in the database."}, status=401)
+
+
+def clean_time_data(q):
+    """This function is used to clean datetime formatting."""
+    post_time = q['post_time'] + timedelta(hours=7)
+    q['post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
+    q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
+    return q
+
+class QuestionQuery(QueryFilterStrategy):
+    """Class for sending all the questions in the Q&A data."""
+
+    def get_data(self, mode, *args, **kwargs):
+        """Get the data from the database and return to the frontend."""
+        question_data = []
+        data = self.get_query_set()
+        for question in self.sorted_qa_data(data, mode):
+            question_data += [clean_time_data(question)]
+
+        return Response(question_data, status=200)
+
+    @staticmethod
+    def get_query_set():
+        """Get queryset with all required attributes to sort."""
+        return  QA_Question.objects.select_related().values(
+                    questions_id=F('question_id'),
+                    questions_text=F('question_text'),
+                    users=F('user'),
+                    post_time=F('posted_time'),
+                    faculties=F('faculty'),
+                ).annotate(
+                    num_convo=Count('qa_answer'),
+                    upvote=Count('qa_question_upvote')
+                )
+
+    @staticmethod
+    def sorted_qa_data(data, mode) -> list[dict]:
+        """Sort a queryset by mode argument."""
+        sort_mode = {'latest': '-posted_time',
+                     'earliest': 'posted_time',
+                     'upvote': '-upvote'}
+
+        return data.order_by(sort_mode[mode])
+
+
+class AnswerQuery(QueryFilterStrategy):
+    """Class for sending all the answers for a question in the Q&A data."""
+
+    def get_data(self, question_id, mode):
+        """Get the data from the database and return to the frontend."""
+        try:
+            answer_list = []
+            question = QA_Question.objects.select_related().get(question_id=question_id)
+            answer_query_set = AnswerQuery.get_query_set(question)
+            answer_data = self.sorted_qa_data(answer_query_set, mode)
+
+            for d in answer_data:
+                answer_list += [clean_time_data(d)]
+
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question isn't in the database."}, status=400)
+
+        return Response(answer_list, status=200)
+
+    @classmethod
+    def get_query_set(cls, question):
+        """Get queryset to sort (classmethod because I need this for testing, too)."""
+        return question.qa_answer_set.all().values(
+                    answers_id=F('answer_id'),
+                    text=F('answer_text'),
+                    users=F('user'),
+                    post_time=F('posted_time'),
+                ).annotate(
+                    upvote=Count('qa_answer_upvote')
+                )
+    @staticmethod
+    def sorted_qa_data(answer, mode) -> list[dict]:
+        """Sort queryset by mode argument."""
+        sort_mode = {'latest': '-posted_time',
+                     'earliest': 'posted_time',
+                     'upvote': '-upvote'}
+
+        return answer.order_by(sort_mode[mode])
 
 
 class BookMarkQuery(QueryFilterStrategy):
@@ -496,6 +594,8 @@ class QueryFactory:
         "normal": NormalQuery,
         "none": CourseQuery,
         "user": UserQuery,
+        "qa_question": QuestionQuery,
+        "qa_answer": AnswerQuery,
         "note": NoteQuery,
         "upvote": UpvoteQuery,
         "book": BookMarkQuery,

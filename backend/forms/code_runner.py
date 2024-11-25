@@ -17,6 +17,7 @@ from forms.db_management import TableManagement, DatabaseManagement, DatabaseBac
 def drop_table():
     t = TableManagement()
     t.drop_all_tables()
+    print(t.get_table_name())
 
 def add_demo_datas():
     d = DatabaseBackup()

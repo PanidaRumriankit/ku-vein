@@ -12,11 +12,16 @@ from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_put import PutFactory
 from .db_query import QueryFactory, InterQuery
-from .schemas import (ReviewPostSchema, UserDataSchema,
-                      UpvotePostSchema, FollowSchema,
-                      UserDataEditSchema, NotePostSchema,
-                      BookMarkSchema, ReviewDeleteSchema,
-                      NoteDeleteSchema)
+from .schemas import (ReviewPostSchema, ReviewPutSchema,
+                      ReviewDeleteSchema,
+                      UpvotePostSchema,
+                      FollowSchema,
+                      UserDataSchema, UserDataEditSchema,
+                      NotePostSchema, NotePutSchema,
+                      NoteDeleteSchema,
+                      BookMarkSchema,
+                      QuestionCreateSchema, AnswerCreateSchema,
+                      QuestionPutSchema, AnswerPutSchema)
 
 app = NinjaExtraAPI()
 
@@ -115,6 +120,12 @@ class ReviewController(ControllerBase):
         strategy = PostFactory.get_post_strategy("review")
         return strategy.post_data(data.model_dump())
 
+    @http_put("", response={200: ReviewPutSchema})
+    def edit_review(self, request, data: ReviewPutSchema):
+        """Edit review data."""
+        strategy = PutFactory.get_put_strategy("review")
+        return strategy.put_data(data.model_dump())
+
     @http_delete("", response={200: ReviewDeleteSchema})
     def delete_review(self, request, data: ReviewDeleteSchema):
         """Delete the review objects."""
@@ -163,8 +174,8 @@ class UserController(ControllerBase):
         return strategy.post_data(data.model_dump())
 
     @http_put("")
-    def change_username(self, request, data: UserDataEditSchema):
-        """Change username for the user."""
+    def edit_user(self, request, data: UserDataEditSchema):
+        """Edit data for the user."""
         strategy = PutFactory.get_put_strategy("user")
         return strategy.put_data(data.model_dump())
 
@@ -192,6 +203,12 @@ class NoteController(ControllerBase):
         """Use for add new Note object."""
         strategy = PostFactory.get_post_strategy("note")
         return strategy.post_data(data.model_dump())
+    
+    @http_put("")
+    def edit_question(self, request, data: NotePutSchema):
+        """Edit Note data."""
+        strategy = PutFactory.get_put_strategy("note")
+        return strategy.put_data(data.model_dump())
 
     @http_delete("", response={200: NoteDeleteSchema})
     def delete_note(self, request, data: NoteDeleteSchema):
@@ -277,6 +294,44 @@ def test_auth(request):
 
     except (IndexError, KeyError):
         return Response({"error": "Malformed or invalid token"}, status=401)
+
+
+@api_controller("/qa")
+class QAController(ControllerBase):
+    """Controller for handling qa endpoints."""
+
+    @http_get("")
+    def get_qa(self, request, question_id: int|None=None, mode: str='latest'):
+        """Get all Answers to a Q&A question."""
+        if question_id is None:
+            strategy = QueryFactory.get_query_strategy("qa_question")
+        else:
+            strategy = QueryFactory.get_query_strategy("qa_answer")
+        return strategy.get_data(question_id=question_id, mode=mode)
+
+    @http_post("")
+    def add_question(self, request, data: QuestionCreateSchema):
+        """Use for creating new question for Q&A."""
+        strategy = PostFactory.get_post_strategy("question")
+        return strategy.post_data(data.model_dump())
+    
+    @http_put("")
+    def edit_question(self, request, data: QuestionPutSchema):
+        """Edit QA_Questions data."""
+        strategy = PutFactory.get_put_strategy("question")
+        return strategy.put_data(data.model_dump())
+
+    @http_post("/answer")
+    def add_answer(self, request, data: AnswerCreateSchema):
+        """Use for creating new answer for Q&A."""
+        strategy = PostFactory.get_post_strategy("answer")
+        return strategy.post_data(data.model_dump())
+    
+    @http_put("/answer")
+    def edit_answer(self, request, data: AnswerPutSchema):
+        """Edit QA_Answers data."""
+        strategy = PutFactory.get_put_strategy("answer")
+        return strategy.put_data(data.model_dump())
 
 
 def backup(request):
