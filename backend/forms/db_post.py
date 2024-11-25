@@ -344,7 +344,6 @@ class QuestionPost(PostStrategy):
                                        faculty=data['faculty'],
                                        pen_name=data['pen_name'],
                                        is_anonymous=(user.user_name != data['pen_name']),
-                                       posted_time=timezone.localtime()
                                        )
 
         except UserData.DoesNotExist:
@@ -410,7 +409,6 @@ class AnswerPost(PostStrategy):
                                      answer_text=data['answer_text'],
                                      pen_name=data['pen_name'],
                                      is_anonymous=(user.user_name != data['pen_name']),
-                                     posted_time=timezone.localtime()
                                      )
 
         except UserData.DoesNotExist:
