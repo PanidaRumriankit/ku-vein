@@ -474,7 +474,7 @@ class QuestionQuery(QueryFilterStrategy):
                     users=F('user'),
                     post_time=F('posted_time'),
                     faculties=F('faculty'),
-                    courses=F('course')
+                    courses=F('course__course_id')
                 ).annotate(
                     num_convo=Count('qa_answer'),
                     upvote=Count('qa_question_upvote')
