@@ -134,7 +134,7 @@ class QA_Question(models.Model):
     question_text = models.TextField(default=None)
     faculty = models.CharField(max_length=100, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    posted_time = models.DateTimeField(auto_now_add=True)
+    posted_time = models.DateTimeField(default=None)
     pen_name = models.CharField(max_length=100, default=None)
     is_anonymous = models.BooleanField(default=False)
 
@@ -158,7 +158,7 @@ class QA_Answer(models.Model):
     question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=255, default=None)
-    posted_time = models.DateTimeField(auto_now_add=True)
+    posted_time = models.DateTimeField(default=None)
     pen_name = models.CharField(max_length=100, default=None)
     is_anonymous = models.BooleanField(default=False)
 

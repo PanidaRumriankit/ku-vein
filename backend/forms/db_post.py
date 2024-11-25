@@ -96,7 +96,7 @@ class ReviewPost(PostStrategy):
             rating=data['rating'],
             academic_year=data['academic_year'],
             pen_name=data['pen_name'],
-            date_data=timezone.now(),
+            date_data=timezone.localtime(),
             grade=data['grade'],
             effort=data['effort'],
             attendance=data['attendance'],
@@ -304,7 +304,7 @@ class NotePost(PostStrategy):
                     file_name=file_name,
                     note_file=file_path,
                     pen_name=data['pen_name'],
-                    date_data=timezone.now(),
+                    date_data=timezone.localtime(),
                     anonymous=anonymous
             )
 
@@ -343,7 +343,9 @@ class QuestionPost(PostStrategy):
                                        user=user,
                                        faculty=data['faculty'],
                                        pen_name=data['pen_name'],
-                                       is_anonymous=(user.user_name != data['pen_name']))
+                                       is_anonymous=(user.user_name != data['pen_name']),
+                                       posted_time=timezone.localtime()
+                                       )
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
@@ -398,7 +400,7 @@ class QuestionUpvotePost(PostStrategy):
 class AnswerPost(PostStrategy):
     """Class for creating new QA_Answer object."""
 
-    def post_data(request, data: dict):
+    def post_data(self, data: dict):
         """Add new QA_Answer to the database."""
         try:
             user = UserData.objects.get(user_id=data['user_id'])
@@ -407,7 +409,9 @@ class AnswerPost(PostStrategy):
                                      user=user,
                                      answer_text=data['answer_text'],
                                      pen_name=data['pen_name'],
-                                     is_anonymous=(user.user_name != data['pen_name']))
+                                     is_anonymous=(user.user_name != data['pen_name']),
+                                     posted_time=timezone.localtime()
+                                     )
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
