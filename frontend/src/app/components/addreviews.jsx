@@ -53,7 +53,6 @@ export default function AddReview() {
     attendance: 3,
     scoring_criteria: '',
     class_type: '',
-    // link: null,
   });
   const [hoveredEffort, setHoveredEffort] = useState(3);
   const [clickedEffort, setClickedEffort] = useState(3);
@@ -122,7 +121,6 @@ export default function AddReview() {
 
     return !(anonymous && !pen_name);
 
-
   };
 
   // console.log("postData: ", postData);
@@ -167,16 +165,15 @@ export default function AddReview() {
             <div className="flex justify-start">
               <h3 className="mr-12 font-bold">ความพึงพอใจ</h3>
               <Rating
-                value={postData.rating}
+                value={Math.max(postData.rating, 1)}
                 getLabelText={GetLabelText}
                 onChange={(event, newValue) => {
-                  setPostData({...postData, rating: newValue});
+                  setPostData({ ...postData, rating: Math.max(newValue, 1) });
                 }}
                 onChangeActive={(event, newHover) => {
-                  setHover(newHover);
+                  setHover(newHover >= 1 ? newHover : hover);
                 }}
-                emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}
-                                     fontSize="inherit"/>}
+                emptyIcon={<StarIcon style={{ opacity: 0.55, color: 'gray' }} fontSize="inherit" />}
               />
               {postData.rating !== null && (
                 <div
