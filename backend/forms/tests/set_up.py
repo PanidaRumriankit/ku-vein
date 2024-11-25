@@ -348,6 +348,7 @@ def book_setup(review, user):
     return book
 
 def question_to_dict(question):
+        """Turns question into dict for testing."""
         convo_cnt = question.qa_answer_set.count()
         q_data = {
                     'questions_id': question.question_id,
@@ -361,6 +362,7 @@ def question_to_dict(question):
         return clean_time_data(q_data)
 
 def qa_setup():
+    """Setup for qa tests."""
     test_user = UserData.objects.create(**{
         "user_name": "Solaire of Astora",
         "user_type": "Knight",

@@ -39,8 +39,8 @@ class QuestionPutTest(TestCase):
         self.assertEqual(json.loads(response.content)["error"],
                          "Some crucial attributes are missing from the data.")
         
-    def test_response_question_id_doesnt_exist(self):
-        """Data provided user_name that is already exist."""
+    def test_response_noten_id_doesnt_exist(self):
+        """Data provided note_id that doesn't exist."""
         self.note_put_dict['note_id'] = 9999
         self.note_put_dict['pen_name'] = 'OOGABOOGA_BANANA'
         response = self.note_put.put_data(self.note_put_dict)
