@@ -38,6 +38,8 @@ jobs:
         MYSQLDATABASE: github_ci_test
         MYSQLUSER: django
         MYSQLPASS: django_password
+        GOOGLE_APPLICATION_CREDENTIALS: bucket_credentials
+        GS_BUCKET_NAME: google_cloud_bucket
       run: |
         python backend/manage.py makemigrations --merge
         python backend/manage.py migrate
