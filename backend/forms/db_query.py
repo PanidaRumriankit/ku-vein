@@ -5,7 +5,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 from typing import Union
 
-from django.conf import settings
 from django.db.models import F, Count
 from ninja.responses import Response
 
@@ -400,15 +399,14 @@ class NoteQuery(QueryFilterStrategy):
                 name=F('pen_name'),
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
-                pdf_path=F('note_file'),
+                pdf_path=F('pdf_url'),
             )
 
             for item in note:
                 relative_path = item['pdf_path']
 
                 if relative_path:
-                    item['pdf_url'] = os.path.join(settings.MEDIA_URL,
-                                                   relative_path)
+                    item['pdf_url'] = os.path.join(relative_path)
                     print(item['pdf_url'])
 
             return list(note)

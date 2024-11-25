@@ -300,7 +300,7 @@ class NotePost(PostStrategy):
 
                 blob = g_bucket.blob(blob_name)
                 blob.upload_from_string(_file_data,
-                                        content_type='application/pdf')  # Upload
+                                        content_type='application/pdf')
                 return blob, blob_name
 
             blob, file_name = upload_file_with_rename(bucket, file_data,
