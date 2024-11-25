@@ -2,11 +2,14 @@
 
 import os
 from abc import ABC, abstractmethod
+from datetime import timedelta
 from typing import Any
 from typing import Union
 
 from django.conf import settings
-from django.db.models import F, Count
+from django.db.models import (F, Count, ExpressionWrapper,
+                              DateTimeField, DateField)
+from django.db.models.functions import TruncDate
 from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
@@ -62,15 +65,19 @@ class SortReview(QueryFilterStrategy):
             ratings=F('rating'),
             year=F('academic_year'),
             name=F('pen_name'),
-            date=F('date_data'),
             grades=F('grade'),
             professor=F('review__instructor'),
             criteria=F('scoring_criteria'),
             type=F('class_type'),
-            is_anonymous=F('review__anonymous')
-
+            is_anonymous=F('review__anonymous'),
         ).annotate(
-            upvote=Count('upvotestat')
+            upvote=Count('upvotestat'),
+            date=TruncDate(
+                ExpressionWrapper(
+                    F('date_data') + timedelta(hours=7),
+                    output_field=DateTimeField()
+                )
+            )
         ).order_by(self.order[order_by])
 
         course_id = filter_key.get("course_id")
@@ -402,6 +409,13 @@ class NoteQuery(QueryFilterStrategy):
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
                 pdf_path=F('note_file'),
+            ).annotate(
+            date=TruncDate(
+                ExpressionWrapper(
+                    F('date_data') + timedelta(hours=7),
+                    output_field=DateTimeField()
+                )
+            )
             )
 
             for update_path in note:
@@ -434,7 +448,7 @@ class NoteQuery(QueryFilterStrategy):
 
 def clean_time_data(q):
     """This function is used to clean datetime formatting."""
-    post_time = q['post_time']
+    post_time = q['post_time'] + timedelta(hours=7)
     q['post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
     q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
     return q

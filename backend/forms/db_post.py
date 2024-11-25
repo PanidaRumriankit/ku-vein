@@ -8,7 +8,6 @@ from abc import ABC, abstractmethod
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.utils import timezone
 from ninja.responses import Response
 
 from .models import (CourseReview, UserData,
@@ -96,7 +95,6 @@ class ReviewPost(PostStrategy):
             rating=data['rating'],
             academic_year=data['academic_year'],
             pen_name=data['pen_name'],
-            date_data=timezone.localtime(),
             grade=data['grade'],
             effort=data['effort'],
             attendance=data['attendance'],
@@ -304,7 +302,6 @@ class NotePost(PostStrategy):
                     file_name=file_name,
                     note_file=file_path,
                     pen_name=data['pen_name'],
-                    date_data=timezone.localtime(),
                     anonymous=anonymous
             )
 
@@ -344,7 +341,6 @@ class QuestionPost(PostStrategy):
                                        faculty=data['faculty'],
                                        pen_name=data['pen_name'],
                                        is_anonymous=(user.user_name != data['pen_name']),
-                                       posted_time=timezone.localtime()
                                        )
 
         except UserData.DoesNotExist:
@@ -410,7 +406,6 @@ class AnswerPost(PostStrategy):
                                      answer_text=data['answer_text'],
                                      pen_name=data['pen_name'],
                                      is_anonymous=(user.user_name != data['pen_name']),
-                                     posted_time=timezone.localtime()
                                      )
 
         except UserData.DoesNotExist:
