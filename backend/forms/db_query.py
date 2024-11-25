@@ -452,19 +452,21 @@ class QuestionQuery(QueryFilterStrategy):
         return Response(question_data, status=200)
 
     @staticmethod
-    def get_query_set(self):
+    def get_query_set():
         """Get queryset with all required attributes to sort."""
         return  QA_Question.objects.select_related().values(
                     questions_id=F('question_id'),
                     questions_text=F('question_text'),
                     users=F('user'),
                     post_time=F('posted_time'),
+                    faculties=F('faculty'),
                 ).annotate(
                     num_convo=Count('qa_answer'),
                     upvote=Count('qa_question_upvote')
                 )
-    
-    def sorted_qa_data(self, data, mode) -> list[dict]:
+
+    @staticmethod
+    def sorted_qa_data(data, mode) -> list[dict]:
         """Sort a queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
@@ -503,8 +505,8 @@ class AnswerQuery(QueryFilterStrategy):
                 ).annotate(
                     upvote=Count('qa_answer_upvote')
                 )
-
-    def sorted_qa_data(self, answer, mode) -> list[dict]:
+    @staticmethod
+    def sorted_qa_data(answer, mode) -> list[dict]:
         """Sort queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
