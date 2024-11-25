@@ -310,6 +310,7 @@ class AnswerCreateSchema(Schema):
 
 class AnswerPutSchema(Schema):
     """Schema for QA_Answer, used for editing Answer."""
+    answer_id: str
     answer_text: str
     pen_name: str
 
