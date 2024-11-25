@@ -466,7 +466,7 @@ class QuestionQuery(QueryStrategy):
     def sorted_qa_data(self, data, mode) -> list[dict]:
         """Sort a queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
-                     'oldest': 'posted_time',
+                     'earliest': 'posted_time',
                      'upvote': '-upvote'}
         
         return data.order_by(sort_mode[mode])

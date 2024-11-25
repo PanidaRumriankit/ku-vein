@@ -272,17 +272,14 @@ class QuestionCreateSchema(Schema):
             "question_text": "Is Prof.Ichi a monkey?",
         }
     """
-
     user_id: str
     question_text: str
     faculty: str
     pen_name: str
-    is_anonymous: Optional[bool] = False
 
 
 class QuestionPutSchema(Schema):
     """Schema for QA_Question, used for editing Questions."""
-
     question_id: str
     question_text: str
     faculty: str
@@ -305,12 +302,10 @@ class AnswerCreateSchema(Schema):
             "user_id": "2"
         }
     """
-
     question_id: str
     answer_text: str
     user_id: str
     pen_name: str
-    is_anonymous: Optional[bool] = False
 
 
 class AnswerPutSchema(Schema):
