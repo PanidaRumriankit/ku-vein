@@ -1,7 +1,6 @@
 """Models module for make query for the frontend."""
 
 from django.db import models
-from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -135,7 +134,7 @@ class QA_Question(models.Model):
     question_text = models.TextField(default=None)
     faculty = models.CharField(max_length=100, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    posted_time = models.DateTimeField(default=timezone.localtime())
+    posted_time = models.DateTimeField(default=None)
     pen_name = models.CharField(max_length=100, default=None)
     is_anonymous = models.BooleanField(default=False)
 
@@ -159,7 +158,7 @@ class QA_Answer(models.Model):
     question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     answer_text = models.CharField(max_length=255, default=None)
-    posted_time = models.DateTimeField(default=timezone.localtime())
+    posted_time = models.DateTimeField(default=None)
     pen_name = models.CharField(max_length=100, default=None)
     is_anonymous = models.BooleanField(default=False)
 

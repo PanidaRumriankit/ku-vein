@@ -22,7 +22,7 @@ class QuestionGetTest(TestCase):
 
     def test_get_all_question_oldest(self):
         """Test normal get from /qa?mode=oldest with no arguments."""
-        response = self.Qquery.get_data(mode='oldest')
+        response = self.Qquery.get_data(mode='earliest')
         self.assertEqual(json.loads(response.content), self.questions)
 
     def test_get_all_question_upvote(self):
@@ -49,7 +49,7 @@ class AnswerGetTest(TestCase):
 
     def test_get_answer_for_question_oldest(self):
         """Test normal get from /qa?mode=oldest with question_id arguments."""
-        response = self.Aquery.get_data(question_id=self.questions[0]['questions_id'], mode='oldest')
+        response = self.Aquery.get_data(question_id=self.questions[0]['questions_id'], mode='earliest')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content), list(self.answers[0]))
 
