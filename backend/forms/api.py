@@ -238,7 +238,7 @@ class UpvoteController(ControllerBase):
     @http_post("", response={200: UpvotePostSchema})
     def add_upvote(self, request, data: UpvotePostSchema):
         """Use for add new upvote."""
-        strategy = PostFactory.get_post_strategy("upvote")
+        strategy = PostFactory.get_post_strategy("review_upvote")
         return strategy.post_data(data.model_dump())
 
 
