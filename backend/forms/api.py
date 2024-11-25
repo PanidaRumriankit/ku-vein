@@ -211,8 +211,8 @@ class NoteController(ControllerBase):
     @http_put("")
     def edit_question(self, request, data: NotePutSchema):
         """Edit Note data."""
-        strategy = PutFactory.get_post_strategy("note")
-        return strategy.post_data(data.model_dump())
+        strategy = PutFactory.get_put_strategy("note")
+        return strategy.put_data(data.model_dump())
 
     @http_delete("", response={200: NoteDeleteSchema})
     def delete_note(self, request, data: NoteDeleteSchema):
@@ -322,8 +322,8 @@ class QAController(ControllerBase):
     @http_put("")
     def edit_question(self, request, data: QuestionPutSchema):
         """Edit QA_Questions data."""
-        strategy = PutFactory.get_post_strategy("question")
-        return strategy.post_data(data.model_dump())
+        strategy = PutFactory.get_put_strategy("question")
+        return strategy.put_data(data.model_dump())
 
     @http_post("/answer")
     def add_answer(self, request, data: AnswerCreateSchema):
@@ -334,8 +334,8 @@ class QAController(ControllerBase):
     @http_put("/answer")
     def edit_answer(self, request, data: AnswerPutSchema):
         """Edit QA_Answers data."""
-        strategy = PutFactory.get_post_strategy("answer")
-        return strategy.post_data(data.model_dump())
+        strategy = PutFactory.get_put_strategy("answer")
+        return strategy.put_data(data.model_dump())
 
 
 def backup(request):

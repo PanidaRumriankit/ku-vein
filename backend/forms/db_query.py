@@ -439,7 +439,7 @@ def clean_time_data(q):
     q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
     return q
 
-class QuestionQuery(QueryStrategy):
+class QuestionQuery(QueryFilterStrategy):
     """Class for sending all the questions in the Q&A data."""
 
     def get_data(self, mode, *args, **kwargs):
@@ -450,7 +450,8 @@ class QuestionQuery(QueryStrategy):
             question_data += [clean_time_data(question)]
 
         return Response(question_data, status=200)
-    
+
+    @staticmethod
     def get_query_set(self):
         """Get queryset with all required attributes to sort."""
         return  QA_Question.objects.select_related().values(
@@ -506,7 +507,7 @@ class AnswerQuery(QueryFilterStrategy):
     def sorted_qa_data(self, answer, mode) -> list[dict]:
         """Sort queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
-                     'oldest': 'posted_time',
+                     'earliest': 'posted_time',
                      'upvote': '-upvote'}
         
         return answer.order_by(sort_mode[mode])
