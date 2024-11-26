@@ -65,6 +65,7 @@ class SortReview(QueryFilterStrategy):
             username=F('review__user__user_name'),
             review_text=F('review__reviews'),
             ratings=F('rating'),
+            efforts=F('effort'),
             year=F('academic_year'),
             name=F('pen_name'),
             grades=F('grade'),
