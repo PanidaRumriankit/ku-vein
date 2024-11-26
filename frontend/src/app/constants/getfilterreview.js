@@ -20,7 +20,14 @@ export default async function MakeFilterApiRequest(sort, filter, option) {
   const response = await fetch(url);
   if (response.ok) {
     const data = await response.json();
-    console.log("Response filter review from backend:", data);
+    // console.log("Response filter review from backend:", data);
+    if (option === "review") {
+      try {
+        return data[0];
+      } catch (error) {
+        return {};
+      }
+    }
     return data;
   } else {
     console.error("Failed to fetch filter review:", response.status);
