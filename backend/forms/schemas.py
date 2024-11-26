@@ -287,6 +287,11 @@ class QuestionPutSchema(Schema):
     pen_name: str
 
 
+class QuestionDeleteSchema(Schema):
+    """Schema for QA_Question, used for deleting Questions."""
+    question_id: str
+
+
 class AnswerCreateSchema(Schema):
     """
     Schema for QA_Answer, used for creating new answers to a question.
@@ -314,6 +319,11 @@ class AnswerPutSchema(Schema):
     answer_id: str
     answer_text: str
     pen_name: str
+
+
+class AnswerDeleteSchema(Schema):
+    """Schema for QA_Answer, used for deleting Answer."""
+    answer_id: str
 
 
 class BookMarkSchema(Schema):
