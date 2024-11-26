@@ -20,8 +20,10 @@ from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       NotePostSchema, NotePutSchema,
                       NoteDeleteSchema,
                       BookMarkSchema,
-                      QuestionCreateSchema, AnswerCreateSchema,
-                      QuestionPutSchema, AnswerPutSchema)
+                      QuestionCreateSchema, QuestionPutSchema,
+                      QuestionDeleteSchema,
+                      AnswerCreateSchema, AnswerPutSchema,
+                      AnswerDeleteSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -324,6 +326,12 @@ class QAController(ControllerBase):
         """Edit QA_Questions data."""
         strategy = PutFactory.get_put_strategy("question")
         return strategy.put_data(data.model_dump())
+    
+    @http_delete("", response={200: QuestionDeleteSchema})
+    def delete_question(self, request, data: QuestionDeleteSchema):
+        """Delete the question objects."""
+        strategy = DeleteFactory.get_delete_strategy("question")
+        return strategy.delete_data(data.model_dump())
 
     @http_post("/answer")
     def add_answer(self, request, data: AnswerCreateSchema):
@@ -336,6 +344,12 @@ class QAController(ControllerBase):
         """Edit QA_Answers data."""
         strategy = PutFactory.get_put_strategy("answer")
         return strategy.put_data(data.model_dump())
+    
+    @http_delete("", response={200: AnswerDeleteSchema})
+    def delete_answer(self, request, data: AnswerDeleteSchema):
+        """Delete the answer objects."""
+        strategy = DeleteFactory.get_delete_strategy("answer")
+        return strategy.delete_data(data.model_dump())
 
 
 def backup(request):
