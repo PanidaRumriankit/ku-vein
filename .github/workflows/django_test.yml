@@ -44,11 +44,6 @@ jobs:
       run: |
         python backend/manage.py makemigrations --merge
         python backend/manage.py migrate
-
-    - name: Set up Google Cloud Credentials
-      run: |
-        echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcloud_credentials.json
-
     - name: Set Environments
       run: |
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
@@ -62,8 +57,6 @@ jobs:
         echo MYSQLPORT=3306 >> .env
 
     - name: Run Tests
-      env:
-        GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud_credentials.json
       run: |
         cd backend
         python manage.py test
