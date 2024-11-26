@@ -46,6 +46,8 @@ jobs:
         python backend/manage.py migrate
     - name: Set Environments
       run: |
+        echo GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
+        echo GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }} >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         echo DEBUG=True >> .env
         echo TIME_ZONE=Asia/Bangkok >> .env
