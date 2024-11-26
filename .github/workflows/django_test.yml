@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: mysql:8.0  # Specify the MySQL version you need
+        image: mysql:8.0
         ports:
           - 3306:3306
         env:
@@ -34,10 +34,10 @@ jobs:
       run: |
         mysql -u root -h 172.18.0.1 -e "GRANT ALL PRIVILEGES ON test_github_ci_test.* TO 'django'@'%'; FLUSH PRIVILEGES;"
 
-#    - name: Set up Google Cloud Credentials
-#      run: |
-#        echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcloud_credentials.json
-#        echo GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcloud_credentials.json >> .env
+    - name: Set up Google Cloud Credentials
+      run: |
+        echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcloud_credentials.json
+        echo GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcloud_credentials.json >> .env
 
     - name: Set up database
       env:
@@ -46,11 +46,7 @@ jobs:
         MYSQLDATABASE: github_ci_test
         MYSQLUSER: django
         MYSQLPASS: django_password
-        GS_BUCKET_NAME: ${{ secrets.GS_BUCKET_NAME }}
-        GOOGLE_CREDENTIAL: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
-        echo GOOGLE_CREDENTIAL=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
-        echo GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }} >> .env  
         python backend/manage.py makemigrations --merge
         python backend/manage.py migrate
 
@@ -67,6 +63,7 @@ jobs:
         echo MYSQLPASS=django_password >> .env
         echo MYSQLDATABASE=github_ci_test >> .env
         echo MYSQLPORT=3306 >> .env
+
     - name: Run Tests
       run: |
         cd backend
