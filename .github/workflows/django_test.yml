@@ -47,6 +47,7 @@ jobs:
         MYSQLUSER: django
         MYSQLPASS: django_password
         GS_BUCKET_NAME: ${{ secrets.GS_BUCKET_NAME }}
+        GOOGLE_CREDENTIAL: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
         echo GOOGLE_CREDENTIAL=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
         echo GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }} >> .env  
@@ -55,7 +56,7 @@ jobs:
 
     - name: Set Environments
       run: |
-        echo GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
+        echo GOOGLE_CREDENTIAL=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }} >> .env
         echo GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }} >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         echo DEBUG=True >> .env
