@@ -39,6 +39,13 @@ jobs:
         echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcloud_credentials.json
         echo GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcloud_credentials.json >> .env
 
+    - name: Not a Debug Google Cloud Setup
+      run: |
+        echo "Content of GOOGLE_APPLICATION_CREDENTIALS secret:"
+        echo "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+        echo "Content of /tmp/gcloud_credentials.json:"
+        cat /tmp/gcloud_credentials.json
+
     - name: Set up database
       env:
         MYSQL_HOST: 172.18.0.1
