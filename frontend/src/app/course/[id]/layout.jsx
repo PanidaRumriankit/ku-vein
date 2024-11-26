@@ -38,8 +38,6 @@ export default function CourseLayout({children, params}) {
   const [rating, setRating] = useState(0);
   const [effort, setEffort] = useState(0);
 
-  // TODO refactor the stats into a new file
-
   useEffect(() => {
     const fetchReviews = async () => {
       try {
