@@ -41,8 +41,6 @@ jobs:
         MYSQLDATABASE: github_ci_test
         MYSQLUSER: django
         MYSQLPASS: django_password
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        GS_BUCKET_NAME: ${{ secrets.GS_BUCKET_NAME }}
       run: |
         python backend/manage.py makemigrations --merge
         python backend/manage.py migrate
@@ -53,8 +51,6 @@ jobs:
 
     - name: Set Environments
       run: |
-        echo GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcloud_credentials.json >> .env
-        echo GS_BUCKET_NAME="${{ secrets.GS_BUCKET_NAME }}" >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         echo DEBUG=True >> .env
         echo TIME_ZONE=Asia/Bangkok >> .env
