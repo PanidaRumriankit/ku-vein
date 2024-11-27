@@ -22,7 +22,10 @@ from decouple import config
 
 # Google cloud services
 GS_BUCKET_NAME = config('GS_BUCKET_NAME', cast=str, default='your-bucket-name')
-GOOGLE_CREDENTIAL = json.loads(config('GOOGLE_APPLICATION_CREDENTIALS', cast=str))
+try:
+    GOOGLE_CREDENTIAL = json.loads(config('GOOGLE_APPLICATION_CREDENTIALS', cast=str))
+except json.JSONDecodeError:
+    GOOGLE_CREDENTIAL = {}
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
