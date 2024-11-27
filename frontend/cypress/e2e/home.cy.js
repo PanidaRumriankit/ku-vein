@@ -85,31 +85,6 @@ describe('Home Page', () => {
     });
   });
 
-  // it('tests upvote functionality', () => {
-  //   // Simulate user login (mock session)
-  //   cy.window().then((win) => {
-  //     win.localStorage.setItem('session', JSON.stringify({
-  //       email: 'test@example.com',
-  //       idToken: 'mock-token'
-  //     }));
-  //   });
-
-  //   // Reload to apply mocked session
-  //   cy.reload();
-
-  //   // Wait for reviews to load
-  //   cy.wait('@getReviews');
-
-  //   // Find first upvote button and click
-  //   cy.get('button').contains('0')
-  //     .click()
-  //     .wait('@upvoteReview');
-
-  //   cy.get('button')
-  //     .contains('1')
-  //     .should('be.visible');
-  // });\
-
   // Check if earliest sorting works
   it('checks earliest sorting affects review order', () => {
     
@@ -128,8 +103,67 @@ describe('Home Page', () => {
       .contains('earliest')
       .click();
     
+    // Wait for reviews to load
     cy.wait('@getReviewsEarliest');
 
+    // Check if reviews are in correct order
+    cy.get('fieldset').then(($cards) => {
+      const reversedCards = Cypress.$.makeArray($cards).reverse();
+
+      Cypress._.each(reversedCards, ($card, index) => {
+      cy.wrap($card)
+        .find('legend')
+        .should('contain', ['01200432-00 | Rolling Stock Technology', '01200101-64 | Innovative Thinking'][index]);
+
+      cy.wrap($card)
+        .find('[class*="MuiRating"]')
+        .should('exist');
+
+      cy.wrap($card)
+        .contains('p', ['A', 'Yes I like itttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt'][index])
+        .should('be.visible');
+
+      cy.wrap($card)
+        .contains('p', ['ผู้สอน: A', 'ผู้สอน: Kasidet'][index])
+        .should('be.visible');
+
+      cy.wrap($card)
+        .contains('p', ['เกรด: C', 'เกรด: A'][index])
+        .should('be.visible');
+
+      cy.wrap($card)
+      .contains('p', ['26 พ.ย. 2567 โดย: user_2', '26 พ.ย. 2567 โดย: roblox'][index])
+      .should('be.visible');
+
+      cy.wrap($card)
+        .find('button')
+        .contains((['0', '10'][index]))
+        .should('be.visible');
+      });
+    });
+  });
+
+  // Check upvote reviews sorting
+  it('checks upvote sorting affects review order', () => {
+    cy.get('button')
+      .contains('latest')
+      .click();
+    
+    // Open sorting dropdown
+    cy.get('button')
+      .contains('latest')
+      .click();
+
+    // Select upvote sorting option
+    cy.get('[role="dialog"]')
+      .find('[role="menuitemradio"]')
+      .contains('upvote')
+      .click();
+    
+    // Wait for reviews to load
+    cy.wait('@getReviewsUpvote');
+
+    // Check if reviews are in correct order
     cy.get('fieldset').then(($cards) => {
       const reversedCards = Cypress.$.makeArray($cards).reverse();
 
