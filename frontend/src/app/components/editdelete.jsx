@@ -20,7 +20,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import {reviewURL} from "../constants/backurl";
 import GetUserData from "../constants/getuser";
 
-export default function EditDelete({userName, reviewId}) {
+export default function EditDelete({userName, reviewId, item}) {
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
   const [currentUser, setCurrentUser] = useState(null);
@@ -33,12 +33,12 @@ export default function EditDelete({userName, reviewId}) {
 
   useEffect(() => {
     if (session) {
-      async function fetchdata() {
+      async function FetchData() {
         const userData = await GetUserData(session.user.email, "email");
         setCurrentUser(userData.username);
       }
 
-      fetchdata().then(() => {});
+      FetchData().then(() => {console.log("Current User", currentUser)});
     }
   }, [currentUser, session]);
 
@@ -69,7 +69,7 @@ export default function EditDelete({userName, reviewId}) {
       console.error("Error upvoting review:", error);
     }
   };
-  if (!session || session?.email !== userName) return;
+  if (!session || currentUser !== userName) return;
 
   return (
     <Dropdown>
