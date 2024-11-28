@@ -18,8 +18,10 @@ export default function SearchFaculty({ onFacultySelect }) {
   const query = searchParams.get('query') || '';
 
   const loadOptions = async (inputValue) => {
-
-    return faculties.map((faculty) => ({
+    const filteredFaculty = faculties.filter((faculty) =>
+      faculty.toLowerCase().includes(inputValue.toLowerCase())
+    );
+    return filteredFaculty.map((faculty) => ({
       value: faculty,
       label: `${faculty}`,
     }));
