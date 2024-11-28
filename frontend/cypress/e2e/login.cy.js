@@ -59,7 +59,7 @@ describe('Layout component', () => {
       .click();
 
     // Mock search components
-    cy.get('[id="react-select-3-input"]').type('01200101-64', {delay: 100});
+    cy.get('[id="react-select-3-input"]').type('01200101-64', {delay: 500});
     cy.wait('@getCourses');
     cy.get('body')
       .find('div[role="option"]')
@@ -67,10 +67,44 @@ describe('Layout component', () => {
       .click({ force: true });
     
     // Mock faculty selection
-    cy.get('[id="react-select-4-input"]').type('คณะวิศวกรรมศาสตร์', {delay: 1000});
+    cy.get('[id="react-select-4-input"]').type('คณะวิศวกรรมศาสตร์', {delay: 500});
     cy.get('body')
       .find('div[role="option"]')
       .first()
       .click({ force: true });
+
+    // Review text
+    cy.get('textarea[placeholder="ความคิดเห็นต่อรายวิชา"]').type('This is a test review')
+
+    // Select rating
+    cy.contains('ความพึงพอใจ').parent().find('svg[data-testid="StarIcon"]').eq(3).click({ force: true });
+
+    // Select effort level
+    cy.contains('ความยาก').parent().contains('4').click({ force: true });
+    cy.contains('ยาก').should('be.visible');
+
+    // Attendance
+    cy.contains('การเช็คชื่อ').parent().contains('3').click()
+    
+    // Class type
+    cy.contains('เรียนแบบ').parent().contains('Onsite').click();
+    
+    // Scoring criteria
+    cy.contains('เกณฑ์').parent().contains('Balance').click();
+    
+    // Grade
+    cy.contains('เกรดที่ได้').parent().contains('B+').click();
+    
+    // Instructor
+    cy.get('input[placeholder="อาจารย์"]').type('Test Instructor');
+    
+    // Academic year
+    cy.get('input[placeholder="พ.ศ."]').clear().type('2567');
+    
+    // Submit review
+    cy.contains('Submit').click({ delay: 1000 });
+
+    // Verify API call and success
+    cy.wait('@submitReview').its('response.statusCode').should('eq', 200);
   })
 })
