@@ -85,7 +85,8 @@ class ReviewPost(PostStrategy):
             user=self.user,
             course=self.course
         ).count() >= 3:
-            return Response({"error": "User can't create the review of same course_id more than 3 time."},
+            return Response({"error": "User can't create"
+                                      " the review of same course_id more than 3 times."},
                             status=405)
 
         review_instance = CourseReview.objects.create(
