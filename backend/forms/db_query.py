@@ -106,7 +106,19 @@ class StatQuery(QueryFilterStrategy):
         self.find_avg()
         self.find_mode()
         if not self.sorted_data:
-            return dict(self.sorted_data)
+            try:
+                course = CourseData.objects.filter(
+                    course_id=filter_by
+                ).values(
+                    courses_id=F('course_id'),
+                    courses_name=F('course_name')
+                ).first()
+
+                return dict(course)
+
+            except (CourseData.DoesNotExist, TypeError):
+                return Response({"error": "This course"
+                                          " isn't in the database."}, status=401)
 
         output = list(self.sorted_data)[0]
         output.pop('faculties')
