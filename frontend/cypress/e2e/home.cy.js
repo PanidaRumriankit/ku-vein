@@ -75,7 +75,7 @@ describe('Home Page', () => {
         .should('be.visible');
 
       cy.wrap($card)
-      .contains('p', ['26 พ.ย. 2567 โดย: user_2', '26 พ.ย. 2567 โดย: roblox'][index])
+      .contains('p', ['26 พ.ย. 2567 โดย: user_2', '26 พ.ย. 2567 โดย: user_0'][index])
       .should('be.visible');
 
       cy.wrap($card)
@@ -132,7 +132,7 @@ describe('Home Page', () => {
         .should('be.visible');
 
       cy.wrap($card)
-      .contains('p', ['26 พ.ย. 2567 โดย: user_2', '26 พ.ย. 2567 โดย: roblox'][index])
+      .contains('p', ['26 พ.ย. 2567 โดย: user_2', '26 พ.ย. 2567 โดย: user_0'][index])
       .should('be.visible');
 
       cy.wrap($card)
@@ -189,7 +189,7 @@ describe('Home Page', () => {
         .should('be.visible');
 
       cy.wrap($card)
-      .contains('p', ['26 พ.ย. 2567 โดย: user_2', '26 พ.ย. 2567 โดย: roblox'][index])
+      .contains('p', ['26 พ.ย. 2567 โดย: user_2', '26 พ.ย. 2567 โดย: user_0'][index])
       .should('be.visible');
 
       cy.wrap($card)
