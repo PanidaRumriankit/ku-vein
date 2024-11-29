@@ -89,6 +89,30 @@ const gradeColors = {
   W: "#9E9E9E",
 };
 
+const attendant = {
+  1: 'ไม่เช็ค',
+  2: 'เช็คบางครั้ง',
+  3: 'เช็คปกติ',
+  4: 'เช็คบ่อย',
+  5: 'เช็คทุกครั้ง',
+};
+
+const satisfaction = {
+  1: 'ไม่พึงพอใจมาก',
+  2: 'ไม่พึงพอใจ',
+  3: 'เฉย ๆ',
+  4: 'พึงพอใจ',
+  5: 'พึงพอใจมาก',
+};
+
+const efforts = {
+  1: 'น้อยมาก',
+  2: 'น้อย',
+  3: 'ปานกลาง',
+  4: 'ยาก',
+  5: 'ยากมาก',
+};
+
 export {
   usersDropdown,
   colorPallet,
@@ -97,4 +121,7 @@ export {
   facultyColor,
   faculties,
   gradeColors,
+  attendant,
+  satisfaction,
+  efforts
 };
