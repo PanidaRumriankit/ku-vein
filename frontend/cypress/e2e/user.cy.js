@@ -16,15 +16,8 @@ describe('Profile oage', () => {
       })
     }).as('session');
 
-    // Mock create user
-    cy.intercept('POST', '**/api/user', (req) => {
-      req.reply({
-        email: testEmail,
-      })
-    }).as('createUser');
-
     // Mock user data fetching
-    cy.intercept('GET', '**/api/user*', (req) => {
+    cy.intercept('GET', '**/api/user?email=test%40ku.th*', (req) => {
       req.reply({
         statusCode: 200,
         body: {
@@ -65,12 +58,12 @@ describe('Profile oage', () => {
         }),
       })
     }).as('followUser');
-
-    // Visit user 4 profile page
-    cy.visit('/user/4')
   });
 
   it('loads user profile correctly', () => {
+    // Visit user 4 profile page
+    cy.visit('/user/4')
+
     // Check profile details
     cy.contains('Ori').should('be.visible')
     cy.contains('@4').should('be.visible')
@@ -78,6 +71,9 @@ describe('Profile oage', () => {
   })
 
   it('displays follower and following counts', () => {
+    // Visit user 4 profile page
+    cy.visit('/user/4')
+
     // Check Following
     cy.get('[aria-describedby="popup-1"]')
       .contains('Following')
@@ -100,6 +96,9 @@ describe('Profile oage', () => {
   })
 
   it('opens following popup', () => {
+    // Visit user 4 profile page
+    cy.visit('/user/4')
+
     // Open Following popup
     cy.get('[aria-describedby="popup-1"]')
       .contains('Following')
@@ -108,6 +107,9 @@ describe('Profile oage', () => {
   })
 
   it('opens follower popup', () => {
+    // Visit user 4 profile page
+    cy.visit('/user/4')
+
     // Open Follower popup
     cy.get('[aria-describedby="popup-2"]')
       .contains('Follower')
@@ -116,16 +118,17 @@ describe('Profile oage', () => {
   })
 
   it('logs the session email', () => {
+    // Visit user 4 profile page
+    cy.visit('/user/4')
+
     cy.wait('@session').then((interception) => {
       const sessionEmail = interception.response.body.email;
       cy.log('Session Email:', sessionEmail);
-      expect(sessionEmail).to.equal(testEmail); // Ensure the mocked email matches
+      expect(sessionEmail).to.equal(testEmail);
     });
   });
 
   it('allows following/unfollowing user', () => {
-    cy.wait('@session');
-    cy.wait('@createUser');
     cy.visit('/user/6');
     // Click Follow button
     cy.get('button').contains('Follow').click()
