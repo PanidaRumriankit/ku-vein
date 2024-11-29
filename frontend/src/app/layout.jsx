@@ -10,6 +10,7 @@ import UserDropdown from "./components/userdropdown";
 import PersonIcon from '@mui/icons-material/Person';
 import {SessionProvider, useSession, signIn, signOut} from "next-auth/react";
 import {useEffect, useState} from 'react';
+import Head from 'next/head';
 
 export default function RootLayout({children}) {
   return (
@@ -80,7 +81,10 @@ function RootLayoutContent({children}) {
 
   return (
     <>
-      <nav className="bg-[#4ECDC4] fixed top-0 left-0 w-full h-14 p-4 z-[9999]">
+      <Head>
+        <title>KU Vein</title>
+      </Head>
+      <nav className="bg-[#4ECDC4] fixed top-0 left-0 w-full h-14 p-4 z-50">
         <div
           className="container fixed mx-auto flex justify-between items-center px-10">
           <a href="/"
