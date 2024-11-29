@@ -138,4 +138,10 @@ ca.pem
 # Log file
 *.log
 
-database/
+/database/*
+
+!/database/backup/
+
+/database/backup/*
+
+!/database/backup/logs.json
