@@ -27,24 +27,29 @@ def add_demo_datas():
     da = DatabaseManagement()
     da.add_course_data_to_sub("inter")
 
+def backup_local():
+    d = DatabaseBackup()
+    d.local_backup()
+
+
+
 
 if __name__ == "__main__":
 
 
     choice_handler = {1: drop_table,
-                      2: add_demo_datas}
+                      2: add_demo_datas,
+                      3: backup_local}
 
     text = (
             "1. Drop all tables.\n"
-            "2. Add demo datas."
+            "2. Add demo datas.\n"
+            "3. Back up test.\n"
             )
 
-    while(True):
-        try:
-            print(text)
-            choice = int(input())
-            func = choice_handler.get(choice)
-            func()
-            break
-        except KeyError:
-            print("No")
+    while True:
+        print(text)
+        choice = int(input())
+        func = choice_handler.get(choice)
+        func()
+        break

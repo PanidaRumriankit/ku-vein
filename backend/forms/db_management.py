@@ -171,32 +171,19 @@ class DatabaseBackup:
         self.con = MySQLConnection()
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview',
-                           'UserData', 'ReviewStat', 'Inter', 'Normal',
-                           'Special', 'CourseData']
+        self.table_name = [
+                           "History", "BookMark",
+                           "QAQuestionUpvote", "QAAnswerUpvote",
+                           "QAAnswer", "QAQuestion",
+                           "Note", "UpvoteStat", "History",
+                           "ReviewStat", "CourseReview",
+                           "FollowData", "UserData", "Inter", "Normal",
+                           "Special", "CourseData"]
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.con.connect()
         self.cursor = self.con.cursor
-
-    @staticmethod
-    def json_converter(data_from_server):
-        """Convert data from MySQL server to JSON."""
-        result_data = {}
-
-        for data in data_from_server:
-
-            try:
-                result_data[data['faculty']][data['course_id']] =\
-                    data['course_name']
-
-            except KeyError:
-                result_data[data['faculty']] = {}
-                result_data[data['faculty']][data['course_id']] =\
-                    data['course_name']
-
-        return result_data
 
     @staticmethod
     def check_date():
@@ -212,18 +199,32 @@ class DatabaseBackup:
 
     def local_backup(self):
         """Pull all data from MySQL server to local every week."""
-        if self.check_date():
+        if not self.check_date():
             self.connect()
 
             try:
                 for table in self.table_name:
                     self.cursor.execute(f"SELECT * FROM {table}")
+                    rows = self.cursor.fetchall()
+                    columns = [desc[0] for desc in self.cursor.description]
 
-                    # write JSON file in backup folder
-                    with open(f"./database/backup/{table.lower()}_data.่json",
+                    print(rows)
+                    # Convert rows into a list of dictionaries
+                    data = []
+                    for row in rows:
+                        row_dict = {}
+                        for idx, value in enumerate(row.values()):
+                            # Convert datetime to string format
+                            if isinstance(value, datetime):
+                                value = value.isoformat()
+
+                            row_dict[columns[idx]] = value
+                        data.append(row_dict)
+
+                    # Write the JSON file in the backup folder
+                    with open(f"./database/backup/{table.lower()}_data.json",
                               "w", encoding='UTF-8') as overwrite_file:
-                        json.dump(self.json_converter(self.cursor.fetchall()),
-                                  overwrite_file, ensure_ascii=False, indent=4)
+                        json.dump(data, overwrite_file, ensure_ascii=False, indent=4)
                     print(f"Data saved to database/backup/"
                           f"{table.lower()}_data.json")
 
@@ -232,8 +233,8 @@ class DatabaseBackup:
 
             with open('database/backup/logs.json', 'w',
                       encoding='UTF-8') as log_file:
-                json.dump(str(datetime.now().date()), log_file,
-                          ensure_ascii=False, indent=4)
+                json.dump({"last-updated": str(datetime.now().date())},
+                          log_file, ensure_ascii=False, indent=4)
             print("Data saved to database/backup/logs.json")
 
     def exist_data_loader(self, course_type: str):
