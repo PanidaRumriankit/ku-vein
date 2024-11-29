@@ -72,7 +72,8 @@ class SortReview(QueryFilterStrategy):
             grades=F('grade'),
             professor=F('review__instructor'),
             criteria=F('scoring_criteria'),
-            type=F('class_type'),
+            classes_type=F('class_type'),
+            courses_type=F('review__course__course_type'),
             is_anonymous=F('review__anonymous'),
         ).annotate(
             upvote=Count('upvotestat'),
