@@ -164,7 +164,6 @@ class ReviewPostSchema(Schema):
 class ReviewPutSchema(Schema):
     """Schema for handling incoming review edit requests from users."""
     review_id: str
-    course_id: str
     course_type: str
     faculty: str
     reviews: str
