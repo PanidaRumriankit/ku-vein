@@ -213,7 +213,6 @@ class DatabaseBackup:
                     rows = self.cursor.fetchall()
                     columns = [desc[0] for desc in self.cursor.description]
 
-                    print(rows)
                     # Convert rows into a list of dictionaries
                     data = []
                     for row in rows:
