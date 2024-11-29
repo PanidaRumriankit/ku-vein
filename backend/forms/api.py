@@ -345,7 +345,7 @@ class QAController(ControllerBase):
         strategy = PutFactory.get_put_strategy("answer")
         return strategy.put_data(data.model_dump())
     
-    @http_delete("", response={200: AnswerDeleteSchema})
+    @http_delete("/answer", response={200: AnswerDeleteSchema})
     def delete_answer(self, request, data: AnswerDeleteSchema):
         """Delete the answer objects."""
         strategy = DeleteFactory.get_delete_strategy("answer")
