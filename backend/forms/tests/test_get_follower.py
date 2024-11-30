@@ -45,7 +45,7 @@ class FollowerGetTest(TestCase):
             {'username': 'Big Hat Logan', 'desc': '', "profile_link": None},
             {'username': 'Laurentius of the Great Swamp', 'desc': '', "profile_link": None}
         ],
-            all_followed['follower'])
+            all_followed['follower']['username'])
 
     def test_follower_update_when_create_new_following(self):
         """Data should be update when new objects got created."""
