@@ -40,7 +40,7 @@ class UserDataPut(PutStrategy):
 
             # Attribute validation
             # Using set() because it is unordered but list is ordered.
-            if set(user.__dict__.keys()) != set(data.keys()).union({'_state'}):
+            if set(user.__dict__.keys()) != set(data.keys()).union({'email','_state'}):
                 raise ValueError 
 
             user_dict = user.__dict__
@@ -59,7 +59,7 @@ class UserDataPut(PutStrategy):
 
         except ValueError:
             return Response({"error": "Some attribute is missing from the data.",
-                            "ex_attribute": ['user_id', 'user_name', 'user_type', 'email', 'description', 'profile_color']},
+                            "ex_attribute": ['user_id', 'user_name', 'user_type', 'description', 'profile_color']},
                             status=400)
 
         user.save()
