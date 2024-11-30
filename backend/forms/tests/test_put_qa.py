@@ -2,8 +2,8 @@
 import json
 
 from .set_up import qa_setup
-from ..models import QA_Question, QA_Answer, UserData
-from ..db_put import QA_QuestionPut, QA_AnswerPut
+from ..models import QA_Question, QA_Answer, UserData, CourseData
+from ..db_put import QA_QuestionPut, QA_AnswerPut, UserDataPut
 from django.test import TestCase
 
 class QuestionPutTest(TestCase):
@@ -57,6 +57,33 @@ class QuestionPutTest(TestCase):
         self.assertEqual(response.status_code, 200)
         question_anonymous = QA_Question.objects.get(question_id=question_id)
         self.assertEqual(question_anonymous.is_anonymous, True)
+
+    def test_change_username_change_penname(self):
+        """Test for username changing will change pen_name in non-anonymous post, too."""
+        user = UserData.objects.all()[0]
+        course = CourseData.objects.all()[0]
+
+        question_id = QA_Question.objects.create(question_text='test username',
+                                                user=user,
+                                                faculty='test',
+                                                course=course,
+                                                pen_name=user.user_name,
+                                                is_anonymous=False,
+                                                ).question_id
+        new_pen_name = 'banana'
+        user_data = {'user_id': user.user_id,
+                    'user_name': new_pen_name,
+                    'user_type': user.user_type,
+                    'email': user.email,
+                    'description': user.description,
+                    'profile_color': user.profile_color}
+        
+        response = UserDataPut().put_data(user_data)
+        self.assertEqual(response.status_code, 200)
+
+        question = QA_Question.objects.get(question_id=question_id)
+        self.assertEqual(question.is_anonymous, False)
+        self.assertEqual(question.pen_name, new_pen_name)
 
 
 class AnswerPutTest(TestCase):
