@@ -3,23 +3,36 @@
 import {useEffect, useState} from "react";
 import CourseNavigationBar from "../../../components/coursenavigation";
 import QuestionCard from "../../../components/questioncard";
-import GetQuestion from "../../../constants/getquestion";
 import {question} from "../../../constants/index";
 import Sorting from "../../../components/sorting";
 import AddQuestion from "../../../components/addquestion";
+import GetQuestion from "../../../constants/getquestion";
 
 export default function QuestionAndAnswerPage({params}) {
   const [questions, setQuestions] = useState([]);
-  const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
+  const [selectedKeys, setSelectedKeys] = useState("latest");
 
-  // useEffect(() => {
-  //   const fetchQuestions = async () => {
-  //     const data = await GetQuestion(courseId);
-  //     setQuestions(data);
-  //   };
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      const data = await GetQuestion(selectedKeys);
+      setQuestions(data);
+    };
+    fetchQuestions()
+  }, [selectedKeys]);
 
-  //   fetchQuestions();
-  // }, [courseId]);
+  async function PostBookmark() {
+    const response = await fetch(`api/book`, {
+      method: 'POST',
+      headers: {
+        "Authorization": `Bearer ${idToken}`,
+        'Content-Type': 'application/json',
+        "email": email,
+      },
+      body: JSON.stringify({
+        email: email,
+      }),
+    })
+  }
 
   return (
     <div className="text-black flex flex-col items-center
@@ -32,8 +45,8 @@ export default function QuestionAndAnswerPage({params}) {
           </div>
       </div>
       <div className="flex flex-col items-center w-full max-w-5xl">
-        {question.length > 0 ? (
-          question.map((item, index) => (
+        {questions.length > 0 ? (
+          questions.map((item, index) => (
             <QuestionCard item={item} key={index}/>
           ))
         ) : (

@@ -60,10 +60,10 @@ export default function QuestionCard({item}) {
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
       <fieldset
         className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-lg cursor-pointer hover:shadow-xl"
-        onClick={() => router.push(`${pathname}/${item.qanda_id}`)}
+        onClick={() => router.push(`${pathname}/${item.qusetions_id}`)}
       >
           <div className="flex justify-between">
-            <h3 className="text-xl font-semibold break-all">{item.title}</h3>
+            <h3 className="text-xl font-semibold break-all">{item.questions_text}</h3>
             <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {e.stopPropagation(); setIsBookmarked(!isBookmarked)}}>
               {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
             </div>
@@ -72,10 +72,10 @@ export default function QuestionCard({item}) {
           <div
             className="flex items-center justify-between text-gray-300 text-right">
             <p className="text-right">
-              {new Date(item.createdAt).toLocaleString()}
+              {new Date(item.post_date).toLocaleString()}
             </p>
             <p className="text-left">
-              โดย: {item.name || item.username}
+              โดย: {item.users}
             </p>
           </div>
           <hr/>
