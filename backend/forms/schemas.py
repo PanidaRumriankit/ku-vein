@@ -283,6 +283,7 @@ class QuestionCreateSchema(Schema):
 class QuestionPutSchema(Schema):
     """Schema for QA_Question, used for editing Questions."""
     question_id: str
+    question_title: str
     question_text: str
     faculty: str
     pen_name: str
