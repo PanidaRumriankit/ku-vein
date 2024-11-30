@@ -1,6 +1,7 @@
 "use client"
 
 import Sorting from "../../components/sorting";
+import SearchFaculty from "../../components/searchfaculty";
 import ReviewCard from "../../components/reviewcard";
 import CourseNavigationBar from "../../components/coursenavigation";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
@@ -11,6 +12,7 @@ import AddReviews from "../../components/addreviews";
 export default function CoursePage({params}) {
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
   const [reviews, setReviews] = useState([]);
+  const [faculty, setFaculty] = useState("");
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -31,6 +33,7 @@ export default function CoursePage({params}) {
           <CourseNavigationBar courseId={params.id}/>
         </div>
         <div className="justify-end">
+          <SearchFaculty onFacultySelect={(faculty) => setFaculty(faculty.name)} />
           <Sorting selectedKeys={selectedKeys}
                    setSelectedKeys={setSelectedKeys}/>
         </div>
