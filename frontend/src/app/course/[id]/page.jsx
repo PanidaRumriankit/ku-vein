@@ -22,6 +22,7 @@ export default function CoursePage({ params }) {
     professor: "",
     criteria: "",
     type: "",
+    faculties: "",
   });
 
   useEffect(() => {
@@ -33,7 +34,14 @@ export default function CoursePage({ params }) {
     };
 
     fetchReviews();
+    
   }, [params.id, selectedKeys]);
+
+  useEffect(() => {
+    if(filteredReviews) {
+      console.log("Filters: ", filteredReviews);
+    }
+  }, [filteredReviews]);
 
   useEffect(() => {
     let filtered = [...reviews];
@@ -64,6 +72,12 @@ export default function CoursePage({ params }) {
       filtered = filtered.filter((review) => review.classes_type === filters.type);
     }
 
+    if (filters.faculties) {
+      filtered = filtered.filter((review) => review.faculties === filters.faculties);
+    }
+
+    console.log("Faculty: ", filters.faculties, reviews);
+
     setFilteredReviews(filtered);
   }, [filters, reviews]);
 
@@ -77,7 +91,6 @@ export default function CoursePage({ params }) {
         </div>
         <div className="my-4 justify-end">
           <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} />
-          <SearchFaculty onFacultySelect={(faculty) => setFaculty(faculty.name)} />
           <ReviewFilters filters={filters} setFilters={setFilters} professors={professors} />
         </div>
         {filteredReviews.length > 0 ? (

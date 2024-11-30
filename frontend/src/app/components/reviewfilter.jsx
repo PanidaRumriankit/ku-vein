@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import {faculties} from "../constants/index";
 
 export default function ReviewFilters({ filters, setFilters, onApplyFilters, professors }) {
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear() + 543);
@@ -9,6 +10,21 @@ export default function ReviewFilters({ filters, setFilters, onApplyFilters, pro
 
   return (
     <div className="flex justify-center space-x-4 my-4">
+      <div>
+        <label className="block text-sm font-medium">คณะ</label>
+        <select
+          value={filters.faculties || ""}
+          onChange={(e) => handleChange("faculties", e.target.value)}
+          className="border rounded p-2"
+        >
+          <option value="">ทั้งหมด</option>
+          {faculties.map((faculty, index) => (
+            <option key={index} value={faculty}>
+              {faculty}
+            </option>
+          ))}
+        </select>
+      </div>
       <div>
         <label className="block text-sm font-medium">ความพึงพอใจ</label>
         <select
