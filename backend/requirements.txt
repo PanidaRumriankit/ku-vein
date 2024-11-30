@@ -13,3 +13,5 @@ django-ninja-extra
 google-auth
 pytz
 tzdata
+apscheduler
+

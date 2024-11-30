@@ -1,5 +1,6 @@
 """This module focus on contact with MySQL server."""
 
+import os
 import json
 from datetime import datetime
 
@@ -145,6 +146,7 @@ class DatabaseManagement:
                            'UserData', 'ReviewStat', 'Inter', 'Normal',
                            'Special', 'CourseData']
 
+
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.con.connect()
@@ -171,37 +173,27 @@ class DatabaseBackup:
         self.con = MySQLConnection()
         self.cursor = None
 
-        self.table_name = ['BookMark', 'QA', 'Summary', 'CourseReview',
-                           'UserData', 'ReviewStat', 'Inter', 'Normal',
-                           'Special', 'CourseData']
+        self.table_name = [
+                           "History", "BookMark",
+                           "QAQuestionUpvote", "QAAnswerUpvote",
+                           "QAAnswer", "QAQuestion",
+                           "Note", "UpvoteStat", "History",
+                           "ReviewStat", "CourseReview",
+                           "FollowData", "UserData", "Inter", "Normal",
+                           "Special", "CourseData"]
+
+        self.base_dir = os.path.dirname(os.path.abspath(__file__))
+
 
     def connect(self):
         """Connect to MySQL server and initialize cursor."""
         self.con.connect()
         self.cursor = self.con.cursor
 
-    @staticmethod
-    def json_converter(data_from_server):
-        """Convert data from MySQL server to JSON."""
-        result_data = {}
-
-        for data in data_from_server:
-
-            try:
-                result_data[data['faculty']][data['course_id']] =\
-                    data['course_name']
-
-            except KeyError:
-                result_data[data['faculty']] = {}
-                result_data[data['faculty']][data['course_id']] =\
-                    data['course_name']
-
-        return result_data
-
-    @staticmethod
-    def check_date():
+    def check_date(self):
         """Check is it time to back up?."""
-        with open('database/backup/logs.json', 'r',
+        logs_path = os.path.join(self.base_dir, 'database', 'backup', 'logs.json')
+        with open(logs_path, 'r',
                   encoding='UTF-8') as log_file:
             last_updated = datetime.strptime(
                 json.load(log_file)['last-updated'], "%Y-%m-%d").date()
@@ -218,23 +210,41 @@ class DatabaseBackup:
             try:
                 for table in self.table_name:
                     self.cursor.execute(f"SELECT * FROM {table}")
+                    rows = self.cursor.fetchall()
+                    columns = [desc[0] for desc in self.cursor.description]
 
-                    # write JSON file in backup folder
-                    with open(f"./database/backup/{table.lower()}_data.่json",
+                    # Convert rows into a list of dictionaries
+                    data = []
+                    for row in rows:
+                        row_dict = {}
+                        for idx, value in enumerate(row.values()):
+                            # Convert datetime to string format
+                            if isinstance(value, datetime):
+                                value = value.isoformat()
+
+                            row_dict[columns[idx]] = value
+                        data.append(row_dict)
+
+                    # Write the JSON file in the backup folder
+                    backup_path = os.path.join(self.base_dir, 'database', 'backup', f"{table.lower()}_data.json")
+                    with open(backup_path,
                               "w", encoding='UTF-8') as overwrite_file:
-                        json.dump(self.json_converter(self.cursor.fetchall()),
-                                  overwrite_file, ensure_ascii=False, indent=4)
+                        json.dump(data, overwrite_file, ensure_ascii=False, indent=4)
                     print(f"Data saved to database/backup/"
                           f"{table.lower()}_data.json")
 
             finally:
                 self.con.close()
 
-            with open('database/backup/logs.json', 'w',
+            logs_path = os.path.join(self.base_dir, 'database', 'backup', 'logs.json')
+            with open(logs_path, 'w',
                       encoding='UTF-8') as log_file:
-                json.dump(str(datetime.now().date()), log_file,
-                          ensure_ascii=False, indent=4)
+                json.dump({"last-updated": str(datetime.now().date())},
+                          log_file, ensure_ascii=False, indent=4)
             print("Data saved to database/backup/logs.json")
+
+            return True
+        return False
 
     def exist_data_loader(self, course_type: str):
         """Combine all data in the folder and separate by course programs."""
