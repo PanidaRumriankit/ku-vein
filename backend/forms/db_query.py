@@ -305,11 +305,17 @@ class UserQuery(QueryFilterStrategy):
                 user_name=filter_key['user_name']
             )
 
+        img_link_current_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('user_id')
+                ).values('img_link')[:1])
+
         self.user = self.user.values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
-                pf_color=F('profile_color')
+                pf_color=F('profile_color'),
+                profile_link=img_link_current_subquery
             ).first()
 
         try:
