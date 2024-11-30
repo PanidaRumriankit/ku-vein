@@ -23,9 +23,12 @@ from decouple import config
 # Google cloud services
 GS_BUCKET_NAME = config('GS_BUCKET_NAME', cast=str, default='your-bucket-name')
 try:
-    GOOGLE_CREDENTIAL = json.loads(config('GOOGLE_APPLICATION_CREDENTIALS', cast=str))
+    GOOGLE_CREDENTIAL = json.loads(
+        config('GOOGLE_APPLICATION_CREDENTIALS', cast=str))
 except json.JSONDecodeError:
     GOOGLE_CREDENTIAL = {}
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 146800640  # 100MB PDF around 140MB base64
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

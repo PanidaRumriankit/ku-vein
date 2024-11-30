@@ -118,7 +118,7 @@ export default function AddNote({courseId}) {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error", response.status, errorText);
-        setError("Unable to send a file please use pdf format");
+        setError("Unable to send a file please use pdf format file less than 100MB");
       } else {
         const data = await response.json();
         console.log('Success:', data);
