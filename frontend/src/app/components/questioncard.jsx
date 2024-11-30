@@ -13,7 +13,7 @@ import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import Button from "@mui/material/Button";
 
 
-export default function QuestionCard({item}) {
+export default function QuestionCard({item, bookmark}) {
   const router = useRouter();
   const pathname = usePathname();
   const {data: session} = useSession();
@@ -60,37 +60,37 @@ export default function QuestionCard({item}) {
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
       <fieldset
         className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-lg cursor-pointer hover:shadow-xl"
-        onClick={() => router.push(`${pathname}/${item.qusetions_id}`)}
+        onClick={() => router.push(`${pathname}/${item.question_id}`)}
       >
-          <div className="flex justify-between">
-            <h3 className="text-xl font-semibold break-all">{item.questions_text}</h3>
-            <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {e.stopPropagation(); setIsBookmarked(!isBookmarked)}}>
-              {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
-            </div>
+        <div className="flex justify-between">
+          <h3 className="text-xl font-semibold break-all">{item.questions_title}</h3>
+          <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {e.stopPropagation(); setIsBookmarked(!isBookmarked)}}>
+            {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
           </div>
-          <br/>
-          <div
-            className="flex items-center justify-between text-gray-300 text-right">
-            <p className="text-right">
-              {new Date(item.post_date).toLocaleString()}
-            </p>
-            <p className="text-left">
-              โดย: {item.users}
-            </p>
+        </div>
+        <br/>
+        <div
+          className="flex items-center justify-between text-gray-300 text-right">
+          <p className="text-right">
+            {new Date(item.posted_time).toLocaleString()}
+          </p>
+          <p className="text-left">
+            โดย: {item.user}
+          </p>
+        </div>
+        <hr/>
+        <div className="text-gray-300 flex justify-between mt-2 -mb-4">
+          <div className="text-left text-2xl flex space-x-4" onClick={(e) => {e.stopPropagation()}}>
+            <Button variant="light" onClick={handleUpvote}
+                    disabled={!session || isLoading}>
+              <ThumbUpTwoToneIcon/>    {upvoteCount}
+            </Button>
           </div>
-          <hr/>
-          <div className="text-gray-300 flex justify-between mt-2 -mb-4">
-            <div className="text-left text-2xl flex space-x-4" onClick={(e) => {e.stopPropagation()}}>
-              <Button variant="light" onClick={handleUpvote}
-                      disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon/>    {upvoteCount}
-              </Button>
-            </div>
-            <div className="text-right" onClick={(e) => e.stopPropagation()}>
-              <ReportButton/>
-              <ShareButton/>
-            </div>
+          <div className="text-right" onClick={(e) => e.stopPropagation()}>
+            <ReportButton/>
+            <ShareButton/>
           </div>
+        </div>
       </fieldset>
     </div>
   );

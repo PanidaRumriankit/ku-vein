@@ -2,7 +2,7 @@
 "use client";
 
 import {useParams, useRouter} from 'next/navigation';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useMemo} from 'react';
 import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
