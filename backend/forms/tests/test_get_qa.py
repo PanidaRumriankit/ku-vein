@@ -32,7 +32,6 @@ class QuestionGetTest(TestCase):
         self.assertEqual(json.loads(response.content), self.questions[::-1])
     
 
-
 class AnswerGetTest(TestCase):
     """Class for test Get answer."""
 
