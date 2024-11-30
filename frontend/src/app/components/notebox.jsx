@@ -72,7 +72,7 @@ export default function NoteBox({userName, data}) {
   };
 
   return (
-    <div className="border p-4 rounded-md shadow-md bg-white">
+    <div className="mx-auto my-4 w-full max-w-4xl border p-4 rounded-md shadow-md bg-white dark:bg-gray-700">
       <p><strong>{data.faculties}</strong></p>
       <p><strong>หลักสูตร:</strong> {data.courses_type}</p>
       <p><strong>
