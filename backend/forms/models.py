@@ -58,6 +58,11 @@ class UserData(models.Model):
         app_label = 'forms'
         db_table = 'UserData'
 
+class UserProfile(models.Model):
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    img_id = models.CharField(max_length=100, null=True, default=None)
+    img_link = models.TextField(null=True, default=None)
+    img_delete_hash = models.CharField(max_length=100, null=True, default=None)
 
 class FollowData(models.Model):
     this_user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='following')
