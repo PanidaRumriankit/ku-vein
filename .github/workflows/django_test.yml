@@ -37,19 +37,6 @@ jobs:
       run: |
         mysql -u root -h 172.18.0.1 -e "GRANT ALL PRIVILEGES ON test_github_ci_test.* TO 'django'@'%'; FLUSH PRIVILEGES;"
 
-    - name: Authenticate to Google Cloud using Workload Identity Federation
-      id: auth
-      uses: google-github-actions/auth@v1
-      with:
-        workload_identity_provider: "projects/754614814453/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider"
-        service_account: "ku-vein-note-upload@rare-truck-442618-a0.iam.gserviceaccount.com"
-        create_credentials_file: true
-
-    - name: Debug Environment Variables
-      run: |
-        echo "GOOGLE_APPLICATION_CREDENTIALS=${{ env.GOOGLE_APPLICATION_CREDENTIALS }}"
-        cat "${{ env.GOOGLE_APPLICATION_CREDENTIALS }}"
-
     - name: Set up database
       env:
         MYSQL_HOST: 172.18.0.1
@@ -63,7 +50,6 @@ jobs:
 
     - name: Set Environments
       run: |
-        echo GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }} >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         echo DEBUG=True >> .env
         echo TIME_ZONE=Asia/Bangkok >> .env
