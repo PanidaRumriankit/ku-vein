@@ -336,7 +336,7 @@ class UserQuery(QueryFilterStrategy):
             following = list(FollowData.objects.filter(
                 follow_by=self.user['id']
             ).values(
-                id=F('this_user__user_id'),
+                follow_id=F('this_user__user_id'),
                 username=F('this_user__user_name'),
                 desc=F('this_user__description'),
                 profile_link=img_link_following_subquery
@@ -351,7 +351,7 @@ class UserQuery(QueryFilterStrategy):
             follower = list(FollowData.objects.filter(
                 this_user=self.user['id']
             ).values(
-                id=F('follow_by__user_id'),
+                follow_id=F('follow_by__user_id'),
                 username=F('follow_by__user_name'),
                 desc=F('follow_by__description'),
                 profile_link=img_link_follower_subquery
