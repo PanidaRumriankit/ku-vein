@@ -40,10 +40,10 @@ class FollowerGetTest(TestCase):
             {"email": self.user_ins[0].email, "user_id": None}
         )
         self.assertEqual([
-            {'username': 'Siegmeyer of Catarina', 'desc': ''},
-            {'username': 'Lucatiel of Mirrah', 'desc': ''},
-            {'username': 'Big Hat Logan', 'desc': ''},
-            {'username': 'Laurentius of the Great Swamp', 'desc': ''}
+            {'username': 'Siegmeyer of Catarina', 'desc': '', "profile_link": None},
+            {'username': 'Lucatiel of Mirrah', 'desc': '', "profile_link": None},
+            {'username': 'Big Hat Logan', 'desc': '', "profile_link": None},
+            {'username': 'Laurentius of the Great Swamp', 'desc': '', "profile_link": None}
         ],
             all_followed['follower'])
 
