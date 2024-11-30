@@ -2,7 +2,7 @@
 "use client";
 
 import {useParams, useRouter} from 'next/navigation';
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useMemo} from 'react';
 import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
@@ -19,6 +19,8 @@ export default function UserProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [followerCount, setFollowerCount] = useState(0);
+  const email = useMemo(() => session?.email || null, [session]);
+  const idToken = useMemo(() => session?.idToken || session?.accessToken || null, [session]);
 
   useEffect(() => {
     if (session && user_id) {
@@ -89,11 +91,6 @@ export default function UserProfile() {
   }, [session, userData, personalData]);
 
   if (loading || !userData) return <p>Loading...</p>;
-
-  if (session) {
-    const idToken = session?.idToken || session?.accessToken;
-    const email = session?.email;
-  }
   
   async function followUser() {
     if (!email || !idToken) {
