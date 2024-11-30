@@ -9,6 +9,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
@@ -19,6 +20,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('posts');
   const {data: session} = useSession();
   const [hovered, setHovered] = useState(false);
+  const [hoveredProfile, setHoveredProfile] = useState(false);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [putData, setPutData] = useState(null);
@@ -57,6 +59,7 @@ export default function Profile() {
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
+  const [profileImage, setProfileImage] = useState(session?.user?.image);
 
   async function putProfile() {
     try {
@@ -95,7 +98,22 @@ export default function Profile() {
 
   if (!putData) return null;
 
-  console.log('Patch Data:', putData);
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfileImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageClick = () => {
+    document.getElementById('fileInput').click();
+  };
+
+  // console.log('Patch Data:', putData);
 
   return (
     <div
@@ -120,21 +138,40 @@ export default function Profile() {
         </div>
 
         {/* Profile Picture */}
-        {session?.user?.image ? (
-          <div className="absolute top-40 left-1/2 transform -translate-x-1/2">
-            <Image
-              src={session.user.image}
-              alt="Profile"
-              width={100}
-              height={100}
-              className="rounded-full border-gray-500 border-2"
-            />
-          </div>
-        ) : (
-          <div
-            className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div> // Placeholder if no image
-        )}
+        <div
+          className="absolute top-40 left-1/2 transform -translate-x-1/2"
+          onMouseEnter={() => setHoveredProfile(true)}
+          onMouseLeave={() => setHoveredProfile(false)}
+        >
+          {/* Image */}
+          <Image
+            src={session.user.image}
+            alt="Profile"
+            width={100}
+            height={100}
+            className="rounded-full border-gray-500 border-2"
+          />
 
+          {/* Overlay */}
+          {hoveredProfile && (
+            <div
+              className='absolute top-0 left-1/2 w-[100px] h-[100px] rounded-full flex items-center justify-center transform -translate-x-1/2 bg-black bg-opacity-50 cursor-pointer'
+              onClick={handleImageClick}
+            >
+              <CameraAltIcon className="text-white text-3xl" />
+            </div>
+          )}
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            id="fileInput"
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </div>
+          
         <div className="mt-16 mb-24">
           <h1 className="text-2xl font-semibold">{putData.user_name}</h1>
           <p className="text-gray-400">@{putData.user_id}</p>
