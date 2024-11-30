@@ -7,7 +7,7 @@ from typing import Union
 
 from django.conf import settings
 from django.db.models import (F, Count, ExpressionWrapper,
-                              DateTimeField)
+                              DateTimeField, OuterRef, Subquery)
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from google.cloud import storage
@@ -16,7 +16,7 @@ from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
-                     QA_Question,
+                     QA_Question, UserProfile,
                      Note, UpvoteStat, CourseReview,
                      BookMark, History)
 
@@ -330,18 +330,31 @@ class UserQuery(QueryFilterStrategy):
                             status=401)
 
         if self.user:
+            img_link_following_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('this_user')
+                ).values('img_link')[:1]
+            )
             following = list(FollowData.objects.filter(
                 follow_by=self.user['id']
             ).values(
                 username=F('this_user__user_name'),
-                desc=F('this_user__description')
+                desc=F('this_user__description'),
+                profile_link=img_link_following_subquery
             ))
+
+            img_link_follower_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('follow_by')
+                ).values('img_link')[:1]
+            )
 
             follower = list(FollowData.objects.filter(
                 this_user=self.user['id']
             ).values(
                 username=F('follow_by__user_name'),
-                desc=F('follow_by__description')
+                desc=F('follow_by__description'),
+                profile_link=img_link_follower_subquery
             ))
 
             self.user['following'] = following
