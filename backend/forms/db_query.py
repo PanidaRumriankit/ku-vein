@@ -459,13 +459,14 @@ class QuestionQuery(QueryFilterStrategy):
         """Get queryset with all required attributes to sort."""
         return  QA_Question.objects.select_related().values(
                     questions_id=F('question_id'),
+                    questions_title=F('question_title'),
                     questions_text=F('question_text'),
                     users=F('user'),
+                    pen_names=F('pen_name'),
                     post_time=F('posted_time'),
                     faculties=F('faculty'),
                     courses=F('course__course_id'),
                     anonymous=F('is_anonymous'),
-                    questions_title=F('question_title')
                 ).annotate(
                     num_convo=Count('qa_answer'),
                     upvote=Count('qa_question_upvote')
@@ -505,7 +506,8 @@ class AnswerQuery(QueryFilterStrategy):
                     text=F('answer_text'),
                     users=F('user'),
                     post_time=F('posted_time'),
-                    anonymous=F('is_anonymous')
+                    anonymous=F('is_anonymous'),
+                    pen_names=F('pen_name'),
                 ).annotate(
                     upvote=Count('qa_answer_upvote')
                 )
