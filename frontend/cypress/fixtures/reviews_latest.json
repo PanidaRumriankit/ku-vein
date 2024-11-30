@@ -1,0 +1,38 @@
+[
+    {
+      "reviews_id": 2,
+      "courses_id": "01200432-00",
+      "courses_name": "Rolling Stock Technology",
+      "faculties": "คณะเกษตร",
+      "username": "user_2",
+      "review_text": "A",
+      "ratings": 3,
+      "year": 2567,
+      "name": "user_2",
+      "grades": "C",
+      "professor": "A",
+      "criteria": "",
+      "type": "onsite",
+      "is_anonymous": false,
+      "upvote": 0,
+      "date": "2024-11-26"
+    },
+    {
+      "reviews_id": 1,
+      "courses_id": "01200101-64",
+      "courses_name": "Innovative Thinking",
+      "faculties": "คณะเกษตร",
+      "username": "user_0",
+      "review_text": "Yes I like itttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt",
+      "ratings": 5,
+      "year": 2567,
+      "name": "roblox",
+      "grades": "A",
+      "professor": "Kasidet",
+      "criteria": "project-based",
+      "type": "hybrid",
+      "is_anonymous": true,
+      "upvote": 10,
+      "date": "2024-11-26"
+    }
+  ]

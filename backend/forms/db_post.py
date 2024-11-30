@@ -85,6 +85,14 @@ class ReviewPost(PostStrategy):
             return Response({"error": "pen_name or academic_year are missing"},
                             status=400)
 
+        if CourseReview.objects.filter(
+            user=self.user,
+            course=self.course
+        ).count() >= 3:
+            return Response({"error": "User can't create"
+                                      " the review of same course_id more than 3 times."},
+                            status=405)
+
         review_instance = CourseReview.objects.create(
             user=self.user,
             course=self.course,
