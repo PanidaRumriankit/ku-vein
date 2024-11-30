@@ -21,9 +21,9 @@ from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       NoteDeleteSchema,
                       BookMarkSchema,
                       QuestionCreateSchema, QuestionPutSchema,
-                      QuestionDeleteSchema,
+                      QuestionDeleteSchema, QuestionUpvoteSchema,
                       AnswerCreateSchema, AnswerPutSchema,
-                      AnswerDeleteSchema)
+                      AnswerDeleteSchema, AnswerUpvoteSchema)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -321,6 +321,12 @@ class QAController(ControllerBase):
         strategy = PostFactory.get_post_strategy("question")
         return strategy.post_data(data.model_dump())
     
+    @http_post("/upvote")
+    def upvote_question(self, request, data: QuestionUpvoteSchema):
+        """Use for creating new upvote for Q&A."""
+        strategy = PostFactory.get_post_strategy("question_upvote")
+        return strategy.post_data(data.model_dump())
+    
     @http_put("")
     def edit_question(self, request, data: QuestionPutSchema):
         """Edit QA_Questions data."""
@@ -337,6 +343,12 @@ class QAController(ControllerBase):
     def add_answer(self, request, data: AnswerCreateSchema):
         """Use for creating new answer for Q&A."""
         strategy = PostFactory.get_post_strategy("answer")
+        return strategy.post_data(data.model_dump())
+    
+    @http_post("/answer/upvote")
+    def upvote_answer(self, request, data: AnswerUpvoteSchema):
+        """Use for creating new upvote for Q&A."""
+        strategy = PostFactory.get_post_strategy("answer_upvote")
         return strategy.post_data(data.model_dump())
     
     @http_put("/answer")
