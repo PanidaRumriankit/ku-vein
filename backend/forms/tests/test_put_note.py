@@ -1,10 +1,11 @@
 """Module for testing PUT requests that were made to Note"""
 import json
 
-from .set_up import note_setup, user_set_up, course_set_up
-from ..models import Note, UserData
-from ..db_put import NotePut
 from django.test import TestCase
+
+from .set_up import note_setup, user_set_up, course_set_up
+from ..db_put import NotePut
+from ..models import Note
 
 
 class QuestionPutTest(TestCase):

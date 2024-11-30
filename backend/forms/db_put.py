@@ -2,14 +2,13 @@
 
 import requests
 import logging
-
-from datetime import datetime
 from abc import ABC, abstractmethod
 
 from decouple import config
 from ninja.responses import Response
-from .models import (CourseReview, UserData, CourseData, ReviewStat,
+from .models import (CourseReview, UserData,
                      QA_Question, QA_Answer, Note, UserProfile)
+
 
 logger = logging.getLogger("user_logger")
 

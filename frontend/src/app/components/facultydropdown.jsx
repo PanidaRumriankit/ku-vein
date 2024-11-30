@@ -29,6 +29,7 @@ export default function FacultyDropDown({selectedKeys, setSelectedKeys}) {
           selectionMode="single"
           selectedKeys={selectedKeys}
           onSelectionChange={setSelectedKeys}
+          className="max-h-40 overflow-y-auto"
         >
           <DropdownSection title="คณะที่เรียน"
                            className="text-black dark:text-white">

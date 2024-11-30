@@ -1,9 +1,10 @@
 """Module for test GET Q&A feature."""
 import json
 
-from ..db_query import QuestionQuery, AnswerQuery
-from .set_up import qa_setup
 from django.test import TestCase
+
+from .set_up import qa_setup
+from ..db_query import QuestionQuery, AnswerQuery
 
 
 class QuestionGetTest(TestCase):
