@@ -1,6 +1,5 @@
 "use client";
 
-import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
 import PopupProfile from "./popupprofile.jsx";
 
@@ -197,7 +196,7 @@ export default function ReviewCard({item, page = null}) {
               </Button>
             </div>
             <div className="text-right">
-              <ReportButton/>
+              {/*<ReportButton/>*/}
               <ShareButton reviewId={item.reviews_id} reviewText={item.review_text} />
               <EditDelete userName={item.username} reviewId={item.reviews_id} item={item}/>
             </div>
