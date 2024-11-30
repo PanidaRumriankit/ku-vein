@@ -28,7 +28,8 @@ try:
 except json.JSONDecodeError:
     GOOGLE_CREDENTIAL = {}
 
-DATA_UPLOAD_MAX_MEMORY_SIZE = 146800640  # 100MB PDF around 140MB base64
+DATA_UPLOAD_MAX_MEMORY_SIZE = 27899392  # 20MB PDF around 27MB base64
+# 100MB PDF around 140MB base64 is too much and the Onrender's server kaboom!
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
