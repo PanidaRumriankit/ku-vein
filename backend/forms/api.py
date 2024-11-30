@@ -186,8 +186,8 @@ class UserController(ControllerBase):
         return strategy.post_data(data.model_dump())
 
     @http_put("/profile", response={200: UserProfileSchema})
-    def add_new_profile_pic(self, request, data: UserProfileSchema):
-        """Use for create new profile"""
+    def change_profile_pic(self, request, data: UserProfileSchema):
+        """Use for change the profile"""
         strategy = PutFactory.get_put_strategy("profile")
         return strategy.put_data(data.model_dump())
 
