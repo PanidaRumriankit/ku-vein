@@ -157,9 +157,11 @@ class QA_AnswerPut(PutStrategy):
         try:
             answer = QA_Answer.objects.get(answer_id=data['answer_id'])
             answer_dict = answer.__dict__
+            answer_dict['is_anonymous'] = (answer.user.user_name != data['pen_name'])
             for key, val in data.items():
                 answer_dict[key] = val
                 logger.info(f"Answer_id: {answer.answer_id} -- Changed their attribute {key} to {val}.")
+
 
         except KeyError:
             return Response({"error": "Some crucial attributes are missing from the data."}, status=400)
