@@ -92,9 +92,19 @@ class UserDataEditSchema(ModelSchema):
         model = UserData
         fields = '__all__'
 
-        
+
+class UserProfileSchema(Schema):
+    """Schema for POST PUT user profile"""
+
+    user_id: str
+    img_id: str
+    img_link: str
+    img_delete_hash: str
+
+
 class FollowSchema(Schema):
     """Schema for follower feature."""
+
     current_user_id: str
     target_user_id: str
 
