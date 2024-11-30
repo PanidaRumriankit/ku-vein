@@ -6,7 +6,7 @@ import Sorting from "./components/sorting";
 import ReviewCard from "./components/reviewcard";
 import MakeApiRequest from "./constants/getreview"
 import AddReviews from "./components/addreviews";
-
+import GetBookmarks from "./constants/getbookmarks";
 import {useState, useEffect} from "react";
 import {useSession} from "next-auth/react";
 
