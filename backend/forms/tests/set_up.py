@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
-from ..db_query import clean_time_data, QuestionQuery, AnswerQuery
+from ..db_query import QuestionQuery, AnswerQuery
 from ..db_post import HistoryPost
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
@@ -347,20 +347,20 @@ def book_setup(review, user):
 
     return book
 
-def question_to_dict(question):
+def question_to_dict(question: QA_Question):
         """Turns question into dict for testing."""
-        convo_cnt = question.qa_answer_set.count()
-        q_data = {
+        return {
                     'questions_id': question.question_id,
                     'questions_text': question.question_text,
                     'users': question.user.user_id,
-                    'num_convo': convo_cnt,
+                    'num_convo': question.qa_answer_set.count(),
                     'upvote': question.qa_question_upvote_set.count(),
                     'post_time': question.posted_time,
                     'faculties': 'tests',
                     "courses": question.course.course_id,
+                    "anonymous": question.is_anonymous
                  }
-        return clean_time_data(q_data)
+
 
 def qa_setup():
     """Setup for qa tests."""
@@ -403,8 +403,6 @@ def qa_setup():
               }
         _a = QA_Answer.objects.create(**_a)
         answer = AnswerQuery.get_query_set(_q)
-        for a in answer:
-            clean_time_data(a)
         for u in range(i):
             QA_Question_Upvote.objects.create(question=_q, user=test_user)
             QA_Answer_Upvote.objects.create(answer=_a, user=test_user)
