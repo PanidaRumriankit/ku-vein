@@ -60,7 +60,7 @@ class UserData(models.Model):
 
 
 class UserProfile(models.Model):
-    user = models.ForeignKey(UserData, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(UserData, on_delete=models.CASCADE, unique=True)
     img_id = models.CharField(max_length=100, null=True, default=None)
     img_link = models.TextField(null=True, default=None)
     img_delete_hash = models.CharField(max_length=100, null=True, default=None)
