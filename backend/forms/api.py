@@ -29,6 +29,7 @@ from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
 from .db_put import PutFactory
 
+
 app = NinjaExtraAPI()
 
 
@@ -364,7 +365,17 @@ class QAController(ControllerBase):
         return strategy.delete_data(data.model_dump())
 
 
-def backup(request):
-    """Use for download data from MySQL server to local."""
-    print(request)
-    DatabaseBackup().local_backup()
+@api_controller("/backup")
+class BackUpController(ControllerBase):
+    """Controller for handling Backup endpoints."""
+
+    @http_post("")
+    def backup(self, request):
+        """Use for download data from MySQL server to local server."""
+        print(request)
+        if DatabaseBackup().local_backup():
+            return Response({"success": "Backup is done."},
+                            status=202)
+        return Response({"success": "But the system does not require a backup right now."},
+                            status=202)
+

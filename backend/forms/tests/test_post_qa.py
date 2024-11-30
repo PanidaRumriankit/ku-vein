@@ -6,6 +6,10 @@ from ..db_post import QuestionPost, AnswerPost
 from .set_up import qa_setup
 from django.test import TestCase
 
+from .set_up import qa_setup
+from ..db_post import QuestionPost, AnswerPost
+from ..models import UserData
+
 
 class QuestionPostTest(TestCase):
     """Class for test POST question."""

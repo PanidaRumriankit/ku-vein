@@ -1,8 +1,8 @@
 """Models module for make query for the frontend."""
 
-from django.db import models
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
 
 
 class CourseData(models.Model):
@@ -60,8 +60,10 @@ class UserData(models.Model):
 
 
 class FollowData(models.Model):
-    this_user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='following')
-    follow_by = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='followers')
+    this_user = models.ForeignKey(UserData, on_delete=models.CASCADE,
+                                  related_name='following')
+    follow_by = models.ForeignKey(UserData, on_delete=models.CASCADE,
+                                  related_name='followers')
 
     class Meta:
         app_label = 'forms'
@@ -120,7 +122,7 @@ class Note(models.Model):
     date_data = models.DateTimeField(auto_now_add=True)
     faculty = models.CharField(max_length=100, default=None)
     file_name = models.CharField(max_length=255, default=None)
-    note_file = models.FileField(upload_to='note_files/', default=None, max_length=255)
+    pdf_url = models.CharField(max_length=1000, default=None)
     pen_name = models.CharField(max_length=100, default=None)
     anonymous = models.BooleanField(default=False)
 
@@ -180,7 +182,8 @@ class QA_Answer_Upvote(models.Model):
 
 
 class BookMark(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
+                                     default=None)
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
@@ -193,7 +196,8 @@ class BookMark(models.Model):
 
 
 class History(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
+                                     default=None)
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)

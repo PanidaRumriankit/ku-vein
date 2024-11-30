@@ -6,6 +6,7 @@ from ..models import QA_Question, QA_Answer, UserData, CourseData
 from ..db_put import QA_QuestionPut, QA_AnswerPut, UserDataPut
 from django.test import TestCase
 
+
 class QuestionPutTest(TestCase):
     """Testcases for PUT request to question."""
 

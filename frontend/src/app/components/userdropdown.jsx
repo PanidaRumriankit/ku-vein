@@ -1,10 +1,15 @@
 "use client";
 
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/react";
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger
+} from "@nextui-org/react";
 import PersonIcon from "@mui/icons-material/Person";
-import { usersDropdown } from "../constants";
-import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import {usersDropdown} from "../constants";
+import {signOut} from "next-auth/react";
+import {useRouter} from "next/navigation";
 
 export default function UserDropdown() {
   const router = useRouter();
@@ -20,7 +25,7 @@ export default function UserDropdown() {
             key={item.key}
             className={` 
               ${item.key === "logout" ? "!text-red-300 hover:!text-red-500" : ""}
-              hover:bg-gray-100 dark:hover:bg-zinc-700 dark:text-white rounded-md transition-colors hover:cursor-pointer px-2 py-1
+              text-black hover:bg-gray-100 dark:hover:bg-zinc-700 dark:text-white rounded-md transition-colors hover:cursor-pointer px-2 py-1
             `}
             onClick={() => {
               if (item.key === "logout") {

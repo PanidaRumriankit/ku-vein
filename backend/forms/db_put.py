@@ -1,12 +1,11 @@
 """This module use for PUT and update database."""
 
 import logging
-
-from datetime import datetime
 from abc import ABC, abstractmethod
+
 from ninja.responses import Response
-from .models import (CourseReview, UserData, CourseData, ReviewStat,
-                     QA_Question, QA_Answer, Note)
+
+from .models import (CourseReview, UserData, QA_Question, QA_Answer, Note)
 
 logger = logging.getLogger("user_logger")
 

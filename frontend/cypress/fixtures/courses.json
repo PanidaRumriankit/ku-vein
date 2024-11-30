@@ -1,0 +1,127 @@
+[
+    {
+      "courses_id": "01200101-64",
+      "courses_name": "Innovative Thinking",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01200431-00",
+      "courses_name": "Principles of Rail Engineering",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01200432-00",
+      "courses_name": "Rolling Stock Technology",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01200433-00",
+      "courses_name": "Signalling and Telecommunication Systems",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01204111-65",
+      "courses_name": "Computers and Programming",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01204216-65",
+      "courses_name": "Probability and Statistics for Computer Engineers",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01204461-60",
+      "courses_name": "Artificial Intelligence",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219116-65",
+      "courses_name": "Computer Programming II",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219117-65",
+      "courses_name": "Computer Programming Laboratory II",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219217-65",
+      "courses_name": "Data Structure and Algorithm I",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219222-65",
+      "courses_name": "Introduction to Computer Systems",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219223-60",
+      "courses_name": "Computer System Laboratory",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219243-65",
+      "courses_name": "Principles of Software Design",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219266-60",
+      "courses_name": "Knowledge Engineering and Knowledge",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219313-60",
+      "courses_name": "Communication Skills for Software and Knowledge Engineers",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219325-60",
+      "courses_name": "Software Development Security",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219335-65",
+      "courses_name": "Data Acquisition and Integration",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219343-65",
+      "courses_name": "Software Testing",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219344-60",
+      "courses_name": "Mobile Software Development",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219345-60",
+      "courses_name": "Software Verification and Validation",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219367-65",
+      "courses_name": "Data Analytics",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219367-60",
+      "courses_name": "Data Analytics",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219382-60",
+      "courses_name": "Interaction Design",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219395-60",
+      "courses_name": "Innovative Software Group Project Preparation",
+      "courses_type": "inter"
+    },
+    {
+      "courses_id": "01219411-60",
+      "courses_name": "Computer Systems Security",
+      "courses_type": "inter"
+    }
+  ]
