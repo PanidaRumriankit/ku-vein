@@ -2,7 +2,7 @@
 import json
 
 from .set_up import qa_setup
-from ..models import QA_Question, QA_Answer
+from ..models import QA_Question, QA_Answer, UserData
 from ..db_put import QA_QuestionPut, QA_AnswerPut
 from django.test import TestCase
 
@@ -16,9 +16,10 @@ class QuestionPutTest(TestCase):
         self.question = QA_Question.objects.all()[0]
         self.question_put_dict = {
             "question_id": self.question.question_id,
+            "question_title": self.question.question_title,
             "question_text": self.question.question_text,
             "faculty": self.question.faculty,
-            "pen_name": "Solaire of Astora",
+            "pen_name": self.question.user.user_name,
         }
 
     def test_response_successful_put(self):
@@ -46,6 +47,16 @@ class QuestionPutTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content)["error"],
                             "The Question with that ID does not exists.")
+        
+    def test_response_anonymous(self):
+        """Sucessful PUT request handling."""
+        question_id = self.question_put_dict['question_id']
+        self.question_put_dict['pen_name'] = 'Anonymous'
+        response = self.question_put.put_data(self.question_put_dict)
+        self.assertEqual(json.loads(response.content)['success'], "The requested question's attribute has been changed.")
+        self.assertEqual(response.status_code, 200)
+        question_anonymous = QA_Question.objects.get(question_id=question_id)
+        self.assertEqual(question_anonymous.is_anonymous, True)
 
 
 class AnswerPutTest(TestCase):
@@ -59,6 +70,7 @@ class AnswerPutTest(TestCase):
         self.answer_put_dict = {
             "answer_id": self.answer.answer_id,
             "answer_text": self.answer.answer_text,
+            "pen_name": self.answer.user.user_name
         }
 
     def test_response_successful_put(self):
@@ -86,3 +98,13 @@ class AnswerPutTest(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content)["error"],
                             "The Answer with that ID does not exists.")
+        
+    def test_response_anonymous(self):
+        """Sucessful PUT request handling."""
+        answer_id = self.answer_put_dict['answer_id']
+        self.answer_put_dict['pen_name'] = 'Anonymous'
+        response = self.answer_put.put_data(self.answer_put_dict)
+        self.assertEqual(json.loads(response.content)['success'], "The requested answer's attribute has been changed.")
+        self.assertEqual(response.status_code, 200)
+        answer_anonymous = QA_Answer.objects.get(answer_id=answer_id)
+        self.assertEqual(answer_anonymous.is_anonymous, True)
