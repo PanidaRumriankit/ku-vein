@@ -178,7 +178,7 @@ class ReviewPutSchema(Schema):
     class_type: str
 
 
-class ReviewDeleteSchema(Schema):
+class ReviewDeleteSchema(ModelSchema):
     """Schema for delete the CourseReview"""
 
     class Meta:
