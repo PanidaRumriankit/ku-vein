@@ -293,27 +293,19 @@ class UserQuery(QueryFilterStrategy):
         if filter_key['email']:
             self.user = UserData.objects.filter(
                 email=filter_key['email']
-            ).values(
-                id=F('user_id'),
-                username=F('user_name'),
-                desc=F('description'),
-                pf_color=F('profile_color'),
-            ).first()
+            )
 
         elif filter_key['user_id']:
             self.user = UserData.objects.filter(
                 user_id=filter_key['user_id']
-            ).values(
-                id=F('user_id'),
-                username=F('user_name'),
-                desc=F('description'),
-                pf_color=F('profile_color')
-            ).first()
+            )
 
         elif filter_key['user_name']:
             self.user = UserData.objects.filter(
                 user_name=filter_key['user_name']
-            ).values(
+            )
+
+        self.user = self.user.values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
