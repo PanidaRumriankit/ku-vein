@@ -350,16 +350,26 @@ def book_setup(review, user):
 def question_to_dict(question: QA_Question):
         """Turns question into dict for testing."""
         return {
+                    'questions_title': question.question_title,
                     'questions_id': question.question_id,
                     'questions_text': question.question_text,
                     'users': question.user.user_id,
                     'num_convo': question.qa_answer_set.count(),
                     'upvote': question.qa_question_upvote_set.count(),
-                    'post_time': question.posted_time,
+                    'post_time': question.posted_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z',
                     'faculties': 'tests',
                     "courses": question.course.course_id,
                     "anonymous": question.is_anonymous
                  }
+
+def answer_to_dict(answer: QA_Answer):
+    return [{'answers_id': answer.answer_id,
+            'post_time': answer.posted_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z',
+            'text': answer.answer_text,
+            'upvote': answer.qa_answer_upvote_set.count(),
+            'users': answer.user.user_id,
+            'anonymous': answer.is_anonymous
+            }]
 
 
 def qa_setup():
@@ -374,19 +384,21 @@ def qa_setup():
     answers = []
     qa_data = [
         {
+            "question_title": "Test question 1", 
             "question_text": "Test question 1",
             "faculty": "tests",
             "user": test_user,
-            "posted_time": datetime(2024, 12, 30, 23, 59, 57),
+            "posted_time": timezone.datetime(2024, 12, 30, 23, 59, 57),
             "pen_name": "Solaire of Astora",
             "is_anonymous": False,
             "course": test_course,
         },
         {
+            "question_title": "Test question 2", 
             "question_text": "Test question 2",
             "faculty": "tests",
             "user": test_user,
-            "posted_time": datetime(2024, 12, 30, 23, 59, 58),
+            "posted_time": timezone.datetime(2024, 12, 30, 23, 59, 58),
             "pen_name": "Wagyu Beef",
             "is_anonymous": False,
             "course": test_course,
@@ -397,16 +409,16 @@ def qa_setup():
         _a = {"question_id": _q.question_id,
               "user": test_user,
               "answer_text": f"Test answer {i}",
-              "posted_time": datetime(2024, 12, 31, 0, 0, i),
+              "posted_time": timezone.datetime(2024, 12, 31, 0, 0, i),
               "pen_name": "Solaire of Astora",
               "is_anonymous": False
               }
         _a = QA_Answer.objects.create(**_a)
-        answer = AnswerQuery.get_query_set(_q)
         for u in range(i):
             QA_Question_Upvote.objects.create(question=_q, user=test_user)
             QA_Answer_Upvote.objects.create(answer=_a, user=test_user)
         question = question_to_dict(_q)
+        answer = answer_to_dict(_a)
         questions += [question]
         answers += [answer]
     return questions, answers
