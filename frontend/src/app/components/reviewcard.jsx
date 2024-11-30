@@ -166,7 +166,7 @@ export default function ReviewCard({item, page = null}) {
                     router.push(`/user/${userId}`);}
                   }}
               >
-                {item.username}
+                {item.name || item.username}
               </span>
               {!item.is_anonymous && isHovered && (
                 <div
