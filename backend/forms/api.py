@@ -308,7 +308,7 @@ class QAController(ControllerBase):
 
     @http_get("")
     def get_qa(self, request, question_id: int|None=None, mode: str='latest'):
-        """Get all Answers to a Q&A question."""
+        """Get all Question or Answers to a Q&A."""
         if question_id is None:
             strategy = QueryFactory.get_query_strategy("qa_question")
         else:
