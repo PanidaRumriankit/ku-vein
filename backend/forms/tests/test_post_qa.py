@@ -41,6 +41,12 @@ class QuestionPostTest(TestCase):
         self.assertEqual(json.loads(response.content)['error'], "Data is missing from the response body.")
         self.assertEqual(response.status_code, 400)
 
+    def test_post_question_but_bad_course(self):
+        """Test post to /qa but with wrong course id"""
+        self.question['course_id'] = 123
+        response = self.Qpost.post_data(self.question)
+        self.assertEqual(json.loads(response.content)['error'], "This course isn't in the database.")
+        self.assertEqual(response.status_code, 400)
 
 class AnswerPostTest(TestCase):
     """Class for test POST answer."""
