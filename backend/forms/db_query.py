@@ -465,7 +465,7 @@ class QuestionQuery(QueryFilterStrategy):
                     faculties=F('faculty'),
                     courses=F('course__course_id'),
                     anonymous=F('is_anonymous'),
-                    title=F('question_title')
+                    questions_title=F('question_title')
                 ).annotate(
                     num_convo=Count('qa_answer'),
                     upvote=Count('qa_question_upvote')
@@ -505,9 +505,11 @@ class AnswerQuery(QueryFilterStrategy):
                     text=F('answer_text'),
                     users=F('user'),
                     post_time=F('posted_time'),
+                    anonymous=F('is_anonymous')
                 ).annotate(
                     upvote=Count('qa_answer_upvote')
                 )
+    
     @staticmethod
     def sorted_qa_data(answer, mode) -> list[dict]:
         """Sort queryset by mode argument."""
