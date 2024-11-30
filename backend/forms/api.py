@@ -13,7 +13,7 @@ from .db_post import PostFactory
 from .db_put import PutFactory
 from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, ReviewPutSchema,
-                      ReviewDeleteSchema,
+                      ReviewDeleteSchema, UserProfileSchema,
                       UpvotePostSchema,
                       FollowSchema,
                       UserDataSchema, UserDataEditSchema,
@@ -177,6 +177,18 @@ class UserController(ControllerBase):
     def edit_user(self, request, data: UserDataEditSchema):
         """Edit data for the user."""
         strategy = PutFactory.get_put_strategy("user")
+        return strategy.put_data(data.model_dump())
+
+    @http_post("/profile", response={200: UserProfileSchema})
+    def add_new_profile_pic(self, request, data: UserProfileSchema):
+        """Use for create new profile"""
+        strategy = PostFactory.get_post_strategy("profile")
+        return strategy.post_data(data.model_dump())
+
+    @http_put("/profile", response={200: UserProfileSchema})
+    def add_new_profile_pic(self, request, data: UserProfileSchema):
+        """Use for create new profile"""
+        strategy = PutFactory.get_put_strategy("profile")
         return strategy.put_data(data.model_dump())
 
 
