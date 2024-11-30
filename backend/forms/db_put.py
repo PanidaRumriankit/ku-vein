@@ -1,11 +1,14 @@
 """This module use for PUT and update database."""
 
+import requests
 import logging
 from abc import ABC, abstractmethod
 
+from decouple import config
 from ninja.responses import Response
+from .models import (CourseReview, UserData,
+                     QA_Question, QA_Answer, Note, UserProfile)
 
-from .models import (CourseReview, UserData, QA_Question, QA_Answer, Note)
 
 logger = logging.getLogger("user_logger")
 
@@ -172,12 +175,58 @@ class QA_AnswerPut(PutStrategy):
                          }, status=200)
 
 
+class UserProfilePut(PutStrategy):
+    """Class for change UserProfile object."""
+
+    def put_data(self, data: dict):
+        """Change the UserProfile data."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+
+            profile = UserProfile.objects.get(user=user)
+
+            try:
+                url = f"https://api.imgur.com/3/image/{profile.img_delete_hash}"
+                headers = {
+                    "Authorization":
+                        "Client-ID"
+                        f" {config('IMGUR_CLIENT_ID', cast=str, default='')}"
+                }
+
+                response = requests.delete(url, headers=headers)
+
+
+            except Exception as e:
+                return Response({e}, status=401)
+
+
+            profile.img_id = data['img_id']
+            profile.img_link = data['img_link']
+            profile.img_delete_hash = data['img_delete_hash']
+
+            profile.save()
+
+            return Response(response.json(), status=response.status_code)
+
+        except KeyError as e:
+            return Response({"error": f"Missing data: {str(e)}"}, status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The User isn't in the database."},
+                            status=401)
+
+        except UserProfile.DoesNotExist:
+            return Response({"error": "The User doesn't have profile."},
+                            status=401)
+
+
 class PutFactory:
     """Factory class to handle query strategy selection."""
 
     strategy_map = {
         "review": ReviewPut,
         "user": UserDataPut,
+        "profile": UserProfilePut,
         "question": QA_QuestionPut,
         "answer": QA_AnswerPut,
     }

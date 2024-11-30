@@ -7,7 +7,7 @@ from typing import Union
 
 from django.conf import settings
 from django.db.models import (F, Count, ExpressionWrapper,
-                              DateTimeField)
+                              DateTimeField, OuterRef, Subquery)
 from django.db.models.functions import TruncDate
 from django.utils import timezone
 from google.cloud import storage
@@ -16,7 +16,7 @@ from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
-                     QA_Question,
+                     QA_Question, UserProfile,
                      Note, UpvoteStat, CourseReview,
                      BookMark, History)
 
@@ -293,31 +293,29 @@ class UserQuery(QueryFilterStrategy):
         if filter_key['email']:
             self.user = UserData.objects.filter(
                 email=filter_key['email']
-            ).values(
-                id=F('user_id'),
-                username=F('user_name'),
-                desc=F('description'),
-                pf_color=F('profile_color'),
-            ).first()
+            )
 
         elif filter_key['user_id']:
             self.user = UserData.objects.filter(
                 user_id=filter_key['user_id']
-            ).values(
-                id=F('user_id'),
-                username=F('user_name'),
-                desc=F('description'),
-                pf_color=F('profile_color')
-            ).first()
+            )
 
         elif filter_key['user_name']:
             self.user = UserData.objects.filter(
                 user_name=filter_key['user_name']
-            ).values(
+            )
+
+        img_link_current_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('user_id')
+                ).values('img_link')[:1])
+
+        self.user = self.user.values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
-                pf_color=F('profile_color')
+                pf_color=F('profile_color'),
+                profile_link=img_link_current_subquery
             ).first()
 
         try:
@@ -330,18 +328,33 @@ class UserQuery(QueryFilterStrategy):
                             status=401)
 
         if self.user:
+            img_link_following_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('this_user')
+                ).values('img_link')[:1]
+            )
             following = list(FollowData.objects.filter(
                 follow_by=self.user['id']
             ).values(
+                follow_id=F('this_user__user_id'),
                 username=F('this_user__user_name'),
-                desc=F('this_user__description')
+                desc=F('this_user__description'),
+                profile_link=img_link_following_subquery
             ))
+
+            img_link_follower_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('follow_by')
+                ).values('img_link')[:1]
+            )
 
             follower = list(FollowData.objects.filter(
                 this_user=self.user['id']
             ).values(
+                follow_id=F('follow_by__user_id'),
                 username=F('follow_by__user_name'),
-                desc=F('follow_by__description')
+                desc=F('follow_by__description'),
+                profile_link=img_link_follower_subquery
             ))
 
             self.user['following'] = following
