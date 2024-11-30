@@ -34,7 +34,7 @@ export default function NotePage({params}) {
       <div className="w-full max-w-5xl">
         {note.length > 0 ? (
           note.map((data, index) => (
-            <NoteBox data={data} key={index}/>
+            <NoteBox userName={data.name} data={data} key={index}/>
           ))
         ) : (
           <p className="text-green-400 text-center text-3xl">
