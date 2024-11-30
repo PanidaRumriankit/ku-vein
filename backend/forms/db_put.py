@@ -188,9 +188,9 @@ class UserProfilePut(PutStrategy):
             try:
                 url = f"https://api.imgur.com/3/image/{profile.img_delete_hash}"
                 headers = {
-                    "Authorization": f"Client-ID {config('IMGUR_CLIENT_ID',
-                                                         cast=str,
-                                                         default='')}"
+                    "Authorization":
+                        "Client-ID"
+                        f" {config('IMGUR_CLIENT_ID', cast=str, default='')}"
                 }
 
                 response = requests.delete(url, headers=headers)
