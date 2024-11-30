@@ -18,7 +18,7 @@ from .models import (CourseReview, UserData,
                      UpvoteStat, FollowData, Note,
                      QA_Question, QA_Answer,
                      QA_Question_Upvote, QA_Answer_Upvote,
-                     BookMark, History)
+                     BookMark, History, UserProfile)
 
 logger = logging.getLogger("user_logger")
 
@@ -54,6 +54,29 @@ class UserDataPost(PostStrategy):
                                       "from the response body."},
                             status=400)
 
+
+class UserProfilePost(PostStrategy):
+    """Class for created new UserProfile object."""
+
+    def post_data(self, data: dict):
+        """Collect the data from the frontend."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+
+            UserProfile.objects.create(
+                user=user,
+                img_id=data['img_id'],
+                img_link=data['img_link'],
+                img_delete_hash=data['img_delete_hash']
+            )
+
+        except KeyError:
+            return Response({"error": "Missing data from the response body."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The User isn't in the database."},
+                            status=401)
 
 class ReviewPost(PostStrategy):
     """Class for created new CourseReview object."""
@@ -614,6 +637,7 @@ class PostFactory:
     strategy_map = {
         "review": ReviewPost,
         "user": UserDataPost,
+        "profile": UserProfilePost,
         "review_upvote": ReviewUpvotePost,
         "question_upvote": QuestionUpvotePost,
         "answer_upvote": AnswerUpvotePost,
