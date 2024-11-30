@@ -1,12 +1,15 @@
 """This module use for PUT and update database."""
 
+import requests
 import logging
 
 from datetime import datetime
 from abc import ABC, abstractmethod
+
+from decouple import config
 from ninja.responses import Response
 from .models import (CourseReview, UserData, CourseData, ReviewStat,
-                     QA_Question, QA_Answer, Note)
+                     QA_Question, QA_Answer, Note, UserProfile)
 
 logger = logging.getLogger("user_logger")
 
@@ -171,6 +174,51 @@ class QA_AnswerPut(PutStrategy):
         return Response({"success": "The requested answer's attribute has been changed.",
                          "answer_data": [{key: val} for key, val in answer.__dict__.items() if key[0] != '_']
                          }, status=200)
+
+
+class UserProfilePut(PutStrategy):
+    """Class for change UserProfile object."""
+
+    def put_data(self, data: dict):
+        """Change the UserProfile data."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+
+            profile = UserProfile.objects.get(user=user)
+
+            try:
+                url = f"https://api.imgur.com/3/image/{profile.img_delete_hash}"
+                headers = {
+                    "Authorization": f"Client-ID {config('IMGUR_CLIENT_ID',
+                                                         cast=str,
+                                                         default='')}"
+                }
+
+                response = requests.delete(url, headers=headers)
+
+
+            except Exception as e:
+                return Response({e}, status=401)
+
+
+            profile.img_id = data['img_id']
+            profile.img_link = data['img_link']
+            profile.img_delete_hash = data['img_delete_hash']
+
+            profile.save()
+
+            return Response(response.json(), status=response.status_code)
+
+        except KeyError as e:
+            return Response({"error": f"Missing data: {str(e)}"}, status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The User isn't in the database."},
+                            status=401)
+
+        except UserProfile.DoesNotExist:
+            return Response({"error": "The User doesn't have profile."},
+                            status=401)
 
 
 class PutFactory:
