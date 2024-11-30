@@ -138,4 +138,8 @@ ca.pem
 # Log file
 *.log
 
-database/
+forms/database/scraped_data
+
+forms/database/backup/*
+
+!forms/database/backup/logs.json
