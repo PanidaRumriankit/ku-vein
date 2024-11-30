@@ -80,17 +80,18 @@ class UserDataSchema(ModelSchema):
         fields = ['email']
 
 
-class UserDataEditSchema(Schema):
+class UserDataEditSchema(ModelSchema):
     """
     Schema for editing existing user data.
 
     Take all the fields from the accounts edit forms.
     """
-    user_id: int
-    user_name: str
-    user_type: str
-    description: str
-    profile_color: str
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = UserData
+        fields = ['user_id','user_name','user_type','description','profile_color']
 
         
 class FollowSchema(Schema):
@@ -293,6 +294,12 @@ class QuestionDeleteSchema(Schema):
     question_id: str
 
 
+class QuestionUpvoteSchema(Schema):
+    """Schema for QA_Question_Upvote, used for upvoting question."""
+    question_id: str
+    user_id: str
+
+
 class AnswerCreateSchema(Schema):
     """
     Schema for QA_Answer, used for creating new answers to a question.
@@ -325,6 +332,12 @@ class AnswerPutSchema(Schema):
 class AnswerDeleteSchema(Schema):
     """Schema for QA_Answer, used for deleting Answer."""
     answer_id: str
+
+
+class AnswerUpvoteSchema(Schema):
+    """Schema for QA_Answer_Upvote, used for upvoting answer."""
+    answer_id: str
+    user_id: str
 
 
 class BookMarkSchema(Schema):
