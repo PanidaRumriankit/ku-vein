@@ -144,7 +144,9 @@ class Note(models.Model):
 
 class QA_Question(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
+    question_title = models.CharField(max_length=100, default='')
     question_text = models.TextField(default=None)
+    course = models.ForeignKey(CourseData, on_delete=models.CASCADE)
     faculty = models.CharField(max_length=100, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
     posted_time = models.DateTimeField(auto_now_add=True)
