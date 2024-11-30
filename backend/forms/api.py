@@ -349,6 +349,6 @@ class BackUpController(ControllerBase):
         if DatabaseBackup().local_backup():
             return Response({"success": "Backup is done."},
                             status=202)
-        return Response({"success": "The system does not require a backup right now."},
+        return Response({"success": "But the system does not require a backup right now."},
                             status=202)
 
