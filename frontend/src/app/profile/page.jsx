@@ -14,6 +14,7 @@ import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
 import Popup from 'reactjs-popup';
+import { fetchData } from 'next-auth/client/_utils';
 
 export default function Profile() {
   const {theme} = useTheme();
@@ -25,6 +26,8 @@ export default function Profile() {
   const [editOpen, setEditOpen] = useState(false);
   const [putData, setPutData] = useState(null);
   const [colorBg, setColorBg] = useState('');
+  const [followingData, setFollowingData] = useState([]);
+  const [followerData, setFollowerData] = useState([]);
 
   const handleColorClick = () => setColorPickerOpen(true);
   const closeColorPicker = () => setColorPickerOpen(false);
@@ -97,6 +100,26 @@ export default function Profile() {
   }
 
   if (!putData) return null;
+
+  const handleFollow = () => {
+    const currentUser = { username: session.user.name, desc: session.user.description || "" };
+  
+    const isFollowing = putData.follower.some(follower => follower.username === currentUser.username);
+  
+    let updatedFollowers;
+  
+    if (isFollowing) {
+      updatedFollowers = putData.follower.filter(follower => follower.username !== currentUser.username);
+    } else {
+      updatedFollowers = [...putData.follower, currentUser];
+    }
+  
+    setPutData({
+      ...putData,
+      follower: updatedFollowers,
+    });
+
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -204,7 +227,7 @@ export default function Profile() {
             </Popup>
             {/* Follower Count */}
             <Popup trigger={
-              <div className="text-center cursor-pointer">
+              <div className="text-center cursor-pointer" onClick={handleFollow}>
                 <span className="block">{putData.follower_count}</span>
                 <span className="text-gray-500">Follower</span>
               </div>
