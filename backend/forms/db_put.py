@@ -226,6 +226,7 @@ class PutFactory:
     strategy_map = {
         "review": ReviewPut,
         "user": UserDataPut,
+        "profile": UserProfilePut,
         "question": QA_QuestionPut,
         "answer": QA_AnswerPut,
     }
