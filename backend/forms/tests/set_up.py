@@ -350,14 +350,15 @@ def book_setup(review, user):
 def question_to_dict(question: QA_Question):
         """Turns question into dict for testing."""
         return {
-                    'questions_title': question.question_title,
                     'questions_id': question.question_id,
+                    'questions_title': question.question_title,
                     'questions_text': question.question_text,
                     'users': question.user.user_id,
+                    'pen_names': question.pen_name,
                     'num_convo': question.qa_answer_set.count(),
                     'upvote': question.qa_question_upvote_set.count(),
                     'post_time': question.posted_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z',
-                    'faculties': 'tests',
+                    'faculties': question.faculty,
                     "courses": question.course.course_id,
                     "anonymous": question.is_anonymous
                  }
@@ -368,6 +369,7 @@ def answer_to_dict(answer: QA_Answer):
             'text': answer.answer_text,
             'upvote': answer.qa_answer_upvote_set.count(),
             'users': answer.user.user_id,
+            'pen_names': answer.pen_name,
             'anonymous': answer.is_anonymous
             }]
 
@@ -398,9 +400,9 @@ def qa_setup():
             "question_text": "Test question 2",
             "faculty": "tests",
             "user": test_user,
-            "posted_time": timezone.datetime(2024, 12, 30, 23, 59, 58),
+            "posted_time": timezone.datetime(2024, 12, 30, 23, 59, 59),
             "pen_name": "Wagyu Beef",
-            "is_anonymous": False,
+            "is_anonymous": True,
             "course": test_course,
         },
     ]
@@ -409,7 +411,7 @@ def qa_setup():
         _a = {"question_id": _q.question_id,
               "user": test_user,
               "answer_text": f"Test answer {i}",
-              "posted_time": timezone.datetime(2024, 12, 31, 0, 0, i),
+              "posted_time": timezone.datetime(2024, 12, 31, 0, 0, 0),
               "pen_name": "Solaire of Astora",
               "is_anonymous": False
               }
