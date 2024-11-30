@@ -7,8 +7,8 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
-from ..db_query import clean_time_data, QuestionQuery, AnswerQuery
 from ..db_post import HistoryPost
+from ..db_query import clean_time_data, AnswerQuery
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
@@ -324,7 +324,7 @@ def note_setup(course, user) -> Note:
         course=course[0],
         faculty="pyromancer",
         file_name='yes_indeed.pdf',
-        note_file=path,
+        pdf_url=path,
         date_data=timezone.now(),
         pen_name="Yes"
     )

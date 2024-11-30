@@ -11,7 +11,6 @@ import {noteURL} from "../constants/backurl";
 import {courseType} from "../constants";
 import FacultyDropDown from "../components/facultydropdown";
 
-import {useRouter} from "next/navigation";
 import {useSession} from "next-auth/react";
 import {useState} from "react";
 
@@ -32,7 +31,6 @@ export default function AddNote({courseId}) {
 
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
-  const route = useRouter();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -120,11 +118,11 @@ export default function AddNote({courseId}) {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error", response.status, errorText);
-        setError(errorText);
+        setError("Unable to send a file please use pdf format file less than 100MB");
       } else {
         const data = await response.json();
         console.log('Success:', data);
-        route.refresh();
+        window.location.reload();
       }
     } catch (err) {
       console.error('Error:', err);
@@ -202,7 +200,7 @@ export default function AddNote({courseId}) {
               type="light"
               onClick={handlePDFUpload}
               disabled={!selectedFile}
-              color="primary"
+              color={selectedFile ? "primary": "default"}
               className="w-30 justify-end"
             >
               Upload

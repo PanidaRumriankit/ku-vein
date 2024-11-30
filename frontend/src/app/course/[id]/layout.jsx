@@ -43,7 +43,7 @@ export default function CourseLayout({children, params}) {
       try {
         const data = await MakeFilterApiRequest("latest", courseId, "stats");
         setStats(data);
-        setColor(facultyColor[data.faculties] || "transparent");
+        setColor(facultyColor[data.mode_faculty] || "transparent");
         setRating(data.avg_rating || 0);
         setEffort(data.avg_effort || 0);
       } catch (e) {
@@ -135,7 +135,7 @@ export default function CourseLayout({children, params}) {
                 <GradePieChart itemData={stats.total_grade}/>
               </div>
             </div>
-            {/*  Add more field*/}
+            {/*  Add more field */}
           </div>
         </div>
 

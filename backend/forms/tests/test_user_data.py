@@ -2,12 +2,13 @@
 
 import json
 
+from django.test import TestCase
+
 from .set_up import user_set_up
-from ..models import UserData
-from ..db_query import UserQuery
 from ..db_post import UserDataPost
 from ..db_put import UserDataPut
-from django.test import TestCase
+from ..db_query import UserQuery
+from ..models import UserData
 
 
 class UserDataPostTests(TestCase):

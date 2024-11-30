@@ -5,9 +5,12 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     services:
       mysql:
-        image: mysql:8.0  # Specify the MySQL version you need
+        image: mysql:8.0
         ports:
           - 3306:3306
         env:
@@ -22,15 +25,26 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: '3.12'
+
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r backend/requirements.txt
+
     - name: Grant Permissions for Testing
       env:
         MYSQL_PWD: root
       run: |
         mysql -u root -h 172.18.0.1 -e "GRANT ALL PRIVILEGES ON test_github_ci_test.* TO 'django'@'%'; FLUSH PRIVILEGES;"
+
+    - name: Authenticate to Google Cloud using Workload Identity Federation
+      id: auth
+      uses: google-github-actions/auth@v1
+      with:
+        workload_identity_provider: "projects/754614814453/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider"
+        service_account: "ku-vein-note-upload@rare-truck-442618-a0.iam.gserviceaccount.com"
+        create_credentials_file: true
+
     - name: Set up database
       env:
         MYSQL_HOST: 172.18.0.1
@@ -41,8 +55,10 @@ jobs:
       run: |
         python backend/manage.py makemigrations --merge
         python backend/manage.py migrate
+
     - name: Set Environments
       run: |
+        echo GS_BUCKET_NAME=${{ secrets.GS_BUCKET_NAME }} >> .env
         echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
         echo DEBUG=True >> .env
         echo TIME_ZONE=Asia/Bangkok >> .env
@@ -52,6 +68,7 @@ jobs:
         echo MYSQLPASS=django_password >> .env
         echo MYSQLDATABASE=github_ci_test >> .env
         echo MYSQLPORT=3306 >> .env
+
     - name: Run Tests
       run: |
         cd backend

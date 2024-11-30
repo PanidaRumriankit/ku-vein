@@ -8,7 +8,7 @@ import {ThemeProvider} from 'next-themes';
 import {userURL} from "./constants/backurl.js";
 import UserDropdown from "./components/userdropdown";
 import PersonIcon from '@mui/icons-material/Person';
-import {SessionProvider, useSession, signIn, signOut} from "next-auth/react";
+import {SessionProvider, signIn, signOut, useSession} from "next-auth/react";
 import {useEffect, useState} from 'react';
 import Head from 'next/head';
 

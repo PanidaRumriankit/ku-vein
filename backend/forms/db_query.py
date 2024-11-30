@@ -1,6 +1,5 @@
 """This module use for contain the class for database query."""
 
-import os
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import Any
@@ -8,8 +7,11 @@ from typing import Union
 
 from django.conf import settings
 from django.db.models import (F, Count, ExpressionWrapper,
-                              DateTimeField, DateField)
+                              DateTimeField)
 from django.db.models.functions import TruncDate
+from django.utils import timezone
+from google.cloud import storage
+from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
@@ -63,12 +65,15 @@ class SortReview(QueryFilterStrategy):
             username=F('review__user__user_name'),
             review_text=F('review__reviews'),
             ratings=F('rating'),
+            efforts=F('effort'),
+            attendances=F('attendance'),
             year=F('academic_year'),
             name=F('pen_name'),
             grades=F('grade'),
             professor=F('review__instructor'),
             criteria=F('scoring_criteria'),
-            type=F('class_type'),
+            classes_type=F('class_type'),
+            courses_type=F('review__course__course_type'),
             is_anonymous=F('review__anonymous'),
         ).annotate(
             upvote=Count('upvotestat'),
@@ -411,7 +416,7 @@ class NoteQuery(QueryFilterStrategy):
                 user = UserData.objects.get(email=filter_key['email'])
                 note = note.filter(user=user)
 
-            note = note.values(
+            note_values = note.values(
                 courses_id=F('course__course_id'),
                 courses_name=F('course__course_name'),
                 faculties=F('faculty'),
@@ -420,30 +425,32 @@ class NoteQuery(QueryFilterStrategy):
                 name=F('pen_name'),
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
-                pdf_path=F('note_file'),
+                pdf_path=F('pdf_url'),
             ).annotate(
-            date=TruncDate(
-                ExpressionWrapper(
-                    F('date_data') + timedelta(hours=7),
-                    output_field=DateTimeField()
+                date=TruncDate(
+                    ExpressionWrapper(
+                        F('date_data') + timedelta(hours=7),
+                        output_field=DateTimeField()
+                    )
                 )
             )
-            )
 
-            for update_path in note:
-                relative_path = update_path['pdf_path']
+            # ggc storage upload
+            storage_client = storage.Client.from_service_account_info(
+                GOOGLE_CREDENTIAL)
+            bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
 
-                if "/" in relative_path:
-                    relative_path = relative_path.replace("/", "\\")
-
-                absolute_note_file_path = os.path.join(
-                    settings.BASE_DIR,
-                    'media',
-                    relative_path
+            for note in note_values:
+                blob_name = note['pdf_name']
+                blob = bucket.blob(blob_name)
+                note["pdf_url"] = blob.generate_signed_url(
+                    version="v4",
+                    expiration=timezone.timedelta(hours=2),
+                    method="GET"
                 )
-                update_path['pdf_file'] = absolute_note_file_path
+                # print(note["pdf_url"]) # debug the url
 
-            return list(note)
+            return list(note_values)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
@@ -455,15 +462,17 @@ class NoteQuery(QueryFilterStrategy):
 
         except Note.DoesNotExist:
             return Response({"error": "This Note isn't "
-                               "in the database."}, status=401)
+                                      "in the database."}, status=401)
 
 
 def clean_time_data(q):
     """This function is used to clean datetime formatting."""
     post_time = q['post_time'] + timedelta(hours=7)
-    q['post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
+    q[
+        'post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
     q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
     return q
+
 
 class QuestionQuery(QueryFilterStrategy):
     """Class for sending all the questions in the Q&A data."""
@@ -480,16 +489,16 @@ class QuestionQuery(QueryFilterStrategy):
     @staticmethod
     def get_query_set():
         """Get queryset with all required attributes to sort."""
-        return  QA_Question.objects.select_related().values(
-                    questions_id=F('question_id'),
-                    questions_text=F('question_text'),
-                    users=F('user'),
-                    post_time=F('posted_time'),
-                    faculties=F('faculty'),
-                ).annotate(
-                    num_convo=Count('qa_answer'),
-                    upvote=Count('qa_question_upvote')
-                )
+        return QA_Question.objects.select_related().values(
+            questions_id=F('question_id'),
+            questions_text=F('question_text'),
+            users=F('user'),
+            post_time=F('posted_time'),
+            faculties=F('faculty'),
+        ).annotate(
+            num_convo=Count('qa_answer'),
+            upvote=Count('qa_question_upvote')
+        )
 
     @staticmethod
     def sorted_qa_data(data, mode) -> list[dict]:
@@ -497,7 +506,7 @@ class QuestionQuery(QueryFilterStrategy):
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
                      'upvote': '-upvote'}
-        
+
         return data.order_by(sort_mode[mode])
 
 
@@ -508,7 +517,8 @@ class AnswerQuery(QueryFilterStrategy):
         """Get the data from the database and return to the frontend."""
         try:
             answer_list = []
-            question = QA_Question.objects.select_related().get(question_id=question_id)
+            question = QA_Question.objects.select_related().get(
+                question_id=question_id)
             answer_query_set = AnswerQuery.get_query_set(question)
             answer_data = self.sorted_qa_data(answer_query_set, mode)
 
@@ -516,28 +526,30 @@ class AnswerQuery(QueryFilterStrategy):
                 answer_list += [clean_time_data(d)]
 
         except QA_Question.DoesNotExist:
-            return Response({"error": "This question isn't in the database."}, status=400)
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
 
         return Response(answer_list, status=200)
-    
+
     @classmethod
     def get_query_set(cls, question):
         """Get queryset to sort (classmethod because I need this for testing, too)."""
         return question.qa_answer_set.all().values(
-                    answers_id=F('answer_id'),
-                    text=F('answer_text'),
-                    users=F('user'),
-                    post_time=F('posted_time'),
-                ).annotate(
-                    upvote=Count('qa_answer_upvote')
-                )
+            answers_id=F('answer_id'),
+            text=F('answer_text'),
+            users=F('user'),
+            post_time=F('posted_time'),
+        ).annotate(
+            upvote=Count('qa_answer_upvote')
+        )
+
     @staticmethod
     def sorted_qa_data(answer, mode) -> list[dict]:
         """Sort queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
                      'upvote': '-upvote'}
-        
+
         return answer.order_by(sort_mode[mode])
 
 

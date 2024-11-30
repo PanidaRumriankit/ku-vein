@@ -22,10 +22,6 @@ from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       BookMarkSchema,
                       QuestionCreateSchema, AnswerCreateSchema,
                       QuestionPutSchema, AnswerPutSchema)
-from .db_management import DatabaseBackup
-from .db_post import PostFactory
-from .db_query import QueryFactory, InterQuery
-from .db_put import PutFactory
 
 app = NinjaExtraAPI()
 

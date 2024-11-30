@@ -5,9 +5,8 @@ from typing import Optional
 from ninja import ModelSchema, Schema
 
 from .models import CourseData, UserData, CourseReview
-from .models import ReviewStat, Note, BookMark
 from .models import Inter, Normal, Special
-from .models import ReviewStat, Note, QA_Question, QA_Answer
+from .models import ReviewStat, Note
 
 
 class CourseDataSchema(ModelSchema):
@@ -165,7 +164,6 @@ class ReviewPostSchema(Schema):
 class ReviewPutSchema(Schema):
     """Schema for handling incoming review edit requests from users."""
     review_id: str
-    course_id: str
     course_type: str
     faculty: str
     reviews: str
