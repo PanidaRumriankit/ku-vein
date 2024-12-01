@@ -3,27 +3,37 @@
 import {useRouter, usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
-import ReportButton from "./reportbutton.jsx";
+import {useTheme} from "next-themes";
 import ShareButton from "./sharebutton.jsx";
+import PopupProfile from "./popupprofile.jsx";
 import TurnedInIcon from '@mui/icons-material/TurnedIn';
 import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUpTwoTone';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import Button from "@mui/material/Button";
-
+import BookmarkButton from "./bookmarkbutton.jsx";
+import GetUser from "../constants/getuser";
 
 export default function QuestionCard({item, bookmark}) {
   const router = useRouter();
   const pathname = usePathname();
   const {data: session} = useSession();
+  const {theme} = useTheme();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
   // const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
-  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [userId, setUserId] = useState(null);
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
+
+  const fetchUser = async () => {
+    const response = await GetUser(email);
+    setUserId(response.id);
+  };
 
   const handleUpvote = async () => {
     if (isLoading || !email || !idToken) return;
@@ -38,8 +48,8 @@ export default function QuestionCard({item, bookmark}) {
           "email": email,
         },
         body: JSON.stringify({
-          review_id: item.reviews_id,
-          email: email
+          question_id: item.questions_id,
+          user_id: userId
         })
       });
 
@@ -56,27 +66,68 @@ export default function QuestionCard({item, bookmark}) {
     }
   };
 
+  const handleMouseEnter = (e) => {
+    const rect = e.target.getBoundingClientRect();
+    setPopupPosition({
+      x: rect.left + window.scrollX,
+      y: rect.bottom + window.scrollY + 10,
+    });
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchUser();
+    }
+  }, [session]);
+
   return (
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
       <fieldset
-        className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800 shadow-lg cursor-pointer hover:shadow-xl"
-        onClick={() => router.push(`${pathname}/${item.question_id}`)}
+        className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-black shadow-lg cursor-pointer hover:shadow-xl"
+        onClick={() => router.push(`${pathname}/${item.questions_id}`)}
       >
         <div className="flex justify-between">
           <h3 className="text-xl font-semibold break-all">{item.questions_title}</h3>
-          <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {e.stopPropagation(); setIsBookmarked(!isBookmarked)}}>
-            {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
-          </div>
         </div>
         <br/>
         <div
           className="flex items-center justify-between text-gray-300 text-right">
           <p className="text-right">
-            {new Date(item.posted_time).toLocaleString()}
+            {new Date(item.post_time).toLocaleString()}
           </p>
-          <p className="text-left">
-            โดย: {item.user}
+          <p
+            className={!item.is_anonymous ? "cursor-pointer": ""}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={() => {
+              if (!item.anonymous) {
+                router.push(`/user/${userId}`);}
+              }}
+          >
+            โดย: {item.pen_names}
           </p>
+          {!item.anonymous && isHovered && (
+            <div
+              style={{
+                position: "absolute",
+                top: popupPosition.y,
+                left: popupPosition.x,
+                width: "14vw",
+                height: "8vw",
+                zIndex: 1000,
+                border: "1px solid #ccc",
+                background: theme === 'dark' ? '#000' : '#fff',
+                boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <PopupProfile userId={item.users.toString()}/>
+            </div>
+          )}
         </div>
         <hr/>
         <div className="text-gray-300 flex justify-between mt-2 -mb-4">
@@ -87,8 +138,8 @@ export default function QuestionCard({item, bookmark}) {
             </Button>
           </div>
           <div className="text-right" onClick={(e) => e.stopPropagation()}>
-            <ReportButton/>
             <ShareButton/>
+            <BookmarkButton id={item.questions_id} type="qa" bookmark={bookmark}/>
           </div>
         </div>
       </fieldset>

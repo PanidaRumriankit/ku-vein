@@ -34,23 +34,7 @@ export default function QuestionAndAnswerPage({params}) {
     if (session) {
       fetchBookmarks();
     }
-
   }, [session]);
-
-  // async function PostBookmark() {
-  //   const response = await fetch(`api/book`, {
-  //     method: 'POST',
-  //     headers: {
-  //       "Authorization": `Bearer ${idToken}`,
-  //       'Content-Type': 'application/json',
-  //       "email": email,
-  //     },
-  //     body: JSON.stringify({
-  //       email: email,
-  //       id: params.id,
-  //     }),
-  //   })
-  // }
 
   return (
     <div className="text-black flex flex-col items-center
@@ -59,16 +43,16 @@ export default function QuestionAndAnswerPage({params}) {
           <CourseNavigationBar courseId={params.id}/>
           <div className="justify-end mt-4">
             <Sorting selectedKeys={selectedKeys}
-                    setSelectedKeys={setSelectedKeys}/>
+                     setSelectedKeys={setSelectedKeys}/>
           </div>
       </div>
       <div className="flex flex-col items-center w-full max-w-5xl">
         {questions.length > 0 ? (
           questions.map((item, index) => {
             const isBookmarked = bookmarkQuestion.some(
-              (bookmark) => bookmark.question_id === item.question_id
+              (bookmark) => bookmark.object_id === item.questions_id
             );
-            <QuestionCard item={item} key={index} bookmark={isBookmarked} />
+            return <QuestionCard item={item} key={index} bookmark={isBookmarked} />
           })
         ) : (
           <p className="text-green-400 text-center">No Q&A currently</p>
