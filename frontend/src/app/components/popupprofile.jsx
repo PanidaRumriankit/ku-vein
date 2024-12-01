@@ -11,8 +11,8 @@ export default function PopupProfile({userId}) {
     async function FetchData() {
       try {
         const data = await GetUserData(userId, "user_id");
-        console.log('Fetched data:', data);
-        console.log('Fetched userId:', userId);
+        // console.log('Fetched data:', data);
+        // console.log('Fetched userId:', userId);
         if (data) {
           setUserData({
             user_id: data.id,
@@ -31,11 +31,11 @@ export default function PopupProfile({userId}) {
     FetchData();
   }, [userId]);
 
-  useEffect(() => {
-    if (userData) {
-      console.log('Popup:', userData);
-    }
-  }, [userData]);
+  // useEffect(() => {
+  //   if (userData) {
+  //     console.log('Popup:', userData);
+  //   }
+  // }, [userData]);
 
   if (!userData) {
     return <p>Loading...</p>;
