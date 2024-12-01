@@ -37,7 +37,6 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isBookmarked, setIsBookmarked] = useState(bookmark);
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
   // console.log('Bookmark:', bookmark);
