@@ -59,7 +59,7 @@ export default function GradePieChart({itemData}) {
     plugins: {
       legend: {
         labels: {
-          color: "#333",
+          color: "#8d8d8d",
           font: {
             size: 14,
           },

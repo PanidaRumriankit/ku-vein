@@ -6,8 +6,7 @@ from abc import ABC, abstractmethod
 import requests
 from decouple import config
 from ninja.responses import Response
-
-from .models import (CourseReview, UserData,
+from .models import (CourseReview, UserData, ReviewStat,
                      QA_Question, QA_Answer, Note, UserProfile)
 
 logger = logging.getLogger("user_logger")
