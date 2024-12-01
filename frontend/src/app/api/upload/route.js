@@ -22,8 +22,6 @@ export async function POST(req) {
             body: JSON.stringify({ image }), // Base64-encoded image
         });
 
-        console.log("Imgur Client ID:", process.env.IMGUR_CLIENT_ID);
-
         const imgurData = await imgurResponse.json();
 
         if (!imgurResponse.ok) {
