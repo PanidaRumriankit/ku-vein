@@ -379,13 +379,20 @@ class QuestionPost(PostStrategy):
         try:
             user = UserData.objects.get(user_id=data['user_id'])
             course = CourseData.objects.get(course_id=data['course_id'])
-            QA_Question.objects.create(question_text=data['question_text'],
+            qa_instance = QA_Question.objects.create(question_text=data['question_text'],
                                        user=user,
                                        faculty=data['faculty'],
                                        course=course,
                                        pen_name=data['pen_name'],
                                        is_anonymous=(user.user_name != data['pen_name']),
                                        )
+
+            HistoryPost().post_data({
+                "email": user.email,
+                "id": qa_instance.question_id,
+                "data_type": "qa",
+                "anonymous": (user.user_name != data['pen_name'])
+            })
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
