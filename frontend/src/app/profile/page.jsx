@@ -158,6 +158,7 @@ export default function Profile() {
             } else {
               await putImage(newProfileImage);
             }
+            window.location.reload();
           } else {
             console.error("Imgur upload failed:", imgurData.error);
           }
@@ -192,25 +193,6 @@ export default function Profile() {
       console.log("Error updating profile:", response.status, response.text());
     }
   }
-  
-  async function postImage(imageData) {
-    const response = await fetch(userURL + '/profile', {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${idToken}`,
-        "Content-Type": "application/json",
-        email,
-      },
-      body: JSON.stringify(imageData),
-    });
-  
-    if (response.ok) {
-      const data = await response.json();
-      console.log("Profile posted successfully:", data);
-    } else {
-      console.log("Error posting profile:", response.status, response.text());
-    }
-  }  
 
   async function postImage(imageData) {
     const response = await fetch(userURL + '/profile', {
@@ -262,13 +244,15 @@ export default function Profile() {
           onMouseLeave={() => setHoveredProfile(false)}
         >
           {/* Image */}
-          <Image
-            src={session.user.image}
-            alt="Profile"
-            width={100}
-            height={100}
-            className="rounded-full border-gray-500 border-2"
-          />
+          <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden">
+            <Image
+              src={putData.profile_link || session.user.image}
+              alt="Profile"
+              layout="fill"   // Ensures the image covers the container
+              objectFit="cover"  // Ensures the image is cropped and fills the circle
+              className="border-gray-500 border-2"
+            />
+          </div>
 
           {/* Overlay */}
           {hoveredProfile && (
