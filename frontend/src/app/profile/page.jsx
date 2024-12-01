@@ -14,7 +14,6 @@ import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
 import Popup from 'reactjs-popup';
-import { fetchData } from 'next-auth/client/_utils';
 import SessionTimeout from '../components/sessiontimeout';
 
 export default function Profile() {
@@ -27,13 +26,17 @@ export default function Profile() {
   const [editOpen, setEditOpen] = useState(false);
   const [putData, setPutData] = useState(null);
   const [colorBg, setColorBg] = useState('');
-  const [followingData, setFollowingData] = useState([]);
-  const [followerData, setFollowerData] = useState([]);
 
   const handleColorClick = () => setColorPickerOpen(true);
   const closeColorPicker = () => setColorPickerOpen(false);
   const openEditDialog = () => setEditOpen(true);
   const closeEditDialog = () => setEditOpen(false);
+  const [profileImage, setProfileImage] = useState({
+      user_id: '',
+      img_id: '',
+      img_link: '',
+      img_delete_hash: '',
+  });
 
   useEffect(() => {
     if (session) {
@@ -45,6 +48,7 @@ export default function Profile() {
           user_name: userData.username,
           user_type: "student",
           description: userData.desc,
+          profile_link: userData.profile_link,
           profile_color: userData.pf_color,
           follower_count: userData.follower_count,
           following_count: userData.following_count,
@@ -52,6 +56,7 @@ export default function Profile() {
           follower: userData.follower,
         });
         setColorBg(userData.pf_color);
+        setProfileImage({...profileImage, user_id: userData.id});
       }
 
       FetchData();
@@ -62,7 +67,6 @@ export default function Profile() {
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
-  const [profileImage, setProfileImage] = useState(session?.user?.image);
 
   async function putProfile() {
     try {
@@ -120,20 +124,112 @@ export default function Profile() {
 
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setProfileImage(reader.result);
+  
+      reader.onload = async () => {
+        const base64Image = reader.result.split(",")[1];
+        try {
+          const imgurResponse = await fetch("/api/upload", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ image: base64Image }),
+          });
+  
+          const imgurData = await imgurResponse.json();
+          console.log("Full Imgur API response:", imgurData);
+  
+          if (imgurResponse.ok) {
+            const newProfileImage = {
+              user_id: String(putData.user_id),
+              img_id: imgurData.data.id,
+              img_link: imgurData.data.link,
+              img_delete_hash: imgurData.data.deletehash,
+            };
+  
+            console.log("Image uploaded successfully:", newProfileImage.img_link);
+  
+            if (!putData.profile_link) {
+              await postImage(newProfileImage);
+            } else {
+              await putImage(newProfileImage);
+            }
+          } else {
+            console.error("Imgur upload failed:", imgurData.error);
+          }
+        } catch (error) {
+          console.error("Error uploading to Imgur:", error);
+        }
       };
+  
       reader.readAsDataURL(file);
     }
-  };
+  };  
 
   const handleImageClick = () => {
     document.getElementById('fileInput').click();
   };
+
+  async function putImage(imageData) {
+    const response = await fetch(userURL + '/profile', {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+        email,
+      },
+      body: JSON.stringify(imageData),
+    });
+  
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Profile updated successfully:", data);
+    } else {
+      console.log("Error updating profile:", response.status, response.text());
+    }
+  }
+  
+  async function postImage(imageData) {
+    const response = await fetch(userURL + '/profile', {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+        email,
+      },
+      body: JSON.stringify(imageData),
+    });
+  
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Profile posted successfully:", data);
+    } else {
+      console.log("Error posting profile:", response.status, response.text());
+    }
+  }  
+
+  async function postImage(imageData) {
+    const response = await fetch(userURL + '/profile', {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+        email,
+      },
+      body: JSON.stringify(imageData),
+    });
+  
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Profile posted successfully:", data);
+    } else {
+      console.log("Error posting profile:", response.status, response.text());
+    }
+  }
 
   // console.log('Patch Data:', putData);
 
