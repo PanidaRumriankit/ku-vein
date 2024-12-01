@@ -5,7 +5,7 @@ all the package we use for frontend in this project
     ```
     npm install
     ```
-2. Make a .env file inside frontend directory.
+2. Make a `.env` file inside frontend directory.
 Examples of the .env files are in [sample.env](./sample.env)
 
 3. Go back to the previous directory using
