@@ -42,9 +42,6 @@ function RootLayoutContent({children}) {
     }
   }, [status, session]);
 
-  const idToken = session?.idToken || session?.accessToken;
-  const email = session?.email;
-
   // Create user in database
   useEffect(() => {
     const CreateUser = async () => {
@@ -52,9 +49,7 @@ function RootLayoutContent({children}) {
         const response = await fetch(userURL, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${idToken}`,
             'Content-Type': 'application/json',
-            'email': email,
           },
           body: JSON.stringify({ email: session.user.email }),
         });
