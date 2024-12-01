@@ -8,7 +8,7 @@ import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
 import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
-import {upvoteURL} from "../constants/backurl.js"
+import {upvoteURL, bookmarkURL} from "../constants/backurl.js"
 import {colorPallet, facultyColor} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
 import GetUserData from '../constants/getuser';
@@ -37,9 +37,10 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(bookmark);
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
-  console.log('Bookmark:', bookmark);
+  // console.log('Bookmark:', bookmark);
 
   const handleUpvote = async () => {
     if (isLoading || !email || !idToken) return;

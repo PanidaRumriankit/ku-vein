@@ -65,7 +65,7 @@ export default function Home() {
         {reviews.length > 0 ? (
           reviews.map((item, index) => {
             const isBookmarked = bookmarkReview.some(
-              (bookmark) => bookmark.review_id === item.review_id
+              (bookmark) => bookmark.object_id === item.reviews_id
             );
             console.log('isBookmarked:', isBookmarked);
             return (

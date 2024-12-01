@@ -14,6 +14,8 @@ export default function BookmarkButton({ id, type, bookmark }) {
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
+  // console.log("ID:", id, "Type:", type, "Bookmark:", bookmark);
+
   const handleBookmark = async () => {
     if (!email || !idToken) return;
     setIsBookmarked(!isBookmarked);
@@ -27,13 +29,14 @@ export default function BookmarkButton({ id, type, bookmark }) {
           "email": email,
         },
         body: JSON.stringify({
-          object_id: id,
+          id: id,
           data_type: type,
           email: email
         })
       });
+
     } catch (error) {
-      console.error("Error bookmarking review:", error);
+      console.error("Error bookmarking:", error);
     }
   };
 
