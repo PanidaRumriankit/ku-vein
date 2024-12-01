@@ -526,7 +526,7 @@ class BookMarkPost(PostStrategy):
 
     def __init__(self):
         """Initialize method for BookMarkPost."""
-        self.table = {"review":CourseReview, "note": Note, "qa": None}
+        self.table = {"review":CourseReview, "note": Note, "qa": QA_Question}
 
     def post_data(self, data: dict):
         """Create a new Bookmark object in the database."""
@@ -600,7 +600,7 @@ class HistoryPost(PostStrategy):
 
     def __init__(self):
         """Initialize method for HistoryPost."""
-        self.table = {"review":CourseReview, "note": Note, "qa": None}
+        self.table = {"review":CourseReview, "note": Note, "qa": QA_Question}
 
     def post_data(self, data: dict):
         """Create a new History object in the database."""
