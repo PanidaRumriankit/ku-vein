@@ -19,6 +19,7 @@ export default function UserProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [followerCount, setFollowerCount] = useState(0);
+  const [followers, setFollowers] = useState([]);
   const email = useMemo(() => session?.email || null, [session]);
   const idToken = useMemo(() => session?.idToken || session?.accessToken || null, [session]);
 
@@ -53,6 +54,7 @@ export default function UserProfile() {
 
         setLoading(false);
         setFollowerCount(data.follower_count);
+        setFollowers(data.follower);
       }
       FetchData();
     }
@@ -189,9 +191,9 @@ export default function UserProfile() {
               {close => (
                 <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
                   <h2 className="text-lg font-semibold mb-4">Followers</h2>
-                  {userData.follower.length > 0 ? (
+                  {followers.length > 0 ? (
                     <ul>
-                      {userData.follower.map((followeredUser, index) => (
+                      {followers.map((followeredUser, index) => (
                         <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
                           <p className="font-medium">{followeredUser.username}</p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
@@ -218,6 +220,7 @@ export default function UserProfile() {
                 onClick={() => {
                   setIsFollowing((prev) => !prev);
                   setFollowerCount((prev) => (isFollowing ? prev - 1 : prev + 1));
+                  setFollowers((prev) => (isFollowing ? prev.filter((follower) => follower.username !== personalData.username) : [...prev, personalData]));
                   followUser();
                 }}
               >
