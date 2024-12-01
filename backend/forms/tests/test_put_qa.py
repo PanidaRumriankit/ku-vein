@@ -1,10 +1,11 @@
 """Module for testing PUT requests that were made to Q&A"""
 import json
 
-from .set_up import qa_setup
-from ..models import QA_Question, QA_Answer, UserData, CourseData
-from ..db_put import QA_QuestionPut, QA_AnswerPut, UserDataPut
 from django.test import TestCase
+
+from .set_up import qa_setup
+from ..db_put import QA_QuestionPut, QA_AnswerPut, UserDataPut
+from ..models import QA_Question, QA_Answer, UserData, CourseData
 
 
 class QuestionPutTest(TestCase):

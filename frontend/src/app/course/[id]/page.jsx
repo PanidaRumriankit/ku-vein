@@ -1,13 +1,12 @@
 "use client";
 
 import Sorting from "../../components/sorting";
-import SearchFaculty from "../../components/searchfaculty";
 import ReviewCard from "../../components/reviewcard";
 import CourseNavigationBar from "../../components/coursenavigation";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
 import ReviewFilters from "../../components/reviewfilter";
 
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import AddReviews from "../../components/addreviews";
 
 export default function CoursePage({ params }) {

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from 'next/image';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useSession} from "next-auth/react";
 import {HexColorPicker} from 'react-colorful';
 import BrushIcon from '@mui/icons-material/Brush';
