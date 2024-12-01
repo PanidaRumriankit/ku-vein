@@ -110,7 +110,7 @@ export default function ReviewCard({item, page = null}) {
       });
       setFormattedDate(formatted);
     }
-  }, [item.date]);
+  }, [item.date])
 
   const handleMouseEnter = (e) => {
     const rect = e.target.getBoundingClientRect();
@@ -163,8 +163,10 @@ export default function ReviewCard({item, page = null}) {
                 onMouseLeave={handleMouseLeave}
                 onClick={() => {
                   if (!item.is_anonymous) {
-                    router.push(`/user/${userId}`);}
-                  }}
+                    router.push(`/user/${userId}`);
+                    window.location.href = `/user/${userId}`;
+                  }
+                }}
               >
                 {item.name || item.username}
               </span>
