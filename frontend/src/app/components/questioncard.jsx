@@ -104,10 +104,11 @@ export default function QuestionCard({item, bookmark}) {
             className={!item.is_anonymous ? "cursor-pointer": ""}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            onClick={() => {
+            onClick={(e) => {
               if (!item.anonymous) {
-                router.push(`/user/${userId}`);}
-              }}
+                e.stopPropagation()
+                router.push(`/user/${item.users.toString()}`);}
+            }}
           >
             โดย: {item.pen_names}
           </p>
