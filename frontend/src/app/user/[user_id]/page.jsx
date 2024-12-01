@@ -7,6 +7,7 @@ import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
 import {followURL} from '../../constants/backurl';
+import Image from 'next/image';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -46,6 +47,7 @@ export default function UserProfile() {
           user_type: "student",
           description: data.desc,
           profile_color: data.pf_color,
+          profile_link: data.profile_link,
           follower_count: data.follower_count,
           following_count: data.following_count,
           following: data.following,
@@ -69,6 +71,7 @@ export default function UserProfile() {
           user_type: "student",
           description: data.desc,
           profile_color: data.pf_color,
+          profile_link: data.profile_link,
           follower_count: data.follower_count,
           following_count: data.following_count,
           following: data.following,
@@ -145,7 +148,21 @@ export default function UserProfile() {
         ></div>
 
         {/* Profile Picture */}
-        <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div>
+        <div className="absolute top-40 left-1/2 transform -translate-x-1/2">
+          {userData.profile_link ? (
+            <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden">
+              <Image
+                src={userData.profile_link}
+                alt="Profile"
+                layout="fill"
+                objectFit="cover"
+                className="border-gray-500 border-2"
+              />
+            </div>
+          ) : (
+            <div className="w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div>
+          )}
+        </div>
 
         <div className="mt-16 mb-24">
           <h1 className="text-2xl font-semibold">{userData.user_name}</h1>

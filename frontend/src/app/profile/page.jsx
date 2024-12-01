@@ -248,8 +248,8 @@ export default function Profile() {
             <Image
               src={putData.profile_link || session.user.image}
               alt="Profile"
-              layout="fill"   // Ensures the image covers the container
-              objectFit="cover"  // Ensures the image is cropped and fills the circle
+              layout="fill"
+              objectFit="cover"
               className="border-gray-500 border-2"
             />
           </div>
