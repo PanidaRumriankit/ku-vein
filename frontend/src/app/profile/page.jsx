@@ -43,7 +43,6 @@ export default function Profile() {
           user_id: userData.id,
           user_name: userData.username,
           user_type: "student",
-          email: session.email,
           description: userData.desc,
           profile_color: userData.pf_color,
           follower_count: userData.follower_count,
@@ -70,7 +69,6 @@ export default function Profile() {
         user_id: putData.user_id,
         user_name: putData.user_name,
         user_type: putData.user_type,
-        email: putData.email,
         description: putData.description,
         profile_color: putData.profile_color,
       };
