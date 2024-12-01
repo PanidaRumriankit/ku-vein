@@ -197,7 +197,7 @@ export default function UserProfile() {
                           <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
                             {/* Profile Image */}
                             {followingUser.profile_link ? (
-                              <div className="w-[5.5rem] h-16 rounded-full overflow-hidden border-2 border-gray-500">
+                              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-500">
                                 <Image
                                   src={followingUser.profile_link}
                                   alt="Profile"
