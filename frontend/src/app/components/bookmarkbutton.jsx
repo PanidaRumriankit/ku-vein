@@ -49,7 +49,7 @@ export default function BookmarkButton({ id, type, bookmark }) {
   }
 
   return (
-    <Button onClick={handleBookmark} variant="light">
+    <Button onClick={handleBookmark} variant="light" isIconOnly>
       {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
     </Button>
   );
