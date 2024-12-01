@@ -48,7 +48,7 @@ export default function GradePieChart({itemData}) {
         data: [999],
         backgroundColor:
           [
-            "#4CAF50",
+            "#9E9E9E",
           ],
         hoverOffset: 4,
       },
@@ -59,7 +59,7 @@ export default function GradePieChart({itemData}) {
     plugins: {
       legend: {
         labels: {
-          color: "#333",
+          color: "#8d8d8d",
           font: {
             size: 14,
           },

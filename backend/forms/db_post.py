@@ -3,11 +3,14 @@
 import base64
 import logging
 import os
-from datetime import datetime
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.utils import timezone
+from google.cloud import storage
+from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
 from .models import (CourseReview, UserData,
@@ -15,7 +18,7 @@ from .models import (CourseReview, UserData,
                      UpvoteStat, FollowData, Note,
                      QA_Question, QA_Answer,
                      QA_Question_Upvote, QA_Answer_Upvote,
-                     BookMark, History)
+                     BookMark, History, UserProfile)
 
 logger = logging.getLogger("user_logger")
 
@@ -48,9 +51,32 @@ class UserDataPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "email is missing "
-                             "from the response body."},
+                                      "from the response body."},
                             status=400)
 
+
+class UserProfilePost(PostStrategy):
+    """Class for created new UserProfile object."""
+
+    def post_data(self, data: dict):
+        """Collect the data from the frontend."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+
+            UserProfile.objects.create(
+                user=user,
+                img_id=data['img_id'],
+                img_link=data['img_link'],
+                img_delete_hash=data['img_delete_hash']
+            )
+
+        except KeyError:
+            return Response({"error": "Missing data from the response body."},
+                            status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The User isn't in the database."},
+                            status=401)
 
 class ReviewPost(PostStrategy):
     """Class for created new CourseReview object."""
@@ -271,7 +297,7 @@ class NotePost(PostStrategy):
 
             user = UserData.objects.get(email=data['email'])
 
-            if 'file' not in data or data['file'] is None:
+            if 'file' not in data or not data['file']:
                 return Response({"error": "File is missing."}, status=400)
 
             anonymous = True
@@ -284,33 +310,42 @@ class NotePost(PostStrategy):
             try:
                 file_data = base64.b64decode(data['file'])
             except Exception as e:
-                return Response({"error": f"Invalid file data: {str(e)}"}, status=400)
+                return Response({"error": f"Invalid file data: {str(e)}"},
+                                status=400)
+
+            # ggc storage upload
+            storage_client = storage.Client.from_service_account_info(GOOGLE_CREDENTIAL)
+            bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
 
             file_name = data['file_name'] + '.pdf'
-            file_path = os.path.join(settings.MEDIA_ROOT,
-                                     'note_files', file_name)
 
-            counter = 1
-            while True:
-                try:
-                    with open(file_path, 'r'):
-                        file_name = data['file_name'] + f'({counter}).pdf'
-                        file_path = os.path.join(settings.MEDIA_ROOT, 'note_files', file_name)
-                        counter += 1
-                except FileNotFoundError:
-                    break
+            def upload_file_with_rename(g_bucket, _file_data,
+                                        original_filename):
+                filename, ext = os.path.splitext(original_filename)
+                counter = 1
+                blob_name = original_filename
 
-            with open(file_path, "wb") as f:
-                f.write(file_data)
+                while g_bucket.blob(blob_name).exists():
+                    blob_name = f"{filename}({counter}){ext}"
+                    counter += 1
+
+                blob = g_bucket.blob(blob_name)
+                blob.upload_from_string(_file_data,
+                                        content_type='application/pdf')
+                return blob, blob_name
+
+            blob, file_name = upload_file_with_rename(bucket, file_data,
+                                                      file_name)
 
             note = Note.objects.create(
-                    course=course,
-                    user=user,
-                    faculty=data['faculty'],
-                    file_name=file_name,
-                    note_file=file_path,
-                    pen_name=data['pen_name'],
-                    anonymous=anonymous
+                course=course,
+                user=user,
+                faculty=data['faculty'],
+                file_name=file_name,
+                pdf_url=blob,
+                pen_name=data['pen_name'],
+                date_data=timezone.now(),
+                anonymous=anonymous
             )
 
             HistoryPost().post_data({
@@ -320,8 +355,7 @@ class NotePost(PostStrategy):
                 "anonymous": anonymous
             })
 
-            return Response({"success": "Note"
-                                        " created successfully."},
+            return Response({"success": "Note created successfully."},
                             status=201)
 
         except KeyError:
@@ -344,16 +378,30 @@ class QuestionPost(PostStrategy):
         """Add new QA_Question to the database."""
         try:
             user = UserData.objects.get(user_id=data['user_id'])
-            QA_Question.objects.create(question_text=data['question_text'],
+            course = CourseData.objects.get(course_id=data['course_id'])
+            qa_instance = QA_Question.objects.create(question_text=data['question_text'],
                                        user=user,
                                        faculty=data['faculty'],
+                                       course=course,
                                        pen_name=data['pen_name'],
                                        is_anonymous=(user.user_name != data['pen_name']),
                                        )
 
+            HistoryPost().post_data({
+                "email": user.email,
+                "id": qa_instance.question_id,
+                "data_type": "qa",
+                "anonymous": (user.user_name != data['pen_name'])
+            })
+
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
                             status=400)
+        
+        except CourseData.DoesNotExist:
+            return Response({"error": "This course isn't in the database."},
+                            status=400)
+
         except KeyError:
             return Response({"error": "Data is missing "
                                       "from the response body."}, status=400)
@@ -370,8 +418,8 @@ class QuestionUpvotePost(PostStrategy):
 
     def post_data(self, data: dict):
         try:
-            self.question = QA_Question.objects.get(question_id=data['id'])
-            self.user = UserData.objects.get(email=data['email'])
+            self.question = QA_Question.objects.get(question_id=data['question_id'])
+            self.user = UserData.objects.get(user_id=data['user_id'])
 
         except QA_Question.DoesNotExist:
             return Response({"error": "This question isn't in the database."},
@@ -380,15 +428,15 @@ class QuestionUpvotePost(PostStrategy):
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
                             status=400)
-        
+
         except KeyError:
             return Response({"error": "Data is missing "
                                       "from the response body."}, status=400)
-        
+
         return self.add_or_delete()
 
     def add_or_delete(self):
-        
+
         if upvote := QA_Question_Upvote.objects.filter(question=self.question,
                                                        user=self.user):
             upvote.delete()
@@ -430,7 +478,7 @@ class AnswerPost(PostStrategy):
 
         return Response({"success": "QA_Answer created successfully."},
                         status=201)
-    
+
 
 class AnswerUpvotePost(PostStrategy):
     """Class for creating new QA_Answern_Upvote object."""
@@ -451,11 +499,11 @@ class AnswerUpvotePost(PostStrategy):
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
                             status=400)
-        
+
         except KeyError:
             return Response({"error": "Data is missing "
                                       "from the response body."}, status=400)
-        
+
         return self.add_or_delete()
 
     def add_or_delete(self):
@@ -470,7 +518,7 @@ class AnswerUpvotePost(PostStrategy):
 
         return Response({"success": "Successfully like the Answer."},
                         status=201)
-    
+
 
 
 class BookMarkPost(PostStrategy):
@@ -478,7 +526,7 @@ class BookMarkPost(PostStrategy):
 
     def __init__(self):
         """Initialize method for BookMarkPost."""
-        self.table = {"review":CourseReview, "note": Note, "qa": None}
+        self.table = {"review":CourseReview, "note": Note, "qa": QA_Question}
 
     def post_data(self, data: dict):
         """Create a new Bookmark object in the database."""
@@ -552,7 +600,7 @@ class HistoryPost(PostStrategy):
 
     def __init__(self):
         """Initialize method for HistoryPost."""
-        self.table = {"review":CourseReview, "note": Note, "qa": None}
+        self.table = {"review":CourseReview, "note": Note, "qa": QA_Question}
 
     def post_data(self, data: dict):
         """Create a new History object in the database."""
@@ -603,6 +651,7 @@ class PostFactory:
     strategy_map = {
         "review": ReviewPost,
         "user": UserDataPost,
+        "profile": UserProfilePost,
         "review_upvote": ReviewUpvotePost,
         "question_upvote": QuestionUpvotePost,
         "answer_upvote": AnswerUpvotePost,

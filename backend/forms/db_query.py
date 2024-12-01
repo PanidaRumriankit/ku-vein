@@ -1,6 +1,5 @@
 """This module use for contain the class for database query."""
 
-import os
 from abc import ABC, abstractmethod
 from datetime import timedelta
 from typing import Any
@@ -8,13 +7,16 @@ from typing import Union
 
 from django.conf import settings
 from django.db.models import (F, Count, ExpressionWrapper,
-                              DateTimeField, DateField)
+                              DateTimeField, OuterRef, Subquery)
 from django.db.models.functions import TruncDate
+from django.utils import timezone
+from google.cloud import storage
+from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
-                     QA_Question,
+                     QA_Question, UserProfile,
                      Note, UpvoteStat, CourseReview,
                      BookMark, History)
 
@@ -63,12 +65,15 @@ class SortReview(QueryFilterStrategy):
             username=F('review__user__user_name'),
             review_text=F('review__reviews'),
             ratings=F('rating'),
+            efforts=F('effort'),
+            attendances=F('attendance'),
             year=F('academic_year'),
             name=F('pen_name'),
             grades=F('grade'),
             professor=F('review__instructor'),
             criteria=F('scoring_criteria'),
-            type=F('class_type'),
+            classes_type=F('class_type'),
+            courses_type=F('review__course__course_type'),
             is_anonymous=F('review__anonymous'),
         ).annotate(
             upvote=Count('upvotestat'),
@@ -288,31 +293,29 @@ class UserQuery(QueryFilterStrategy):
         if filter_key['email']:
             self.user = UserData.objects.filter(
                 email=filter_key['email']
-            ).values(
-                id=F('user_id'),
-                username=F('user_name'),
-                desc=F('description'),
-                pf_color=F('profile_color'),
-            ).first()
+            )
 
         elif filter_key['user_id']:
             self.user = UserData.objects.filter(
                 user_id=filter_key['user_id']
-            ).values(
-                id=F('user_id'),
-                username=F('user_name'),
-                desc=F('description'),
-                pf_color=F('profile_color')
-            ).first()
+            )
 
         elif filter_key['user_name']:
             self.user = UserData.objects.filter(
                 user_name=filter_key['user_name']
-            ).values(
+            )
+
+        img_link_current_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('user_id')
+                ).values('img_link')[:1])
+
+        self.user = self.user.values(
                 id=F('user_id'),
                 username=F('user_name'),
                 desc=F('description'),
-                pf_color=F('profile_color')
+                pf_color=F('profile_color'),
+                profile_link=img_link_current_subquery
             ).first()
 
         try:
@@ -325,18 +328,33 @@ class UserQuery(QueryFilterStrategy):
                             status=401)
 
         if self.user:
+            img_link_following_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('this_user')
+                ).values('img_link')[:1]
+            )
             following = list(FollowData.objects.filter(
                 follow_by=self.user['id']
             ).values(
+                follow_id=F('this_user__user_id'),
                 username=F('this_user__user_name'),
-                desc=F('this_user__description')
+                desc=F('this_user__description'),
+                profile_link=img_link_following_subquery
             ))
+
+            img_link_follower_subquery = Subquery(
+                UserProfile.objects.filter(
+                    user_id=OuterRef('follow_by')
+                ).values('img_link')[:1]
+            )
 
             follower = list(FollowData.objects.filter(
                 this_user=self.user['id']
             ).values(
+                follow_id=F('follow_by__user_id'),
                 username=F('follow_by__user_name'),
-                desc=F('follow_by__description')
+                desc=F('follow_by__description'),
+                profile_link=img_link_follower_subquery
             ))
 
             self.user['following'] = following
@@ -411,7 +429,7 @@ class NoteQuery(QueryFilterStrategy):
                 user = UserData.objects.get(email=filter_key['email'])
                 note = note.filter(user=user)
 
-            note = note.values(
+            note_values = note.values(
                 courses_id=F('course__course_id'),
                 courses_name=F('course__course_name'),
                 faculties=F('faculty'),
@@ -420,30 +438,32 @@ class NoteQuery(QueryFilterStrategy):
                 name=F('pen_name'),
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
-                pdf_path=F('note_file'),
+                pdf_path=F('pdf_url'),
             ).annotate(
-            date=TruncDate(
-                ExpressionWrapper(
-                    F('date_data') + timedelta(hours=7),
-                    output_field=DateTimeField()
+                date=TruncDate(
+                    ExpressionWrapper(
+                        F('date_data') + timedelta(hours=7),
+                        output_field=DateTimeField()
+                    )
                 )
             )
-            )
 
-            for update_path in note:
-                relative_path = update_path['pdf_path']
+            # ggc storage upload
+            storage_client = storage.Client.from_service_account_info(
+                GOOGLE_CREDENTIAL)
+            bucket = storage_client.bucket(settings.GS_BUCKET_NAME)
 
-                if "/" in relative_path:
-                    relative_path = relative_path.replace("/", "\\")
-
-                absolute_note_file_path = os.path.join(
-                    settings.BASE_DIR,
-                    'media',
-                    relative_path
+            for note in note_values:
+                blob_name = note['pdf_name']
+                blob = bucket.blob(blob_name)
+                note["pdf_url"] = blob.generate_signed_url(
+                    version="v4",
+                    expiration=timezone.timedelta(hours=2),
+                    method="GET"
                 )
-                update_path['pdf_file'] = absolute_note_file_path
+                # print(note["pdf_url"]) # debug the url
 
-            return list(note)
+            return list(note_values)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
@@ -455,37 +475,30 @@ class NoteQuery(QueryFilterStrategy):
 
         except Note.DoesNotExist:
             return Response({"error": "This Note isn't "
-                               "in the database."}, status=401)
+                                      "in the database."}, status=401)
 
-
-def clean_time_data(q):
-    """This function is used to clean datetime formatting."""
-    post_time = q['post_time'] + timedelta(hours=7)
-    q['post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
-    q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
-    return q
 
 class QuestionQuery(QueryFilterStrategy):
     """Class for sending all the questions in the Q&A data."""
 
     def get_data(self, mode, *args, **kwargs):
         """Get the data from the database and return to the frontend."""
-        question_data = []
         data = self.get_query_set()
-        for question in self.sorted_qa_data(data, mode):
-            question_data += [clean_time_data(question)]
-
-        return Response(question_data, status=200)
+        return Response(self.sorted_qa_data(data, mode), status=200)
 
     @staticmethod
     def get_query_set():
         """Get queryset with all required attributes to sort."""
         return  QA_Question.objects.select_related().values(
                     questions_id=F('question_id'),
+                    questions_title=F('question_title'),
                     questions_text=F('question_text'),
                     users=F('user'),
+                    pen_names=F('pen_name'),
                     post_time=F('posted_time'),
                     faculties=F('faculty'),
+                    courses=F('course__course_id'),
+                    anonymous=F('is_anonymous'),
                 ).annotate(
                     num_convo=Count('qa_answer'),
                     upvote=Count('qa_question_upvote')
@@ -497,8 +510,7 @@ class QuestionQuery(QueryFilterStrategy):
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
                      'upvote': '-upvote'}
-        
-        return data.order_by(sort_mode[mode])
+        return list(data.order_by(sort_mode[mode]))
 
 
 class AnswerQuery(QueryFilterStrategy):
@@ -508,17 +520,15 @@ class AnswerQuery(QueryFilterStrategy):
         """Get the data from the database and return to the frontend."""
         try:
             answer_list = []
-            question = QA_Question.objects.select_related().get(question_id=question_id)
+            question = QA_Question.objects.select_related().get(
+                question_id=question_id)
             answer_query_set = AnswerQuery.get_query_set(question)
             answer_data = self.sorted_qa_data(answer_query_set, mode)
 
-            for d in answer_data:
-                answer_list += [clean_time_data(d)]
-
         except QA_Question.DoesNotExist:
-            return Response({"error": "This question isn't in the database."}, status=400)
-
-        return Response(answer_list, status=200)
+            return Response({"error": "This question isn't in the database."},
+                            status=400)
+        return Response(answer_data, status=200)
     
     @classmethod
     def get_query_set(cls, question):
@@ -528,17 +538,19 @@ class AnswerQuery(QueryFilterStrategy):
                     text=F('answer_text'),
                     users=F('user'),
                     post_time=F('posted_time'),
+                    anonymous=F('is_anonymous'),
+                    pen_names=F('pen_name'),
                 ).annotate(
                     upvote=Count('qa_answer_upvote')
                 )
+    
     @staticmethod
     def sorted_qa_data(answer, mode) -> list[dict]:
         """Sort queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
-                     'upvote': '-upvote'}
-        
-        return answer.order_by(sort_mode[mode])
+                     'upvote': '-upvote'}        
+        return list(answer.order_by(sort_mode[mode]))
 
 
 class BookMarkQuery(QueryFilterStrategy):

@@ -1,6 +1,5 @@
 "use client";
 
-import ReportButton from "./reportbutton.jsx";
 import ShareButton from "./sharebutton.jsx";
 import BookmarkButton from "./bookmarkbutton.jsx";
 import PopupProfile from "./popupprofile.jsx";
@@ -15,11 +14,11 @@ import MakeApiRequest from '../constants/getupvotestatus';
 import GetUserData from '../constants/getuser';
 import EditDelete from "../components/editdelete"
 
-import { Button } from "@nextui-org/button";
-import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useTheme } from "next-themes";
+import {Button} from "@nextui-org/button";
+import {useRouter} from "next/navigation";
+import {useEffect, useState} from "react";
+import {useSession} from "next-auth/react";
+import {useTheme} from "next-themes";
 
 function RandomColor() {
   const index = Math.floor(Math.random() * colorPallet.length);
@@ -28,8 +27,8 @@ function RandomColor() {
 
 export default function ReviewCard({item, page = null, bookmark = false}) {
   const router = useRouter();
-  const { data: session } = useSession();
-  const { theme } = useTheme();
+  const {data: session} = useSession();
+  const {theme} = useTheme();
   const color = facultyColor[item.faculties] || RandomColor();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
@@ -143,16 +142,21 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
         <div className="text-black dark:text-white">
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
-                    emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}/>}/>
+                    emptyIcon={<StarIcon
+                      style={{opacity: 0.55, color: 'gray'}}/>}/>
             {item.professor &&
-              <p className="text-gray-300">ผู้สอน: {item.professor}</p>}
+              <p className="text-gray-400">ผู้สอน: {item.professor}</p>}
           </div>
           <br />
-          <p>{item.review_text}</p>
+          <p className="w-full break-all">
+            {item.review_text}
+          </p>
           <br />
-          <div className="flex items-center justify-between text-gray-300 text-right">
-            <p className="text-left">เกรด: {item.grades}</p>
-            <p className="text-right">
+          <div
+             className="flex items-center justify-between text-gray-400 text-right">
+            <p className="text-left w-20">เกรด: {item.grades}</p>
+            <p
+              className="text-right w-80 flex-wrap break-words">
               {formattedDate} โดย:{" "}
               <span
                 className={!item.is_anonymous ? "cursor-pointer": ""}
@@ -163,7 +167,7 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
                     router.push(`/user/${userId}`);}
                   }}
               >
-                {item.username}
+                {item.name || item.username}
               </span>
               {!item.is_anonymous && isHovered && (
                 <div
@@ -185,18 +189,19 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
             </p>
           </div>
           <hr/>
-          <div className="text-gray-300 flex justify-between mt-2">
+          <div className="flex justify-between mt-2">
             <div className="text-left">
               <Button variant="light" onClick={handleUpvote}
                       disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
+                <ThumbUpTwoToneIcon
+                  color={isVoted ? "primary" : ""}/> {upvoteCount}
               </Button>
             </div>
             <div className="text-right">
-              <ReportButton/>
-              <ShareButton/>
+              {/*<ReportButton/>*/}
+              <ShareButton reviewId={item.reviews_id} reviewText={item.review_text} />
               <BookmarkButton id={item.reviews_id} type="review" bookmark={bookmark}/>
-              <EditDelete userMail={email} reviewId={item.reviews_id}/>
+              <EditDelete userName={item.username} reviewId={item.reviews_id} item={item}/>
             </div>
           </div>
         </div>
