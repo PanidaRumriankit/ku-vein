@@ -478,40 +478,31 @@ class NoteQuery(QueryFilterStrategy):
                                       "in the database."}, status=401)
 
 
-def clean_time_data(q):
-    """This function is used to clean datetime formatting."""
-    post_time = q['post_time'] + timedelta(hours=7)
-    q[
-        'post_date'] = f'{post_time.day:02d} {post_time.month:02d} {post_time.year}'
-    q['post_time'] = f'{post_time.hour:02d}:{post_time.minute:02d}'
-    return q
-
-
 class QuestionQuery(QueryFilterStrategy):
     """Class for sending all the questions in the Q&A data."""
 
     def get_data(self, mode, *args, **kwargs):
         """Get the data from the database and return to the frontend."""
-        question_data = []
         data = self.get_query_set()
-        for question in self.sorted_qa_data(data, mode):
-            question_data += [clean_time_data(question)]
-
-        return Response(question_data, status=200)
+        return Response(self.sorted_qa_data(data, mode), status=200)
 
     @staticmethod
     def get_query_set():
         """Get queryset with all required attributes to sort."""
-        return QA_Question.objects.select_related().values(
-            questions_id=F('question_id'),
-            questions_text=F('question_text'),
-            users=F('user'),
-            post_time=F('posted_time'),
-            faculties=F('faculty'),
-        ).annotate(
-            num_convo=Count('qa_answer'),
-            upvote=Count('qa_question_upvote')
-        )
+        return  QA_Question.objects.select_related().values(
+                    questions_id=F('question_id'),
+                    questions_title=F('question_title'),
+                    questions_text=F('question_text'),
+                    users=F('user'),
+                    pen_names=F('pen_name'),
+                    post_time=F('posted_time'),
+                    faculties=F('faculty'),
+                    courses=F('course__course_id'),
+                    anonymous=F('is_anonymous'),
+                ).annotate(
+                    num_convo=Count('qa_answer'),
+                    upvote=Count('qa_question_upvote')
+                )
 
     @staticmethod
     def sorted_qa_data(data, mode) -> list[dict]:
@@ -519,8 +510,7 @@ class QuestionQuery(QueryFilterStrategy):
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
                      'upvote': '-upvote'}
-
-        return data.order_by(sort_mode[mode])
+        return list(data.order_by(sort_mode[mode]))
 
 
 class AnswerQuery(QueryFilterStrategy):
@@ -535,35 +525,32 @@ class AnswerQuery(QueryFilterStrategy):
             answer_query_set = AnswerQuery.get_query_set(question)
             answer_data = self.sorted_qa_data(answer_query_set, mode)
 
-            for d in answer_data:
-                answer_list += [clean_time_data(d)]
-
         except QA_Question.DoesNotExist:
             return Response({"error": "This question isn't in the database."},
                             status=400)
-
-        return Response(answer_list, status=200)
-
+        return Response(answer_data, status=200)
+    
     @classmethod
     def get_query_set(cls, question):
         """Get queryset to sort (classmethod because I need this for testing, too)."""
         return question.qa_answer_set.all().values(
-            answers_id=F('answer_id'),
-            text=F('answer_text'),
-            users=F('user'),
-            post_time=F('posted_time'),
-        ).annotate(
-            upvote=Count('qa_answer_upvote')
-        )
-
+                    answers_id=F('answer_id'),
+                    text=F('answer_text'),
+                    users=F('user'),
+                    post_time=F('posted_time'),
+                    anonymous=F('is_anonymous'),
+                    pen_names=F('pen_name'),
+                ).annotate(
+                    upvote=Count('qa_answer_upvote')
+                )
+    
     @staticmethod
     def sorted_qa_data(answer, mode) -> list[dict]:
         """Sort queryset by mode argument."""
         sort_mode = {'latest': '-posted_time',
                      'earliest': 'posted_time',
-                     'upvote': '-upvote'}
-
-        return answer.order_by(sort_mode[mode])
+                     'upvote': '-upvote'}        
+        return list(answer.order_by(sort_mode[mode]))
 
 
 class BookMarkQuery(QueryFilterStrategy):

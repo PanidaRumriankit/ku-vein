@@ -13,7 +13,7 @@ export default async function MakeNoteApiRequest(filter=null) {
   const response = await fetch(url);
   if (response.ok) {
     const data = await response.json();
-    console.log("Response filter review from backend:", data);
+    console.log("Response filter note from backend:", data);
     return data;
   } else {
     console.error("Failed to fetch filter note:", response.status);

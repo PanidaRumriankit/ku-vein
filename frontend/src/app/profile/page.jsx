@@ -15,6 +15,7 @@ import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
 import Popup from 'reactjs-popup';
 import { fetchData } from 'next-auth/client/_utils';
+import SessionTimeout from '../components/sessiontimeout';
 
 export default function Profile() {
   const {theme} = useTheme();
@@ -57,7 +58,7 @@ export default function Profile() {
     }
   }, [session]);
 
-  if (!session) return null;
+  if (!session) return SessionTimeout();
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
@@ -97,7 +98,7 @@ export default function Profile() {
     }
   }
 
-  if (!putData) return null;
+  if (!putData) return SessionTimeout();
 
   const handleFollow = () => {
     const currentUser = { username: session.user.name, desc: session.user.description || "" };

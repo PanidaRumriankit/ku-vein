@@ -22,7 +22,7 @@ export default function NotePage({params}) {
   }, [params.id]);
 
   return (
-    <div className="text-black flex flex-col min-h-screen bg-white
+    <div className="w-full text-black flex flex-col min-h-screen bg-white
     dark:bg-black dark:text-white">
 
       <div className="w-full max-w-5xl">
@@ -31,10 +31,10 @@ export default function NotePage({params}) {
         </div>
       </div>
 
-      <div className="w-full max-w-5xl">
+      <div className="w-full flex flex-col items-center">
         {note.length > 0 ? (
           note.map((data, index) => (
-            <NoteBox data={data} key={index}/>
+            <NoteBox userName={data.name} data={data} key={index}/>
           ))
         ) : (
           <p className="text-green-400 text-center text-3xl">
