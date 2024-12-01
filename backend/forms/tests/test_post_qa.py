@@ -1,13 +1,11 @@
 """Module for test POST Q&A feature."""
 import json
 
-from ..models import UserData, CourseData
-from ..db_post import QuestionPost, AnswerPost
-from .set_up import qa_setup
 from django.test import TestCase
 
 from .set_up import qa_setup
 from ..db_post import QuestionPost, AnswerPost
+from ..models import CourseData
 from ..models import UserData
 
 

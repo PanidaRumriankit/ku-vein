@@ -1,7 +1,7 @@
 "use client";
 
 import Image from 'next/image';
-import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useSession} from "next-auth/react";
 import {HexColorPicker} from 'react-colorful';
 import BrushIcon from '@mui/icons-material/Brush';
@@ -9,6 +9,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
@@ -20,6 +21,7 @@ export default function Profile() {
   const [activeTab, setActiveTab] = useState('posts');
   const {data: session} = useSession();
   const [hovered, setHovered] = useState(false);
+  const [hoveredProfile, setHoveredProfile] = useState(false);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [putData, setPutData] = useState(null);
@@ -29,6 +31,12 @@ export default function Profile() {
   const closeColorPicker = () => setColorPickerOpen(false);
   const openEditDialog = () => setEditOpen(true);
   const closeEditDialog = () => setEditOpen(false);
+  const [profileImage, setProfileImage] = useState({
+      user_id: '',
+      img_id: '',
+      img_link: '',
+      img_delete_hash: '',
+  });
 
   useEffect(() => {
     if (session) {
@@ -39,8 +47,8 @@ export default function Profile() {
           user_id: userData.id,
           user_name: userData.username,
           user_type: "student",
-          email: session.email,
           description: userData.desc,
+          profile_link: userData.profile_link,
           profile_color: userData.pf_color,
           follower_count: userData.follower_count,
           following_count: userData.following_count,
@@ -48,6 +56,7 @@ export default function Profile() {
           follower: userData.follower,
         });
         setColorBg(userData.pf_color);
+        setProfileImage({...profileImage, user_id: userData.id});
       }
 
       FetchData();
@@ -65,7 +74,6 @@ export default function Profile() {
         user_id: putData.user_id,
         user_name: putData.user_name,
         user_type: putData.user_type,
-        email: putData.email,
         description: putData.description,
         profile_color: putData.profile_color,
       };
@@ -96,7 +104,116 @@ export default function Profile() {
 
   if (!putData) return SessionTimeout();
 
-  console.log('Patch Data:', putData);
+  const handleFollow = () => {
+    const currentUser = { username: session.user.name, desc: session.user.description || "" };
+  
+    const isFollowing = putData.follower.some(follower => follower.username === currentUser.username);
+  
+    let updatedFollowers;
+  
+    if (isFollowing) {
+      updatedFollowers = putData.follower.filter(follower => follower.username !== currentUser.username);
+    } else {
+      updatedFollowers = [...putData.follower, currentUser];
+    }
+  
+    setPutData({
+      ...putData,
+      follower: updatedFollowers,
+    });
+
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+  
+      reader.onload = async () => {
+        const base64Image = reader.result.split(",")[1];
+        try {
+          const imgurResponse = await fetch("/api/upload", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ image: base64Image }),
+          });
+  
+          const imgurData = await imgurResponse.json();
+          console.log("Full Imgur API response:", imgurData);
+  
+          if (imgurResponse.ok) {
+            const newProfileImage = {
+              user_id: String(putData.user_id),
+              img_id: imgurData.data.id,
+              img_link: imgurData.data.link,
+              img_delete_hash: imgurData.data.deletehash,
+            };
+  
+            console.log("Image uploaded successfully:", newProfileImage.img_link);
+  
+            if (!putData.profile_link) {
+              await postImage(newProfileImage);
+            } else {
+              await putImage(newProfileImage);
+            }
+            window.location.reload();
+          } else {
+            console.error("Imgur upload failed:", imgurData.error);
+          }
+        } catch (error) {
+          console.error("Error uploading to Imgur:", error);
+        }
+      };
+  
+      reader.readAsDataURL(file);
+    }
+  };  
+
+  const handleImageClick = () => {
+    document.getElementById('fileInput').click();
+  };
+
+  async function putImage(imageData) {
+    const response = await fetch(userURL + '/profile', {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+        email,
+      },
+      body: JSON.stringify(imageData),
+    });
+  
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Profile updated successfully:", data);
+    } else {
+      console.log("Error updating profile:", response.status, response.text());
+    }
+  }
+
+  async function postImage(imageData) {
+    const response = await fetch(userURL + '/profile', {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+        email,
+      },
+      body: JSON.stringify(imageData),
+    });
+  
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Profile posted successfully:", data);
+    } else {
+      console.log("Error posting profile:", response.status, response.text());
+    }
+  }
+
+  // console.log('Patch Data:', putData);
 
   return (
     <div
@@ -121,21 +238,42 @@ export default function Profile() {
         </div>
 
         {/* Profile Picture */}
-        {session?.user?.image ? (
-          <div className="absolute top-40 left-1/2 transform -translate-x-1/2">
+        <div
+          className="absolute top-40 left-1/2 transform -translate-x-1/2"
+          onMouseEnter={() => setHoveredProfile(true)}
+          onMouseLeave={() => setHoveredProfile(false)}
+        >
+          {/* Image */}
+          <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden">
             <Image
-              src={session.user.image}
+              src={putData.profile_link || session.user.image}
               alt="Profile"
-              width={100}
-              height={100}
-              className="rounded-full border-gray-500 border-2"
+              layout="fill"
+              objectFit="cover"
+              className="border-gray-500 border-2"
             />
           </div>
-        ) : (
-          <div
-            className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div> // Placeholder if no image
-        )}
 
+          {/* Overlay */}
+          {hoveredProfile && (
+            <div
+              className='absolute top-0 left-1/2 w-[100px] h-[100px] rounded-full flex items-center justify-center transform -translate-x-1/2 bg-black bg-opacity-50 cursor-pointer'
+              onClick={handleImageClick}
+            >
+              <CameraAltIcon className="text-white text-3xl" />
+            </div>
+          )}
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            id="fileInput"
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileChange}
+          />
+        </div>
+          
         <div className="mt-16 mb-24">
           <h1 className="text-2xl font-semibold">{putData.user_name}</h1>
           <p className="text-gray-400">@{putData.user_id}</p>
@@ -168,7 +306,7 @@ export default function Profile() {
             </Popup>
             {/* Follower Count */}
             <Popup trigger={
-              <div className="text-center cursor-pointer">
+              <div className="text-center cursor-pointer" onClick={handleFollow}>
                 <span className="block">{putData.follower_count}</span>
                 <span className="text-gray-500">Follower</span>
               </div>

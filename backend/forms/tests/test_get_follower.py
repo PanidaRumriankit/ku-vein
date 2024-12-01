@@ -1,9 +1,10 @@
 """Module for test GET Follower feature."""
 
-from ..models import FollowData
-from ..db_query import UserQuery
-from .set_up import user_set_up, follower_setup
 from django.test import TestCase
+
+from .set_up import user_set_up, follower_setup
+from ..db_query import UserQuery
+from ..models import FollowData
 
 
 class FollowerGetTest(TestCase):
