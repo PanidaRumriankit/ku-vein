@@ -13,10 +13,12 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
+import {useRouter} from 'next/navigation';
 import Popup from 'reactjs-popup';
 import SessionTimeout from '../components/sessiontimeout';
 
 export default function Profile() {
+  const router = useRouter();
   const {theme} = useTheme();
   const [activeTab, setActiveTab] = useState('posts');
   const {data: session} = useSession();
@@ -292,10 +294,34 @@ export default function Profile() {
                   {putData.following.length > 0 ? (
                     <ul>
                       {putData.following.map((followedUser, index) => (
-                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
-                          <p className="font-medium">{followedUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc}</p>
-                        </li>
+                        <li
+                        key={index}
+                        className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
+                        onClick={() => {router.push(`/user/${followedUser.follow_id}`);}}
+                      >
+                        <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
+                          {/* Profile Image */}
+                          {followedUser.profile_link ? (
+                            <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-500">
+                              <Image
+                                src={followedUser.profile_link}
+                                alt="Profile"
+                                width={100}
+                                height={100}
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-[5.5rem] h-16 rounded-full bg-gray-300 border-2 border-gray-500"></div>
+                          )}
+
+                          {/* Username and Description */}
+                          <div className="flex flex-col">
+                            <p className="font-medium">{followedUser.username}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc}</p>
+                          </div>
+                        </div>
+                      </li>
                       ))}
                     </ul>
                   ) : (
@@ -317,10 +343,34 @@ export default function Profile() {
                   {putData.follower.length > 0 ? (
                     <ul>
                       {putData.follower.map((followeredUser, index) => (
-                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
-                          <p className="font-medium">{followeredUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
-                        </li>
+                        <li
+                        key={index}
+                        className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
+                        onClick={() => {router.push(`/user/${followeredUser.follow_id}`);}}
+                      >
+                        <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
+                          {/* Profile Image */}
+                          {followeredUser.profile_link ? (
+                            <div className="w-[5.5rem] h-16 rounded-full overflow-hidden border-2 border-gray-500">
+                              <Image
+                                src={followeredUser.profile_link}
+                                alt="Profile"
+                                width={100}
+                                height={100}
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-[5.5rem] h-16 rounded-full bg-gray-300 border-2 border-gray-500"></div>
+                          )}
+
+                          {/* Username and Description */}
+                          <div className="flex flex-col">
+                            <p className="font-medium">{followeredUser.username}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
+                          </div>
+                        </div>
+                      </li>
                       ))}
                     </ul>
                   ) : (

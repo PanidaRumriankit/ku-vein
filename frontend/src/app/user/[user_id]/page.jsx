@@ -96,6 +96,12 @@ export default function UserProfile() {
     }
   }, [session, userData, personalData]);
 
+  useEffect(() => {
+    if (followers) {
+      console.log('Followers:', followers);
+    }
+  }, [followers]);
+
   if (loading || !userData) return <p>Loading...</p>;
   
   async function followUser() {
@@ -235,7 +241,10 @@ export default function UserProfile() {
                         <li
                           key={index}
                           className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
-                          onClick={() => {router.push(`/user/${followeredUser.follow_id}`);}}
+                          onClick={() => {
+                            const navigationId = followeredUser.follow_id || followeredUser.id;
+                            router.push(`/user/${navigationId}`);
+                          }}
                         >
                           <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
                             {/* Profile Image */}
@@ -280,9 +289,9 @@ export default function UserProfile() {
                     : 'text-white bg-[#4ECDC4] hover:bg-[#44b3ab]'
                 }`}
                 onClick={() => {
-                  setIsFollowing((prev) => !prev);
                   setFollowerCount((prev) => (isFollowing ? prev - 1 : prev + 1));
                   setFollowers((prev) => (isFollowing ? prev.filter((follower) => follower.username !== personalData.username) : [...prev, personalData]));
+                  setIsFollowing((prev) => !prev);
                   followUser();
                 }}
               >
