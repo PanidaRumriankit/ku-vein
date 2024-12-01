@@ -247,13 +247,17 @@ export default function Profile() {
         >
           {/* Image */}
           <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden">
-            <Image
-              src={putData.profile_link || session.user.image}
-              alt="Profile"
-              layout="fill"
-              objectFit="cover"
-              className="border-gray-500 border-2"
-            />
+            {putData.profile_link ? (
+              <Image
+                src={putData.profile_link}
+                alt="Profile"
+                layout="fill"
+                objectFit="cover"
+                className="border-gray-500 border-2"
+              />
+            ) : (
+              <div className="w-[100px] h-[100px] rounded-full bg-gray-300 border-2 border-gray-500"></div>
+            )}
           </div>
 
           {/* Overlay */}
