@@ -30,9 +30,6 @@ function RootLayoutContent({children}) {
   const {data: session, status} = useSession();
   const [error, setError] = useState(null);
 
-  const idToken = session.idToken || session.accessToken;
-  const email = session.email;
-
   // Check for session errors
   useEffect(() => {
     if (status === 'error') {
@@ -44,6 +41,9 @@ function RootLayoutContent({children}) {
       signOut();
     }
   }, [status, session]);
+
+  const idToken = session?.idToken || session?.accessToken;
+  const email = session?.email;
 
   // Create user in database
   useEffect(() => {
