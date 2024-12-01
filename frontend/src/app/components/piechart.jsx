@@ -64,6 +64,7 @@ export default function GradePieChart({itemData}) {
             size: 14,
           },
         },
+        position: "left",
       },
     },
   };
