@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 
-import {facultyColor} from "../../constants/index";
+import {attendant, facultyColor} from "../../constants/index";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
 
 import Image from "next/image";
@@ -12,15 +12,6 @@ import StarIcon from "@mui/icons-material/Star";
 import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
 import LocalFireDepartmentOutlinedIcon
   from "@mui/icons-material/LocalFireDepartmentOutlined";
-
-const attendent = {
-  1: 'ไม่เช็คชื่อ',
-  2: 'เช็คชื่อบางครั้ง',
-  3: 'เช็คชื่อปานกลาง',
-  4: 'เช็คชื่อบ่อย',
-  5: 'เช็คชื่อทุกครั้ง',
-};
-
 
 export default function ReviewPage({params}) {
   const [stats, setStats] = useState({});
@@ -37,7 +28,7 @@ export default function ReviewPage({params}) {
         setColor(facultyColor[data.faculties || ""] || "transparent");
         setRating(data.ratings || 0);
         setEffort(data.efforts || 0);
-        setChips([data.criteria, data.type, attendent[data.attendances]]);
+        setChips([data.criteria, data.classes_type, attendant[data.attendances]]);
       }
       console.log("Fetched review data", data);
     };
