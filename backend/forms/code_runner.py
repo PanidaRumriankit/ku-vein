@@ -47,9 +47,12 @@ if __name__ == "__main__":
             "3. Back up test.\n"
             )
 
-    while True:
-        print(text)
-        choice = int(input())
-        func = choice_handler.get(choice)
-        func()
-        break
+    while(True):
+        try:
+            print(text)
+            choice = int(input())
+            func = choice_handler.get(choice)
+            func()
+            break
+        except KeyError:
+            print("No")

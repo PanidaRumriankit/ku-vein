@@ -2,11 +2,11 @@
 "use client";
 
 import {useParams, useRouter} from 'next/navigation';
-import {useEffect, useState, useMemo} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
-import { followURL } from '../../constants/backurl';
+import {followURL} from '../../constants/backurl';
 
 export default function UserProfile() {
   const router = useRouter();

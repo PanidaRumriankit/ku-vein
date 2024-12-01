@@ -10,13 +10,24 @@ import LinkRoundedIcon from '@mui/icons-material/LinkRounded';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import XIcon from '@mui/icons-material/X';
 
-export default function ShareButton({reviewId}) {
-  const url = '/review/' + reviewId;
-
+export default function ShareButton({reviewId, reviewText}) {
   // TODO fix the url
-  const handleCopy = (e) => {
-    navigator.clipboard.writeText(url)
+  const url = window.location.host + '/review/' + reviewId;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(url).then(() => console.log("Copied"));
   }
+
+  const shareToFacebook = () => {
+    const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+    window.open(fbUrl, "_blank", "noopener,noreferrer");
+  }
+
+  const shareToX = () => {
+    const xShareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(reviewText)}`;
+    window.open(xShareUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <Popover placement="buttom">
       <PopoverTrigger>
@@ -27,15 +38,21 @@ export default function ShareButton({reviewId}) {
       </PopoverTrigger>
       <PopoverContent>
         <div className="text-black dark:text-white">
-          <div className="my-2">
-            <FacebookIcon/> Facebook
+          <div>
+            <button className="my-2" onClick={shareToFacebook}>
+              <FacebookIcon/> Facebook
+            </button>
           </div>
-          <div className="my-2">
-            <XIcon/> X
+          <div>
+            <button className="my-2" onClick={shareToX}>
+              <XIcon/> X
+            </button>
           </div>
-          <div className="my-2 cursor-pointer" onClick={handleCopy}>
-            <LinkRoundedIcon/>
-            Copy link
+          <div>
+            <button className="my-2 cursor-pointer" onClick={handleCopy}>
+              <LinkRoundedIcon/>
+              Copy link
+            </button>
           </div>
         </div>
       </PopoverContent>
