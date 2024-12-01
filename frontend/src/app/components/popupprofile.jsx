@@ -51,7 +51,6 @@ export default function PopupProfile({userId}) {
           style={{ background: userData.profile_color }}
         ></div>
         {/* Profile Picture */}
-        {/* <div className="absolute -my-6 ml-8 text-left transform -translate-x-1/2 w-12 h-12 bg-gray-300 rounded-full border-gray-500 border-2"></div> */}
         <div className="absolute -my-6 ml-8 text-left transform -translate-x-1/2">
           {userData.profile_link ? (
             <div className="relative w-12 h-12 rounded-full overflow-hidden">
