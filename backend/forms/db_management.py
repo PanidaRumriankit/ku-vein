@@ -156,7 +156,7 @@ class DatabaseManagement:
     def add_course_data_to_sub(course_type: str):
         """Add datas to the Inter, Special, Normal tables."""
         filtered_data = CourseData.objects.filter(course_type=course_type)
-        course_type = {"inter": Inter, "special": Special, "Normal": Normal}.get(course_type)
+        course_type = {"inter": Inter, "special": Special, "normal": Normal}.get(course_type)
         for course in filtered_data:
             course_instance = CourseData.objects.get(id=course.id)
             course_type.objects.create(course=course_instance)
