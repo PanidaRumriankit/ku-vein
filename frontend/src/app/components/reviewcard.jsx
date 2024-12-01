@@ -36,6 +36,7 @@ export default function ReviewCard({item, page = null}) {
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUserId, setIsUserId] = useState(false);
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
@@ -96,7 +97,7 @@ export default function ReviewCard({item, page = null}) {
 
   useEffect(() => {
     if (userId) {
-      console.log("User id2:", userId.toString(), typeof userId.toString());
+      setIsUserId(true);
     }
   }, [userId]);
 
@@ -167,7 +168,7 @@ export default function ReviewCard({item, page = null}) {
               >
                 {item.name || item.username}
               </span>
-              {!item.is_anonymous && isHovered && (
+              {!item.is_anonymous && isHovered && isUserId (
                 <div
                   style={{
                     position: "absolute",
