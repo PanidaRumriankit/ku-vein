@@ -30,6 +30,9 @@ function RootLayoutContent({children}) {
   const {data: session, status} = useSession();
   const [error, setError] = useState(null);
 
+  const idToken = session.idToken || session.accessToken;
+  const email = session.email;
+
   // Check for session errors
   useEffect(() => {
     if (status === 'error') {
@@ -49,7 +52,9 @@ function RootLayoutContent({children}) {
         const response = await fetch(userURL, {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${idToken}`,
             'Content-Type': 'application/json',
+            'email': email,
           },
           body: JSON.stringify({ email: session.user.email }),
         });

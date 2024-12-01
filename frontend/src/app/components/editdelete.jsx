@@ -119,6 +119,7 @@ export default function EditDelete({userName, reviewId, item}) {
         headers: {
           "Authorization": `Bearer ${idToken}`,
           "Content-Type": "application/json",
+          "email": email,
         },
         body: JSON.stringify(postData)
       });
