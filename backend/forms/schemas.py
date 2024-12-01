@@ -90,11 +90,21 @@ class UserDataEditSchema(ModelSchema):
         """Metaclass for linking this schema to the target model."""
 
         model = UserData
-        fields = '__all__'
+        fields = ['user_id','user_name','user_type','description','profile_color']
 
-        
+
+class UserProfileSchema(Schema):
+    """Schema for POST PUT user profile"""
+
+    user_id: str
+    img_id: str
+    img_link: str
+    img_delete_hash: str
+
+
 class FollowSchema(Schema):
     """Schema for follower feature."""
+
     current_user_id: str
     target_user_id: str
 
@@ -271,17 +281,31 @@ class QuestionCreateSchema(Schema):
         }
     """
     user_id: str
+    question_title: str
     question_text: str
     faculty: str
+    course_id: str
     pen_name: str
 
 
 class QuestionPutSchema(Schema):
     """Schema for QA_Question, used for editing Questions."""
     question_id: str
+    question_title: str
     question_text: str
     faculty: str
     pen_name: str
+
+
+class QuestionDeleteSchema(Schema):
+    """Schema for QA_Question, used for deleting Questions."""
+    question_id: str
+
+
+class QuestionUpvoteSchema(Schema):
+    """Schema for QA_Question_Upvote, used for upvoting question."""
+    question_id: str
+    user_id: str
 
 
 class AnswerCreateSchema(Schema):
@@ -311,6 +335,17 @@ class AnswerPutSchema(Schema):
     answer_id: str
     answer_text: str
     pen_name: str
+
+
+class AnswerDeleteSchema(Schema):
+    """Schema for QA_Answer, used for deleting Answer."""
+    answer_id: str
+
+
+class AnswerUpvoteSchema(Schema):
+    """Schema for QA_Answer_Upvote, used for upvoting answer."""
+    answer_id: str
+    user_id: str
 
 
 class BookMarkSchema(Schema):

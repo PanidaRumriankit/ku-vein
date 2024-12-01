@@ -13,6 +13,7 @@ import GetUserData from '../constants/getuser';
 import {userURL} from "../constants/backurl";
 import {useTheme} from 'next-themes';
 import Popup from 'reactjs-popup';
+import SessionTimeout from '../components/sessiontimeout';
 
 export default function Profile() {
   const {theme} = useTheme();
@@ -53,7 +54,7 @@ export default function Profile() {
     }
   }, [session]);
 
-  if (!session) return null;
+  if (!session) return SessionTimeout();
 
   const idToken = session.idToken || session.accessToken;
   const email = session.email;
@@ -93,7 +94,7 @@ export default function Profile() {
     }
   }
 
-  if (!putData) return null;
+  if (!putData) return SessionTimeout();
 
   console.log('Patch Data:', putData);
 

@@ -13,15 +13,22 @@ from .db_post import PostFactory
 from .db_put import PutFactory
 from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, ReviewPutSchema,
-                      ReviewDeleteSchema,
+                      ReviewDeleteSchema, UserProfileSchema,
                       UpvotePostSchema,
                       FollowSchema,
                       UserDataSchema, UserDataEditSchema,
                       NotePostSchema, NotePutSchema,
                       NoteDeleteSchema,
                       BookMarkSchema,
-                      QuestionCreateSchema, AnswerCreateSchema,
-                      QuestionPutSchema, AnswerPutSchema)
+                      QuestionCreateSchema, QuestionPutSchema,
+                      QuestionDeleteSchema, QuestionUpvoteSchema,
+                      AnswerCreateSchema, AnswerPutSchema,
+                      AnswerDeleteSchema, AnswerUpvoteSchema)
+from .db_management import DatabaseBackup
+from .db_post import PostFactory
+from .db_query import QueryFactory, InterQuery
+from .db_put import PutFactory
+
 
 app = NinjaExtraAPI()
 
@@ -179,6 +186,18 @@ class UserController(ControllerBase):
         strategy = PutFactory.get_put_strategy("user")
         return strategy.put_data(data.model_dump())
 
+    @http_post("/profile", response={200: UserProfileSchema})
+    def add_new_profile_pic(self, request, data: UserProfileSchema):
+        """Use for create new profile"""
+        strategy = PostFactory.get_post_strategy("profile")
+        return strategy.post_data(data.model_dump())
+
+    @http_put("/profile", response={200: UserProfileSchema})
+    def change_profile_pic(self, request, data: UserProfileSchema):
+        """Use for change the profile"""
+        strategy = PutFactory.get_put_strategy("profile")
+        return strategy.put_data(data.model_dump())
+
 
 @api_controller("/note")
 class NoteController(ControllerBase):
@@ -302,7 +321,7 @@ class QAController(ControllerBase):
 
     @http_get("")
     def get_qa(self, request, question_id: int|None=None, mode: str='latest'):
-        """Get all Answers to a Q&A question."""
+        """Get all Question or Answers to a Q&A."""
         if question_id is None:
             strategy = QueryFactory.get_query_strategy("qa_question")
         else:
@@ -315,11 +334,23 @@ class QAController(ControllerBase):
         strategy = PostFactory.get_post_strategy("question")
         return strategy.post_data(data.model_dump())
     
+    @http_post("/upvote")
+    def upvote_question(self, request, data: QuestionUpvoteSchema):
+        """Use for creating new upvote for Q&A."""
+        strategy = PostFactory.get_post_strategy("question_upvote")
+        return strategy.post_data(data.model_dump())
+    
     @http_put("")
     def edit_question(self, request, data: QuestionPutSchema):
         """Edit QA_Questions data."""
         strategy = PutFactory.get_put_strategy("question")
         return strategy.put_data(data.model_dump())
+    
+    @http_delete("", response={200: QuestionDeleteSchema})
+    def delete_question(self, request, data: QuestionDeleteSchema):
+        """Delete the question objects."""
+        strategy = DeleteFactory.get_delete_strategy("question")
+        return strategy.delete_data(data.model_dump())
 
     @http_post("/answer")
     def add_answer(self, request, data: AnswerCreateSchema):
@@ -327,11 +358,23 @@ class QAController(ControllerBase):
         strategy = PostFactory.get_post_strategy("answer")
         return strategy.post_data(data.model_dump())
     
+    @http_post("/answer/upvote")
+    def upvote_answer(self, request, data: AnswerUpvoteSchema):
+        """Use for creating new upvote for Q&A."""
+        strategy = PostFactory.get_post_strategy("answer_upvote")
+        return strategy.post_data(data.model_dump())
+    
     @http_put("/answer")
     def edit_answer(self, request, data: AnswerPutSchema):
         """Edit QA_Answers data."""
         strategy = PutFactory.get_put_strategy("answer")
         return strategy.put_data(data.model_dump())
+    
+    @http_delete("/answer", response={200: AnswerDeleteSchema})
+    def delete_answer(self, request, data: AnswerDeleteSchema):
+        """Delete the answer objects."""
+        strategy = DeleteFactory.get_delete_strategy("answer")
+        return strategy.delete_data(data.model_dump())
 
 
 @api_controller("/backup")
