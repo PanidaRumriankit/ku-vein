@@ -168,7 +168,7 @@ export default function ReviewCard({item, page = null}) {
               >
                 {item.name || item.username}
               </span>
-              {!item.is_anonymous && isHovered && isUserId (
+              {!item.is_anonymous && isHovered && isUserId && (
                 <div
                   style={{
                     position: "absolute",
