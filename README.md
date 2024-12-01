@@ -16,7 +16,17 @@ prerequisite
     ```shell 
     git clone https://github.com/PanidaRumriankit/ku-vein.git`
     ```
-2. Activate virtual environment
+2. Creating virtual environment
+   - For macOS/Linux
+   ```
+   python -m venv env
+   ```
+   
+   - For Windows
+   ```
+   python3 -m venv env
+   ```
+3. Activate virtual environment
    - For macOS/Linux
     ```shell
     source env/bin/activate
@@ -25,13 +35,13 @@ prerequisite
     ```shell
     env\Scripts\activate
     ```
-3. Install all requirements for frontend
+4. Install all requirements for frontend
     ```shell
     cd frontend
     ```
     
    - [frontend installation guide](./frontend/README.md)
-4. Install all requirements for backend
+5. Install all requirements for backend
     ```shell
     cd backend
     ```
