@@ -346,26 +346,6 @@ class HistoryController(ControllerBase):
         return check_response(strategy.get_data(target_user, is_other_user))
 
 
-@app.get("/database/cou")
-def test_auth(request):
-    """For test API authentication only."""
-    auth_header = request.headers.get("Authorization")
-
-    if auth_header is None:
-        return Response({"error": "Authorization header missing"}, status=401)
-
-    try:
-        email = request.headers.get("email")
-
-        if verify_google_token(auth_header, email):
-            return Response(InterQuery().get_data())
-        else:
-            return Response({"error": "Invalid token"}, status=403)
-
-    except (IndexError, KeyError):
-        return Response({"error": "Malformed or invalid token"}, status=401)
-
-
 @api_controller("/qa")
 class QAController(ControllerBase):
     """Controller for handling qa endpoints."""
