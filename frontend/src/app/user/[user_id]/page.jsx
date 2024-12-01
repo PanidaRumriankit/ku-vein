@@ -181,14 +181,14 @@ export default function UserProfile() {
                   <h2 className="text-lg font-semibold mb-4">Following</h2>
                   {userData.following.length > 0 ? (
                     <ul>
-                      {userData.following.map((followedUser, index) => (
+                      {userData.following.map((followingUser, index) => (
                         <li
                           key={index}
                           className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
-                          // onClick={() => {router.push(`/user/${user_id}`);}}
-                          >
-                          <p className="font-medium">{followedUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc}</p>
+                          onClick={() => {router.push(`/user/${followingUser.follow_id}`);}}
+                        >
+                          <p className="font-medium">{followingUser.username}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{followingUser.desc}</p>
                         </li>
                       ))}
                     </ul>
@@ -211,7 +211,11 @@ export default function UserProfile() {
                   {followers.length > 0 ? (
                     <ul>
                       {followers.map((followeredUser, index) => (
-                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
+                        <li
+                          key={index}
+                          className="py-2 border-b border-gray-300 dark:border-gray-600"
+                          onClick={() => {router.push(`/user/${followeredUser.follow_id}`);}}
+                        >
                           <p className="font-medium">{followeredUser.username}</p>
                           <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
                         </li>
