@@ -64,9 +64,10 @@ export default function GradePieChart({itemData}) {
             size: 14,
           },
         },
+        position: "left",
       },
     },
   };
 
-  return <Pie data={data} options={options} className="border rounded"/>;
+  return <Pie data={data} options={options}/>;
 }
