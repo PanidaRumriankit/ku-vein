@@ -482,9 +482,11 @@ class NoteQuery(QueryFilterStrategy):
 class QuestionQuery(QueryFilterStrategy):
     """Class for sending all the questions in the Q&A data."""
 
-    def get_data(self, mode, *args, **kwargs):
+    def get_data(self,course_id=None, mode='latest', *args, **kwargs):
         """Get the data from the database and return to the frontend."""
         data = self.get_query_set()
+        if course_id:
+            data = data.filter(course__course_id=course_id)
         return Response(self.sorted_qa_data(data, mode), status=200)
 
     @staticmethod

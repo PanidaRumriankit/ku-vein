@@ -128,7 +128,7 @@ class ReviewPost(PostStrategy):
             review=review_instance,
             rating=data['rating'],
             academic_year=data['academic_year'],
-            pen_name=data['pen_name'],
+            pen_name=data['pen_name'] or self.user.username,
             grade=data['grade'],
             effort=data['effort'],
             attendance=data['attendance'],
@@ -343,7 +343,7 @@ class NotePost(PostStrategy):
                 faculty=data['faculty'],
                 file_name=file_name,
                 pdf_url=blob,
-                pen_name=data['pen_name'],
+                pen_name=data['pen_name'] or user.username,
                 date_data=timezone.now(),
                 anonymous=anonymous
             )
@@ -386,8 +386,8 @@ class QuestionPost(PostStrategy):
                                     user=user,
                                     faculty=data['faculty'],
                                     course=course,
-                                    pen_name=data['pen_name'],
-                                    is_anonymous=(user.user_name != data['pen_name']),
+                                    pen_name=data['pen_name'] or user.username,
+                                    is_anonymous=(data['pen_name'] != ""),
                                     )
 
             HistoryPost().post_data({
@@ -463,8 +463,8 @@ class AnswerPost(PostStrategy):
             QA_Answer.objects.create(question=question,
                                      user=user,
                                      answer_text=data['answer_text'],
-                                     pen_name=data['pen_name'],
-                                     is_anonymous=(user.user_name != data['pen_name']),
+                                     pen_name=data['pen_name'] or user.username,
+                                     is_anonymous=(data['pen_name'] != ""),
                                      )
 
         except UserData.DoesNotExist:
