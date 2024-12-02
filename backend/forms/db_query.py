@@ -538,6 +538,7 @@ class AnswerQuery(QueryFilterStrategy):
                     answers_id=F('answer_id'),
                     text=F('answer_text'),
                     users=F('user'),
+                    username=F('user__user_name'),
                     post_time=F('posted_time'),
                     anonymous=F('is_anonymous'),
                     pen_names=F('pen_name'),
