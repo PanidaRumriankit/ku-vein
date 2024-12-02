@@ -113,7 +113,7 @@ export default function QuestionCard({item, bookmark}) {
             {formattedDate}
           </p>
           <p
-            className={!item.is_anonymous ? "cursor-pointer": ""}
+            className={!item.anonymous ? "cursor-pointer": ""}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onClick={(e) => {
