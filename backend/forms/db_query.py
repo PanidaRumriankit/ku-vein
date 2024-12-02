@@ -60,6 +60,7 @@ class SortReview(QueryFilterStrategy):
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
             courses_id=F('review__course__course_id'),
+            username=F('review__user__user_name'),
             courses_name=F('review__course__course_name'),
             faculties=F('review__faculty'),
             review_text=F('review__reviews'),
@@ -496,6 +497,7 @@ class QuestionQuery(QueryFilterStrategy):
                     questions_title=F('question_title'),
                     questions_text=F('question_text'),
                     users=F('user'),
+                    username=F('user__user_name'),
                     pen_names=F('pen_name'),
                     post_time=F('posted_time'),
                     faculties=F('faculty'),
@@ -539,6 +541,7 @@ class AnswerQuery(QueryFilterStrategy):
                     answers_id=F('answer_id'),
                     text=F('answer_text'),
                     users=F('user'),
+                    username=F('user__user_name'),
                     post_time=F('posted_time'),
                     anonymous=F('is_anonymous'),
                     pen_names=F('pen_name'),
