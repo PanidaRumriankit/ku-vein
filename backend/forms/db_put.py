@@ -124,6 +124,7 @@ class ReviewPut(PutStrategy):
             return Response({"error": "The Review with that ID does not exists."}, status=400)
 
         review.save()
+        review_stat.save()
         return Response({"success": "The requested user's attribute has been changed.",
                          "review_data": [[{key: val} for key, val in review.__dict__.items() if key[0] != '_'],
                                         [{key: val} for key, val in review_stat.__dict__.items() if key[0] != '_']]
