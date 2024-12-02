@@ -494,6 +494,7 @@ class QuestionQuery(QueryFilterStrategy):
                     questions_title=F('question_title'),
                     questions_text=F('question_text'),
                     users=F('user'),
+                    username=F('user__user_name'),
                     pen_names=F('pen_name'),
                     post_time=F('posted_time'),
                     faculties=F('faculty'),
