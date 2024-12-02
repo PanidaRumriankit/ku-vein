@@ -154,7 +154,7 @@ class ReviewPost(PostStrategy):
                 course_id=data['course_id'],
                 course_type=data['course_type'])
         except KeyError:
-            return Response({"error": "User data or CourseData are missing "
+            return Response({"error": "UserData or CourseData are missing "
                                       "from the request body."}, status=400)
 
         except CourseData.DoesNotExist:
@@ -378,7 +378,8 @@ class QuestionPost(PostStrategy):
         """Add new QA_Question to the database."""
         try:
             user = UserData.objects.get(user_id=data['user_id'])
-            course = CourseData.objects.filter(course_id=data['course_id']).first()
+            course = CourseData.objects.get(course_id=data['course_id'],
+                                            course_type=data['course_type'])
             qa_instance = QA_Question.objects.create(
                                     question_title=data['question_title'],
                                     question_text=data['question_text'],
