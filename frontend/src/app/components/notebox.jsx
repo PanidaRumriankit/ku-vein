@@ -15,6 +15,7 @@ const pdfDataExample = {
   faculties: "engineering",
   courses_type: "inter",
   u_id: 1,
+  pdf_id: 1,
   name: "yes",
   is_anonymous: true,
   pdf_name: "string.pdf",
@@ -45,7 +46,7 @@ export default function NoteBox({userName, data}) {
     if (!email || !idToken || currentUser !== userName) return;
 
     try {
-      console.log("noteId", data.u_id)
+      console.log("noteId", data.pdf_id)
       const response = await fetch(noteURL, {
         method: "DELETE",
         headers: {
@@ -54,7 +55,7 @@ export default function NoteBox({userName, data}) {
           "email": email,
         },
         body: JSON.stringify({
-          note_id: data.u_id,
+          note_id: data.pdf_id,
         })
       });
 
