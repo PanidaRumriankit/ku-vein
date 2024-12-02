@@ -347,17 +347,14 @@ class HistoryController(ControllerBase):
 
 
 @api_controller("/qa")
-class QAController(ControllerBase):
+class QuestionController(ControllerBase):
     """Controller for handling qa endpoints."""
 
     @http_get("")
-    def get_qa(self, request, question_id: int|None=None, mode: str='latest'):
+    def get_question(self, request, course_id: str|None=None, mode: str='latest'):
         """Get all Question or Answers to a Q&A."""
-        if question_id is None:
-            strategy = QueryFactory.get_query_strategy("qa_question")
-        else:
-            strategy = QueryFactory.get_query_strategy("qa_answer")
-        return strategy.get_data(question_id=question_id, mode=mode)
+        strategy = QueryFactory.get_query_strategy("qa_question")
+        return strategy.get_data(course_id=course_id, mode=mode)
 
     @http_post("")
     def add_question(self, request, data: QuestionCreateSchema):
@@ -368,15 +365,6 @@ class QAController(ControllerBase):
         strategy = PostFactory.get_post_strategy("question")
         return strategy.post_data(data.model_dump())
     
-    @http_post("/upvote")
-    def upvote_question(self, request, data: QuestionUpvoteSchema):
-        """Use for creating new upvote for Q&A."""
-        correct_user = check_real_user(data)
-        if isinstance(correct_user, Response):
-            return correct_user
-        strategy = PostFactory.get_post_strategy("question_upvote")
-        return strategy.post_data(data.model_dump())
-    
     @http_put("")
     def edit_question(self, request, data: QuestionPutSchema):
         """Edit QA_Questions data."""
@@ -385,6 +373,15 @@ class QAController(ControllerBase):
             return correct_user
         strategy = PutFactory.get_put_strategy("question")
         return strategy.put_data(data.model_dump())
+
+    @http_post("/upvote")
+    def upvote_question(self, request, data: QuestionUpvoteSchema):
+        """Use for creating new upvote for Q&A."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
+        strategy = PostFactory.get_post_strategy("question_upvote")
+        return strategy.post_data(data.model_dump())
     
     @http_delete("", response={200: QuestionDeleteSchema})
     def delete_question(self, request, data: QuestionDeleteSchema):
@@ -395,6 +392,16 @@ class QAController(ControllerBase):
         strategy = DeleteFactory.get_delete_strategy("question")
         return strategy.delete_data(data.model_dump())
 
+
+@api_controller("/qa/answer")
+class AnswerController(ControllerBase):
+    """Controller for handling qa endpoints."""
+
+    @http_get("")
+    def get_answer(self, request, question_id, mode='latest'):
+        strategy = QueryFactory.get_query_strategy("qa_answer")
+        return strategy.get_data(question_id=question_id, mode=mode)
+
     @http_post("/answer")
     def add_answer(self, request, data: AnswerCreateSchema):
         """Use for creating new answer for Q&A."""
@@ -402,15 +409,6 @@ class QAController(ControllerBase):
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("answer")
-        return strategy.post_data(data.model_dump())
-    
-    @http_post("/answer/upvote")
-    def upvote_answer(self, request, data: AnswerUpvoteSchema):
-        """Use for creating new upvote for Q&A."""
-        correct_user = check_real_user(data)
-        if isinstance(correct_user, Response):
-            return correct_user
-        strategy = PostFactory.get_post_strategy("answer_upvote")
         return strategy.post_data(data.model_dump())
     
     @http_put("/answer")
@@ -430,6 +428,15 @@ class QAController(ControllerBase):
             return correct_user
         strategy = DeleteFactory.get_delete_strategy("answer")
         return strategy.delete_data(data.model_dump())
+    
+    @http_post("/answer/upvote")
+    def upvote_answer(self, request, data: AnswerUpvoteSchema):
+        """Use for creating new upvote for Q&A."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
+        strategy = PostFactory.get_post_strategy("answer_upvote")
+        return strategy.post_data(data.model_dump())
 
 
 @api_controller("/backup")
