@@ -79,26 +79,23 @@ class UserDataSchema(ModelSchema):
         fields = ['email']
 
 
-class UserDataEditSchema(Schema):
+class UserDataEditSchema(ModelSchema):
     """
     Schema for editing existing user data.
 
     Take all the fields from the accounts edit forms.
     """
-    Authorization: str
-    email: str
-    user_id: int
-    user_name: str
-    user_type: str
-    description: str
-    profile_color: str
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = UserData
+        fields = ['user_id','user_name','user_type','description','profile_color']
 
 
 class UserProfileSchema(Schema):
     """Schema for POST PUT user profile"""
 
-    Authorization: str
-    email: str
     user_id: str
     img_id: str
     img_link: str
@@ -106,12 +103,39 @@ class UserProfileSchema(Schema):
 
 
 class FollowSchema(Schema):
-    """Schema for POST follower feature."""
+    """Schema for follower feature."""
 
-    Authorization: str
-    email: str
     current_user_id: str
     target_user_id: str
+
+
+class CourseReviewSchema(ModelSchema):
+    """
+    Schema for CourseReview model, representing reviews left by users.
+
+    Includes all fields in the CourseReview model.
+    """
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = CourseReview
+        fields = '__all__'
+
+
+class ReviewStatSchema(ModelSchema):
+    """
+    Schema for ReviewStat model.
+
+    Containing statistical data for course reviews.
+    Includes all fields in the ReviewStat model.
+    """
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = ReviewStat
+        fields = '__all__'
 
 
 class ReviewPostSchema(Schema):
@@ -131,7 +155,6 @@ class ReviewPostSchema(Schema):
     - pen_name (str): User's preferred display name.
     - grade (str): Grade assigned to the course by the user.
     """
-    Authorization: str
     email: str
     course_id: str
     course_type: str
@@ -150,10 +173,8 @@ class ReviewPostSchema(Schema):
 
 class ReviewPutSchema(Schema):
     """Schema for handling incoming review edit requests from users."""
-    Authorization: str
-    email: str
+    # --CourseReview--
     review_id: str|int
-    course_type: str
     faculty: str
     reviews: str
     instructor: str
@@ -168,20 +189,34 @@ class ReviewPutSchema(Schema):
     class_type: str
 
 
-class ReviewDeleteSchema(Schema):
+class ReviewDeleteSchema(ModelSchema):
     """Schema for delete the CourseReview"""
-    Authorization: str
-    email: str
-    review_id: int
 
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = CourseReview
+        fields = ['review_id']
 
 
 class UpvotePostSchema(Schema):
     """Schema for increase the upvote number."""
-
-    Authorization: str
     email: str
     review_id: int
+
+
+class NoteSchema(ModelSchema):
+    """
+    Schema for Summary model, representing summaries written by users.
+
+    Includes all fields in the Summary model.
+    """
+
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = Note
+        fields = '__all__'
 
 
 class NotePostSchema(Schema):
@@ -206,8 +241,7 @@ class NotePostSchema(Schema):
         }
     """
 
-    Authorization: str
-    email: str
+    email : str
     course_id: str
     faculty: str
     course_type: str
@@ -218,20 +252,19 @@ class NotePostSchema(Schema):
 
 class NotePutSchema(Schema):
     """Schema for Note, used for editing Note."""
-
-    Authorization: str
-    email: str
     note_id: str
     faculty: str
     pen_name: str
 
 
-class NoteDeleteSchema(Schema):
+class NoteDeleteSchema(ModelSchema):
     """Schema for delete Note"""
 
-    Authorization: str
-    email: str
-    note_id: int
+    class Meta:
+        """Metaclass for linking this schema to the target model."""
+
+        model = Note
+        fields = ['note_id']
 
 
 class QuestionCreateSchema(Schema):
@@ -248,9 +281,6 @@ class QuestionCreateSchema(Schema):
             "question_text": "Is Prof.Ichi a monkey?",
         }
     """
-
-    Authorization: str
-    email: str
     user_id: str
     question_title: str
     question_text: str
@@ -262,9 +292,6 @@ class QuestionCreateSchema(Schema):
 
 class QuestionPutSchema(Schema):
     """Schema for QA_Question, used for editing Questions."""
-
-    Authorization: str
-    email: str
     question_id: str
     question_title: str
     question_text: str
@@ -274,17 +301,11 @@ class QuestionPutSchema(Schema):
 
 class QuestionDeleteSchema(Schema):
     """Schema for QA_Question, used for deleting Questions."""
-
-    Authorization: str
-    email: str
     question_id: str
 
 
 class QuestionUpvoteSchema(Schema):
     """Schema for QA_Question_Upvote, used for upvoting question."""
-
-    Authorization: str
-    email: str
     question_id: str
     user_id: str
 
@@ -305,9 +326,6 @@ class AnswerCreateSchema(Schema):
             "user_id": "2"
         }
     """
-
-    Authorization: str
-    email: str
     question_id: str
     answer_text: str
     user_id: str
@@ -316,9 +334,6 @@ class AnswerCreateSchema(Schema):
 
 class AnswerPutSchema(Schema):
     """Schema for QA_Answer, used for editing Answer."""
-
-    Authorization: str
-    email: str
     answer_id: str
     answer_text: str
     pen_name: str
@@ -326,17 +341,11 @@ class AnswerPutSchema(Schema):
 
 class AnswerDeleteSchema(Schema):
     """Schema for QA_Answer, used for deleting Answer."""
-
-    Authorization: str
-    email: str
     answer_id: str
 
 
 class AnswerUpvoteSchema(Schema):
     """Schema for QA_Answer_Upvote, used for upvoting answer."""
-
-    Authorization: str
-    email: str
     answer_id: str
     user_id: str
 
@@ -358,8 +367,6 @@ class BookMarkSchema(Schema):
 
         }
     """
-
-    Authorization: str
-    email: str
+    email : str
     id : int
     data_type : str
