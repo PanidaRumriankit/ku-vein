@@ -23,7 +23,7 @@ import GetUserData from "../constants/getuser";
 import SearchFaculty from "../components/searchfaculty";
 import { questionURL } from "../constants/backurl";
 
-export default function EditDelete({userName, answerId, item}) {
+export default function EDAnswer({userName, answerId, item}) {
   // Original const
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
@@ -36,7 +36,7 @@ export default function EditDelete({userName, answerId, item}) {
     answer_text: item.text,
     pen_name: item.pen_names,
   })
-  const [anonymous, setAnonymous] = useState(false);
+  const [anonymous2, setAnonymous2] = useState(false);
   const answerURL = questionURL + '/answer';
 
   const isFormValid = () => {
@@ -48,7 +48,7 @@ export default function EditDelete({userName, answerId, item}) {
     if (!answer_text || !answer_id) {
       return false;
     }
-    return !(anonymous && !pen_name);
+    return !(anonymous2 && !pen_name);
   };
 
   // original const and uses
@@ -70,6 +70,18 @@ export default function EditDelete({userName, answerId, item}) {
       });
     }
   }, [currentUser, session]);
+
+  useEffect(() => {
+    if (isEditOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isEditOpen]);
 
   const handleDelete = async () => {
     if (!email || !idToken || currentUser !== userName) return;
@@ -148,7 +160,7 @@ export default function EditDelete({userName, answerId, item}) {
             className={textClasses}
             onClick={() => setIsEditOpen(true)}
           >
-            แก้ไขคำถาม
+            แก้ไขคำตอบ
           </DropdownItem>
           <DropdownItem
             key="delete"
@@ -158,7 +170,7 @@ export default function EditDelete({userName, answerId, item}) {
               className={cn(iconClasses, "text-danger")}/>}
             onClick={handleDelete}
           >
-            ลบคำถาม
+            ลบคำตอบ
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
@@ -175,102 +187,90 @@ export default function EditDelete({userName, answerId, item}) {
           border: 'none',
           padding: '0',
           background: 'none',
+          display: 'flex',
+          justifyContent: 'center', 
+          alignItems: 'center',
           height: '90%',
           width: '60%',
           overflow: 'auto'
         }}
       >
         <div
-            className="text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
-            <h2 className="text-xl font-semibold pb-2">เพิ่มคำถาม</h2>
-            <SearchFaculty onFacultySelect={(faculty) => setPostData({
+          className="mx-auto my-4 w-[32rem] max-w-4xl bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+          <h2 className="text-xl font-semibold pb-2">เพิ่มความคิดเห็น</h2>
+          <textarea
+            type="text"
+            placeholder="ความคิดเห็น"
+            className="w-full h-48 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2"
+            required
+            value={postData.answer_text}
+            onChange={(e) => setPostData({
               ...postData,
-              faculty: faculty.name,
-            })}/>
-            <div className='flex flex-wrap mt-4 font-bold'>
-              <input type='text'
-                     placeholder='หัวข้อคำถาม'
-                     className='w-full px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
-                     required
-                     onChange={(e) => setPostData({
-                       ...postData,
-                       question_title: e.target.value
-                     })}
-              />
-            </div>
-            <textarea
-              type="text"
-              placeholder="เนื้อหา"
-              className="w-full h-48 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2"
-              required
-              value={postData.question_text}
-              onChange={(e) => setPostData({
-                ...postData,
-                question_text: e.target.value
-              })}
-            />
-            <div className='flex flex-wrap mt-4 font-bold'>
-              <h1 className='mr-14'>โพสต์แบบ</h1>
-              <div className="flex flex-col">
-                <div className="flex items-center space-x-4">
-                  {/* ระบุตัวตน Option */}
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      name="identity"
-                      value="ระบุตัวตน"
-                      checked={anonymous === false}
-                      onClick={() => setAnonymous(false)}
-                      className="form-radio text-[#4ECDC4]"
-                    />
-                    <span>ระบุตัวตน</span>
-                  </label>
-                  {/* ไม่ระบุตัวตน Option */}
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="radio"
-                      name="identity"
-                      value="ไม่ระบุตัวตน"
-                      checked={anonymous === true}
-                      onClick={() => setAnonymous(true)}
-                      className="form-radio text-[#4ECDC4]"
-                    />
-                    <span>ไม่ระบุตัวตน</span>
-                  </label>
-                </div>
-                {/* Input field for ไม่ระบุตัวตน */}
-                {anonymous && (
-                  <div className='flex flex-wrap mt-4'>
-                    <h1 className='mr-8'>นามปากกา</h1>
-                    <input
-                      type='text'
-                      placeholder='นามปากกา'
-                      className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
-                      required
-                      value={postData.pen_name}
-                      onChange={(e) => setPostData({
-                        ...postData,
-                        pen_name: e.target.value
-                      })}
-                    />
-                  </div>
-                )}
+              answer_text: e.target.value
+            })}
+          />
+          <div className='flex flex-wrap mt-4 font-bold'>
+            <h1 className='mr-14'>โพสต์แบบ</h1>
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-4">
+                {/* ระบุตัวตน Option */}
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="identity"
+                    value="ระบุตัวตน"
+                    checked={anonymous2 === false}
+                    onClick={() => setAnonymous2(false)}
+                    className="form-radio text-[#4ECDC4]"
+                  />
+                  <span>ระบุตัวตน</span>
+                </label>
+                {/* ไม่ระบุตัวตน Option */}
+                <label className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="identity"
+                    value="ไม่ระบุตัวตน"
+                    checked={anonymous2 === true}
+                    onClick={() => setAnonymous2(true)}
+                    className="form-radio text-[#4ECDC4]"
+                  />
+                  <span>ไม่ระบุตัวตน</span>
+                </label>
               </div>
-            </div>
-            <div className="flex justify-end mt-4">
-              <button
-                className={`px-4 py-2 rounded text-white ${
-                  isFormValid() ? 'bg-[#4ECDC4] hover:bg-[#44b3ab]' : 'bg-gray-300 cursor-not-allowed'
-                }`}
-                onClick={() => {
-                  handleEditSubmit();
-                  close();
-                }}
-              >
-                Submit
-              </button>
+              {/* Input field for ไม่ระบุตัวตน */}
+              {anonymous2 && (
+                <div className='flex flex-wrap mt-4'>
+                  <h1 className='mr-8'>นามปากกา</h1>
+                  <input
+                    type='text'
+                    placeholder='นามปากกา'
+                    className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
+                    required
+                    value={postData.pen_name}
+                    onChange={(e) => setPostData({
+                      ...postData,
+                      pen_name: e.target.value
+                    })}
+                  />
+                </div>
+              )}
             </div>
           </div>
+          <div className="flex justify-end mt-4">
+            <button
+              className={`px-4 py-2 rounded text-white ${
+                isFormValid() ? 'bg-[#4ECDC4] hover:bg-[#44b3ab]' : 'bg-gray-300 cursor-not-allowed'
+              }`}
+              onClick={() => {
+                handleEditSubmit();
+                close();
+              }}
+            >
+              Submit
+            </button>
+          </div>
+        </div>   
       </Popup>
     </>
   );

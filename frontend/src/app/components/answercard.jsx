@@ -11,6 +11,7 @@ import { questionURL } from "../constants/backurl.js";
 import PopupProfile from "./popupprofile.jsx";
 import GetUser from "../constants/getuser";
 import MakeApiRequest from "../constants/getupvotestatus.js";
+import EDAnswer from "../components/edanswer";
 
 export default function AnswerCard({item}) {
   const router = useRouter();
@@ -112,13 +113,6 @@ export default function AnswerCard({item}) {
       <fieldset
         className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-gray-800"
       >
-          {/* <div className="flex justify-between">
-            <h3 className="text-xl font-semibold break-all">{item.title}</h3>
-            <div className="ml-4 cursor-pointer hover:scale-105" onClick={(e) => {e.stopPropagation(); setIsBookmarked(!isBookmarked)}}>
-              {isBookmarked ? <TurnedInIcon /> : <TurnedInNotIcon />}
-            </div>
-          </div> */}
-          {/* <br/> */}
           <p className="text-lg">{item.text}</p>
           <br/>
           <div
@@ -165,6 +159,7 @@ export default function AnswerCard({item}) {
             </div>
             <div className="text-right">
               <ShareButton/>
+              <EDAnswer userName={item.username} answerId={String(item.answers_id)} item={item} />
             </div>
           </div>
       </fieldset>
