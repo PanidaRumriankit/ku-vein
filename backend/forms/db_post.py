@@ -493,7 +493,7 @@ class AnswerUpvotePost(PostStrategy):
     def post_data(self, data: dict):
         try:
             self.answer = QA_Answer.objects.get(answer_id=data['answer_id'])
-            self.user = UserData.objects.get(email=data['email'])
+            self.user = UserData.objects.get(user_id=data['user_id'])
 
         except QA_Answer.DoesNotExist:
             return Response({"error": "This question isn't in the database."},
