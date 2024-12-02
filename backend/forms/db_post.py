@@ -51,7 +51,7 @@ class UserDataPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "email is missing "
-                                      "from the response body."},
+                                      "from the request body."},
                             status=400)
 
 
@@ -71,7 +71,7 @@ class UserProfilePost(PostStrategy):
             )
 
         except KeyError:
-            return Response({"error": "Missing data from the response body."},
+            return Response({"error": "Missing data from the request body."},
                             status=400)
 
         except UserData.DoesNotExist:
@@ -154,8 +154,8 @@ class ReviewPost(PostStrategy):
                 course_id=data['course_id'],
                 course_type=data['course_type'])
         except KeyError:
-            return Response({"error": "User data or Course Data are missing "
-                                      "from the response body."}, status=400)
+            return Response({"error": "User data or CourseData are missing "
+                                      "from the request body."}, status=400)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course isn't "
@@ -216,8 +216,8 @@ class ReviewUpvotePost(PostStrategy):
             )
 
         except KeyError:
-            return Response({"error": "User data or Review Data are missing "
-                                      "from the response body."}, status=400)
+            return Response({"error": "UserData or ReviewData are missing "
+                                      "from the request body."}, status=400)
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
@@ -251,7 +251,7 @@ class FollowPost(PostStrategy):
         except KeyError:
             return Response({"error": "current_user_id "
                                       "or target_user_id are missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         if not self.user:
             return Response({"error": "This user isn't "
@@ -360,7 +360,7 @@ class NotePost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
@@ -406,7 +406,7 @@ class QuestionPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return Response({"success": "QA_Question created successfully."},
                         status=201)
@@ -433,7 +433,7 @@ class QuestionUpvotePost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return self.add_or_delete()
 
@@ -476,7 +476,7 @@ class AnswerPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return Response({"success": "QA_Answer created successfully."},
                         status=201)
@@ -504,7 +504,7 @@ class AnswerUpvotePost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return self.add_or_delete()
 
