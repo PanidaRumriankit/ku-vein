@@ -12,7 +12,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 
 import {useSession} from "next-auth/react";
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardControlKeyIcon from '@mui/icons-material/KeyboardControlKey';
@@ -119,6 +119,7 @@ export default function EditDelete({userName, reviewId, item}) {
         headers: {
           "Authorization": `Bearer ${idToken}`,
           "Content-Type": "application/json",
+          "email": email,
         },
         body: JSON.stringify(postData)
       });

@@ -3,6 +3,7 @@
 import os
 import json
 from datetime import datetime
+from MySQLdb import IntegrityError
 
 import pymysql
 from decouple import config
@@ -91,7 +92,6 @@ class TableManagement:
         self.connect()
 
         try:
-
             for table_name in self.table_name:
                 print(table_name)
                 self.cursor.execute(f"DROP TABLE IF EXISTS "
@@ -156,7 +156,7 @@ class DatabaseManagement:
     def add_course_data_to_sub(course_type: str):
         """Add datas to the Inter, Special, Normal tables."""
         filtered_data = CourseData.objects.filter(course_type=course_type)
-        course_type = {"inter": Inter, "special": Special, "Normal": Normal}.get(course_type)
+        course_type = {"inter": Inter, "special": Special, "normal": Normal}.get(course_type)
         for course in filtered_data:
             course_instance = CourseData.objects.get(id=course.id)
             course_type.objects.create(course=course_instance)
@@ -271,14 +271,18 @@ class DatabaseBackup:
         try:
             print(self.data)
             for course_id, course_name in self.data.items():
-                self.cursor.execute(
-                    "INSERT INTO CourseData (course_id,\
-                        course_type, course_name) "
-                    "VALUES (%s, %s, %s)", (course_id,
-                                                course_type, course_name)
-                )
-                print(course_id, course_type, course_name)
-                print("Inserting...\n")
+                try:
+                    self.cursor.execute(
+                        "INSERT INTO CourseData (course_id,\
+                            course_type, course_name) "
+                        "VALUES (%s, %s, %s)", (course_id,
+                                                    course_type, course_name)
+                    )
+                    print(course_id, course_type, course_name)
+                    print("Inserting...\n")
+                except IntegrityError:
+                    print("Skipping: ",course_id, course_type, course_name)
+                    continue
 
             self.con.connection.commit()
 

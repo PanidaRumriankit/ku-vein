@@ -60,9 +60,9 @@ class SortReview(QueryFilterStrategy):
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
             courses_id=F('review__course__course_id'),
+            username=F('review__user__user_name'),
             courses_name=F('review__course__course_name'),
             faculties=F('review__faculty'),
-            username=F('review__user__user_name'),
             review_text=F('review__reviews'),
             ratings=F('rating'),
             efforts=F('effort'),
@@ -417,10 +417,10 @@ class NoteQuery(QueryFilterStrategy):
             note = Note.objects.all()
 
             if filter_key['course_id']:
-                course = CourseData.objects.get(
+                course = CourseData.objects.filter(
                     course_id=filter_key['course_id'],
                 )
-                note = note.filter(course=course)
+                note = note.filter(course__in=course)
 
             if filter_key['faculty']:
                 note = note.filter(faculty=filter_key['faculty'])
@@ -439,6 +439,7 @@ class NoteQuery(QueryFilterStrategy):
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
                 pdf_path=F('pdf_url'),
+                pdf_id=F('note_id'),
             ).annotate(
                 date=TruncDate(
                     ExpressionWrapper(
@@ -481,9 +482,11 @@ class NoteQuery(QueryFilterStrategy):
 class QuestionQuery(QueryFilterStrategy):
     """Class for sending all the questions in the Q&A data."""
 
-    def get_data(self, mode, *args, **kwargs):
+    def get_data(self,course_id=None, mode='latest', *args, **kwargs):
         """Get the data from the database and return to the frontend."""
         data = self.get_query_set()
+        if course_id:
+            data = data.filter(course__course_id=course_id)
         return Response(self.sorted_qa_data(data, mode), status=200)
 
     @staticmethod
@@ -494,6 +497,7 @@ class QuestionQuery(QueryFilterStrategy):
                     questions_title=F('question_title'),
                     questions_text=F('question_text'),
                     users=F('user'),
+                    username=F('user__user_name'),
                     pen_names=F('pen_name'),
                     post_time=F('posted_time'),
                     faculties=F('faculty'),
@@ -537,6 +541,7 @@ class AnswerQuery(QueryFilterStrategy):
                     answers_id=F('answer_id'),
                     text=F('answer_text'),
                     users=F('user'),
+                    username=F('user__user_name'),
                     post_time=F('posted_time'),
                     anonymous=F('is_anonymous'),
                     pen_names=F('pen_name'),

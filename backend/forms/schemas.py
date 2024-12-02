@@ -6,7 +6,7 @@ from ninja import ModelSchema, Schema
 
 from .models import CourseData, UserData, CourseReview
 from .models import Inter, Normal, Special
-from .models import ReviewStat, Note
+from .models import Note
 
 
 class CourseDataSchema(ModelSchema):
@@ -109,35 +109,6 @@ class FollowSchema(Schema):
     target_user_id: str
 
 
-class CourseReviewSchema(ModelSchema):
-    """
-    Schema for CourseReview model, representing reviews left by users.
-
-    Includes all fields in the CourseReview model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = CourseReview
-        fields = '__all__'
-
-
-class ReviewStatSchema(ModelSchema):
-    """
-    Schema for ReviewStat model.
-
-    Containing statistical data for course reviews.
-    Includes all fields in the ReviewStat model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = ReviewStat
-        fields = '__all__'
-
-
 class ReviewPostSchema(Schema):
     """
     Schema for handling incoming review requests from users.
@@ -173,15 +144,16 @@ class ReviewPostSchema(Schema):
 
 class ReviewPutSchema(Schema):
     """Schema for handling incoming review edit requests from users."""
-    review_id: str
+    review_id: str|int
     course_type: str
     faculty: str
     reviews: str
+    instructor: str
+    # --ReviewStat--
     rating: float
     academic_year: int
     pen_name: str
     grade: str
-    instructor: str
     effort: int
     attendance: int
     scoring_criteria: str
@@ -202,20 +174,6 @@ class UpvotePostSchema(Schema):
     """Schema for increase the upvote number."""
     email: str
     review_id: int
-
-
-class NoteSchema(ModelSchema):
-    """
-    Schema for Summary model, representing summaries written by users.
-
-    Includes all fields in the Summary model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = Note
-        fields = '__all__'
 
 
 class NotePostSchema(Schema):
@@ -284,7 +242,8 @@ class QuestionCreateSchema(Schema):
     question_title: str
     question_text: str
     faculty: str
-    course_id: str
+    course_id: str|int
+    course_type: str|int
     pen_name: str
 
 

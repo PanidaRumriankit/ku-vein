@@ -51,7 +51,7 @@ class UserDataPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "email is missing "
-                                      "from the response body."},
+                                      "from the request body."},
                             status=400)
 
 
@@ -71,7 +71,7 @@ class UserProfilePost(PostStrategy):
             )
 
         except KeyError:
-            return Response({"error": "Missing data from the response body."},
+            return Response({"error": "Missing data from the request body."},
                             status=400)
 
         except UserData.DoesNotExist:
@@ -128,7 +128,7 @@ class ReviewPost(PostStrategy):
             review=review_instance,
             rating=data['rating'],
             academic_year=data['academic_year'],
-            pen_name=data['pen_name'],
+            pen_name=data['pen_name'] or self.user.username,
             grade=data['grade'],
             effort=data['effort'],
             attendance=data['attendance'],
@@ -154,8 +154,8 @@ class ReviewPost(PostStrategy):
                 course_id=data['course_id'],
                 course_type=data['course_type'])
         except KeyError:
-            return Response({"error": "User data or Course Data are missing "
-                                      "from the response body."}, status=400)
+            return Response({"error": "UserData or CourseData are missing "
+                                      "from the request body."}, status=400)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course isn't "
@@ -216,8 +216,8 @@ class ReviewUpvotePost(PostStrategy):
             )
 
         except KeyError:
-            return Response({"error": "User data or Review Data are missing "
-                                      "from the response body."}, status=400)
+            return Response({"error": "UserData or ReviewData are missing "
+                                      "from the request body."}, status=400)
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't "
                                       "in the database."}, status=401)
@@ -251,7 +251,7 @@ class FollowPost(PostStrategy):
         except KeyError:
             return Response({"error": "current_user_id "
                                       "or target_user_id are missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         if not self.user:
             return Response({"error": "This user isn't "
@@ -343,7 +343,7 @@ class NotePost(PostStrategy):
                 faculty=data['faculty'],
                 file_name=file_name,
                 pdf_url=blob,
-                pen_name=data['pen_name'],
+                pen_name=data['pen_name'] or user.username,
                 date_data=timezone.now(),
                 anonymous=anonymous
             )
@@ -360,7 +360,7 @@ class NotePost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         except CourseData.DoesNotExist:
             return Response({"error": "This course"
@@ -378,14 +378,17 @@ class QuestionPost(PostStrategy):
         """Add new QA_Question to the database."""
         try:
             user = UserData.objects.get(user_id=data['user_id'])
-            course = CourseData.objects.get(course_id=data['course_id'])
-            qa_instance = QA_Question.objects.create(question_text=data['question_text'],
-                                       user=user,
-                                       faculty=data['faculty'],
-                                       course=course,
-                                       pen_name=data['pen_name'],
-                                       is_anonymous=(user.user_name != data['pen_name']),
-                                       )
+            course = CourseData.objects.get(course_id=data['course_id'],
+                                            course_type=data['course_type'])
+            qa_instance = QA_Question.objects.create(
+                                    question_title=data['question_title'],
+                                    question_text=data['question_text'],
+                                    user=user,
+                                    faculty=data['faculty'],
+                                    course=course,
+                                    pen_name=data['pen_name'] or user.username,
+                                    is_anonymous=(data['pen_name'] != ""),
+                                    )
 
             HistoryPost().post_data({
                 "email": user.email,
@@ -404,7 +407,7 @@ class QuestionPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return Response({"success": "QA_Question created successfully."},
                         status=201)
@@ -431,7 +434,7 @@ class QuestionUpvotePost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return self.add_or_delete()
 
@@ -460,8 +463,8 @@ class AnswerPost(PostStrategy):
             QA_Answer.objects.create(question=question,
                                      user=user,
                                      answer_text=data['answer_text'],
-                                     pen_name=data['pen_name'],
-                                     is_anonymous=(user.user_name != data['pen_name']),
+                                     pen_name=data['pen_name'] or user.username,
+                                     is_anonymous=(data['pen_name'] != ""),
                                      )
 
         except UserData.DoesNotExist:
@@ -474,7 +477,7 @@ class AnswerPost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return Response({"success": "QA_Answer created successfully."},
                         status=201)
@@ -489,7 +492,7 @@ class AnswerUpvotePost(PostStrategy):
 
     def post_data(self, data: dict):
         try:
-            self.answer = QA_Answer.objects.get(answer_id=data['id'])
+            self.answer = QA_Answer.objects.get(answer_id=data['answer_id'])
             self.user = UserData.objects.get(email=data['email'])
 
         except QA_Answer.DoesNotExist:
@@ -502,7 +505,7 @@ class AnswerUpvotePost(PostStrategy):
 
         except KeyError:
             return Response({"error": "Data is missing "
-                                      "from the response body."}, status=400)
+                                      "from the request body."}, status=400)
 
         return self.add_or_delete()
 
