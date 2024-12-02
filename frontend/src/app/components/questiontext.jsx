@@ -4,8 +4,6 @@ import {useRouter, usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import ShareButton from "./sharebutton.jsx";
-import TurnedInIcon from '@mui/icons-material/TurnedIn';
-import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUpTwoTone';
 import {Button} from "@nextui-org/button";
 import PopupProfile from "./popupprofile.jsx";
