@@ -53,10 +53,10 @@ def verify_google_token(auth: str, email: str) -> bool:
 def check_real_user(req_header):
     """Check is email of token equal to email send from frontend."""
     token, email = req_header.headers.get('Authorization'), req_header.headers.get('email')
-    if not token is None:
+    if token is None:
         return Response({"error": "Authorization header missing"}, status=401)
 
-    if not email is None:
+    if email is None:
         return Response({"error": "Email header is missing"}, status=401)
 
     try:
