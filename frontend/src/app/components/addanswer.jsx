@@ -1,15 +1,11 @@
 "use client";
 
 import React from 'react';
-import AddIcon from '@mui/icons-material/Add';
-import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
-import Search from './search';
-import Rating from '@mui/material/Rating';
 import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
 import { useParams } from 'next/navigation.js';
-import {reviewURL} from '../constants/backurl.js'
+import {questionURL} from '../constants/backurl.js'
 
 export default function AddAnswer() {
   const {data: session} = useSession();
@@ -17,22 +13,18 @@ export default function AddAnswer() {
   const questionId = parseInt(params.qanda_id, 10);
   const [hover, setHover] = useState(-1);
   const [postData, setPostData] = useState({
-    email: '',
-    ans_id: '',
     question_id: '',
-    description: '',
-    isCorrect: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    username: '',
+    answer_text: '',
+    user_id: '',
+    pen_name: '',
   });
 
-  console.log('qID: ', questionId);
+  // console.log('qID: ', questionId);
 
   async function AddingAnswer() {
     try {
       // create review api
-      const response = await fetch(reviewURL, {
+      const response = await fetch(questionURL + '/answer', {
         method: 'POST',
         headers: {
           "Authorization": `Bearer ${idToken}`,
@@ -48,16 +40,13 @@ export default function AddAnswer() {
       if (response.ok) {
         const data = await response.json();
         console.log('Success:', data);
+        window.location.reload();
       } else {
         console.log('Error:', response.status, response.text());
       }
     } catch (error) {
       console.error('Error:', error);
     }
-  }
-
-  function GetLabelText(value) {
-    return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
   }
 
   useEffect(() => {
@@ -84,7 +73,7 @@ export default function AddAnswer() {
         value={postData.description}
         onChange={(e) => setPostData({
           ...postData,
-          description: e.target.value
+          answer_text: e.target.value
         })}
       />
       <div className='flex flex-wrap mt-4 font-bold'>
@@ -95,7 +84,7 @@ export default function AddAnswer() {
                 value={postData.username}
                 onChange={(e) => setPostData({
                   ...postData,
-                  username: e.target.value
+                  pen_name: e.target.value
                 })}
         />
       </div>
