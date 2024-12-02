@@ -6,14 +6,11 @@ import {useSession} from "next-auth/react";
 import {useTheme} from "next-themes";
 import ShareButton from "./sharebutton.jsx";
 import PopupProfile from "./popupprofile.jsx";
-import TurnedInIcon from '@mui/icons-material/TurnedIn';
-import TurnedInNotIcon from '@mui/icons-material/TurnedInNot';
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUpTwoTone';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
-import Button from "@mui/material/Button";
+import {Button} from "@nextui-org/button";
 import BookmarkButton from "./bookmarkbutton.jsx";
 import GetUser from "../constants/getuser";
+import { questionURL } from "../constants/backurl.js";
 
 export default function QuestionCard({item, bookmark}) {
   const router = useRouter();
@@ -27,20 +24,41 @@ export default function QuestionCard({item, bookmark}) {
   const [isHovered, setIsHovered] = useState(false);
   // const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
   const [userId, setUserId] = useState(null);
+  const [formattedDate, setFormattedDate] = useState("");
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
+  // console.log("Session: ", session);  
 
   const fetchUser = async () => {
-    const response = await GetUser(email);
+    const response = await GetUser(email, "email");
     setUserId(response.id);
   };
 
+  useEffect(() => {
+    if (session) {
+      fetchUser();
+    }
+  }, [session]);
+
+  useEffect(() => {
+    if (item.post_time) {
+      const formatted = new Date(item.post_time).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      setFormattedDate(formatted);
+    }
+  }, [item.post_time]);
+
   const handleUpvote = async () => {
-    if (isLoading || !email || !idToken) return;
+    if (isLoading || !session) return;
     setIsLoading(true);
 
     try {
-      const response = await fetch(upvoteURL, {
+      const response = await fetch(questionURL + '/upvote', {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${idToken}`,
@@ -48,8 +66,8 @@ export default function QuestionCard({item, bookmark}) {
           "email": email,
         },
         body: JSON.stringify({
-          question_id: item.questions_id,
-          user_id: userId
+          question_id: String(item.questions_id),
+          user_id: String(userId)
         })
       });
 
@@ -98,7 +116,7 @@ export default function QuestionCard({item, bookmark}) {
         <div
           className="flex items-center justify-between text-gray-300 text-right">
           <p className="text-right">
-            {new Date(item.post_time).toLocaleString()}
+            {formattedDate}
           </p>
           <p
             className={!item.is_anonymous ? "cursor-pointer": ""}
@@ -131,12 +149,13 @@ export default function QuestionCard({item, bookmark}) {
           )}
         </div>
         <hr/>
-        <div className="text-gray-300 flex justify-between mt-2 -mb-4">
+        <div className="text-gray-300 flex justify-between -ml-4 mt-2 -mb-4">
           <div className="text-left text-2xl flex space-x-4" onClick={(e) => {e.stopPropagation()}}>
-            <Button variant="light" onClick={handleUpvote}
-                    disabled={!session || isLoading}>
-              <ThumbUpTwoToneIcon/>    {upvoteCount}
-            </Button>
+          <Button variant="light" onClick={handleUpvote}
+                  disabled={!session || isLoading}>
+            <ThumbUpTwoToneIcon
+              color={isVoted ? "primary" : ""}/> {upvoteCount}
+          </Button>
           </div>
           <div className="text-right" onClick={(e) => e.stopPropagation()}>
             <ShareButton/>
