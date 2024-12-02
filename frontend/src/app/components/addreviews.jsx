@@ -89,15 +89,16 @@ export default function AddReview() {
       academic_year,
       instructor,
       pen_name,
-      anonymous
+      scoring_criteria,
+      attendance,
+      effort,
+      class_type,
     } = postData;
 
-    if (!email || !course_id || !reviews || !academic_year || !instructor) {
+    if (!email || !course_id || !reviews || !academic_year || !instructor || !scoring_criteria || !attendance || !effort || !class_type) {
       return false;
     }
-
     return !(anonymous && !pen_name);
-
   };
 
   // console.log("postData: ", postData);
