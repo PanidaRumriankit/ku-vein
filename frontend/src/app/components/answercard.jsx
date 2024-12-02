@@ -40,16 +40,15 @@ export default function AnswerCard({item}) {
     }
   }, [session]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (session) {
-        const voteStatus = await MakeApiRequest(email, item.reviews_id);
-        setIsVoted(voteStatus);
-      }
-    };
-    fetchData().then();
-    setUpvoteCount(item.upvote || 0);
-  }, [session, email, item]);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (session) {
+  //       setIsVoted(userId == item.users );
+  //     }
+  //   };
+  //   fetchData().then();
+  //   setUpvoteCount(item.upvote || 0);
+  // }, [session, email, item]);
 
   const handleUpvote = async () => {
     if (isLoading || !session) return;
