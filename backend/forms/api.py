@@ -7,11 +7,6 @@ from ninja_extra import (ControllerBase, api_controller, http_put,
                          http_get, http_post, http_delete)
 from ninja_extra import NinjaExtraAPI
 
-from .db_delete import DeleteFactory
-from .db_management import DatabaseBackup
-from .db_post import PostFactory
-from .db_put import PutFactory
-from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       ReviewDeleteSchema, UserProfileSchema,
                       UpvotePostSchema,
@@ -24,9 +19,10 @@ from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       QuestionDeleteSchema, QuestionUpvoteSchema,
                       AnswerCreateSchema, AnswerPutSchema,
                       AnswerDeleteSchema, AnswerUpvoteSchema)
+from .db_delete import DeleteFactory
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
-from .db_query import QueryFactory, InterQuery
+from .db_query import QueryFactory
 from .db_put import PutFactory
 
 
@@ -66,6 +62,19 @@ def check_real_user(auth_data):
 
     except (IndexError, KeyError):
         return Response({"error": "Malformed or invalid token"}, status=401)
+
+def validate_user(func):
+    """
+    Decorator to validate user authentication and authorization.
+    Returns an error response if validation fails, otherwise proceeds to the decorated function.
+    """
+    def wrapper(self, request, data, *args, **kwargs):
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
+        return func(self, request, data, *args, **kwargs)
+    return wrapper
+
 
 def check_response(data):
     """
