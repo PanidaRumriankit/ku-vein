@@ -12,6 +12,7 @@ import BookmarkButton from "./bookmarkbutton.jsx";
 import GetUser from "../constants/getuser";
 import { questionURL } from "../constants/backurl.js";
 import MakeApiRequest from "../constants/getupvotestatus.js";
+import EDQuestion from "./edquestion.jsx";
 
 export default function QuestionCard({item, bookmark}) {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function QuestionCard({item, bookmark}) {
   const [isHovered, setIsHovered] = useState(false);
   // const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
   const [userId, setUserId] = useState(null);
+  const [userName, setUserName] = useState(null);
   const [formattedDate, setFormattedDate] = useState("");
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
@@ -33,6 +35,7 @@ export default function QuestionCard({item, bookmark}) {
   const fetchUser = async () => {
     const response = await GetUser(email, "email");
     setUserId(response.id);
+    setUserName(response.name);
   };
 
   useEffect(() => {
@@ -95,6 +98,8 @@ export default function QuestionCard({item, bookmark}) {
       setIsLoading(false);
     }
   };
+
+  console.log("Item: ", item);
 
   const handleMouseEnter = (e) => {
     const rect = e.target.getBoundingClientRect();
@@ -166,6 +171,7 @@ export default function QuestionCard({item, bookmark}) {
           <div className="text-right" onClick={(e) => e.stopPropagation()}>
             <ShareButton/>
             <BookmarkButton id={item.questions_id} type="qa" bookmark={bookmark}/>
+            <EDQuestion userName={item.username} questionId={String(item.questions_id)} item={item} />
           </div>
         </div>
       </fieldset>

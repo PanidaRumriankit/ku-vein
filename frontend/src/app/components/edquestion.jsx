@@ -23,7 +23,7 @@ import GetUserData from "../constants/getuser";
 import SearchFaculty from "../components/searchfaculty";
 import { questionURL } from "../constants/backurl";
 
-export default function EditDelete({userName, questionId, item}) {
+export default function EDQuestion({userName, questionId, item}) {
   // Original const
   const [isOpen, setIsOpen] = useState(false);
   const {data: session} = useSession();
@@ -45,10 +45,9 @@ export default function EditDelete({userName, questionId, item}) {
       question_title,
       question_text,
       faculty,
-      course_id,
       pen_name,
     } = postData;
-    if (!question_title || !question_text || !faculty || !course_id) {
+    if (!question_title || !question_text || !faculty) {
       return false;
     }
     return !(anonymous && !pen_name);
@@ -73,6 +72,18 @@ export default function EditDelete({userName, questionId, item}) {
       });
     }
   }, [currentUser, session]);
+
+  useEffect(() => {
+    if (isEditOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+  
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isEditOpen]);
 
   const handleDelete = async () => {
     if (!email || !idToken || currentUser !== userName) return;
@@ -178,6 +189,9 @@ export default function EditDelete({userName, questionId, item}) {
           border: 'none',
           padding: '0',
           background: 'none',
+          display: 'flex',
+          justifyContent: 'center', 
+          alignItems: 'center',
           height: '90%',
           width: '60%',
           overflow: 'auto'
@@ -185,7 +199,7 @@ export default function EditDelete({userName, questionId, item}) {
       >
         <div
             className="text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
-            <h2 className="text-xl font-semibold pb-2">เพิ่มคำถาม</h2>
+            <h2 className="text-xl font-semibold pb-2">แก้ไขคำถาม</h2>
             <SearchFaculty onFacultySelect={(faculty) => setPostData({
               ...postData,
               faculty: faculty.name,
