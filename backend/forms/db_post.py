@@ -105,7 +105,7 @@ class ReviewPost(PostStrategy):
             review=review_instance,
             rating=data['rating'],
             academic_year=data['academic_year'],
-            pen_name=data['pen_name'],
+            pen_name=data['pen_name'] or self.user.username,
             grade=data['grade'],
             effort=data['effort'],
             attendance=data['attendance'],
@@ -320,7 +320,7 @@ class NotePost(PostStrategy):
                 faculty=data['faculty'],
                 file_name=file_name,
                 pdf_url=blob,
-                pen_name=data['pen_name'],
+                pen_name=data['pen_name'] or user.username,
                 date_data=timezone.now(),
                 anonymous=anonymous
             )
@@ -355,14 +355,25 @@ class QuestionPost(PostStrategy):
         """Add new QA_Question to the database."""
         try:
             user = UserData.objects.get(user_id=data['user_id'])
-            course = CourseData.objects.get(course_id=data['course_id'])
-            QA_Question.objects.create(question_text=data['question_text'],
-                                       user=user,
-                                       faculty=data['faculty'],
-                                       course=course,
-                                       pen_name=data['pen_name'],
-                                       is_anonymous=(user.user_name != data['pen_name']),
-                                       )
+            course = CourseData.objects.get(course_id=data['course_id'],
+                                            course_type=data['course_type'])
+            qa_instance = QA_Question.objects.create(
+                                    question_title=data['question_title'],
+                                    question_text=data['question_text'],
+                                    user=user,
+                                    faculty=data['faculty'],
+                                    course=course,
+                                    pen_name=data['pen_name'] or user.username,
+                                    is_anonymous=(data['pen_name'] != ""),
+                                    )
+
+            HistoryPost().post_data({
+                "email": user.email,
+                "id": qa_instance.question_id,
+                "data_type": "qa",
+                "anonymous": (user.user_name != data['pen_name'])
+            })
+
 
         except UserData.DoesNotExist:
             return Response({"error": "This user isn't in the database."},
@@ -430,8 +441,8 @@ class AnswerPost(PostStrategy):
             QA_Answer.objects.create(question=question,
                                      user=user,
                                      answer_text=data['answer_text'],
-                                     pen_name=data['pen_name'],
-                                     is_anonymous=(user.user_name != data['pen_name']),
+                                     pen_name=data['pen_name'] or user.username,
+                                     is_anonymous=(data['pen_name'] != ""),
                                      )
 
         except UserData.DoesNotExist:
