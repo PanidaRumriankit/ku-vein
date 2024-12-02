@@ -6,20 +6,32 @@ import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
 import { useParams } from 'next/navigation.js';
 import {questionURL} from '../constants/backurl.js'
+import GetUser from '../constants/getuser';
 
 export default function AddAnswer() {
   const {data: session} = useSession();
   const params = useParams();
   const questionId = parseInt(params.qanda_id, 10);
-  const [hover, setHover] = useState(-1);
+  const [anonymous, setAnonymous] = useState(false);
   const [postData, setPostData] = useState({
-    question_id: '',
+    question_id: questionId.toString(),
     answer_text: '',
     user_id: '',
     pen_name: '',
   });
 
   // console.log('qID: ', questionId);
+
+  const fetchUser = async () => {
+    const response = await GetUser(email, "email");
+    setPostData((prevData) => ({ ...prevData, user_id: String(response.id) }));
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchUser();
+    }
+  }, [session]);
 
   async function AddingAnswer() {
     try {
@@ -63,23 +75,59 @@ export default function AddAnswer() {
         placeholder="ความคิดเห็น"
         className="w-full h-48 px-4 py-2 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2"
         required
-        value={postData.description}
+        value={postData.answer_text}
         onChange={(e) => setPostData({
           ...postData,
           answer_text: e.target.value
         })}
       />
       <div className='flex flex-wrap mt-4 font-bold'>
-        <input type='text'
+        <h1 className='mr-14'>โพสต์แบบ</h1>
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-4">
+            {/* ระบุตัวตน Option */}
+            <label className="flex items-center space-x-2">
+              <input
+                type="radio"
+                name="identity"
+                value="ระบุตัวตน"
+                checked={anonymous === false}
+                onClick={() => setAnonymous(false)}
+                className="form-radio text-[#4ECDC4]"
+              />
+              <span>ระบุตัวตน</span>
+            </label>
+            {/* ไม่ระบุตัวตน Option */}
+            <label className="flex items-center space-x-2">
+              <input
+                type="radio"
+                name="identity"
+                value="ไม่ระบุตัวตน"
+                checked={anonymous === true}
+                onClick={() => setAnonymous(true)}
+                className="form-radio text-[#4ECDC4]"
+              />
+              <span>ไม่ระบุตัวตน</span>
+            </label>
+          </div>
+          {/* Input field for ไม่ระบุตัวตน */}
+          {anonymous && (
+            <div className='flex flex-wrap mt-4'>
+              <h1 className='mr-8'>นามปากกา</h1>
+              <input
+                type='text'
                 placeholder='นามปากกา'
                 className='w-40 px-2 py-1 text-gray-700 dark:text-white rounded-md border border-gray-300 focus:outline-2'
                 required
-                value={postData.username}
+                value={postData.pen_name}
                 onChange={(e) => setPostData({
                   ...postData,
                   pen_name: e.target.value
                 })}
-        />
+              />
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex justify-end mt-4">
         <button
