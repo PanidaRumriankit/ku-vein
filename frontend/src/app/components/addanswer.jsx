@@ -33,6 +33,18 @@ export default function AddAnswer() {
     }
   }, [session]);
 
+  const isFormValid = () => {
+    const {
+      answer_text,
+      user_id,
+      pen_name,
+    } = postData;
+    if (!answer_text || !user_id) {
+      return false;
+    }
+    return !(anonymous && !pen_name);
+  };
+
   async function AddingAnswer() {
     try {
       // create review api
@@ -131,9 +143,12 @@ export default function AddAnswer() {
       </div>
       <div className="flex justify-end mt-4">
         <button
-          className="bg-[#4ECDC4] px-4 py-2 rounded text-white hover:bg-[#44b3ab]"
+          className={`px-4 py-2 rounded text-white ${
+            isFormValid() ? 'bg-[#4ECDC4] hover:bg-[#44b3ab]' : 'bg-gray-300 cursor-not-allowed'
+          }`}
           onClick={() => {
             AddingAnswer();
+            close();
           }}
         >
           Submit
