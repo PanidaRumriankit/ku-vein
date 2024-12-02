@@ -11,6 +11,7 @@ import PopupProfile from "./popupprofile.jsx";
 import { questionURL } from "../constants/backurl.js";
 import BookmarkButton from "./bookmarkbutton.jsx";
 import GetUser from "../constants/getuser";
+import EDQuestion from "./edquestion.jsx";
 
 export default function QuestionText({ item, bookmark }) {
   const router = useRouter();
@@ -156,6 +157,7 @@ export default function QuestionText({ item, bookmark }) {
           <div className="text-right" onClick={(e) => e.stopPropagation()}>
             <ShareButton/>
             <BookmarkButton id={item.questions_id} type="qa" bookmark={bookmark}/>
+            <EDQuestion userName={item.username} questionId={String(item.questions_id)} item={item} />
           </div>
         </div>
       </fieldset>
