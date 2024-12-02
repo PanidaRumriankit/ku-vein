@@ -439,6 +439,7 @@ class NoteQuery(QueryFilterStrategy):
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
                 pdf_path=F('pdf_url'),
+                pdf_id=F('note_id'),
             ).annotate(
                 date=TruncDate(
                     ExpressionWrapper(

@@ -38,7 +38,7 @@ export default function ReviewCard({item, page = null}) {
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUserId, setIsUserId] = useState(false);
-  const chips = [item.criteria, item.classes_type, attendant[item.attendances], "ยาก" + efforts[item.efforts]];
+  const chips = [item.criteria, item.classes_type, attendant[item.attendances], "ยาก: " + efforts[item.efforts]];
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 

@@ -492,7 +492,7 @@ class AnswerUpvotePost(PostStrategy):
 
     def post_data(self, data: dict):
         try:
-            self.answer = QA_Answer.objects.get(answer_id=data['id'])
+            self.answer = QA_Answer.objects.get(answer_id=data['answer_id'])
             self.user = UserData.objects.get(email=data['email'])
 
         except QA_Answer.DoesNotExist:
