@@ -18,6 +18,9 @@ import Popup from 'reactjs-popup';
 import MakeApiRequest from "../constants/getreview";
 import ReviewCard from "../components/reviewcard";
 import SessionTimeout from '../components/sessiontimeout';
+import {questionURL} from '../constants/backurl';
+import GetBookmarks from '../constants/getbookmarks';
+import QuestionCard from '../components/questioncard';
 
 export default function Profile() {
   const router = useRouter();
@@ -31,6 +34,8 @@ export default function Profile() {
   const [putData, setPutData] = useState(null);
   const [colorBg, setColorBg] = useState('');
   const [reviews, setReviews] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [bookmarkQuestion, setBookmarkQuestion] = useState([]);
 
   const handleColorClick = () => setColorPickerOpen(true);
   const closeColorPicker = () => setColorPickerOpen(false);
@@ -71,14 +76,39 @@ export default function Profile() {
     setReviews(await MakeApiRequest('latest'));
   };
 
+  const fetchQuestions = async () => {
+    try {
+      const response = await fetch(questionURL + '?mode=latest');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setQuestions(data);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+
   const getFilteredReviews = () => {
     return reviews.filter((review) => review.username === putData.user_name);
   };
 
+  const getFilteredQuestions = () => {
+    return questions.filter((question) => question.username === putData.user_name);
+  };
+  console.log("Questions: ", questions);
+  
+  const fetchBookmarkQuestions = async () => {
+    const response = await GetBookmarks(session.email);
+    setBookmarkQuestion(response.filter((bookmark) => bookmark.data_type === "qa"));
+    console.log('Received bookmarks questions:', bookmarkQuestion);
+  };
+
   useEffect(() => {
     if (session) {
-      fetchData();
       fetchReviews();
+      fetchQuestions();
+      fetchBookmarkQuestions();
     }
   }, [session]);
 
@@ -126,7 +156,7 @@ export default function Profile() {
       case "reviews":
         const filteredReviews = getFilteredReviews();
         return (
-          <>
+          <div className="flex flex-col maw-w-6xl w-full space-y-4">
             {filteredReviews.length > 0 ? (
               filteredReviews.map((item, index) => (
                 <ReviewCard item={item} key={index} page={"page"} />
@@ -134,12 +164,24 @@ export default function Profile() {
             ) : (
               <p className="text-green-400 text-center">No review currently</p>
             )}
-          </>
+          </div>
         );
       case "posts":
-        return <p>Here are your posts!</p>;
-      case "replies":
-        return <p>Here are your replies!</p>;
+        const filteredQuestions = getFilteredQuestions();
+        return (
+          <div className="flex flex-col maw-w-6xl w-full space-y-4">
+            {filteredQuestions.length > 0 ? (
+              filteredQuestions.map((item, index) => {
+                const isBookmarked = bookmarkQuestion.some(
+                  (bookmark) => bookmark.object_id === item.questions_id
+                );
+                return <QuestionCard item={item} key={index} bookmark={isBookmarked} />
+              })
+            ) : (
+              <p className="text-green-400 text-center">No Q&A currently</p>
+            )}
+          </div>
+        );
       case "notes":
         return <p>Here are your notes!</p>;
       default:
@@ -583,7 +625,7 @@ export default function Profile() {
       {/* Tab Navigation */}
       <div
         className="flex justify-around w-3/4 mt-6 border-b-2 border-gray-200">
-        {['Reviews', 'Posts', 'Replies', 'Notes'].map(tab => (
+        {['Reviews', 'Posts', 'Notes'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab.toLowerCase())}

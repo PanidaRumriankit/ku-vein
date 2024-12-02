@@ -114,7 +114,7 @@ export default function EachQuestionPage() {
   
   // console.log('questions:', questions);
   // console.log('questionId:', questionId);
-  console.log('answers: ', answers);
+  // console.log('answers: ', answers);
 
   return (
     <div className="text-black flex flex-col items-center
