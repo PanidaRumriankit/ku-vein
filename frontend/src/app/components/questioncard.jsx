@@ -97,12 +97,6 @@ export default function QuestionCard({item, bookmark}) {
     setIsHovered(false);
   };
 
-  useEffect(() => {
-    if (session) {
-      fetchUser();
-    }
-  }, [session]);
-
   return (
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
       <fieldset
