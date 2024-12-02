@@ -41,7 +41,7 @@ export default function AddQuestion({courseId}) {
     return !(anonymous && !pen_name);
   };
 
-  console.log(courseId);
+  // console.log(courseId);
 
   async function AddingQuestion() {
     try {
