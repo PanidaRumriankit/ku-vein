@@ -352,6 +352,7 @@ def question_to_dict(question: QA_Question):
                     'questions_title': question.question_title,
                     'questions_text': question.question_text,
                     'users': question.user.user_id,
+                    'username': question.user.user_name,
                     'pen_names': question.pen_name,
                     'num_convo': question.qa_answer_set.count(),
                     'upvote': question.qa_question_upvote_set.count(),
@@ -367,6 +368,7 @@ def answer_to_dict(answer: QA_Answer):
             'text': answer.answer_text,
             'upvote': answer.qa_answer_upvote_set.count(),
             'users': answer.user.user_id,
+            'username': answer.user.user_name,
             'pen_names': answer.pen_name,
             'anonymous': answer.is_anonymous
             }]
