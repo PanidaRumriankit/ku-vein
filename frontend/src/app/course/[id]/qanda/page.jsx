@@ -4,7 +4,6 @@ import {useEffect, useState, useMemo} from "react";
 import {useSession} from "next-auth/react";
 import CourseNavigationBar from "../../../components/coursenavigation";
 import QuestionCard from "../../../components/questioncard";
-import {question} from "../../../constants/index";
 import Sorting from "../../../components/sorting";
 import AddQuestion from "../../../components/addquestion";
 import GetQuestion from "../../../constants/getquestion";
@@ -18,7 +17,7 @@ export default function QuestionAndAnswerPage({params}) {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const data = await GetQuestion(selectedKeys);
+      const data = await GetQuestion(selectedKeys, params.id);
       setQuestions(data);
     };
     fetchQuestions()
@@ -64,7 +63,7 @@ export default function QuestionAndAnswerPage({params}) {
         )}
       </div>
       <div className="fixed bottom-4 right-4 z-40">
-        <AddQuestion />
+        <AddQuestion courseId={params.id} />
       </div>
     </div>
   );

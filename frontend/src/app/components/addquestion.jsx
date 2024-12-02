@@ -11,14 +11,15 @@ import GetUser from '../constants/getuser';
 import Search from './search';
 import SearchFaculty from './searchfaculty';
 
-export default function AddQuestion() {
+export default function AddQuestion({courseId}) {
   const {data: session} = useSession();
   const [postData, setPostData] = useState({
     user_id: '',
     question_title: '',
     question_text: '',
     faculty: '',
-    course_id: '',
+    course_id: courseId,
+    course_type: 'inter',
     pen_name: '',
   });
   const [anonymous, setAnonymous] = useState(false);
@@ -33,14 +34,15 @@ export default function AddQuestion() {
       question_title,
       question_text,
       faculty,
-      course_id,
       pen_name,
     } = postData;
-    if (!question_title || !question_text || !faculty || !course_id) {
+    if (!question_title || !question_text || !faculty) {
       return false;
     }
     return !(anonymous && !pen_name);
   };
+
+  console.log(courseId);
 
   async function AddingQuestion() {
     try {
@@ -60,6 +62,7 @@ export default function AddQuestion() {
       if (response.ok) {
         const data = await response.json();
         console.log('Success:', data);
+        window.location.reload();
       } else {
         console.log('Error:', response.status, response.text());
       }
@@ -99,10 +102,10 @@ export default function AddQuestion() {
           <div
             className="text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-xl font-semibold pb-2">เพิ่มคำถาม</h2>
-            <Search onCourseSelect={(course) => setPostData({
+            {/* <Search onCourseSelect={(course) => setPostData({
               ...postData,
               course_id: course.courses_id,
-            })}/>
+            })}/> */}
             <SearchFaculty onFacultySelect={(faculty) => setPostData({
               ...postData,
               faculty: faculty.name,
@@ -185,6 +188,7 @@ export default function AddQuestion() {
                 onClick={() => {
                   AddingQuestion();
                   close();
+                  // window.location.reload();
                 }}
               >
                 Submit
