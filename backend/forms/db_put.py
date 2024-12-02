@@ -125,7 +125,8 @@ class ReviewPut(PutStrategy):
 
         review.save()
         return Response({"success": "The requested user's attribute has been changed.",
-                         "review_data": [{key: val} for key, val in review.__dict__.items() if key[0] != '_']
+                         "review_data": [[{key: val} for key, val in review.__dict__.items() if key[0] != '_'],
+                                        [{key: val} for key, val in review_stat.__dict__.items() if key[0] != '_']]
                          }, status=200)
 
 
