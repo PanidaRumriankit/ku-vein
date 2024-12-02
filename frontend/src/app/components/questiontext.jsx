@@ -3,6 +3,7 @@
 import {useRouter, usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
+import {useTheme} from "next-themes";
 import ShareButton from "./sharebutton.jsx";
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUpTwoTone';
 import {Button} from "@nextui-org/button";
@@ -14,6 +15,7 @@ import GetUser from "../constants/getuser";
 export default function QuestionText({ item, bookmark }) {
   const router = useRouter();
   const pathname = usePathname();
+  const theme = useTheme();
   const {data: session} = useSession();
   const [upvoteCount, setUpvoteCount] = useState(0);
   const [isVoted, setIsVoted] = useState(false);

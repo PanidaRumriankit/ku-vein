@@ -55,7 +55,7 @@ export default function EachQuestionPage() {
   useEffect(() => {
     const fetchAnswers = async () => {
       try {
-        const response = await fetch(`${backurl}/qa?question_id=${questionId}&mode=${selectedKeys}`);
+        const response = await fetch(`${backurl}/qa/answer?question_id=${questionId}&mode=${selectedKeys}`);
         if (!response.ok) {
           throw new Error(`Failed to fetch answers: ${response.statusText}`);
         }
@@ -94,7 +94,7 @@ export default function EachQuestionPage() {
 
   useEffect(() => {
     const fetchQuestions = async () => {
-      const data = await GetQuestion(selectedKeys);
+      const data = await GetQuestion(selectedKeys, params.id);
       setQuestions(data);
     };
     fetchQuestions()
@@ -106,16 +106,15 @@ export default function EachQuestionPage() {
   //   }
   // })
 
-  useEffect(() => {
-    if (questions) {
-      console.log('questions[questionId]:', question);
-    }
-  })
+  // useEffect(() => {
+  //   if (questions) {
+  //     console.log('questions[questionId]:', question);
+  //   }
+  // })
   
   // console.log('questions:', questions);
   // console.log('questionId:', questionId);
-
-  // console.log('questions:', questions);
+  console.log('answers: ', answers);
 
   return (
     <div className="text-black flex flex-col items-center
