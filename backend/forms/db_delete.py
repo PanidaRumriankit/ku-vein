@@ -1,11 +1,14 @@
 """This module use for contain the class for database delete."""
 
 from abc import ABC, abstractmethod
-from typing import Any, Union
+from typing import Any
 
 from ninja.responses import Response
-from .models import (ReviewStat, Note,
-                     CourseReview)
+
+from .models import (Note,
+                     CourseReview,
+                     QA_Question,
+                     QA_Answer)
 
 
 class DeleteStrategy(ABC):
@@ -46,6 +49,36 @@ class NoteDelete(DeleteStrategy):
         except Note.DoesNotExist:
             return Response({"error": "This Note"
                                       " isn't in the database."}, status=401)
+        
+
+class QuestionDelete(DeleteStrategy):
+    """Class for delete Question objects."""
+
+    def delete_data(self, data):
+        """Delete Question objects."""
+        try:
+            question = QA_Question.objects.get(question_id=data['question_id'])
+            question.delete()
+            return Response({"success": "Delete Question Successfully."},
+                            status=200)
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This Question isn't in the database."},
+                            status=401)
+        
+
+class AnswerDelete(DeleteStrategy):
+    """Class for delete Answer objects."""
+
+    def delete_data(self, data):
+        """Delete Answer objects."""
+        try:
+            answer = QA_Answer.objects.get(answer_id=data['answer_id'])
+            answer.delete()
+            return Response({"success": "Delete Answer Successfully."},
+                            status=200)
+        except QA_Answer.DoesNotExist:
+            return Response({"error": "This Answer isn't in the database."},
+                            status=401)
 
 
 class DeleteFactory:
@@ -54,6 +87,8 @@ class DeleteFactory:
     strategy_map = {
         "review": CourseReviewDelete,
         "note": NoteDelete,
+        "question": QuestionDelete,
+        "answer": AnswerDelete,
     }
 
     @classmethod

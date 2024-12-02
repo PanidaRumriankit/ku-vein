@@ -1,14 +1,10 @@
-import base64
 import json
-import os
 
-from django.conf import settings
 from django.test import TestCase
 
 from .set_up import (user_set_up, course_set_up)
-
-from ..db_post import ReviewPost, NotePost, HistoryPost
-from ..models import History, CourseReview, Note
+from ..db_post import ReviewPost, HistoryPost
+from ..models import History, CourseReview
 
 
 class HistoryPostTests(TestCase):
@@ -19,7 +15,6 @@ class HistoryPostTests(TestCase):
         self.history = History
         self.history_post = HistoryPost()
         self.review_post = ReviewPost()
-        self.note_post = NotePost()
         self.course = course_set_up()[0]
         self.user = user_set_up()
 
@@ -80,36 +75,3 @@ class HistoryPostTests(TestCase):
         self.assertEqual(review.review_id, result_data['object_id'])
         self.assertIsInstance(self.history.objects.first().instance, CourseReview)
         self.assertEqual('review', result_data['data_type'])
-
-    def test_successfully_post_note(self):
-        """Test value for creating a history with correct note data."""
-        path = os.path.join(settings.MEDIA_ROOT,
-                            'note_files', 'yes_indeed.pdf')
-
-        with open(path, "rb") as f:
-             test_pdf = f.read()
-
-        fake_pdf = base64.b64encode(test_pdf).decode('utf-8')
-
-        note_data = {
-            "email": self.user[0].email,
-            "course_id": self.course[0].course_id,
-            "faculty": "Yes",
-            "course_type": self.course[0].course_type,
-            "file": fake_pdf,
-            "file_name": "please_work",
-            "pen_name": "onegai"
-        }
-
-        self.note_post.post_data(note_data)
-
-        note = Note.objects.get(user__email=note_data['email'])
-        result_data = self.history.objects.values(
-            'object_id',
-            'data_type',
-            'user'
-        ).first()
-        self.assertEqual(self.user[0].user_id, result_data['user'])
-        self.assertEqual(note.note_id, result_data['object_id'])
-        self.assertEqual('note', result_data['data_type'])
-

@@ -5,6 +5,10 @@ from django.test import TestCase
 from .set_up import course_set_up, review_set_up, user_set_up, upvote_set_up
 from ..db_query import SortReview
 
+EARLIEST = {"sort": "earliest"}
+LATEST = {"sort": "latest"}
+UPVOTE = {"sort": "upvote"}
+
 
 class EarliestReviewTests(TestCase):
     """Test cases for EarliestReview."""
@@ -15,7 +19,7 @@ class EarliestReviewTests(TestCase):
         course_set_up()
         user_set_up()
         self.review, self.data = review_set_up()
-        self.get_review = self.earliest.get_data("earliest")
+        self.get_review = self.earliest.get_data(EARLIEST)
 
     def test_correct_data_format(self):
         """Data should return as a list."""
@@ -26,14 +30,15 @@ class EarliestReviewTests(TestCase):
         expected_values = [item['course_id'] for item in self.data]
         self.assertEqual(expected_values,
                          [item['courses_id']
-                          for item in self.earliest.get_data("earliest")])
+                          for item in self.earliest.get_data(EARLIEST)])
 
     def test_contain_data(self):
         """Test to check is GET method return all demand field."""
         expected_keys = [
-            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
-            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
-            'criteria', 'type', 'upvote'
+            'reviews_id', 'courses_id', 'courses_name', 'faculties',
+            'review_text', 'ratings', 'year', 'name', 'date', 'grades',
+            'professor', 'attendances', 'efforts',
+            'criteria', 'classes_type', 'courses_type', 'upvote'
         ]
 
         for key in expected_keys:
@@ -41,12 +46,9 @@ class EarliestReviewTests(TestCase):
 
     def test_filter_working(self):
         """Filter_by key should filter the data."""
-        self.assertEqual(
-            3,
-                len(self.earliest.get_data(
-                     "earliest", "1")
-                )
-        )
+        filter = {"sort": "earliest", "course_id": "1"}
+        self.assertEqual(3, len(self.earliest.get_data(filter)))
+
 
 class LatestReviewTests(TestCase):
     """Test cases for LatestReview."""
@@ -57,12 +59,11 @@ class LatestReviewTests(TestCase):
         course_set_up()
         user_set_up()
         self.review, self.data = review_set_up()
-        self.get_review = self.latest.get_data("latest")
-
+        self.get_review = self.latest.get_data(LATEST)
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertIsInstance(self.latest.get_data("latest"), list)
+        self.assertIsInstance(self.latest.get_data(LATEST), list)
 
     def test_order_by_latest(self):
         """Data should order by last to first."""
@@ -71,14 +72,15 @@ class LatestReviewTests(TestCase):
 
         self.assertEqual(expected_values,
                          [item['courses_id']
-                          for item in self.latest.get_data("latest")])
+                          for item in self.latest.get_data(LATEST)])
 
     def test_contain_data(self):
         """Test to check is GET method return all demand field."""
         expected_keys = [
-            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
-            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
-            'criteria', 'type', 'upvote'
+            'reviews_id', 'courses_id', 'courses_name', 'faculties',
+            'review_text', 'ratings', 'year', 'name', 'date', 'grades',
+            'professor', 'attendances', 'efforts',
+            'criteria', 'classes_type', 'courses_type', 'upvote'
         ]
 
         for key in expected_keys:
@@ -86,12 +88,9 @@ class LatestReviewTests(TestCase):
 
     def test_filter_working(self):
         """Filter_by key should filter the data."""
-        self.assertEqual(
-            3,
-            len(self.latest.get_data(
-                "latest", "1")
-            )
-        )
+        filter = {"sort": "latest", "course_id": "1"}
+        self.assertEqual(3, len(self.latest.get_data(filter)))
+
 
 class UpvoteReviewTests(TestCase):
     """Test cases for UpvoteReview."""
@@ -102,25 +101,26 @@ class UpvoteReviewTests(TestCase):
         course_set_up()
         self.user = user_set_up()
         self.review, self.data = review_set_up()
-        self.get_review = self.upvote.get_data("upvote")
+        self.get_review = self.upvote.get_data(UPVOTE)
 
     def test_correct_data_format(self):
         """Data should return as a list."""
-        self.assertIsInstance(self.upvote.get_data("upvote"), list)
+        self.assertIsInstance(self.upvote.get_data(UPVOTE), list)
 
     def test_order_by_upvote(self):
         """Data should order by highest to lowest."""
         upvote_set_up(self.review, self.user)
         self.assertEqual([5, 4, 3, 2, 1, 0, 0, 0, 0],
                          [item['upvote']
-                          for item in self.upvote.get_data("upvote")])
+                          for item in self.upvote.get_data(UPVOTE)])
 
     def test_contain_data(self):
         """Test to check is GET method return all demand field."""
         expected_keys = [
-            'reviews_id', 'courses_id', 'courses_name', 'faculties', 'username',
-            'review_text', 'ratings', 'year', 'name', 'date', 'grades', 'professor',
-            'criteria', 'type', 'upvote'
+            'reviews_id', 'courses_id', 'courses_name', 'faculties',
+            'review_text', 'ratings', 'year', 'name', 'date', 'grades',
+            'professor', 'attendances', 'efforts',
+            'criteria', 'classes_type', 'courses_type', 'upvote'
         ]
 
         for key in expected_keys:
@@ -128,9 +128,5 @@ class UpvoteReviewTests(TestCase):
 
     def test_filter_working(self):
         """Filter_by key should filter the data."""
-        self.assertEqual(
-            3,
-            len(self.upvote.get_data(
-                "upvote", "1")
-            )
-        )
+        filter = {"sort": "upvote", "course_id": "1"}
+        self.assertEqual(3, len(self.upvote.get_data(filter)))

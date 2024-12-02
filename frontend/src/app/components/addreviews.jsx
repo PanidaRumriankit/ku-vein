@@ -1,40 +1,16 @@
 "use client";
 
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import Search from './search';
 import SearchFaculty from './searchfaculty';
 import Rating from '@mui/material/Rating';
-import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
 import {reviewURL} from '../constants/backurl.js'
 import StarIcon from '@mui/icons-material/Star';
-
-const labels = {
-  1: 'ไม่พึงพอใจมาก',
-  2: 'ไม่พึงพอใจ',
-  3: 'เฉย ๆ',
-  4: 'พึงพอใจ',
-  5: 'พึงพอใจมาก',
-};
-
-const effortless = {
-  1: 'น้อย',
-  2: 'น้อยมาก',
-  3: 'ปานกลาง',
-  4: 'ยาก',
-  5: 'ยากมาก',
-};
-
-const attendent = {
-  1: 'ไม่เช็ค',
-  2: 'เช็คบางครั้ง',
-  3: 'เช็คปานกลาง',
-  4: 'เช็คบ่อย',
-  5: 'เช็คทุกครั้ง',
-};
+import {attendant, efforts, satisfaction} from "../constants";
 
 export default function AddReview() {
   const {data: session} = useSession();
@@ -52,9 +28,8 @@ export default function AddReview() {
     instructor: '',
     effort: 3,
     attendance: 3,
-    scoring_criteria: '',
-    class_type: '',
-    // link: null,
+    scoring_criteria: 'work-based',
+    class_type: 'onsite',
   });
   const [hoveredEffort, setHoveredEffort] = useState(3);
   const [clickedEffort, setClickedEffort] = useState(3);
@@ -91,16 +66,16 @@ export default function AddReview() {
   }
 
   function GetLabelText(value) {
-    return `${value} Star${value !== 1 ? 's' : ''}, ${labels[value]}`;
+    return `${value} Star${value !== 1 ? 's' : ''}, ${satisfaction[value]}`;
   }
 
   useEffect(() => {
     if (session) {
       const email = session.email;
-      setPostData((prevData) => ({ ...prevData, email }));
+      setPostData((prevData) => ({...prevData, email}));
     }
   }, [session]);
-  
+
   if (!session) return null;
 
   const idToken = session.idToken || session.accessToken;
@@ -114,21 +89,17 @@ export default function AddReview() {
       academic_year,
       instructor,
       pen_name,
-      anonymous
+      scoring_criteria,
+      attendance,
+      effort,
+      class_type,
     } = postData;
 
-    if (!email || !course_id || !reviews || !academic_year || !instructor) {
+    if (!email || !course_id || !reviews || !academic_year || !instructor || !scoring_criteria || !attendance || !effort || !class_type) {
       return false;
     }
-
-    if (anonymous && !pen_name) {
-      return false;
-    }
-
-    return true;
+    return !(anonymous && !pen_name);
   };
-
-  console.log("postData: ", postData);
 
   return (
     <div className="fixed bottom-4 right-4">
@@ -142,7 +113,14 @@ export default function AddReview() {
         }
         modal
         nested
-        contentStyle={{border: 'none', padding: '0', background: 'none', height: '90%', width: '60%', overflow: 'auto'}}
+        contentStyle={{
+          border: 'none',
+          padding: '0',
+          background: 'none',
+          height: '90%',
+          width: '60%',
+          overflow: 'auto'
+        }}
       >
         {close => (
           <div
@@ -151,11 +129,11 @@ export default function AddReview() {
             <Search onCourseSelect={(course) => setPostData({
               ...postData,
               course_id: course.courses_id,
-            }) } />
+            })}/>
             <SearchFaculty onFacultySelect={(faculty) => setPostData({
               ...postData,
               faculty: faculty.name,
-            }) } />
+            })}/>
             <textarea
               type="text"
               placeholder="ความคิดเห็นต่อรายวิชา"
@@ -170,20 +148,20 @@ export default function AddReview() {
             <div className="flex justify-start">
               <h3 className="mr-12 font-bold">ความพึงพอใจ</h3>
               <Rating
-                value={postData.rating}
+                value={Math.max(postData.rating, 1)}
                 getLabelText={GetLabelText}
                 onChange={(event, newValue) => {
-                  setPostData({...postData, rating: newValue});
+                  setPostData({...postData, rating: Math.max(newValue, 1)});
                 }}
                 onChangeActive={(event, newHover) => {
-                  setHover(newHover);
+                  setHover(newHover >= 1 ? newHover : hover);
                 }}
                 emptyIcon={<StarIcon style={{opacity: 0.55, color: 'gray'}}
                                      fontSize="inherit"/>}
               />
               {postData.rating !== null && (
                 <div
-                  className='ml-2'>{labels[hover !== -1 ? hover : postData.rating]}</div>
+                  className='ml-2'>{satisfaction[hover !== -1 ? hover : postData.rating]}</div>
               )}
             </div>
             <div className="flex flex-wrap mt-4 font-bold items-center">
@@ -196,8 +174,7 @@ export default function AddReview() {
                   }`}
                   onMouseEnter={() => setHoveredEffort(effort)}
                   onMouseLeave={() => setHoveredEffort(clickedEffort)}
-                  onClick={() =>
-                  {
+                  onClick={() => {
                     setPostData((prevData) => ({
                       ...prevData,
                       effort
@@ -210,8 +187,8 @@ export default function AddReview() {
                 </h1>
               ))}
               {hoveredEffort && (
-                  <span className="ml-4 font-normal">
-                    {effortless[hoveredEffort]}
+                <span className="ml-4 font-normal">
+                    {efforts[hoveredEffort]}
                   </span>
               )}
             </div>
@@ -225,8 +202,8 @@ export default function AddReview() {
                   }`}
                   onClick={() => {
                     setPostData((prevData) => ({
-                    ...prevData,
-                    attendance
+                      ...prevData,
+                      attendance
                     }));
                     setClickedAttendance(attendance);
                     setHoveredAttendance(attendance);
@@ -238,8 +215,8 @@ export default function AddReview() {
                 </h1>
               ))}
               {hoveredAttendance && (
-                  <span className="ml-4 font-normal">
-                    {attendent[hoveredAttendance]}
+                <span className="ml-4 font-normal">
+                    {attendant[hoveredAttendance]}
                   </span>
               )}
             </div>

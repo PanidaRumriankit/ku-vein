@@ -8,7 +8,7 @@ import {
 } from "@nextui-org/dropdown";
 import {Button} from "@nextui-org/button";
 import TuneTwoToneIcon from "@mui/icons-material/TuneTwoTone";
-import {facultyColor} from "../constants";
+import {faculties} from "../constants";
 
 export default function FacultyDropDown({selectedKeys, setSelectedKeys}) {
   return (
@@ -29,12 +29,15 @@ export default function FacultyDropDown({selectedKeys, setSelectedKeys}) {
           selectionMode="single"
           selectedKeys={selectedKeys}
           onSelectionChange={setSelectedKeys}
+          className="max-h-40 overflow-y-auto"
         >
           <DropdownSection title="คณะที่เรียน"
                            className="text-black dark:text-white">
-            {facultyColor.map((item) => (
-              <DropdownItem key={item.name}>{item.name}</DropdownItem>
-            ))}
+            {
+              faculties.map((faculty) => (
+                <DropdownItem key={faculty}>{faculty}</DropdownItem>
+              ))
+            }
           </DropdownSection>
         </DropdownMenu>
       </Dropdown>

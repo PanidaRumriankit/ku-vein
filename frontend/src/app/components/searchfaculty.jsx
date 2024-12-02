@@ -1,7 +1,7 @@
 "use client"
 
-import {usePathname, useRouter, useSearchParams} from "next/navigation";
-import {facultyColor} from "../constants/index";
+import {useSearchParams} from "next/navigation";
+import {faculties} from "../constants/index";
 import AsyncSelect from 'react-select/async';
 import {useTheme} from "next-themes";
 import {useEffect, useState} from 'react';
@@ -18,14 +18,12 @@ export default function SearchFaculty({ onFacultySelect }) {
   const query = searchParams.get('query') || '';
 
   const loadOptions = async (inputValue) => {
-
-    const filteredData = facultyColor.filter((faculty) =>
-      faculty.name.toLowerCase().includes(inputValue.toLowerCase())
+    const filteredFaculty = faculties.filter((faculty) =>
+      faculty.toLowerCase().includes(inputValue.toLowerCase())
     );
-
-    return filteredData.map((faculty) => ({
-      value: faculty.name,
-      label: `${faculty.name}`,
+    return filteredFaculty.map((faculty) => ({
+      value: faculty,
+      label: `${faculty}`,
     }));
   };
 

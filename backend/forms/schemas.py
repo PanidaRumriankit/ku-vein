@@ -6,7 +6,7 @@ from ninja import ModelSchema, Schema
 
 from .models import CourseData, UserData, CourseReview
 from .models import Inter, Normal, Special
-from .models import ReviewStat, Note, QA
+from .models import Note
 
 
 class CourseDataSchema(ModelSchema):
@@ -90,42 +90,23 @@ class UserDataEditSchema(ModelSchema):
         """Metaclass for linking this schema to the target model."""
 
         model = UserData
-        fields = '__all__'
+        fields = ['user_id','user_name','user_type','description','profile_color']
 
-        
+
+class UserProfileSchema(Schema):
+    """Schema for POST PUT user profile"""
+
+    user_id: str
+    img_id: str
+    img_link: str
+    img_delete_hash: str
+
+
 class FollowSchema(Schema):
     """Schema for follower feature."""
+
     current_user_id: str
     target_user_id: str
-
-
-class CourseReviewSchema(ModelSchema):
-    """
-    Schema for CourseReview model, representing reviews left by users.
-
-    Includes all fields in the CourseReview model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = CourseReview
-        fields = '__all__'
-
-
-class ReviewStatSchema(ModelSchema):
-    """
-    Schema for ReviewStat model.
-
-    Containing statistical data for course reviews.
-    Includes all fields in the ReviewStat model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = ReviewStat
-        fields = '__all__'
 
 
 class ReviewPostSchema(Schema):
@@ -137,7 +118,7 @@ class ReviewPostSchema(Schema):
     - course_id (str): Unique identifier for the course.
     - course_type (str): Type of the course (e.g., Inter, Special, Normal).
     - faculty (str): Faculty to which the course belongs.
-    - reviews (str): Text of the user’s review.
+    - reviews (str): Text of the user's review.
 
     These fields are for ReviewStats:
     - rating (float): User's rating for the course.
@@ -161,6 +142,24 @@ class ReviewPostSchema(Schema):
     class_type: str
 
 
+class ReviewPutSchema(Schema):
+    """Schema for handling incoming review edit requests from users."""
+    review_id: str|int
+    course_type: str
+    faculty: str
+    reviews: str
+    instructor: str
+    # --ReviewStat--
+    rating: float
+    academic_year: int
+    pen_name: str
+    grade: str
+    effort: int
+    attendance: int
+    scoring_criteria: str
+    class_type: str
+
+
 class ReviewDeleteSchema(ModelSchema):
     """Schema for delete the CourseReview"""
 
@@ -175,20 +174,6 @@ class UpvotePostSchema(Schema):
     """Schema for increase the upvote number."""
     email: str
     review_id: int
-
-
-class NoteSchema(ModelSchema):
-    """
-    Schema for Summary model, representing summaries written by users.
-
-    Includes all fields in the Summary model.
-    """
-
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
-
-        model = Note
-        fields = '__all__'
 
 
 class NotePostSchema(Schema):
@@ -212,6 +197,7 @@ class NotePostSchema(Schema):
             "file": "base64-encoded-string"
         }
     """
+
     email : str
     course_id: str
     faculty: str
@@ -219,6 +205,13 @@ class NotePostSchema(Schema):
     file : str
     file_name : str
     pen_name: Optional[str] = None
+
+
+class NotePutSchema(Schema):
+    """Schema for Note, used for editing Note."""
+    note_id: str
+    faculty: str
+    pen_name: str
 
 
 class NoteDeleteSchema(ModelSchema):
@@ -231,18 +224,88 @@ class NoteDeleteSchema(ModelSchema):
         fields = ['note_id']
 
 
-class QASchema(ModelSchema):
+class QuestionCreateSchema(Schema):
     """
-    Schema for QA model, containing questions and answers related to courses.
+    Schema for QA_Question, used for creating new questions.
 
-    Includes all fields in the QA model.
+    Attributes:
+        user_id (str): The user id of the question's creator.
+        question_text (str): The texts of the question.
+
+    Example:
+        {
+            "user_id": "1",
+            "question_text": "Is Prof.Ichi a monkey?",
+        }
     """
+    user_id: str
+    question_title: str
+    question_text: str
+    faculty: str
+    course_id: str|int
+    course_type: str|int
+    pen_name: str
 
-    class Meta:
-        """Metaclass for linking this schema to the target model."""
 
-        model = QA
-        fields = '__all__'
+class QuestionPutSchema(Schema):
+    """Schema for QA_Question, used for editing Questions."""
+    question_id: str
+    question_title: str
+    question_text: str
+    faculty: str
+    pen_name: str
+
+
+class QuestionDeleteSchema(Schema):
+    """Schema for QA_Question, used for deleting Questions."""
+    question_id: str
+
+
+class QuestionUpvoteSchema(Schema):
+    """Schema for QA_Question_Upvote, used for upvoting question."""
+    question_id: str
+    user_id: str
+
+
+class AnswerCreateSchema(Schema):
+    """
+    Schema for QA_Answer, used for creating new answers to a question.
+
+    Attributes:
+        question_id (str): The question id of the answer.
+        answer_text (str): The texts of the question.
+        user_id (str): The user id of the user who answered the question.
+
+    Example:
+        {
+            "question_id": "1"
+            "answer_text": "Prof.Ichi is just a Congalala fan.",
+            "user_id": "2"
+        }
+    """
+    question_id: str
+    answer_text: str
+    user_id: str
+    pen_name: str
+
+
+class AnswerPutSchema(Schema):
+    """Schema for QA_Answer, used for editing Answer."""
+    answer_id: str
+    answer_text: str
+    pen_name: str
+
+
+class AnswerDeleteSchema(Schema):
+    """Schema for QA_Answer, used for deleting Answer."""
+    answer_id: str
+
+
+class AnswerUpvoteSchema(Schema):
+    """Schema for QA_Answer_Upvote, used for upvoting answer."""
+    answer_id: str
+    user_id: str
+
 
 class BookMarkSchema(Schema):
     """

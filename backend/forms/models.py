@@ -55,12 +55,26 @@ class UserData(models.Model):
     profile_color = models.CharField(max_length=7, default="#ffffff")
 
     class Meta:
+        app_label = 'forms'
         db_table = 'UserData'
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(UserData, on_delete=models.CASCADE, unique=True)
+    img_id = models.CharField(max_length=100, null=True, default=None)
+    img_link = models.TextField(null=True, default=None)
+    img_delete_hash = models.CharField(max_length=100, null=True, default=None)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'UserProfile'
+
+
 class FollowData(models.Model):
-    this_user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='following')
-    follow_by = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='followers')
+    this_user = models.ForeignKey(UserData, on_delete=models.CASCADE,
+                                  related_name='following')
+    follow_by = models.ForeignKey(UserData, on_delete=models.CASCADE,
+                                  related_name='followers')
 
     class Meta:
         app_label = 'forms'
@@ -89,7 +103,7 @@ class ReviewStat(models.Model):
     rating = models.FloatField(default=0.0)
     academic_year = models.IntegerField(default=0)
     pen_name = models.CharField(max_length=100, default=None)
-    date_data = models.DateTimeField(default=None)
+    date_data = models.DateTimeField(auto_now_add=True)
     grade = models.CharField(max_length=2, default=None)
     effort = models.IntegerField(default=None)
     attendance = models.IntegerField(default=None)
@@ -116,10 +130,10 @@ class Note(models.Model):
     course = models.ForeignKey(CourseData, on_delete=models.CASCADE,
                                related_name='summaries')
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    date_data = models.DateTimeField(default=None)
+    date_data = models.DateTimeField(auto_now_add=True)
     faculty = models.CharField(max_length=100, default=None)
     file_name = models.CharField(max_length=255, default=None)
-    note_file = models.FileField(upload_to='note_files/', default=None, max_length=255)
+    pdf_url = models.CharField(max_length=1000, default=None)
     pen_name = models.CharField(max_length=100, default=None)
     anonymous = models.BooleanField(default=False)
 
@@ -128,30 +142,59 @@ class Note(models.Model):
         db_table = 'Note'
 
 
-class QA(models.Model):
+class QA_Question(models.Model):
     question_id = models.AutoField(unique=True, primary_key=True)
+    question_title = models.CharField(max_length=100, default='')
     question_text = models.TextField(default=None)
+    course = models.ForeignKey(CourseData, on_delete=models.CASCADE)
     faculty = models.CharField(max_length=100, default=None)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    posted_time = models.DateTimeField(auto_now_add=True)
+    pen_name = models.CharField(max_length=100, default=None)
+    is_anonymous = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'forms'
-        db_table = 'QA'
+        db_table = 'QAQuestion'
 
 
-class Comment(models.Model):
-    question = models.ForeignKey(QA, on_delete=models.CASCADE)
+class QA_Question_Upvote(models.Model):
+    question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
     user = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    comment = models.CharField(max_length=255, default=None)
 
     class Meta:
         app_label = 'forms'
-        db_table = 'Comment'
-        unique_together = ('user', 'comment')
+        db_table = 'QAQuestionUpvote'
+        unique_together = ('question', 'user')
+
+
+class QA_Answer(models.Model):
+    answer_id = models.AutoField(unique=True, primary_key=True)
+    question = models.ForeignKey(QA_Question, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    answer_text = models.CharField(max_length=255, default=None)
+    posted_time = models.DateTimeField(auto_now_add=True)
+    pen_name = models.CharField(max_length=100, default=None)
+    is_anonymous = models.BooleanField(default=False)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'QAAnswer'
+
+
+class QA_Answer_Upvote(models.Model):
+    answer = models.ForeignKey(QA_Answer, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+
+    class Meta:
+        app_label = 'forms'
+        db_table = 'QAAnswerUpvote'
+        unique_together = ('answer', 'user')
 
 
 class BookMark(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
+                                     default=None)
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)
@@ -164,7 +207,8 @@ class BookMark(models.Model):
 
 
 class History(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, default=None)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE,
+                                     default=None)
     object_id = models.PositiveIntegerField(default=None)
     instance = GenericForeignKey('content_type', 'object_id')
     data_type = models.CharField(max_length=20, default=None)

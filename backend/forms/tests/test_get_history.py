@@ -1,8 +1,8 @@
 from django.test import TestCase
 
 from .set_up import course_set_up, review_set_up, user_set_up
-from ..models import History
 from ..db_query import HistoryQuery
+from ..models import History
 
 
 class HistoryQueryTests(TestCase):
@@ -16,12 +16,12 @@ class HistoryQueryTests(TestCase):
         self.user = user_set_up()
         self.review, self.data = review_set_up()
         self.this_user = self.history_query.get_data(
-            email=self.user[0].email,
-            other_user=False
+            target_user=self.user[0].email,
+            is_other_user=False
         )
         self.other_user = self.history_query.get_data(
-            email=self.user[0].email,
-            other_user=True
+            target_user=self.user[0].email,
+            is_other_user=True
         )
 
     def test_correct_data_format(self):

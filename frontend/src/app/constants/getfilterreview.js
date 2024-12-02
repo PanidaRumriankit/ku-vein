@@ -1,17 +1,37 @@
 import {reviewURL} from "./backurl.js";
 
-export default async function MakeFilterApiRequest(sort, filter) {
+export default async function MakeFilterApiRequest(sort, filter, option) {
   // Construct the URL with the sort and filter parameters
   const sortBy = encodeURIComponent(sort.toLowerCase())
   const filterBy = encodeURIComponent(filter.toLowerCase())
-  const response = await fetch(reviewURL + `?sort=${sortBy}&course_id=${filterBy}`, {});
 
+  let url;
+  if (option === "course") {
+    url = `${reviewURL}?sort=${sortBy}&course_id=${filterBy}`;
+  } else if (option === "review") {
+    url = `${reviewURL}?sort=${sortBy}&review_id=${filterBy}`;
+  } else if (option === "stats") {
+    url = `${reviewURL}/stats?course_id=${filterBy}`;
+  } else {
+    console.error("Invalid option:", option);
+    return [];
+  }
+
+  const response = await fetch(url);
   if (response.ok) {
     const data = await response.json();
-    console.log("Response filter review from backend:", data);
+    // console.log("Response filter review from backend:", data);
+    if (option === "review") {
+      try {
+        return data[0];
+      } catch (error) {
+        return {};
+      }
+    }
     return data;
   } else {
     console.error("Failed to fetch filter review:", response.status);
     return []
   }
+
 };
