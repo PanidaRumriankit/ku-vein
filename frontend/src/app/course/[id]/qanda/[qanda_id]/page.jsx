@@ -31,7 +31,7 @@ export default function EachQuestionPage() {
   const fetchBookmarks = async () => {
     const response = await GetBookmarks(session.email);
     setBookmarkQuestion(response.filter((bookmark) => bookmark.data_type === "qa"));
-    console.log('Received bookmarks questions:', bookmarkQuestion);
+    // console.log('Received bookmarks questions:', bookmarkQuestion);
   };
 
   useEffect(() => {
@@ -131,14 +131,14 @@ export default function EachQuestionPage() {
         <div className="flex w-1/2 justify-start font-bold my-4">
           <h1>Answers</h1>
         </div>
-        {/* {answers.length > 0 ? (
+        {answers.length > 0 ? (
           answers.map((item, index) => (
             <AnswerCard item={item} key={index}/>
           ))
         ) : (
           <p className="text-green-400 text-center">No Q&A currently</p>
         )}
-        <AddAnswer /> */}
+        {/* <AddAnswer /> */}
       </div>
     </div>
   );
