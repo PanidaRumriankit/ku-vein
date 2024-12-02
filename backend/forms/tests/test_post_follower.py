@@ -27,7 +27,7 @@ class FollowPostTest(TestCase):
 
         self.assertEqual(json.loads(response.content),
                          {"error": "current_user_id or target_user_id"
-                                   " are missing from the response body."})
+                                   " are missing from the request body."})
 
     def test_response_missing_target_user_id(self):
         """Data missing target_user_id key."""
@@ -39,7 +39,7 @@ class FollowPostTest(TestCase):
 
         self.assertEqual(json.loads(response.content),
                          {"error": "current_user_id or target_user_id"
-                                   " are missing from the response body."})
+                                   " are missing from the request body."})
 
     def test_response_cur_user_not_in_the_database(self):
         """Current_user_id isn't in the database."""
