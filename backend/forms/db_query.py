@@ -60,6 +60,7 @@ class SortReview(QueryFilterStrategy):
         self.sorted_data = ReviewStat.objects.values(
             reviews_id=F('review__review_id'),
             courses_id=F('review__course__course_id'),
+            username=F('review__user__user_name'),
             courses_name=F('review__course__course_name'),
             faculties=F('review__faculty'),
             review_text=F('review__reviews'),
