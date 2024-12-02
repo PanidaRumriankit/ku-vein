@@ -24,6 +24,7 @@ export default function EachQuestionPage() {
   const [answers, setAnswers] = useState([]);
   const [bookmarkQuestion, setBookmarkQuestion] = useState([]);
   const [isBookmarked, setIsBookmarked] = useState(false);
+  const question = questions.find((question) => question.questions_id === questionId);
 
   // console.log('questionID:', questionId);
 
@@ -102,7 +103,7 @@ export default function EachQuestionPage() {
 
   useEffect(() => {
     if (questions) {
-      console.log('questions[questionId]:', questions[questionId]);
+      console.log('questions[questionId]:', question);
     }
   })
   
@@ -122,8 +123,8 @@ export default function EachQuestionPage() {
           </div>
       </div>
       <div className="flex flex-col items-center w-full max-w-5xl">
-      {questions[questionId] ? (
-        <QuestionText item={questions[questionId]} bookmark={isBookmarked}/>
+      {question ? (
+        <QuestionText item={question} bookmark={isBookmarked}/>
       ) : (
         <p>Loading question...</p>
       )}
