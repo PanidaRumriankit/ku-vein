@@ -2,6 +2,7 @@
 
 import {useEffect, useState} from 'react';
 import GetUserData from '../constants/getuser';
+import Image from 'next/image';
 
 export default function PopupProfile({userId}) {
   const [userData, setUserData] = useState(null);
@@ -10,14 +11,15 @@ export default function PopupProfile({userId}) {
     async function FetchData() {
       try {
         const data = await GetUserData(userId, "user_id");
-        console.log('Fetched data:', data);
-        console.log('Fetched userId:', userId);
+        // console.log('Fetched data:', data);
+        // console.log('Fetched userId:', userId);
         if (data) {
           setUserData({
             user_id: data.id,
             user_name: data.username,
             description: data.desc,
             profile_color: data.pf_color,
+            profile_link: data.profile_link,
           });
         } else {
           console.error("No data returned from GetUserData");
@@ -29,11 +31,11 @@ export default function PopupProfile({userId}) {
     FetchData();
   }, [userId]);
 
-  useEffect(() => {
-    if (userData) {
-      console.log('Popup:', userData);
-    }
-  }, [userData]);
+  // useEffect(() => {
+  //   if (userData) {
+  //     console.log('Popup:', userData);
+  //   }
+  // }, [userData]);
 
   if (!userData) {
     return <p>Loading...</p>;
@@ -49,7 +51,21 @@ export default function PopupProfile({userId}) {
           style={{ background: userData.profile_color }}
         ></div>
         {/* Profile Picture */}
-        <div className="absolute -my-6 ml-8 text-left transform -translate-x-1/2 w-12 h-12 bg-gray-300 rounded-full border-gray-500 border-2"></div>
+        <div className="absolute -my-6 ml-8 text-left transform -translate-x-1/2">
+          {userData.profile_link ? (
+            <div className="relative w-12 h-12 rounded-full overflow-hidden">
+              <Image
+                src={userData.profile_link}
+                alt="Profile"
+                layout="fill"
+                objectFit="cover"
+                className="border-gray-500 border-2"
+              />
+            </div>
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-gray-300 border-gray-500 border-2"></div>
+          )}
+        </div>
         {/* Profile Information */}
         <div className="mt-7">
           <div className="flex items-center ml-2 space-x-2">

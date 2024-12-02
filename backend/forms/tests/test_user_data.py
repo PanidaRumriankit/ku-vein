@@ -23,7 +23,7 @@ class UserDataPostTests(TestCase):
         response = self.user.post_data({})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content),
-                         {"error": "email is missing from the response body."})
+                         {"error": "email is missing from the request body."})
 
     def test_response_success(self):
         """Created User successes."""
@@ -92,6 +92,7 @@ class UserQueryTest(TestCase):
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
+            "profile_link": None,
             "following": [],
             "follower": [],
             "follower_count": 0,
@@ -111,6 +112,7 @@ class UserQueryTest(TestCase):
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
+            "profile_link": None,
             "following": [],
             "follower": [],
             "follower_count": 0,
@@ -130,6 +132,7 @@ class UserQueryTest(TestCase):
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
+            "profile_link": None,
             "following": [],
             "follower": [],
             "follower_count": 0,

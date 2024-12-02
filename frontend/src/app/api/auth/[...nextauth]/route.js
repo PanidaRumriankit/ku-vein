@@ -24,7 +24,7 @@ const authOptions = {
                 token.idToken = account.id_token;
                 token.refreshToken = account.refresh_token || token.refreshToken;
                 token.accessTokenExpires = Date.now() + 3600 * 1000;
-                console.log("Token expires at: " + new Date(token.accessTokenExpires).toLocaleString());
+                // console.log("Token expires at: " + new Date(token.accessTokenExpires).toLocaleString());
             }
 
             if (Date.now() < token.accessTokenExpires) {

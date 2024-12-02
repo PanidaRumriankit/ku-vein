@@ -59,14 +59,15 @@ export default function GradePieChart({itemData}) {
     plugins: {
       legend: {
         labels: {
-          color: "#333",
+          color: "#8d8d8d",
           font: {
             size: 14,
           },
         },
+        position: "left",
       },
     },
   };
 
-  return <Pie data={data} options={options} className="border rounded"/>;
+  return <Pie data={data} options={options}/>;
 }

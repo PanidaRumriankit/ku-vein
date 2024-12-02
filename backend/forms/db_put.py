@@ -3,9 +3,11 @@
 import logging
 from abc import ABC, abstractmethod
 
+import requests
+from decouple import config
 from ninja.responses import Response
-
-from .models import (CourseReview, UserData, QA_Question, QA_Answer, Note)
+from .models import (CourseReview, UserData, ReviewStat,
+                     QA_Question, QA_Answer, Note, UserProfile)
 
 logger = logging.getLogger("user_logger")
 
@@ -98,11 +100,21 @@ class ReviewPut(PutStrategy):
         try:
             review = CourseReview.objects.get(review_id=data['review_id'])
             review_dict = review.__dict__
+            review_stat = ReviewStat.objects.get(review=review)
+            review_stat_dict = review_stat.__dict__
 
-            review_dict['is_anonymous'] = (review.user.user_name != data['pen_name'])
+            review_dict['is_anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = review.user.user_name
+
+            edit_review = ['reviews', 'faculty', 'instructor']
 
             for key, val in data.items():
-                review_dict[key] = val
+                if key in edit_review:
+                    review_dict[key] = val
+                else:
+                    review_stat_dict[key] = val
                 logger.info(f"Review_id: {review.review_id} -- Changed their attribute {key} to {val}.")
 
         except KeyError:
@@ -112,8 +124,10 @@ class ReviewPut(PutStrategy):
             return Response({"error": "The Review with that ID does not exists."}, status=400)
 
         review.save()
+        review_stat.save()
         return Response({"success": "The requested user's attribute has been changed.",
-                         "review_data": [{key: val} for key, val in review.__dict__.items() if key[0] != '_']
+                         "review_data": [[{key: val} for key, val in review.__dict__.items() if key[0] != '_'],
+                                        [{key: val} for key, val in review_stat.__dict__.items() if key[0] != '_']]
                          }, status=200)
 
 
@@ -126,7 +140,10 @@ class NotePut(PutStrategy):
             note = Note.objects.get(note_id=data['note_id'])
             note_dict = note.__dict__
 
-            note_dict['anonymous'] = (note.user.user_name != data['pen_name'])
+            note_dict['anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = note.user.user_name
 
             for key, val in data.items():
                 note_dict[key] = val
@@ -153,7 +170,10 @@ class QA_QuestionPut(PutStrategy):
             question = QA_Question.objects.get(question_id=data['question_id'])
             question_dict = question.__dict__
 
-            question_dict['is_anonymous'] = (question.user.user_name != data['pen_name'])
+            question_dict['is_anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = question.user.user_name
 
             for key, val in data.items():
                 question_dict[key] = val
@@ -180,7 +200,11 @@ class QA_AnswerPut(PutStrategy):
         try:
             answer = QA_Answer.objects.get(answer_id=data['answer_id'])
             answer_dict = answer.__dict__
-            answer_dict['is_anonymous'] = (answer.user.user_name != data['pen_name'])
+            answer_dict['is_anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = answer.user.user_name
+            
             for key, val in data.items():
                 answer_dict[key] = val
                 logger.info(f"Answer_id: {answer.answer_id} -- Changed their attribute {key} to {val}.")
@@ -198,12 +222,58 @@ class QA_AnswerPut(PutStrategy):
                          }, status=200)
 
 
+class UserProfilePut(PutStrategy):
+    """Class for change UserProfile object."""
+
+    def put_data(self, data: dict):
+        """Change the UserProfile data."""
+        try:
+            user = UserData.objects.get(user_id=data['user_id'])
+
+            profile = UserProfile.objects.get(user=user)
+
+            try:
+                url = f"https://api.imgur.com/3/image/{profile.img_delete_hash}"
+                headers = {
+                    "Authorization":
+                        "Client-ID"
+                        f" {config('IMGUR_CLIENT_ID', cast=str, default='')}"
+                }
+
+                response = requests.delete(url, headers=headers)
+
+
+            except Exception as e:
+                return Response({e}, status=401)
+
+
+            profile.img_id = data['img_id']
+            profile.img_link = data['img_link']
+            profile.img_delete_hash = data['img_delete_hash']
+
+            profile.save()
+
+            return Response(response.json(), status=response.status_code)
+
+        except KeyError as e:
+            return Response({"error": f"Missing data: {str(e)}"}, status=400)
+
+        except UserData.DoesNotExist:
+            return Response({"error": "The User isn't in the database."},
+                            status=401)
+
+        except UserProfile.DoesNotExist:
+            return Response({"error": "The User doesn't have profile."},
+                            status=401)
+
+
 class PutFactory:
     """Factory class to handle query strategy selection."""
 
     strategy_map = {
         "review": ReviewPut,
         "user": UserDataPut,
+        "profile": UserProfilePut,
         "question": QA_QuestionPut,
         "answer": QA_AnswerPut,
     }
