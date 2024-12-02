@@ -402,7 +402,7 @@ class AnswerController(ControllerBase):
         strategy = QueryFactory.get_query_strategy("qa_answer")
         return strategy.get_data(question_id=question_id, mode=mode)
 
-    @http_post("/answer")
+    @http_post("")
     def add_answer(self, request, data: AnswerCreateSchema):
         """Use for creating new answer for Q&A."""
         correct_user = check_real_user(data)
@@ -411,7 +411,7 @@ class AnswerController(ControllerBase):
         strategy = PostFactory.get_post_strategy("answer")
         return strategy.post_data(data.model_dump())
     
-    @http_put("/answer")
+    @http_put("")
     def edit_answer(self, request, data: AnswerPutSchema):
         """Edit QA_Answers data."""
         correct_user = check_real_user(data)
@@ -420,7 +420,7 @@ class AnswerController(ControllerBase):
         strategy = PutFactory.get_put_strategy("answer")
         return strategy.put_data(data.model_dump())
     
-    @http_delete("/answer", response={200: AnswerDeleteSchema})
+    @http_delete("", response={200: AnswerDeleteSchema})
     def delete_answer(self, request, data: AnswerDeleteSchema):
         """Delete the answer objects."""
         correct_user = check_real_user(data)
@@ -429,7 +429,7 @@ class AnswerController(ControllerBase):
         strategy = DeleteFactory.get_delete_strategy("answer")
         return strategy.delete_data(data.model_dump())
     
-    @http_post("/answer/upvote")
+    @http_post("/upvote")
     def upvote_answer(self, request, data: AnswerUpvoteSchema):
         """Use for creating new upvote for Q&A."""
         correct_user = check_real_user(data)
