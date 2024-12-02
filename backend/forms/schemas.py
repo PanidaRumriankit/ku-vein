@@ -285,7 +285,8 @@ class QuestionCreateSchema(Schema):
     question_title: str
     question_text: str
     faculty: str
-    course_id: str
+    course_id: str|int
+    course_type: str|int
     pen_name: str
 
 
