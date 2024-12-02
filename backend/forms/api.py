@@ -50,16 +50,17 @@ def verify_google_token(auth: str, email: str) -> bool:
     except ValueError:
         return False
 
-def check_real_user(auth_data):
+def check_real_user(req_header):
     """Check is email of token equal to email send from frontend."""
-    if auth_data['Authorization'] is None:
+    token, email = req_header.headers.get('Authorization'), req_header.headers.get('email')
+    if not token is None:
         return Response({"error": "Authorization header missing"}, status=401)
 
-    if auth_data['email'] is None:
+    if not email is None:
         return Response({"error": "Email header is missing"}, status=401)
 
     try:
-        if verify_google_token(auth_data['Authorization'], auth_data['email']):
+        if verify_google_token(token, email):
             return True
         else:
             return Response({"error": "Invalid token"}, status=403)
@@ -112,7 +113,7 @@ class FollowController(ControllerBase):
     @http_post("", response={200: FollowSchema})
     def add_follower(self, request, data: FollowSchema):
         """Use for add new follower to the database."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("follow")
@@ -144,7 +145,7 @@ class ReviewController(ControllerBase):
     @http_post("", response={200: ReviewPostSchema})
     def create_review(self, request, data: ReviewPostSchema):
         """Use for create new review."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("review")
@@ -154,7 +155,7 @@ class ReviewController(ControllerBase):
     @http_put("", response={200: ReviewPutSchema})
     def edit_review(self, request, data: ReviewPutSchema):
         """Edit review data."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PutFactory.get_put_strategy("review")
@@ -163,7 +164,7 @@ class ReviewController(ControllerBase):
     @http_delete("", response={200: ReviewDeleteSchema})
     def delete_review(self, request, data: ReviewDeleteSchema):
         """Delete the review objects."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = DeleteFactory.get_delete_strategy("review")
@@ -213,7 +214,7 @@ class UserController(ControllerBase):
     @http_put("")
     def edit_user(self, request, data: UserDataEditSchema):
         """Edit data for the user."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PutFactory.get_put_strategy("user")
@@ -222,7 +223,7 @@ class UserController(ControllerBase):
     @http_post("/profile", response={200: UserProfileSchema})
     def add_new_profile_pic(self, request, data: UserProfileSchema):
         """Use for create new profile"""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("profile")
@@ -231,7 +232,7 @@ class UserController(ControllerBase):
     @http_put("/profile", response={200: UserProfileSchema})
     def change_profile_pic(self, request, data: UserProfileSchema):
         """Use for change the profile"""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PutFactory.get_put_strategy("profile")
@@ -259,7 +260,7 @@ class NoteController(ControllerBase):
     @http_post("", response={200: NotePostSchema})
     def add_note(self, request, data: NotePostSchema):
         """Use for add new Note object."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("note")
@@ -268,7 +269,7 @@ class NoteController(ControllerBase):
     @http_put("")
     def edit_question(self, request, data: NotePutSchema):
         """Edit Note data."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PutFactory.get_put_strategy("note")
@@ -277,7 +278,7 @@ class NoteController(ControllerBase):
     @http_delete("", response={200: NoteDeleteSchema})
     def delete_note(self, request, data: NoteDeleteSchema):
         """Delete the note objects."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = DeleteFactory.get_delete_strategy("note")
@@ -325,7 +326,7 @@ class BookMarkController(ControllerBase):
     @http_post("", response={200: BookMarkSchema})
     def add_bookmark(self, request, data: BookMarkSchema):
         """Use for add new bookmark object."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("book")
@@ -362,7 +363,7 @@ class QAController(ControllerBase):
     @http_post("")
     def add_question(self, request, data: QuestionCreateSchema):
         """Use for creating new question for Q&A."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("question")
@@ -371,7 +372,7 @@ class QAController(ControllerBase):
     @http_post("/upvote")
     def upvote_question(self, request, data: QuestionUpvoteSchema):
         """Use for creating new upvote for Q&A."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("question_upvote")
@@ -380,7 +381,7 @@ class QAController(ControllerBase):
     @http_put("")
     def edit_question(self, request, data: QuestionPutSchema):
         """Edit QA_Questions data."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PutFactory.get_put_strategy("question")
@@ -389,7 +390,7 @@ class QAController(ControllerBase):
     @http_delete("", response={200: QuestionDeleteSchema})
     def delete_question(self, request, data: QuestionDeleteSchema):
         """Delete the question objects."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = DeleteFactory.get_delete_strategy("question")
@@ -398,7 +399,7 @@ class QAController(ControllerBase):
     @http_post("/answer")
     def add_answer(self, request, data: AnswerCreateSchema):
         """Use for creating new answer for Q&A."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("answer")
@@ -407,7 +408,7 @@ class QAController(ControllerBase):
     @http_post("/answer/upvote")
     def upvote_answer(self, request, data: AnswerUpvoteSchema):
         """Use for creating new upvote for Q&A."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PostFactory.get_post_strategy("answer_upvote")
@@ -416,7 +417,7 @@ class QAController(ControllerBase):
     @http_put("/answer")
     def edit_answer(self, request, data: AnswerPutSchema):
         """Edit QA_Answers data."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = PutFactory.get_put_strategy("answer")
@@ -425,7 +426,7 @@ class QAController(ControllerBase):
     @http_delete("/answer", response={200: AnswerDeleteSchema})
     def delete_answer(self, request, data: AnswerDeleteSchema):
         """Delete the answer objects."""
-        correct_user = check_real_user(data)
+        correct_user = check_real_user(request)
         if isinstance(correct_user, Response):
             return correct_user
         strategy = DeleteFactory.get_delete_strategy("answer")
@@ -445,4 +446,3 @@ class BackUpController(ControllerBase):
                             status=202)
         return Response({"success": "But the system does not require a backup right now."},
                             status=202)
-
