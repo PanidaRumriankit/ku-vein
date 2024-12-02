@@ -186,10 +186,6 @@ export default function EditDelete({userName, questionId, item}) {
         <div
             className="text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
             <h2 className="text-xl font-semibold pb-2">เพิ่มคำถาม</h2>
-            <Search onCourseSelect={(course) => setPostData({
-              ...postData,
-              course_id: course.courses_id,
-            })}/>
             <SearchFaculty onFacultySelect={(faculty) => setPostData({
               ...postData,
               faculty: faculty.name,
