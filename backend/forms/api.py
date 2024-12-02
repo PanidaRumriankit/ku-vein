@@ -7,6 +7,11 @@ from ninja_extra import (ControllerBase, api_controller, http_put,
                          http_get, http_post, http_delete)
 from ninja_extra import NinjaExtraAPI
 
+from .db_delete import DeleteFactory
+from .db_management import DatabaseBackup
+from .db_post import PostFactory
+from .db_put import PutFactory
+from .db_query import QueryFactory, InterQuery
 from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       ReviewDeleteSchema, UserProfileSchema,
                       UpvotePostSchema,
@@ -19,10 +24,9 @@ from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       QuestionDeleteSchema, QuestionUpvoteSchema,
                       AnswerCreateSchema, AnswerPutSchema,
                       AnswerDeleteSchema, AnswerUpvoteSchema)
-from .db_delete import DeleteFactory
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
-from .db_query import QueryFactory
+from .db_query import QueryFactory, InterQuery
 from .db_put import PutFactory
 
 
@@ -62,19 +66,6 @@ def check_real_user(auth_data):
 
     except (IndexError, KeyError):
         return Response({"error": "Malformed or invalid token"}, status=401)
-
-def validate_user(func):
-    """
-    Decorator to validate user authentication and authorization.
-    Returns an error response if validation fails, otherwise proceeds to the decorated function.
-    """
-    def wrapper(self, request, data, *args, **kwargs):
-        correct_user = check_real_user(data)
-        if isinstance(correct_user, Response):
-            return correct_user
-        return func(self, request, data, *args, **kwargs)
-    return wrapper
-
 
 def check_response(data):
     """
@@ -119,9 +110,11 @@ class FollowController(ControllerBase):
     """Controller for handling Follow endpoints."""
 
     @http_post("", response={200: FollowSchema})
-    @validate_user
     def add_follower(self, request, data: FollowSchema):
         """Use for add new follower to the database."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("follow")
         return strategy.post_data(data.model_dump())
 
@@ -149,24 +142,30 @@ class ReviewController(ControllerBase):
 
 
     @http_post("", response={200: ReviewPostSchema})
-    @validate_user
     def create_review(self, request, data: ReviewPostSchema):
         """Use for create new review."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("review")
         return strategy.post_data(data.model_dump())
 
 
     @http_put("", response={200: ReviewPutSchema})
-    @validate_user
     def edit_review(self, request, data: ReviewPutSchema):
         """Edit review data."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PutFactory.get_put_strategy("review")
         return strategy.put_data(data.model_dump())
 
     @http_delete("", response={200: ReviewDeleteSchema})
-    @validate_user
     def delete_review(self, request, data: ReviewDeleteSchema):
         """Delete the review objects."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = DeleteFactory.get_delete_strategy("review")
         return strategy.delete_data(data.model_dump())
 
@@ -212,23 +211,29 @@ class UserController(ControllerBase):
         return strategy.post_data(data.model_dump())
 
     @http_put("")
-    @validate_user
     def edit_user(self, request, data: UserDataEditSchema):
         """Edit data for the user."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PutFactory.get_put_strategy("user")
         return strategy.put_data(data.model_dump())
 
     @http_post("/profile", response={200: UserProfileSchema})
-    @validate_user
     def add_new_profile_pic(self, request, data: UserProfileSchema):
         """Use for create new profile"""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("profile")
         return strategy.post_data(data.model_dump())
 
     @http_put("/profile", response={200: UserProfileSchema})
-    @validate_user
     def change_profile_pic(self, request, data: UserProfileSchema):
         """Use for change the profile"""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PutFactory.get_put_strategy("profile")
         return strategy.put_data(data.model_dump())
 
@@ -252,23 +257,29 @@ class NoteController(ControllerBase):
             return Response({"error": str(e)}, status=400)
 
     @http_post("", response={200: NotePostSchema})
-    @validate_user
     def add_note(self, request, data: NotePostSchema):
         """Use for add new Note object."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("note")
         return strategy.post_data(data.model_dump())
     
     @http_put("")
-    @validate_user
     def edit_question(self, request, data: NotePutSchema):
         """Edit Note data."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PutFactory.get_put_strategy("note")
         return strategy.put_data(data.model_dump())
 
     @http_delete("", response={200: NoteDeleteSchema})
-    @validate_user
     def delete_note(self, request, data: NoteDeleteSchema):
         """Delete the note objects."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = DeleteFactory.get_delete_strategy("note")
         return strategy.delete_data(data.model_dump())
 
@@ -292,7 +303,6 @@ class UpvoteController(ControllerBase):
             strategy.get_data({"email": email, "review_id": review_id}))
 
     @http_post("", response={200: UpvotePostSchema})
-    @validate_user
     def add_upvote(self, request, data: UpvotePostSchema):
         """Use for add new upvote."""
         strategy = PostFactory.get_post_strategy("review_upvote")
@@ -313,9 +323,11 @@ class BookMarkController(ControllerBase):
         return check_response(strategy.get_data(email))
 
     @http_post("", response={200: BookMarkSchema})
-    @validate_user
     def add_bookmark(self, request, data: BookMarkSchema):
         """Use for add new bookmark object."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("book")
         return strategy.post_data(data.model_dump())
 
@@ -348,58 +360,74 @@ class QAController(ControllerBase):
         return strategy.get_data(question_id=question_id, mode=mode)
 
     @http_post("")
-    @validate_user
     def add_question(self, request, data: QuestionCreateSchema):
         """Use for creating new question for Q&A."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("question")
         return strategy.post_data(data.model_dump())
     
     @http_post("/upvote")
-    @validate_user
     def upvote_question(self, request, data: QuestionUpvoteSchema):
         """Use for creating new upvote for Q&A."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("question_upvote")
         return strategy.post_data(data.model_dump())
     
     @http_put("")
-    @validate_user
     def edit_question(self, request, data: QuestionPutSchema):
         """Edit QA_Questions data."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PutFactory.get_put_strategy("question")
         return strategy.put_data(data.model_dump())
     
     @http_delete("", response={200: QuestionDeleteSchema})
-    @validate_user
     def delete_question(self, request, data: QuestionDeleteSchema):
         """Delete the question objects."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = DeleteFactory.get_delete_strategy("question")
         return strategy.delete_data(data.model_dump())
 
     @http_post("/answer")
-    @validate_user
     def add_answer(self, request, data: AnswerCreateSchema):
         """Use for creating new answer for Q&A."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("answer")
         return strategy.post_data(data.model_dump())
     
     @http_post("/answer/upvote")
-    @validate_user
     def upvote_answer(self, request, data: AnswerUpvoteSchema):
         """Use for creating new upvote for Q&A."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("answer_upvote")
         return strategy.post_data(data.model_dump())
     
     @http_put("/answer")
-    @validate_user
     def edit_answer(self, request, data: AnswerPutSchema):
         """Edit QA_Answers data."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PutFactory.get_put_strategy("answer")
         return strategy.put_data(data.model_dump())
     
     @http_delete("/answer", response={200: AnswerDeleteSchema})
-    @validate_user
     def delete_answer(self, request, data: AnswerDeleteSchema):
         """Delete the answer objects."""
+        correct_user = check_real_user(data)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = DeleteFactory.get_delete_strategy("answer")
         return strategy.delete_data(data.model_dump())
 
