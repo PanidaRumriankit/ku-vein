@@ -30,6 +30,11 @@ export default function QuestionAndAnswerPage({params}) {
     console.log('Received bookmarks questions:', bookmarkQuestion);
   };
 
+  const handleSelectedKeysChange = (keys) => {
+    const selectedKey = Array.isArray(keys) ? keys[0] : [...keys][0];
+    setSelectedKeys(selectedKey);
+  };
+
   useEffect(() => {
     if (session) {
       fetchBookmarks();
@@ -43,7 +48,7 @@ export default function QuestionAndAnswerPage({params}) {
           <CourseNavigationBar courseId={params.id}/>
           <div className="justify-end mt-4">
             <Sorting selectedKeys={selectedKeys}
-                     setSelectedKeys={setSelectedKeys}/>
+                     setSelectedKeys={handleSelectedKeysChange}/>
           </div>
       </div>
       <div className="flex flex-col items-center w-full max-w-5xl">
