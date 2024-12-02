@@ -6,7 +6,7 @@ from ninja import ModelSchema, Schema
 
 from .models import CourseData, UserData, CourseReview
 from .models import Inter, Normal, Special
-from .models import ReviewStat, Note
+from .models import Note
 
 
 class CourseDataSchema(ModelSchema):
@@ -149,6 +149,7 @@ class ReviewPutSchema(Schema):
     faculty: str
     reviews: str
     instructor: str
+    # --ReviewStat--
     rating: float
     academic_year: int
     pen_name: str
