@@ -22,6 +22,7 @@ class QuestionPostTest(TestCase):
         self.Apost = AnswerPost()
         test_course = CourseData.objects.create(course_id='000000-00',course_name='test', course_type='test')
         self.question = {
+            "qiestion_title": "Test title",
             "question_text": "Test question",
             "faculty": "test",
             "user_id": self.user.user_id,
