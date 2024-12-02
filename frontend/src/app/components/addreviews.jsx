@@ -28,8 +28,8 @@ export default function AddReview() {
     instructor: '',
     effort: 3,
     attendance: 3,
-    scoring_criteria: '',
-    class_type: '',
+    scoring_criteria: 'work-based',
+    class_type: 'onsite',
   });
   const [hoveredEffort, setHoveredEffort] = useState(3);
   const [clickedEffort, setClickedEffort] = useState(3);
