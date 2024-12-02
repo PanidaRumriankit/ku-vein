@@ -37,9 +37,7 @@ export default function NoteBox({userName, data}) {
         setCurrentUser(userData.username);
       }
 
-      FetchData().then(() => {
-        console.log("Current User", currentUser)
-      });
+      FetchData().then(() => {});
     }
   }, [currentUser, session]);
 
@@ -89,14 +87,15 @@ export default function NoteBox({userName, data}) {
         >
           <VisibilityIcon/> PDF
         </a>
-
-        <p
-          className="px-4 py-2 bg-red-500 text-white rounded-md
-          shadow hover:bg-red-600 hover:cursor-pointer"
-          onClick={handleDeleteNote}
-        >
-          <DeleteForeverIcon/> PDF
-        </p>
+        {currentUser === userName && (
+          <p
+            className="px-4 py-2 bg-red-500 text-white rounded-md
+            shadow hover:bg-red-600 hover:cursor-pointer"
+            onClick={handleDeleteNote}
+          >
+            <DeleteForeverIcon/> PDF
+          </p>
+        )}
       </div>
     </div>
   )
