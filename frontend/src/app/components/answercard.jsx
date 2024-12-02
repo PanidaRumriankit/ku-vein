@@ -3,6 +3,7 @@
 import {useRouter, usePathname} from "next/navigation";
 import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
+import {useTheme} from "next-themes";
 import ShareButton from "./sharebutton.jsx";
 import ThumbUpTwoToneIcon from '@mui/icons-material/ThumbUpTwoTone';
 import {Button} from "@nextui-org/button";
@@ -13,6 +14,7 @@ import GetUser from "../constants/getuser";
 export default function AnswerCard({item}) {
   const router = useRouter();
   const pathname = usePathname();
+  const theme = useTheme();
   const {data: session} = useSession();
   const [upvoteCount, setUpvoteCount] = useState(item.upvote || 0);
   const [isVoted, setIsVoted] = useState(false);
@@ -145,10 +147,9 @@ export default function AnswerCard({item}) {
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2 -mb-4">
             <div className="text-left text-2xl flex space-x-4">
-              <Button variant="light" onClick={handleUpvote}
-                      disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon/>    {upvoteCount}
-              </Button>
+            <Button variant="light" onClick={handleUpvote} disabled={!session || isLoading}>
+              <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
+            </Button>
             </div>
             <div className="text-right">
               <ShareButton/>
