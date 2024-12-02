@@ -80,6 +80,7 @@ export default function UserProfile() {
 
         setLoading(false);
         setFollowerCount(data.follower_count);
+        setFollowers(data.follower);
       }
       FetchData();
     }
@@ -89,11 +90,17 @@ export default function UserProfile() {
     if (session && userData && personalData) {
       // Check if the user is already following the target user
       setIsFollowing(userData.follower.some(follower => follower.username === personalData.username));
-      // console.log('User Data:', userData);
+      console.log('User Data:', userData);
       // console.log('Personal Data:', personalData);
       // console.log('isfollowing:', isFollowing);
     }
   }, [session, userData, personalData]);
+
+  useEffect(() => {
+    if (followers) {
+      console.log('Followers:', followers);
+    }
+  }, [followers]);
 
   if (loading || !userData) return <p>Loading...</p>;
   
@@ -181,14 +188,34 @@ export default function UserProfile() {
                   <h2 className="text-lg font-semibold mb-4">Following</h2>
                   {userData.following.length > 0 ? (
                     <ul>
-                      {userData.following.map((followedUser, index) => (
+                      {userData.following.map((followingUser, index) => (
                         <li
                           key={index}
                           className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
-                          // onClick={() => {router.push(`/user/${user_id}`);}}
-                          >
-                          <p className="font-medium">{followedUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc}</p>
+                          onClick={() => {router.push(`/user/${followingUser.follow_id}`);}}
+                        >
+                          <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
+                            {/* Profile Image */}
+                            {followingUser.profile_link ? (
+                              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-500">
+                                <Image
+                                  src={followingUser.profile_link}
+                                  alt="Profile"
+                                  width={100}
+                                  height={100}
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-[5.5rem] h-16 rounded-full bg-gray-300 border-2 border-gray-500"></div>
+                            )}
+
+                            {/* Username and Description */}
+                            <div className="flex flex-col">
+                              <p className="font-medium">{followingUser.username}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">{followingUser.desc}</p>
+                            </div>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -211,9 +238,36 @@ export default function UserProfile() {
                   {followers.length > 0 ? (
                     <ul>
                       {followers.map((followeredUser, index) => (
-                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
-                          <p className="font-medium">{followeredUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
+                        <li
+                          key={index}
+                          className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
+                          onClick={() => {
+                            const navigationId = followeredUser.follow_id || followeredUser.id;
+                            router.push(`/user/${navigationId}`);
+                          }}
+                        >
+                          <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
+                            {/* Profile Image */}
+                            {followeredUser.profile_link ? (
+                              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-500">
+                                <Image
+                                  src={followeredUser.profile_link}
+                                  alt="Profile"
+                                  width={100}
+                                  height={100}
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-[5.5rem] h-16 rounded-full bg-gray-300 border-2 border-gray-500"></div>
+                            )}
+
+                            {/* Username and Description */}
+                            <div className="flex flex-col">
+                              <p className="font-medium">{followeredUser.username}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
+                            </div>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -235,9 +289,9 @@ export default function UserProfile() {
                     : 'text-white bg-[#4ECDC4] hover:bg-[#44b3ab]'
                 }`}
                 onClick={() => {
-                  setIsFollowing((prev) => !prev);
                   setFollowerCount((prev) => (isFollowing ? prev - 1 : prev + 1));
                   setFollowers((prev) => (isFollowing ? prev.filter((follower) => follower.username !== personalData.username) : [...prev, personalData]));
+                  setIsFollowing((prev) => !prev);
                   followUser();
                 }}
               >

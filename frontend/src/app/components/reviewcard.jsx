@@ -38,6 +38,7 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
   const [popupPosition, setPopupPosition] = useState({x: 0, y: 0});
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUserId, setIsUserId] = useState(false);
   const chips = [item.criteria, item.classes_type, attendant[item.attendances], "ยาก" + efforts[item.efforts]];
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
@@ -99,6 +100,12 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
   }, [item.username]);
 
   useEffect(() => {
+    if (userId) {
+      setIsUserId(true);
+    }
+  }, [userId]);
+
+  useEffect(() => {
     if (item.date) {
       const formatted = new Date(item.date).toLocaleDateString("th-TH", {
         year: "numeric",
@@ -107,7 +114,7 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
       });
       setFormattedDate(formatted);
     }
-  }, [item.date]);
+  }, [item.date])
 
   const handleMouseEnter = (e) => {
     const rect = e.target.getBoundingClientRect();
@@ -177,12 +184,13 @@ export default function ReviewCard({item, page = null, bookmark = false}) {
                 onClick={() => {
                   if (!item.is_anonymous) {
                     router.push(`/user/${userId}`);
+                    window.location.href = `/user/${userId}`;
                   }
                 }}
               >
                 {item.name || item.username}
               </span>
-              {!item.is_anonymous && isHovered && (
+              {!item.is_anonymous && isHovered && isUserId && (
                 <div
                   style={{
                     position: "absolute",
