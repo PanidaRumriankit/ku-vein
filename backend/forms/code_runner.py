@@ -21,10 +21,10 @@ def drop_table():
 
 def add_demo_datas():
     d = DatabaseBackup()
-    d.exist_data_loader("inter")
-    d.insert_data_to_remote("inter")
-    d.exist_data_loader("normal")
-    d.insert_data_to_remote("normal")
+    # d.exist_data_loader("inter")
+    # d.insert_data_to_remote("inter")
+    # d.exist_data_loader("normal")
+    # d.insert_data_to_remote("normal")
     d.exist_data_loader("special")
     d.insert_data_to_remote("special")
 
