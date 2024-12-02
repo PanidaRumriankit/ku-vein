@@ -11,6 +11,7 @@ import {Button} from "@nextui-org/button";
 import BookmarkButton from "./bookmarkbutton.jsx";
 import GetUser from "../constants/getuser";
 import { questionURL } from "../constants/backurl.js";
+import MakeApiRequest from "../constants/getupvotestatus.js";
 
 export default function QuestionCard({item, bookmark}) {
   const router = useRouter();
@@ -39,6 +40,17 @@ export default function QuestionCard({item, bookmark}) {
       fetchUser();
     }
   }, [session]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session) {
+        const voteStatus = await MakeApiRequest(email, item.reviews_id);
+        setIsVoted(voteStatus);
+      }
+    };
+    fetchData().then();
+    setUpvoteCount(item.upvote || 0);
+  }, [session, email, item]);
 
   useEffect(() => {
     if (item.post_time) {

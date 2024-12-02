@@ -10,6 +10,7 @@ import {Button} from "@nextui-org/button";
 import { questionURL } from "../constants/backurl.js";
 import PopupProfile from "./popupprofile.jsx";
 import GetUser from "../constants/getuser";
+import MakeApiRequest from "../constants/getupvotestatus.js";
 
 export default function AnswerCard({item}) {
   const router = useRouter();
@@ -37,6 +38,17 @@ export default function AnswerCard({item}) {
       fetchUser();
     }
   }, [session]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session) {
+        const voteStatus = await MakeApiRequest(email, item.reviews_id);
+        setIsVoted(voteStatus);
+      }
+    };
+    fetchData().then();
+    setUpvoteCount(item.upvote || 0);
+  }, [session, email, item]);
 
   const handleUpvote = async () => {
     if (isLoading || !session) return;
