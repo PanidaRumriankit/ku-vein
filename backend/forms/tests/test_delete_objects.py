@@ -2,8 +2,10 @@ import json
 
 from django.test import TestCase
 
-from .set_up import course_set_up, review_set_up, user_set_up, note_setup, qa_setup
-from ..db_delete import CourseReviewDelete, NoteDelete, QuestionDelete, AnswerDelete
+from .set_up import course_set_up, review_set_up, user_set_up, note_setup, \
+    qa_setup
+from ..db_delete import CourseReviewDelete, NoteDelete, QuestionDelete, \
+    AnswerDelete
 from ..models import CourseReview, ReviewStat, Note, QA_Question, QA_Answer
 
 

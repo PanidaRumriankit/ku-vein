@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 import requests
 from decouple import config
 from ninja.responses import Response
-
 from .models import (CourseReview, UserData, ReviewStat,
                      QA_Question, QA_Answer, Note, UserProfile)
 
@@ -101,11 +100,21 @@ class ReviewPut(PutStrategy):
         try:
             review = CourseReview.objects.get(review_id=data['review_id'])
             review_dict = review.__dict__
+            review_stat = ReviewStat.objects.get(review=review)
+            review_stat_dict = review_stat.__dict__
 
-            review_dict['is_anonymous'] = (review.user.user_name != data['pen_name'])
+            review_dict['is_anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = review.user.user_name
+
+            edit_review = ['reviews', 'faculty', 'instructor']
 
             for key, val in data.items():
-                review_dict[key] = val
+                if key in edit_review:
+                    review_dict[key] = val
+                else:
+                    review_stat_dict[key] = val
                 logger.info(f"Review_id: {review.review_id} -- Changed their attribute {key} to {val}.")
 
         except KeyError:
@@ -115,8 +124,10 @@ class ReviewPut(PutStrategy):
             return Response({"error": "The Review with that ID does not exists."}, status=400)
 
         review.save()
+        review_stat.save()
         return Response({"success": "The requested user's attribute has been changed.",
-                         "review_data": [{key: val} for key, val in review.__dict__.items() if key[0] != '_']
+                         "review_data": [[{key: val} for key, val in review.__dict__.items() if key[0] != '_'],
+                                        [{key: val} for key, val in review_stat.__dict__.items() if key[0] != '_']]
                          }, status=200)
 
 
@@ -129,7 +140,10 @@ class NotePut(PutStrategy):
             note = Note.objects.get(note_id=data['note_id'])
             note_dict = note.__dict__
 
-            note_dict['anonymous'] = (note.user.user_name != data['pen_name'])
+            note_dict['anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = note.user.user_name
 
             for key, val in data.items():
                 note_dict[key] = val
@@ -156,7 +170,10 @@ class QA_QuestionPut(PutStrategy):
             question = QA_Question.objects.get(question_id=data['question_id'])
             question_dict = question.__dict__
 
-            question_dict['is_anonymous'] = (question.user.user_name != data['pen_name'])
+            question_dict['is_anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = question.user.user_name
 
             for key, val in data.items():
                 question_dict[key] = val
@@ -183,7 +200,11 @@ class QA_AnswerPut(PutStrategy):
         try:
             answer = QA_Answer.objects.get(answer_id=data['answer_id'])
             answer_dict = answer.__dict__
-            answer_dict['is_anonymous'] = (answer.user.user_name != data['pen_name'])
+            answer_dict['is_anonymous'] = (data['pen_name'] != "")
+
+            if not data['pen_name']:
+                data['pen_name'] = answer.user.user_name
+            
             for key, val in data.items():
                 answer_dict[key] = val
                 logger.info(f"Answer_id: {answer.answer_id} -- Changed their attribute {key} to {val}.")

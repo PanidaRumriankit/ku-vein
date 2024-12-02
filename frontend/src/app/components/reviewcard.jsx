@@ -8,7 +8,7 @@ import Rating from '@mui/material/Rating';
 import StarIcon from '@mui/icons-material/Star';
 
 import {upvoteURL} from "../constants/backurl.js"
-import {colorPallet, facultyColor} from "../constants";
+import {attendant, colorPallet, efforts, facultyColor} from "../constants";
 import MakeApiRequest from '../constants/getupvotestatus';
 import GetUserData from '../constants/getuser';
 import EditDelete from "../components/editdelete"
@@ -18,6 +18,7 @@ import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import {useTheme} from "next-themes";
+import Chip from "@mui/material/Chip";
 
 function RandomColor() {
   const index = Math.floor(Math.random() * colorPallet.length);
@@ -33,9 +34,11 @@ export default function ReviewCard({item, page = null}) {
   const [isVoted, setIsVoted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [formattedDate, setFormattedDate] = useState("");
-  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
+  const [popupPosition, setPopupPosition] = useState({x: 0, y: 0});
   const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUserId, setIsUserId] = useState(false);
+  const chips = [item.criteria, item.classes_type, attendant[item.attendances], "ยาก" + efforts[item.efforts]];
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
 
@@ -89,14 +92,14 @@ export default function ReviewCard({item, page = null}) {
     const fetchUserId = async () => {
       const data = await GetUserData(item.username, "user_name");
       setUserId(data.id);
-      console.log("User id:", data.id);
     };
-    fetchUserId();
+    fetchUserId().then(() => {
+    });
   }, [item.username]);
 
   useEffect(() => {
     if (userId) {
-      console.log("User id2:", userId.toString(), typeof userId.toString());
+      setIsUserId(true);
     }
   }, [userId]);
 
@@ -109,7 +112,7 @@ export default function ReviewCard({item, page = null}) {
       });
       setFormattedDate(formatted);
     }
-  }, [item.date]);
+  }, [item.date])
 
   const handleMouseEnter = (e) => {
     const rect = e.target.getBoundingClientRect();
@@ -138,6 +141,7 @@ export default function ReviewCard({item, page = null}) {
           </legend>
         )}
         <div className="text-black dark:text-white">
+          {/*rating stars and instructor*/}
           <div className="justify-between flex">
             <Rating value={item.ratings} readOnly
                     emptyIcon={<StarIcon
@@ -145,29 +149,46 @@ export default function ReviewCard({item, page = null}) {
             {item.professor &&
               <p className="text-gray-400">ผู้สอน: {item.professor}</p>}
           </div>
-          <br />
+          <br/>
+
+          {/*reviews*/}
           <p className="w-full break-all">
             {item.review_text}
           </p>
-          <br />
+
+          {/*tags*/}
+          <div className="my-2">
+            {chips.map((item, index) => (
+              <Chip
+                label={item}
+                key={index}
+                className="mr-2"
+                color="success"
+              />
+            ))}
+          </div>
+
+          {/*grades, date, authors*/}
           <div
-             className="flex items-center justify-between text-gray-400 text-right">
+            className="flex items-center justify-between text-gray-400 text-right">
             <p className="text-left w-20">เกรด: {item.grades}</p>
             <p
               className="text-right w-80 flex-wrap break-words">
               {formattedDate} โดย:{" "}
               <span
-                className={!item.is_anonymous ? "cursor-pointer": ""}
+                className={!item.is_anonymous ? "cursor-pointer" : ""}
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 onClick={() => {
                   if (!item.is_anonymous) {
-                    router.push(`/user/${userId}`);}
-                  }}
+                    router.push(`/user/${userId}`);
+                    window.location.href = `/user/${userId}`;
+                  }
+                }}
               >
                 {item.name || item.username}
               </span>
-              {!item.is_anonymous && isHovered && (
+              {!item.is_anonymous && isHovered && isUserId && (
                 <div
                   style={{
                     position: "absolute",
@@ -197,8 +218,10 @@ export default function ReviewCard({item, page = null}) {
             </div>
             <div className="text-right">
               {/*<ReportButton/>*/}
-              <ShareButton reviewId={item.reviews_id} reviewText={item.review_text} />
-              <EditDelete userName={item.username} reviewId={item.reviews_id} item={item}/>
+              <ShareButton reviewId={item.reviews_id}
+                           reviewText={item.review_text}/>
+              <EditDelete userName={item.username} reviewId={item.reviews_id}
+                          item={item}/>
             </div>
           </div>
         </div>

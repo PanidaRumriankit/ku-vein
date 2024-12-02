@@ -7,7 +7,7 @@ from datetime import datetime
 import pymysql
 from decouple import config
 
-from .models import CourseData, Inter
+from .models import CourseData, Inter, Special, Normal
 
 
 class MySQLConnection:
@@ -156,10 +156,10 @@ class DatabaseManagement:
     def add_course_data_to_sub(course_type: str):
         """Add datas to the Inter, Special, Normal tables."""
         filtered_data = CourseData.objects.filter(course_type=course_type)
-
+        course_type = {"inter": Inter, "special": Special, "normal": Normal}.get(course_type)
         for course in filtered_data:
             course_instance = CourseData.objects.get(id=course.id)
-            Inter.objects.create(course=course_instance)
+            course_type.objects.create(course=course_instance)
             print(f"Inserted: {course_instance}")
         print("Successfully Saved in MySQL server\n")
 
@@ -281,6 +281,8 @@ class DatabaseBackup:
                 print("Inserting...\n")
 
             self.con.connection.commit()
+
+            self.data = None
 
             print("Successfully Saved in MySQL server\n")
 

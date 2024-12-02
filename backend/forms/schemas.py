@@ -152,15 +152,16 @@ class ReviewPutSchema(Schema):
     """Schema for handling incoming review edit requests from users."""
     Authorization: str
     email: str
-    review_id: str
+    review_id: str|int
     course_type: str
     faculty: str
     reviews: str
+    instructor: str
+    # --ReviewStat--
     rating: float
     academic_year: int
     pen_name: str
     grade: str
-    instructor: str
     effort: int
     attendance: int
     scoring_criteria: str
@@ -254,7 +255,8 @@ class QuestionCreateSchema(Schema):
     question_title: str
     question_text: str
     faculty: str
-    course_id: str
+    course_id: str|int
+    course_type: str|int
     pen_name: str
 
 

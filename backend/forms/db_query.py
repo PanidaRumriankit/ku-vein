@@ -62,7 +62,6 @@ class SortReview(QueryFilterStrategy):
             courses_id=F('review__course__course_id'),
             courses_name=F('review__course__course_name'),
             faculties=F('review__faculty'),
-            username=F('review__user__user_name'),
             review_text=F('review__reviews'),
             ratings=F('rating'),
             efforts=F('effort'),
@@ -417,10 +416,10 @@ class NoteQuery(QueryFilterStrategy):
             note = Note.objects.all()
 
             if filter_key['course_id']:
-                course = CourseData.objects.get(
+                course = CourseData.objects.filter(
                     course_id=filter_key['course_id'],
                 )
-                note = note.filter(course=course)
+                note = note.filter(course__in=course)
 
             if filter_key['faculty']:
                 note = note.filter(faculty=filter_key['faculty'])

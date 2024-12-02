@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import {faculties} from "../constants/index";
 
 export default function ReviewFilters({ filters, setFilters, onApplyFilters, professors }) {

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Rating from '@mui/material/Rating';
 
+import Rating from '@mui/material/Rating';
+import Chip from "@mui/material/Chip";
 import StarIcon from "@mui/icons-material/Star";
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import LocalFireDepartmentOutlinedIcon
@@ -12,7 +13,7 @@ import {useEffect, useState} from "react";
 import Search from "../../components/search";
 import GradePieChart from "../../components/piechart";
 import MakeFilterApiRequest from "../../constants/getfilterreview";
-import {facultyColor} from "../../constants"
+import {attendant, facultyColor} from "../../constants"
 
 
 const example = {
@@ -37,6 +38,7 @@ export default function CourseLayout({children, params}) {
   const [color, setColor] = useState("");
   const [rating, setRating] = useState(0);
   const [effort, setEffort] = useState(0);
+  const [chips, setChips] = useState([]);
 
   useEffect(() => {
     const fetchReviews = async () => {
@@ -46,6 +48,7 @@ export default function CourseLayout({children, params}) {
         setColor(facultyColor[data.mode_faculty] || "transparent");
         setRating(data.avg_rating || 0);
         setEffort(data.avg_effort || 0);
+        setChips([data.mode_criteria, data.mode_class_type, attendant[data.mode_attendance]]);
       } catch (e) {
         console.error("Error fetching reviews", e);
       }
@@ -93,7 +96,6 @@ export default function CourseLayout({children, params}) {
             <div className="p-2 text-black dark:text-white">
               {stats.courses_name}
             </div>
-
           </div>
 
           <div className="mt-4">
@@ -129,11 +131,25 @@ export default function CourseLayout({children, params}) {
               <div>{stats.total_review || 0}</div>
             </div>
 
-            <div className="flex justify-between">
-              <div className="items-center text-center">
-                เกรด
+            <div className="flex items-center justify-center">
+              <div className="w-3/4 text-center">
                 <GradePieChart itemData={stats.total_grade}/>
               </div>
+            </div>
+
+            <div className="my-2">
+              {chips.length > 0 ? (
+                  chips.map((item, index) => (
+                    <Chip
+                      label={item}
+                      key={index}
+                      className="mx-1"
+                      color="success"
+                    />
+                  ))
+                ) : (
+                  <Chip label="ไม่มี"/>
+                )}
             </div>
             {/*  Add more field */}
           </div>

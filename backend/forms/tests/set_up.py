@@ -1,15 +1,12 @@
 """Set up function for every feature."""
 
 import os
-from datetime import datetime
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
-from ..db_query import QuestionQuery, AnswerQuery
 from ..db_post import HistoryPost
-from ..db_query import AnswerQuery
 from ..models import (CourseData, UserData,
                       CourseReview, ReviewStat,
                       UpvoteStat, FollowData,
