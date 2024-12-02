@@ -48,13 +48,6 @@ export default function AddAnswer() {
       console.error('Error:', error);
     }
   }
-
-  useEffect(() => {
-    if (session) {
-      const email = session.email;
-      setPostData((prevData) => ({ ...prevData, email }));
-    }
-  }, [session]);
   
   if (!session) return null;
 

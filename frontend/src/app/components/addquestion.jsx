@@ -8,7 +8,6 @@ import {useEffect, useState} from 'react';
 import {useSession} from 'next-auth/react';
 import {questionURL} from '../constants/backurl.js'
 import GetUser from '../constants/getuser';
-import Search from './search';
 import SearchFaculty from './searchfaculty';
 
 export default function AddQuestion({courseId}) {
@@ -73,8 +72,6 @@ export default function AddQuestion({courseId}) {
 
   useEffect(() => {
     if (session) {
-      const email = session.email;
-      setPostData((prevData) => ({ ...prevData, email }));
       fetchUser();
     }
   }, [session]);

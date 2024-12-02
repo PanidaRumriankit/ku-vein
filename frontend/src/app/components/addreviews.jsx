@@ -101,8 +101,6 @@ export default function AddReview() {
     return !(anonymous && !pen_name);
   };
 
-  // console.log("postData: ", postData);
-
   return (
     <div className="fixed bottom-4 right-4">
       <Popup
