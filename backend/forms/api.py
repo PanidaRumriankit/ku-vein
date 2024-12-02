@@ -53,10 +53,10 @@ def verify_google_token(auth: str, email: str) -> bool:
 def check_real_user(req_header):
     """Check is email of token equal to email send from frontend."""
     token, email = req_header.headers.get('Authorization'), req_header.headers.get('email')
-    if not token is None:
+    if token is None:
         return Response({"error": "Authorization header missing"}, status=401)
 
-    if not email is None:
+    if email is None:
         return Response({"error": "Email header is missing"}, status=401)
 
     try:
@@ -306,6 +306,9 @@ class UpvoteController(ControllerBase):
     @http_post("", response={200: UpvotePostSchema})
     def add_upvote(self, request, data: UpvotePostSchema):
         """Use for add new upvote."""
+        correct_user = check_real_user(request)
+        if isinstance(correct_user, Response):
+            return correct_user
         strategy = PostFactory.get_post_strategy("review_upvote")
         return strategy.post_data(data.model_dump())
 
