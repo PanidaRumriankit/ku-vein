@@ -44,8 +44,8 @@ class UpvotePostTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content),
-                         {"error": "User data or Review Data are missing "
-                                   "from the response body."})
+                         {"error": "UserData or ReviewData are missing "
+                                   "from the request body."})
 
     def test_post_missing_user_data_response(self):
         """Missing UserData should return error response."""
@@ -55,8 +55,8 @@ class UpvotePostTests(TestCase):
 
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content),
-                         {"error": "User data or Review Data are missing "
-                                   "from the response body."})
+                         {"error": "UserData or ReviewData are missing "
+                                   "from the request body."})
 
     def test_post_review_not_in_db_response(self):
         """Course that not in the database shouldn't be able to have a like."""
