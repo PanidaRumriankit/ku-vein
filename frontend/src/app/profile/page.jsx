@@ -36,6 +36,7 @@ export default function Profile() {
   const [reviews, setReviews] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [bookmarkQuestion, setBookmarkQuestion] = useState([]);
+  const [bookmarkReview, setBookmarkReview] = useState([]);
 
   const handleColorClick = () => setColorPickerOpen(true);
   const closeColorPicker = () => setColorPickerOpen(false);
@@ -104,11 +105,18 @@ export default function Profile() {
     console.log('Received bookmarks questions:', bookmarkQuestion);
   };
 
+  const fetchBookmarkReviews = async () => {
+    const response = await GetBookmarks(session.email);
+    setBookmarkReview(response.filter((bookmark) => bookmark.data_type === "review"));
+    console.log('Received bookmarks reviews:', bookmarkReview);
+  }
+
   useEffect(() => {
     if (session) {
       fetchReviews();
       fetchQuestions();
       fetchBookmarkQuestions();
+      fetchBookmarkReviews();
     }
   }, [session]);
 
@@ -158,11 +166,14 @@ export default function Profile() {
         return (
           <div className="flex flex-col maw-w-6xl w-full space-y-4">
             {filteredReviews.length > 0 ? (
-              filteredReviews.map((item, index) => (
-                <ReviewCard item={item} key={index} page={"page"} />
-              ))
+              filteredReviews.map((item, index) => {
+                const isBookmarked = bookmarkReview.some(
+                  (bookmark) => bookmark.object_id == item.reviews_id
+                );
+                return <ReviewCard item={item} key={index} bookmark={isBookmarked} />
+              })
             ) : (
-              <p className="text-green-400 text-center">No review currently</p>
+              <p className="text-green-400 text-center">No Q&A currently</p>
             )}
           </div>
         );
