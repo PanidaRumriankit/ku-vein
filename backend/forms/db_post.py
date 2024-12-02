@@ -378,14 +378,16 @@ class QuestionPost(PostStrategy):
         """Add new QA_Question to the database."""
         try:
             user = UserData.objects.get(user_id=data['user_id'])
-            course = CourseData.objects.get(course_id=data['course_id'])
-            qa_instance = QA_Question.objects.create(question_text=data['question_text'],
-                                       user=user,
-                                       faculty=data['faculty'],
-                                       course=course,
-                                       pen_name=data['pen_name'],
-                                       is_anonymous=(user.user_name != data['pen_name']),
-                                       )
+            course = CourseData.objects.filter(course_id=data['course_id']).first()
+            qa_instance = QA_Question.objects.create(
+                                    question_title=data['question_title'],
+                                    question_text=data['question_text'],
+                                    user=user,
+                                    faculty=data['faculty'],
+                                    course=course,
+                                    pen_name=data['pen_name'],
+                                    is_anonymous=(user.user_name != data['pen_name']),
+                                    )
 
             HistoryPost().post_data({
                 "email": user.email,
