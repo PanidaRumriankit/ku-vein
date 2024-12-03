@@ -44,15 +44,15 @@ export default function QuestionCard({item, bookmark}) {
     }
   }, [session]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (session) {
-  //       setIsVoted(userId == item.users);
-  //     }
-  //   };
-  //   fetchData().then();
-  //   setUpvoteCount(item.upvote || 0);
-  // }, [session, email, item]);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session) {
+        setIsVoted(userId);
+      }
+    };
+    fetchData().then();
+    setUpvoteCount(item.upvote || 0);
+  }, [session, email, item]);
 
   useEffect(() => {
     if (item.post_time) {
@@ -168,7 +168,6 @@ export default function QuestionCard({item, bookmark}) {
 {/*           </Button> */}
 {/*           </div> */}
           <div className="text-right" onClick={(e) => e.stopPropagation()}>
-            <ShareButton/>
             <BookmarkButton id={item.questions_id} type="qa" bookmark={bookmark}/>
             <EDQuestion userName={item.username} questionId={String(item.questions_id)} item={item} />
           </div>

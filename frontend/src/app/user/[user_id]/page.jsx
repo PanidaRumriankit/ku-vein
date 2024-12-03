@@ -6,6 +6,8 @@ import {useEffect, useMemo, useState} from 'react';
 import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
+import MakeApiRequest from "../../constants/getreview";
+import ReviewCard from "../../components/reviewcard";
 import {followURL} from '../../constants/backurl';
 import Image from 'next/image';
 
@@ -20,6 +22,15 @@ export default function UserProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [followerCount, setFollowerCount] = useState(0);
+  const [reviews, setReviews] = useState([]);
+
+  const fetchReviews = async () => {
+    setReviews(await MakeApiRequest('latest'));
+  };
+
+  const getFilteredReviews = () => {
+    return reviews.filter((review) => (review.username === userData.user_name && review.is_anonymous === false));
+  };
   const [followers, setFollowers] = useState([]);
   const email = useMemo(() => session?.email || null, [session]);
   const idToken = useMemo(() => session?.idToken || session?.accessToken || null, [session]);
@@ -83,6 +94,7 @@ export default function UserProfile() {
         setFollowers(data.follower);
       }
       FetchData();
+      fetchReviews();
     }
   }, [session, user_id, router]);
 
@@ -143,6 +155,32 @@ export default function UserProfile() {
       console.error('Error:', error);
     }
   }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case "reviews":
+        const filteredReviews = getFilteredReviews();
+        return (
+          <>
+            {filteredReviews.length > 0 ? (
+              filteredReviews.map((item, index) => (
+                <ReviewCard item={item} key={index} page={"page"} />
+              ))
+            ) : (
+              <p className="text-green-400 text-center">No review currently</p>
+            )}
+          </>
+        );
+      case "posts":
+        return <p>Here are your posts!</p>;
+      case "replies":
+        return <p>Here are your replies!</p>;
+      case "notes":
+        return <p>Here are your notes!</p>;
+      default:
+        return <p>Select a section to view its content.</p>;
+    }
+  };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white dark:bg-black">
@@ -313,6 +351,9 @@ export default function UserProfile() {
             {tab}
           </button>
         ))}
+      </div>
+      <div className="w-full max-w-6xl mt-4 flex justify-center">
+        {renderContent()}
       </div>
     </div>
   );
