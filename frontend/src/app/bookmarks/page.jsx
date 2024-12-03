@@ -16,13 +16,13 @@ export default function Home() {
   const [questions, setQuestions] = useState([]);
   const [bookmarkReview, setBookmarkReview] = useState([]);
   const [bookmarkPost, setBookmarkPost] = useState([]);
-  const [bookmarkNote, setBookmarkNote] = useState([]);
+  // const [bookmarkNote, setBookmarkNote] = useState([]);
 
   const fetchBookmarks = async () => {
     const response = await GetBookmarks(session.email);
     setBookmarkReview(response.filter((bookmark) => bookmark.data_type === "review"));
     setBookmarkPost(response.filter((bookmark) => bookmark.data_type === "qa"));
-    setBookmarkNote(response.filter((bookmark) => bookmark.data_type === "note"));
+    // setBookmarkNote(response.filter((bookmark) => bookmark.data_type === "note"));
     // console.log('Received bookmarks review:', bookmarkReview);
   }
 
