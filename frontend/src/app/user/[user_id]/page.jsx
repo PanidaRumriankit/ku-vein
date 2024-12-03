@@ -8,8 +8,11 @@ import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
 import MakeApiRequest from "../../constants/getreview";
 import ReviewCard from "../../components/reviewcard";
-import {followURL} from '../../constants/backurl';
+import {followURL, questionURL, noteURL} from '../../constants/backurl';
 import Image from 'next/image';
+import GetBookmarks from '../../constants/getbookmarks';
+import QuestionCard from '../../components/questioncard';
+import NoteBox from '../../components/notebox';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -23,14 +26,72 @@ export default function UserProfile() {
   const [loading, setLoading] = useState(true);
   const [followerCount, setFollowerCount] = useState(0);
   const [reviews, setReviews] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [note, setNote] = useState([]);
+  const [bookmarkQuestion, setBookmarkQuestion] = useState([]);
+  const [bookmarkReview, setBookmarkReview] = useState([]);
+  const [bookmarkNote, setBookmarkNote] = useState([]);
 
   const fetchReviews = async () => {
     setReviews(await MakeApiRequest('latest'));
   };
 
+  const fetchQuestions = async () => {
+    try {
+      const response = await fetch(questionURL + '?mode=latest');
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setQuestions(data);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+
+  const fetchNotes = async () => {
+    try {
+      const response = await fetch(noteURL + '?email=' + session.user.email);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setNote(data);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
+  };
+
   const getFilteredReviews = () => {
     return reviews.filter((review) => (review.username === userData.user_name && review.is_anonymous === false));
   };
+
+  const getFilteredQuestions = () => {
+    return questions.filter((question) => question.username === userData.user_name && question.anonymous === false);
+  };
+
+  const getFilteredNotes = () => {
+    return note.filter((note) => note.username === userData.user_name && note.is_anonymous === false);
+  };
+
+  const fetchBookmarkQuestions = async () => {
+    const response = await GetBookmarks(session.email);
+    setBookmarkQuestion(response.filter((bookmark) => bookmark.data_type === "qa"));
+    // console.log('Received bookmarks questions:', bookmarkQuestion);
+  };
+
+  const fetchBookmarkReviews = async () => {
+    const response = await GetBookmarks(session.email);
+    setBookmarkReview(response.filter((bookmark) => bookmark.data_type === "review"));
+    // console.log('Received bookmarks reviews:', bookmarkReview);
+  }
+
+  const fetchBookmarkNotes = async () => {
+    const response = await GetBookmarks(session.email);
+    setBookmarkNote(response.filter((bookmark) => bookmark.data_type === "note"));
+    // console.log('Received bookmarks reviews:', bookmarkReview);
+  }
+
   const [followers, setFollowers] = useState([]);
   const email = useMemo(() => session?.email || null, [session]);
   const idToken = useMemo(() => session?.idToken || session?.accessToken || null, [session]);
@@ -43,7 +104,7 @@ export default function UserProfile() {
           GetUserData(session.email, "email"),
         ]);
 
-        console.log('Fetched personData:', personData);
+        // console.log('Fetched personData:', personData);
         setPersonalData(personData);
 
         if (user_id == personData.id) {
@@ -114,6 +175,17 @@ export default function UserProfile() {
     }
   }, [followers]);
 
+  useEffect(() => {
+    if (session) {
+      fetchReviews();
+      fetchQuestions();
+      fetchNotes();
+      fetchBookmarkQuestions();
+      fetchBookmarkReviews();
+      fetchBookmarkNotes();
+    }
+  }, [session]);
+
   if (loading || !userData) return <p>Loading...</p>;
   
   async function followUser() {
@@ -161,22 +233,52 @@ export default function UserProfile() {
       case "reviews":
         const filteredReviews = getFilteredReviews();
         return (
-          <>
+          <div className="flex flex-col maw-w-6xl w-full space-y-4">
             {filteredReviews.length > 0 ? (
-              filteredReviews.map((item, index) => (
-                <ReviewCard item={item} key={index} page={"page"} />
-              ))
+              filteredReviews.map((item, index) => {
+                const isBookmarked = bookmarkReview.some(
+                  (bookmark) => bookmark.object_id == item.reviews_id
+                );
+                return <ReviewCard item={item} key={index} bookmark={isBookmarked} />
+              })
             ) : (
-              <p className="text-green-400 text-center">No review currently</p>
+              <p className="text-green-400 text-center">No Reviews currently</p>
             )}
-          </>
+          </div>
         );
       case "posts":
-        return <p>Here are your posts!</p>;
-      case "replies":
-        return <p>Here are your replies!</p>;
+        const filteredQuestions = getFilteredQuestions();
+        return (
+          <div className="flex flex-col maw-w-6xl w-full space-y-4">
+            {filteredQuestions.length > 0 ? (
+              filteredQuestions.map((item, index) => {
+                const isBookmarked = bookmarkQuestion.some(
+                  (bookmark) => bookmark.object_id === item.questions_id
+                );
+                return <QuestionCard item={item} key={index} bookmark={isBookmarked} page="profile" />
+              })
+            ) : (
+              <p className="text-green-400 text-center">No Question currently</p>
+            )}
+          </div>
+        );
       case "notes":
-        return <p>Here are your notes!</p>;
+        const filteredNotes = getFilteredNotes();
+        // console.log("Filtered Notes: ", filteredNotes);
+        return (
+          <div className="flex flex-col maw-w-6xl w-full space-y-4">
+            {filteredNotes.length > 0 ? (
+              filteredNotes.map((item, index) => {
+                const isBookmarked = bookmarkNote.some(
+                  (bookmark) => bookmark.object_id == item.pdf_id
+                );
+                return <NoteBox userName={item.username} data={item} key={index}/>
+              })
+            ) : (
+              <p className="text-green-400 text-center">No Notes currently</p>
+            )}
+          </div>
+        );
       default:
         return <p>Select a section to view its content.</p>;
     }
@@ -342,7 +444,7 @@ export default function UserProfile() {
 
       {/* Tab Navigation */}
       <div className="flex justify-around w-3/4 mt-6 border-b-2 border-gray-200">
-        {['Reviews', 'Posts', 'Replies', 'Notes'].map(tab => (
+        {['Reviews', 'Posts', 'Notes'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab.toLowerCase())}
