@@ -91,11 +91,11 @@ export default function Profile() {
   };
 
   const getFilteredReviews = () => {
-    return reviews.filter((review) => review.username === putData.user_name);
+    return reviews.filter((review) => review.username === putData.user_name && review.anonymous === false);
   };
 
   const getFilteredQuestions = () => {
-    return questions.filter((question) => question.username === putData.user_name);
+    return questions.filter((question) => question.username === putData.user_name && question.anonymous === false);
   };
   console.log("Questions: ", questions);
   
