@@ -23,7 +23,8 @@ from .schemas import (ReviewPostSchema, ReviewPutSchema,
                       QuestionCreateSchema, QuestionPutSchema,
                       QuestionDeleteSchema, QuestionUpvoteSchema,
                       AnswerCreateSchema, AnswerPutSchema,
-                      AnswerDeleteSchema, AnswerUpvoteSchema)
+                      AnswerDeleteSchema, AnswerUpvoteSchema,
+                      QA_Upvote_Get)
 from .db_management import DatabaseBackup
 from .db_post import PostFactory
 from .db_query import QueryFactory, InterQuery
@@ -52,6 +53,7 @@ def verify_google_token(auth: str, email: str) -> bool:
 
 def check_real_user(req_header):
     """Check is email of token equal to email send from frontend."""
+    # TODO: remove comment
     # token, email = req_header.headers.get('Authorization'), req_header.headers.get('email')
     # if token is None:
     #     return Response({"error": "Authorization header missing"}, status=401)
@@ -378,6 +380,20 @@ class QuestionController(ControllerBase):
             return correct_user
         strategy = PutFactory.get_put_strategy("question")
         return strategy.put_data(data.model_dump())
+    
+    @http_get("/upvote")
+    def is_q_upvote(self, request, email: str, qa_id: int):
+        """Check is the user already like the question."""
+        if not email:
+            return Response({"error": "Missing email parameter."},
+                            status=401)
+        elif not qa_id:
+            return Response({"error": "Missing qa_id parameter."},
+                            status=401)
+
+        strategy = QueryFactory.get_query_strategy("question_upvote")
+        return check_response(
+            strategy.get_data({"email": email, "qa_id": qa_id}))
 
     @http_post("/upvote")
     def upvote_question(self, request, data: QuestionUpvoteSchema):
@@ -434,6 +450,20 @@ class AnswerController(ControllerBase):
         strategy = DeleteFactory.get_delete_strategy("answer")
         return strategy.delete_data(data.model_dump())
     
+    @http_get("/upvote")
+    def is_a_upvote(self, request, email: str, qa_id: int):
+        """Check is the user already like the answer."""
+        if not email:
+            return Response({"error": "Missing email parameter."},
+                            status=401)
+        elif not qa_id:
+            return Response({"error": "Missing qa_id parameter."},
+                            status=401)
+
+        strategy = QueryFactory.get_query_strategy("answer_upvote")
+        return check_response(
+            strategy.get_data({"email": email, "qa_id": qa_id}))
+
     @http_post("/upvote")
     def upvote_answer(self, request, data: AnswerUpvoteSchema):
         """Use for creating new upvote for Q&A."""
