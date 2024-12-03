@@ -436,6 +436,7 @@ class NoteQuery(QueryFilterStrategy):
                 faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
+                username=F('user__user_name'),
                 name=F('pen_name'),
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
@@ -662,7 +663,7 @@ class HistoryQuery(QueryFilterStrategy):
     def get_data(self, target_user: str, is_other_user: bool):
         """Get the History from the database filter by user."""
         try:
-            user = UserData.objects.get(email=target_user)
+            user = UserData.objects.get(user_id=target_user)
 
             if is_other_user:
                 history = History.objects.filter(
