@@ -91,9 +91,10 @@ export default function Profile() {
   };
 
   const getFilteredReviews = () => {
-    return reviews.filter((review) => review.username === putData.user_name && review.anonymous === false);
+    return reviews.filter((review) => review.username === putData.user_name && review.is_anonymous === false);
   };
 
+  // console.log("Reviews: ", reviews);
   const getFilteredQuestions = () => {
     return questions.filter((question) => question.username === putData.user_name && question.anonymous === false);
   };
@@ -173,7 +174,7 @@ export default function Profile() {
                 return <ReviewCard item={item} key={index} bookmark={isBookmarked} />
               })
             ) : (
-              <p className="text-green-400 text-center">No Q&A currently</p>
+              <p className="text-green-400 text-center">No Reviews currently</p>
             )}
           </div>
         );
