@@ -18,9 +18,10 @@ import Popup from 'reactjs-popup';
 import MakeApiRequest from "../constants/getreview";
 import ReviewCard from "../components/reviewcard";
 import SessionTimeout from '../components/sessiontimeout';
-import {questionURL} from '../constants/backurl';
+import {questionURL, noteURL} from '../constants/backurl';
 import GetBookmarks from '../constants/getbookmarks';
 import QuestionCard from '../components/questioncard';
+import NoteBox from '../components/notebox';
 
 export default function Profile() {
   const router = useRouter();
@@ -35,8 +36,10 @@ export default function Profile() {
   const [colorBg, setColorBg] = useState('');
   const [reviews, setReviews] = useState([]);
   const [questions, setQuestions] = useState([]);
+  const [note, setNote] = useState([]);
   const [bookmarkQuestion, setBookmarkQuestion] = useState([]);
   const [bookmarkReview, setBookmarkReview] = useState([]);
+  const [bookmarkNote, setBookmarkNote] = useState([]);
 
   const handleColorClick = () => setColorPickerOpen(true);
   const closeColorPicker = () => setColorPickerOpen(false);
@@ -90,6 +93,32 @@ export default function Profile() {
     }
   };
 
+  const fetchNotes = async () => {
+    try {
+      const response = await fetch(noteURL + '?email=' + session.user.email);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      setNote(data);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
+  };
+
+  // console.log("THis is note: ", noteURL + '?email=' + session.user.email);
+
+  // useEffect(() => {
+  //   const fetchNotes = async () => {
+  //     const data = await MakeNoteApiRequest(session.user.email);
+  //     setNote(data);
+  //   };
+
+  //   fetchNotes().then(() => {
+  //     console.log("Fetch note success")
+  //   });
+  // }, [session]);
+
   const getFilteredReviews = () => {
     return reviews.filter((review) => review.username === putData.user_name && review.is_anonymous === false);
   };
@@ -99,25 +128,37 @@ export default function Profile() {
     return questions.filter((question) => question.username === putData.user_name && question.anonymous === false);
   };
   // console.log("Questions: ", questions);
+
+  const getFilteredNotes = () => {
+    return note.filter((note) => note.username === putData.user_name && note.is_anonymous === false);
+  };
   
   const fetchBookmarkQuestions = async () => {
     const response = await GetBookmarks(session.email);
     setBookmarkQuestion(response.filter((bookmark) => bookmark.data_type === "qa"));
-    console.log('Received bookmarks questions:', bookmarkQuestion);
+    // console.log('Received bookmarks questions:', bookmarkQuestion);
   };
 
   const fetchBookmarkReviews = async () => {
     const response = await GetBookmarks(session.email);
     setBookmarkReview(response.filter((bookmark) => bookmark.data_type === "review"));
-    console.log('Received bookmarks reviews:', bookmarkReview);
+    // console.log('Received bookmarks reviews:', bookmarkReview);
+  }
+
+  const fetchBookmarkNotes = async () => {
+    const response = await GetBookmarks(session.email);
+    setBookmarkNote(response.filter((bookmark) => bookmark.data_type === "note"));
+    // console.log('Received bookmarks reviews:', bookmarkReview);
   }
 
   useEffect(() => {
     if (session) {
       fetchReviews();
       fetchQuestions();
+      fetchNotes();
       fetchBookmarkQuestions();
       fetchBookmarkReviews();
+      fetchBookmarkNotes();
     }
   }, [session]);
 
@@ -160,6 +201,8 @@ export default function Profile() {
     }
   }
 
+  console.log('Note: ', note);
+
   const renderContent = () => {
     switch (activeTab) {
       case "reviews":
@@ -195,7 +238,22 @@ export default function Profile() {
           </div>
         );
       case "notes":
-        return <p>No Notes currently</p>;
+        const filteredNotes = getFilteredNotes();
+        // console.log("Filtered Notes: ", filteredNotes);
+        return (
+          <div className="flex flex-col maw-w-6xl w-full space-y-4">
+            {filteredNotes.length > 0 ? (
+              filteredNotes.map((item, index) => {
+                const isBookmarked = bookmarkNote.some(
+                  (bookmark) => bookmark.object_id == item.pdf_id
+                );
+                return <NoteBox userName={item.username} data={item} key={index}/>
+              })
+            ) : (
+              <p className="text-green-400 text-center">No Notes currently</p>
+            )}
+          </div>
+        );
       default:
         return <p>Select a section to view its content.</p>;
     }
