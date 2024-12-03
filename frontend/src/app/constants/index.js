@@ -4,6 +4,10 @@ const usersDropdown = [
     label: "Profile",
   },
   {
+    key: "bookmarks",
+    label: "Bookmarks"
+  },
+  {
     key: "logout",
     label: "Logout",
   },
