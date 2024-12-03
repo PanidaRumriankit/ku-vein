@@ -187,7 +187,7 @@ export default function Profile() {
                 const isBookmarked = bookmarkQuestion.some(
                   (bookmark) => bookmark.object_id === item.questions_id
                 );
-                return <QuestionCard item={item} key={index} bookmark={isBookmarked} />
+                return <QuestionCard item={item} key={index} bookmark={isBookmarked} page="profile" />
               })
             ) : (
               <p className="text-green-400 text-center">No Q&A currently</p>

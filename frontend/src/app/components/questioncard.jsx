@@ -14,7 +14,7 @@ import { questionURL } from "../constants/backurl.js";
 import MakeApiRequest from "../constants/getupvotestatus.js";
 import EDQuestion from "./edquestion.jsx";
 
-export default function QuestionCard({item, bookmark}) {
+export default function QuestionCard({item, bookmark, page=null}) {
   const router = useRouter();
   const pathname = usePathname();
   const {data: session} = useSession();
@@ -117,7 +117,11 @@ export default function QuestionCard({item, bookmark}) {
     <div className="mx-auto my-4 w-[32rem] max-w-4xl text-black dark:text-white">
       <fieldset
         className="border border-gray-300 rounded-md p-6 w-full bg-white dark:bg-black shadow-lg cursor-pointer hover:shadow-xl"
-        onClick={() => router.push(`${pathname}/${item.questions_id}`)}
+        onClick={() => {
+          if (!page) {
+            router.push(`${pathname}/${item.questions_id}`)
+          }
+          }}
       >
         <div className="flex justify-between">
           <h3 className="text-xl font-semibold break-all">{item.questions_title}</h3>

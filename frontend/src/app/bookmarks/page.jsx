@@ -88,7 +88,7 @@ export default function Home() {
           <>
             {filteredQuestions.length > 0 ? (
               filteredQuestions.map((item, index) => (
-                <QuestionCard item={item} key={index} bookmark={true} />
+                <QuestionCard item={item} key={index} bookmark={true} page="bookmarks" />
               ))
             ) : (
               <p className="text-green-400 text-center">No Q&A currently</p>
