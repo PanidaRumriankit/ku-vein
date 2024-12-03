@@ -157,7 +157,6 @@ export default function AnswerCard({item}) {
 {/*             </Button> */}
 {/*             </div> */}
             <div className="text-right">
-              <ShareButton/>
               <EDAnswer userName={item.username} answerId={String(item.answers_id)} item={item} />
             </div>
           </div>

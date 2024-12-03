@@ -168,7 +168,6 @@ export default function QuestionCard({item, bookmark}) {
 {/*           </Button> */}
 {/*           </div> */}
           <div className="text-right" onClick={(e) => e.stopPropagation()}>
-            <ShareButton/>
             <BookmarkButton id={item.questions_id} type="qa" bookmark={bookmark}/>
             <EDQuestion userName={item.username} questionId={String(item.questions_id)} item={item} />
           </div>
