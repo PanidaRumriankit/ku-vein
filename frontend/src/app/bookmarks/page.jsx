@@ -131,14 +131,6 @@ export default function Home() {
           >
             Posts
           </li>
-          <li
-            className={`p-2 cursor-pointer ${
-              selectedSection === "Notes" ? "bg-blue-300 dark:bg-blue-500 dark:text-white" : "hover:bg-gray-400 dark:hover:bg-gray-700"
-            }`}
-            onClick={() => setSelectedSection("Notes")}
-          >
-            Notes
-          </li>
         </ul>
       </div>
 
