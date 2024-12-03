@@ -147,13 +147,13 @@ export default function QuestionText({ item, bookmark }) {
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between -ml-4 mt-2 -mb-4">
-            <div className="text-left text-2xl flex space-x-4" onClick={(e) => {e.stopPropagation()}}>
-              <Button variant="light" onClick={handleUpvote}
-                      disabled={!session || isLoading}>
-                <ThumbUpTwoToneIcon
-                  color={isVoted ? "primary" : ""}/> {upvoteCount}
-              </Button>
-            </div>
+{/*             <div className="text-left text-2xl flex space-x-4" onClick={(e) => {e.stopPropagation()}}> */}
+{/*               <Button variant="light" onClick={handleUpvote} */}
+{/*                       disabled={!session || isLoading}> */}
+{/*                 <ThumbUpTwoToneIcon */}
+{/*                   color={isVoted ? "primary" : ""}/> {upvoteCount} */}
+{/*               </Button> */}
+{/*             </div> */}
           <div className="text-right" onClick={(e) => e.stopPropagation()}>
             <ShareButton/>
             <BookmarkButton id={item.questions_id} type="qa" bookmark={bookmark}/>

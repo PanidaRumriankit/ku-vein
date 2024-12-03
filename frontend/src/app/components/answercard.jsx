@@ -151,11 +151,11 @@ export default function AnswerCard({item}) {
           </div>
           <hr/>
           <div className="text-gray-300 flex justify-between mt-2 -mb-4">
-            <div className="text-left text-2xl flex space-x-4">
-            <Button variant="light" onClick={handleUpvote} disabled={!session || isLoading}>
-              <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount}
-            </Button>
-            </div>
+{/*             <div className="text-left text-2xl flex space-x-4"> */}
+{/*             <Button variant="light" onClick={handleUpvote} disabled={!session || isLoading}> */}
+{/*               <ThumbUpTwoToneIcon color={isVoted ? "primary" : ""} /> {upvoteCount} */}
+{/*             </Button> */}
+{/*             </div> */}
             <div className="text-right">
               <ShareButton/>
               <EDAnswer userName={item.username} answerId={String(item.answers_id)} item={item} />

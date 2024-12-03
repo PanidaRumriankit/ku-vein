@@ -75,7 +75,7 @@ export default function NoteBox({userName, data}) {
       <p><strong>{data.faculties}</strong></p>
       <p><strong>หลักสูตร:</strong> {data.courses_type}</p>
       <p><strong>
-        โดย:</strong> {data.name} ({data.is_anonymous ? "Anonymous" : "Public"})
+        โดย:</strong> {data.name || data.username} ({data.is_anonymous ? "Anonymous" : "Public"})
       </p>
       <p><strong>ชื่อไฟล์:</strong> {pdfName}</p>
 
