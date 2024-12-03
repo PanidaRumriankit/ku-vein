@@ -266,6 +266,11 @@ class QuestionUpvoteSchema(Schema):
     question_id: str
     user_id: str
 
+class QA_Upvote_Get(Schema):
+    """Schema for getting Upvote for Q&A."""
+    qa_id: str|int
+    user_id: str|int
+
 
 class AnswerCreateSchema(Schema):
     """

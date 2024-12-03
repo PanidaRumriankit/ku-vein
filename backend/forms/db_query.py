@@ -16,7 +16,8 @@ from ninja.responses import Response
 
 from .models import (Inter, ReviewStat, Special,
                      Normal, CourseData, UserData, FollowData,
-                     QA_Question, UserProfile,
+                     QA_Question, QA_Question_Upvote, QA_Answer, QA_Answer_Upvote,
+                     UserProfile,
                      Note, UpvoteStat, CourseReview,
                      BookMark, History)
 
@@ -515,6 +516,44 @@ class QuestionQuery(QueryFilterStrategy):
                      'earliest': 'posted_time',
                      'upvote': '-upvote'}
         return list(data.order_by(sort_mode[mode]))
+    
+
+class QuestionUpvoteGet(QueryStrategy):
+    def get_data(self, data: dict):
+        """
+        Check is the user already like the question.
+
+        :return
+        true if user already like the question
+        false if user doesn't like the question
+        """
+        try:
+            question = QA_Question.objects.get(
+                question_id=data['qa_id']
+            )
+            user = UserData.objects.get(email=data['email'])
+
+            QA_Question_Upvote.objects.get(question=question, user=user)
+
+            return True
+
+        except KeyError:
+            return Response({"error": "Missing review_id or"
+                                      " email from response body"}, status=400)
+
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question"
+                                      " isn't in the database."}, status=401)
+
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user"
+                                      " isn't in the database."}, status=401)
+
+        except QA_Question_Upvote.DoesNotExist:
+            return False
+
+        return False
 
 
 class AnswerQuery(QueryFilterStrategy):
@@ -556,6 +595,44 @@ class AnswerQuery(QueryFilterStrategy):
                      'earliest': 'posted_time',
                      'upvote': '-upvote'}        
         return list(answer.order_by(sort_mode[mode]))
+    
+
+class AnswerUpvoteGet(QueryStrategy):
+    def get_data(self, data: dict):
+        """
+        Check is the user already like the answer.
+
+        :return
+        true if user already like the answer
+        false if user doesn't like the answer
+        """
+        try:
+            answer = QA_Answer.objects.get(
+                question_id=data['qa_id']
+            )
+            user = UserData.objects.get(email=data['email'])
+
+            QA_Answer_Upvote.objects.get(answer=answer, user=user)
+
+            return True
+
+        except KeyError:
+            return Response({"error": "Missing review_id or"
+                                      " email from response body"}, status=400)
+
+        except QA_Question.DoesNotExist:
+            return Response({"error": "This question"
+                                      " isn't in the database."}, status=401)
+
+
+        except UserData.DoesNotExist:
+            return Response({"error": "This user"
+                                      " isn't in the database."}, status=401)
+
+        except QA_Question_Upvote.DoesNotExist:
+            return False
+
+        return False
 
 
 class BookMarkQuery(QueryFilterStrategy):
@@ -621,6 +698,7 @@ class QueryFactory:
         "none": CourseQuery,
         "user": UserQuery,
         "qa_question": QuestionQuery,
+        "question_upvote": QuestionUpvoteGet,
         "qa_answer": AnswerQuery,
         "note": NoteQuery,
         "upvote": UpvoteQuery,
