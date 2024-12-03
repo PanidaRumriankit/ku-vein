@@ -120,17 +120,17 @@ export default function Profile() {
   // }, [session]);
 
   const getFilteredReviews = () => {
-    return reviews.filter((review) => review.username === putData.user_name && review.is_anonymous === false);
+    return reviews.filter((review) => review.username === putData.user_name);
   };
 
   // console.log("Reviews: ", reviews);
   const getFilteredQuestions = () => {
-    return questions.filter((question) => question.username === putData.user_name && question.anonymous === false);
+    return questions.filter((question) => question.username === putData.user_name);
   };
   // console.log("Questions: ", questions);
 
   const getFilteredNotes = () => {
-    return note.filter((note) => note.username === putData.user_name && note.is_anonymous === false);
+    return note.filter((note) => note.username === putData.user_name);
   };
   
   const fetchBookmarkQuestions = async () => {
