@@ -194,7 +194,7 @@ export default function Profile() {
           </div>
         );
       case "notes":
-        return <p>Here are your notes!</p>;
+        return <p>No Notes currently</p>;
       default:
         return <p>Select a section to view its content.</p>;
     }
