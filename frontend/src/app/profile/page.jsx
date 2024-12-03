@@ -56,7 +56,7 @@ export default function Profile() {
     if (session) {
       async function FetchData() {
         const userData = await GetUserData(session.user.email, "email");
-        console.log('userData: ', userData);
+        // console.log('userData: ', userData);
         setPutData({
           user_id: userData.id,
           user_name: userData.username,
@@ -201,7 +201,7 @@ export default function Profile() {
     }
   }
 
-  console.log('Note: ', note);
+  // console.log('Note: ', note);
 
   const renderContent = () => {
     switch (activeTab) {
