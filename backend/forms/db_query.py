@@ -585,7 +585,7 @@ class HistoryQuery(QueryFilterStrategy):
     def get_data(self, target_user: str, is_other_user: bool):
         """Get the History from the database filter by user."""
         try:
-            user = UserData.objects.get(email=target_user)
+            user = UserData.objects.get(user_id=target_user)
 
             if is_other_user:
                 history = History.objects.filter(
