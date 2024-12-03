@@ -121,6 +121,10 @@ export default function QuestionCard({item, bookmark, page=null}) {
           if (!page) {
             router.push(`${pathname}/${item.questions_id}`)
           }
+          else {
+            const targetUrl = `https://ku-vein.vercel.app/course/${item.courses}/qanda/${item.questions_id}`;
+            router.push(targetUrl);
+          }
           }}
       >
         <div className="flex justify-between">
