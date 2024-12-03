@@ -435,6 +435,7 @@ class NoteQuery(QueryFilterStrategy):
                 faculties=F('faculty'),
                 courses_type=F('course__course_type'),
                 u_id=F('user__user_id'),
+                username=F('user__user_name'),
                 name=F('pen_name'),
                 is_anonymous=F('anonymous'),
                 pdf_name=F('file_name'),
