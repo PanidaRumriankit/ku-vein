@@ -11,6 +11,11 @@ from .models import (CourseReview, UserData, ReviewStat,
 
 logger = logging.getLogger("user_logger")
 
+def normalize_data(data):
+    for key, val in data.items():
+        if val == 'none':
+            data[key] = ""
+    return data
 
 class PutStrategy(ABC):
     """Abstract base class for update the database."""
@@ -96,6 +101,7 @@ class ReviewPut(PutStrategy):
 
     def put_data(self, data: dict):
         """Change the data in the UserData."""
+        data = normalize_data(data)
 
         try:
             review = CourseReview.objects.get(review_id=data['review_id'])
@@ -136,6 +142,8 @@ class NotePut(PutStrategy):
 
     def put_data(self, data: dict):
         """Change the data in the Note."""
+        data = normalize_data(data)
+
         try:
             note = Note.objects.get(note_id=data['note_id'])
             note_dict = note.__dict__
@@ -166,6 +174,8 @@ class QA_QuestionPut(PutStrategy):
 
     def put_data(self, data: dict):
         """Change the data in the QA_Question."""
+        data = normalize_data(data)
+
         try:
             question = QA_Question.objects.get(question_id=data['question_id'])
             question_dict = question.__dict__
@@ -196,6 +206,7 @@ class QA_AnswerPut(PutStrategy):
 
     def put_data(self, data: dict):
         """Change the data in the QA_Answer."""
+        data = normalize_data(data)
 
         try:
             answer = QA_Answer.objects.get(answer_id=data['answer_id'])
