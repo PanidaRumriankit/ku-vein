@@ -44,15 +44,15 @@ export default function QuestionCard({item, bookmark}) {
     }
   }, [session]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     if (session) {
-  //       setIsVoted(userId == item.users);
-  //     }
-  //   };
-  //   fetchData().then();
-  //   setUpvoteCount(item.upvote || 0);
-  // }, [session, email, item]);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session) {
+        setIsVoted(userId);
+      }
+    };
+    fetchData().then();
+    setUpvoteCount(item.upvote || 0);
+  }, [session, email, item]);
 
   useEffect(() => {
     if (item.post_time) {
