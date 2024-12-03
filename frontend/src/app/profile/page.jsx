@@ -97,7 +97,7 @@ export default function Profile() {
   const getFilteredQuestions = () => {
     return questions.filter((question) => question.username === putData.user_name && question.anonymous === false);
   };
-  console.log("Questions: ", questions);
+  // console.log("Questions: ", questions);
   
   const fetchBookmarkQuestions = async () => {
     const response = await GetBookmarks(session.email);
