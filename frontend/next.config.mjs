@@ -6,7 +6,7 @@ const nextConfig = {
       NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     },
     images: {
-      domains: ['lh3.googleusercontent.com'],
+      domains: ['lh3.googleusercontent.com', 'i.imgur.com'],
     },
   };
   

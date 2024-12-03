@@ -5,6 +5,7 @@ from datetime import datetime
 
 from django.test import TestCase
 
+from django.db.models import F
 from .set_up import course_set_up, user_set_up
 from ..db_post import ReviewPost
 from ..models import CourseReview, ReviewStat
@@ -41,8 +42,8 @@ class ReviewPostTests(TestCase):
         response = self.review_post.post_data(review_data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content),
-                         {'error': 'User data or Course Data'
-                                   ' are missing from the response body.'})
+                         {'error': 'UserData or CourseData'
+                                   ' are missing from the request body.'})
 
     def test_error_response_from_missing_course_data(self):
         """Missing course_id, course_type and faculty key."""
@@ -64,8 +65,8 @@ class ReviewPostTests(TestCase):
         response = self.review_post.post_data(review_data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content),
-                         {'error': 'User data or Course Data'
-                                   ' are missing from the response body.'})
+                         {'error': 'UserData or CourseData'
+                                   ' are missing from the request body.'})
 
     def test_error_response_from_missing_pen_name(self):
         """Missing pen_name key."""
@@ -291,6 +292,104 @@ class ReviewPostTests(TestCase):
         review = CourseReview.objects.first()
 
         self.assertFalse(review.anonymous)
+
+    def test_post_4_time(self):
+        """User can't post the review with the same course_id more than 3 times."""
+        test_data_1 = {
+            "email": "solaire@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "Praise the Sun! The teachings"
+                       " on miracles here are both uplifting and inspiring.",
+            "rating": 4.5,
+            "academic_year": 0,
+            "pen_name": "Yes",
+            "grade": "A",
+            "instructor": None,
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "work-base",
+            "class_type": "online",
+        }
+
+        test_data_2 = {
+            "email": "solaire@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "An enlightening course with a deep focus on practical miracle applications.",
+            "rating": 4.8,
+            "academic_year": 1,
+            "pen_name": "Yes",
+            "grade": "A+",
+            "instructor": "Lord Gwyn",
+            "effort": 5,
+            "attendance": 5,
+            "scoring_criteria": "research-based",
+            "class_type": "hybrid",
+        }
+
+        test_data_3 = {
+            "email": "solaire@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "A solid introduction to miracles, but lacked depth in some areas.",
+            "rating": 3.9,
+            "academic_year": 2,
+            "pen_name": "No",
+            "grade": "B",
+            "instructor": "Allfather Lloyd",
+            "effort": 3,
+            "attendance": 3,
+            "scoring_criteria": "exam-based",
+            "class_type": "in-person",
+        }
+
+        test_data_4 = {
+            "email": "solaire@gmail.com",
+            "course_id": "1",
+            "course_type": "Priest",
+            "faculty": "Miracle",
+            "reviews": "A good course, but the online format made it hard to stay engaged.",
+            "rating": 4.0,
+            "academic_year": 3,
+            "pen_name": "Yes",
+            "grade": "B+",
+            "instructor": "Sunlight Warrior",
+            "effort": 4,
+            "attendance": 4,
+            "scoring_criteria": "project-based",
+            "class_type": "online",
+        }
+
+        # Post the first three reviews
+        for i, post_data in enumerate([test_data_1, test_data_2, test_data_3]):
+            self.review_post.post_data(post_data)  # Assume this posts the data to the database
+            result_data = CourseReview.objects.filter(
+                user__email=post_data['email'], course__course_id=post_data['course_id']
+            ).values(
+                user_email=F('user__email'),  # Use an alias to avoid conflicts
+                course_id_alias=F('course__course_id'),  # Alias for `course_id`
+                review_data=F('reviews')
+            )[i]
+
+            self.assertEqual({
+                "user_email": post_data['email'],  # Adjust keys to match alias
+                "course_id_alias": post_data['course_id'],
+                "review_data": post_data['reviews'],
+            }, result_data)
+
+        # Attempt to post the fourth review
+        response = self.review_post.post_data(test_data_4)
+
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(
+            json.loads(response.content),
+            {"error": "User can't create the review of same course_id more than 3 times."}
+        )
+
 
 
 

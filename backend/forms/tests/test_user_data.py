@@ -2,12 +2,13 @@
 
 import json
 
+from django.test import TestCase
+
 from .set_up import user_set_up
-from ..models import UserData
-from ..db_query import UserQuery
 from ..db_post import UserDataPost
 from ..db_put import UserDataPut
-from django.test import TestCase
+from ..db_query import UserQuery
+from ..models import UserData
 
 
 class UserDataPostTests(TestCase):
@@ -22,7 +23,7 @@ class UserDataPostTests(TestCase):
         response = self.user.post_data({})
         self.assertEqual(response.status_code, 400)
         self.assertEqual(json.loads(response.content),
-                         {"error": "email is missing from the response body."})
+                         {"error": "email is missing from the request body."})
 
     def test_response_success(self):
         """Created User successes."""
@@ -91,6 +92,7 @@ class UserQueryTest(TestCase):
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
+            "profile_link": None,
             "following": [],
             "follower": [],
             "follower_count": 0,
@@ -110,6 +112,7 @@ class UserQueryTest(TestCase):
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
+            "profile_link": None,
             "following": [],
             "follower": [],
             "follower_count": 0,
@@ -129,6 +132,7 @@ class UserQueryTest(TestCase):
             "username": user.user_name,
             "desc": user.description,
             "pf_color": user.profile_color,
+            "profile_link": None,
             "following": [],
             "follower": [],
             "follower_count": 0,

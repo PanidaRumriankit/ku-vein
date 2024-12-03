@@ -36,10 +36,9 @@ class EarliestReviewTests(TestCase):
         """Test to check is GET method return all demand field."""
         expected_keys = [
             'reviews_id', 'courses_id', 'courses_name', 'faculties',
-            'username',
             'review_text', 'ratings', 'year', 'name', 'date', 'grades',
-            'professor',
-            'criteria', 'type', 'upvote'
+            'professor', 'attendances', 'efforts',
+            'criteria', 'classes_type', 'courses_type', 'upvote'
         ]
 
         for key in expected_keys:
@@ -79,10 +78,9 @@ class LatestReviewTests(TestCase):
         """Test to check is GET method return all demand field."""
         expected_keys = [
             'reviews_id', 'courses_id', 'courses_name', 'faculties',
-            'username',
             'review_text', 'ratings', 'year', 'name', 'date', 'grades',
-            'professor',
-            'criteria', 'type', 'upvote'
+            'professor', 'attendances', 'efforts',
+            'criteria', 'classes_type', 'courses_type', 'upvote'
         ]
 
         for key in expected_keys:
@@ -120,10 +118,9 @@ class UpvoteReviewTests(TestCase):
         """Test to check is GET method return all demand field."""
         expected_keys = [
             'reviews_id', 'courses_id', 'courses_name', 'faculties',
-            'username',
             'review_text', 'ratings', 'year', 'name', 'date', 'grades',
-            'professor',
-            'criteria', 'type', 'upvote'
+            'professor', 'attendances', 'efforts',
+            'criteria', 'classes_type', 'courses_type', 'upvote'
         ]
 
         for key in expected_keys:

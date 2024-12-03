@@ -2,11 +2,14 @@
 "use client";
 
 import {useParams, useRouter} from 'next/navigation';
-import {useEffect, useState, useMemo} from 'react';
+import {useEffect, useMemo, useState} from 'react';
 import {useSession} from "next-auth/react";
 import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
-import { followURL } from '../../constants/backurl';
+import MakeApiRequest from "../../constants/getreview";
+import ReviewCard from "../../components/reviewcard";
+import {followURL} from '../../constants/backurl';
+import Image from 'next/image';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -19,6 +22,16 @@ export default function UserProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [followerCount, setFollowerCount] = useState(0);
+  const [reviews, setReviews] = useState([]);
+
+  const fetchReviews = async () => {
+    setReviews(await MakeApiRequest('latest'));
+  };
+
+  const getFilteredReviews = () => {
+    return reviews.filter((review) => (review.username === userData.user_name && review.is_anonymous === false));
+  };
+  const [followers, setFollowers] = useState([]);
   const email = useMemo(() => session?.email || null, [session]);
   const idToken = useMemo(() => session?.idToken || session?.accessToken || null, [session]);
 
@@ -45,6 +58,7 @@ export default function UserProfile() {
           user_type: "student",
           description: data.desc,
           profile_color: data.pf_color,
+          profile_link: data.profile_link,
           follower_count: data.follower_count,
           following_count: data.following_count,
           following: data.following,
@@ -53,6 +67,7 @@ export default function UserProfile() {
 
         setLoading(false);
         setFollowerCount(data.follower_count);
+        setFollowers(data.follower);
       }
       FetchData();
     }
@@ -67,6 +82,7 @@ export default function UserProfile() {
           user_type: "student",
           description: data.desc,
           profile_color: data.pf_color,
+          profile_link: data.profile_link,
           follower_count: data.follower_count,
           following_count: data.following_count,
           following: data.following,
@@ -75,8 +91,10 @@ export default function UserProfile() {
 
         setLoading(false);
         setFollowerCount(data.follower_count);
+        setFollowers(data.follower);
       }
       FetchData();
+      fetchReviews();
     }
   }, [session, user_id, router]);
 
@@ -84,11 +102,17 @@ export default function UserProfile() {
     if (session && userData && personalData) {
       // Check if the user is already following the target user
       setIsFollowing(userData.follower.some(follower => follower.username === personalData.username));
-      // console.log('User Data:', userData);
+      console.log('User Data:', userData);
       // console.log('Personal Data:', personalData);
       // console.log('isfollowing:', isFollowing);
     }
   }, [session, userData, personalData]);
+
+  useEffect(() => {
+    if (followers) {
+      console.log('Followers:', followers);
+    }
+  }, [followers]);
 
   if (loading || !userData) return <p>Loading...</p>;
   
@@ -132,6 +156,32 @@ export default function UserProfile() {
     }
   }
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "reviews":
+        const filteredReviews = getFilteredReviews();
+        return (
+          <>
+            {filteredReviews.length > 0 ? (
+              filteredReviews.map((item, index) => (
+                <ReviewCard item={item} key={index} page={"page"} />
+              ))
+            ) : (
+              <p className="text-green-400 text-center">No review currently</p>
+            )}
+          </>
+        );
+      case "posts":
+        return <p>Here are your posts!</p>;
+      case "replies":
+        return <p>Here are your replies!</p>;
+      case "notes":
+        return <p>Here are your notes!</p>;
+      default:
+        return <p>Select a section to view its content.</p>;
+    }
+  };
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-white dark:bg-black">
       {/* Profile Header */}
@@ -143,7 +193,21 @@ export default function UserProfile() {
         ></div>
 
         {/* Profile Picture */}
-        <div className="absolute top-40 left-1/2 transform -translate-x-1/2 w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div>
+        <div className="absolute top-40 left-1/2 transform -translate-x-1/2">
+          {userData.profile_link ? (
+            <div className="relative w-[100px] h-[100px] rounded-full overflow-hidden">
+              <Image
+                src={userData.profile_link}
+                alt="Profile"
+                layout="fill"
+                objectFit="cover"
+                className="border-gray-500 border-2"
+              />
+            </div>
+          ) : (
+            <div className="w-24 h-24 bg-gray-300 rounded-full border-gray-500 border-2"></div>
+          )}
+        </div>
 
         <div className="mt-16 mb-24">
           <h1 className="text-2xl font-semibold">{userData.user_name}</h1>
@@ -162,14 +226,34 @@ export default function UserProfile() {
                   <h2 className="text-lg font-semibold mb-4">Following</h2>
                   {userData.following.length > 0 ? (
                     <ul>
-                      {userData.following.map((followedUser, index) => (
+                      {userData.following.map((followingUser, index) => (
                         <li
                           key={index}
                           className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
-                          // onClick={() => {router.push(`/user/${user_id}`);}}
-                          >
-                          <p className="font-medium">{followedUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followedUser.desc}</p>
+                          onClick={() => {router.push(`/user/${followingUser.follow_id}`);}}
+                        >
+                          <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
+                            {/* Profile Image */}
+                            {followingUser.profile_link ? (
+                              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-500">
+                                <Image
+                                  src={followingUser.profile_link}
+                                  alt="Profile"
+                                  width={100}
+                                  height={100}
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-[5.5rem] h-16 rounded-full bg-gray-300 border-2 border-gray-500"></div>
+                            )}
+
+                            {/* Username and Description */}
+                            <div className="flex flex-col">
+                              <p className="font-medium">{followingUser.username}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">{followingUser.desc}</p>
+                            </div>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -189,12 +273,39 @@ export default function UserProfile() {
               {close => (
                 <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
                   <h2 className="text-lg font-semibold mb-4">Followers</h2>
-                  {userData.follower.length > 0 ? (
+                  {followers.length > 0 ? (
                     <ul>
-                      {userData.follower.map((followeredUser, index) => (
-                        <li key={index} className="py-2 border-b border-gray-300 dark:border-gray-600">
-                          <p className="font-medium">{followeredUser.username}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
+                      {followers.map((followeredUser, index) => (
+                        <li
+                          key={index}
+                          className="py-2 border-b border-gray-300 dark:border-gray-600 cursor-pointer"
+                          onClick={() => {
+                            const navigationId = followeredUser.follow_id || followeredUser.id;
+                            router.push(`/user/${navigationId}`);
+                          }}
+                        >
+                          <div className="flex items-center space-x-4 ml-28 transform -translate-x-1/2">
+                            {/* Profile Image */}
+                            {followeredUser.profile_link ? (
+                              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-500">
+                                <Image
+                                  src={followeredUser.profile_link}
+                                  alt="Profile"
+                                  width={100}
+                                  height={100}
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-[5.5rem] h-16 rounded-full bg-gray-300 border-2 border-gray-500"></div>
+                            )}
+
+                            {/* Username and Description */}
+                            <div className="flex flex-col">
+                              <p className="font-medium">{followeredUser.username}</p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">{followeredUser.desc}</p>
+                            </div>
+                          </div>
                         </li>
                       ))}
                     </ul>
@@ -216,8 +327,9 @@ export default function UserProfile() {
                     : 'text-white bg-[#4ECDC4] hover:bg-[#44b3ab]'
                 }`}
                 onClick={() => {
-                  setIsFollowing((prev) => !prev);
                   setFollowerCount((prev) => (isFollowing ? prev - 1 : prev + 1));
+                  setFollowers((prev) => (isFollowing ? prev.filter((follower) => follower.username !== personalData.username) : [...prev, personalData]));
+                  setIsFollowing((prev) => !prev);
                   followUser();
                 }}
               >
@@ -239,6 +351,9 @@ export default function UserProfile() {
             {tab}
           </button>
         ))}
+      </div>
+      <div className="w-full max-w-6xl mt-4 flex justify-center">
+        {renderContent()}
       </div>
     </div>
   );

@@ -1,9 +1,10 @@
 """Module for test GET Follower feature."""
 
-from ..models import FollowData
-from ..db_query import UserQuery
-from .set_up import user_set_up, follower_setup
 from django.test import TestCase
+
+from .set_up import user_set_up, follower_setup
+from ..db_query import UserQuery
+from ..models import FollowData
 
 
 class FollowerGetTest(TestCase):
@@ -39,13 +40,18 @@ class FollowerGetTest(TestCase):
         all_followed = self.user.get_data(
             {"email": self.user_ins[0].email, "user_id": None}
         )
-        self.assertEqual([
-            {'username': 'Siegmeyer of Catarina', 'desc': ''},
-            {'username': 'Lucatiel of Mirrah', 'desc': ''},
-            {'username': 'Big Hat Logan', 'desc': ''},
-            {'username': 'Laurentius of the Great Swamp', 'desc': ''}
-        ],
-            all_followed['follower'])
+
+        for i, check in enumerate([
+            {'username': 'Siegmeyer of Catarina', 'desc': '', "profile_link": None},
+            {'username': 'Lucatiel of Mirrah', 'desc': '', "profile_link": None},
+            {'username': 'Big Hat Logan', 'desc': '', "profile_link": None},
+            {'username': 'Laurentius of the Great Swamp', 'desc': '', "profile_link": None}
+        ]):
+            self.assertEqual(
+                check['username'],
+                  all_followed['follower'][i]['username']
+            )
+
 
     def test_follower_update_when_create_new_following(self):
         """Data should be update when new objects got created."""

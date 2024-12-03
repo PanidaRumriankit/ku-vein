@@ -16,11 +16,11 @@ class HistoryQueryTests(TestCase):
         self.user = user_set_up()
         self.review, self.data = review_set_up()
         self.this_user = self.history_query.get_data(
-            target_user=self.user[0].email,
+            target_user=self.user[0].user_id,
             is_other_user=False
         )
         self.other_user = self.history_query.get_data(
-            target_user=self.user[0].email,
+            target_user=self.user[0].user_id,
             is_other_user=True
         )
 

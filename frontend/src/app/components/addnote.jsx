@@ -11,7 +11,6 @@ import {noteURL} from "../constants/backurl";
 import {courseType} from "../constants";
 import FacultyDropDown from "../components/facultydropdown";
 
-import {useRouter} from "next/navigation";
 import {useSession} from "next-auth/react";
 import {useState} from "react";
 
@@ -31,8 +30,8 @@ export default function AddNote({courseId}) {
   const [isPenName, setIsPenName] = useState(false);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const {data: session} = useSession();
-  const route = useRouter();
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -74,6 +73,8 @@ export default function AddNote({courseId}) {
   const handlePDFUpload = async () => {
     setError("");
     setMessage("");
+    setIsLoading(true);
+    console.log("isLoading:", isLoading, "selectedFile:", selectedFile);
 
     if (!session?.email || !(session.idToken || session.accessToken)) {
       setError('Unauthorized: Please log in first.');
@@ -89,14 +90,6 @@ export default function AddNote({courseId}) {
       setError("Failed to process the selected file. Please try again.");
       return;
     }
-    console.log("POST Data",
-      "\nemail:", session.email,
-      "\ncourse_id:", courseId,
-      "\nfaculty:", Array.from(selectedFaculty)[0],
-      "\ncourse_type:", selectedCourseType,
-      "\nfile:", base64File,
-      "\nfile_name", selectedFileName,
-      "\npen_name:", selectedPenName || "",);
 
     try {
       const response = await fetch(noteURL, {
@@ -120,16 +113,18 @@ export default function AddNote({courseId}) {
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Error", response.status, errorText);
-        setError(errorText);
+        setError("Unable to send a file please use pdf format file less than 20MB");
       } else {
         const data = await response.json();
         console.log('Success:', data);
-        route.refresh();
+        window.location.reload();
       }
     } catch (err) {
       console.error('Error:', err);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   if (!session) return null;
 
@@ -201,11 +196,11 @@ export default function AddNote({courseId}) {
             <Button
               type="light"
               onClick={handlePDFUpload}
-              disabled={!selectedFile}
-              color="primary"
+              disabled={!selectedFile || isLoading}
+              color={(selectedFile && !isLoading) ? "primary": "default"}
               className="w-30 justify-end"
             >
-              Upload
+              {isLoading ? "Uploading..." : "Upload"}
             </Button>
           </div>
 
