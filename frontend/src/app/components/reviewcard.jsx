@@ -1,6 +1,7 @@
 "use client";
 
 import ShareButton from "./sharebutton.jsx";
+import BookmarkButton from "./bookmarkbutton.jsx";
 import PopupProfile from "./popupprofile.jsx";
 
 import ThumbUpTwoToneIcon from "@mui/icons-material/ThumbUpTwoTone";
@@ -25,7 +26,7 @@ function RandomColor() {
   return colorPallet[index];
 }
 
-export default function ReviewCard({item, page = null}) {
+export default function ReviewCard({item, page = null, bookmark = false}) {
   const router = useRouter();
   const {data: session} = useSession();
   const {theme} = useTheme();
@@ -41,6 +42,7 @@ export default function ReviewCard({item, page = null}) {
   const chips = [item.criteria, item.classes_type, attendant[item.attendances], "ยาก: " + efforts[item.efforts]];
   const idToken = session?.idToken || session?.accessToken;
   const email = session?.email;
+  // console.log('Bookmark:', bookmark);
 
   const handleUpvote = async () => {
     if (isLoading || !email || !idToken) return;
@@ -218,10 +220,9 @@ export default function ReviewCard({item, page = null}) {
             </div>
             <div className="text-right">
               {/*<ReportButton/>*/}
-              <ShareButton reviewId={item.reviews_id}
-                           reviewText={item.review_text}/>
-              <EditDelete userName={item.username} reviewId={item.reviews_id}
-                          item={item}/>
+              <ShareButton reviewId={item.reviews_id} reviewText={item.review_text} />
+              <BookmarkButton id={item.reviews_id} type="review" bookmark={bookmark}/>
+              <EditDelete userName={item.username} reviewId={item.reviews_id} item={item}/>
             </div>
           </div>
         </div>

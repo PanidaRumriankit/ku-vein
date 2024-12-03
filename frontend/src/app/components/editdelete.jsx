@@ -177,7 +177,7 @@ export default function EditDelete({userName, reviewId, item}) {
             className={textClasses}
             onClick={() => setIsEditOpen(true)}
           >
-            Edit Review
+            แก้ไขรีวิว
           </DropdownItem>
           <DropdownItem
             key="delete"
@@ -187,7 +187,7 @@ export default function EditDelete({userName, reviewId, item}) {
               className={cn(iconClasses, "text-danger")}/>}
             onClick={handleDelete}
           >
-            Delete Review
+            ลบรีวิว
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>

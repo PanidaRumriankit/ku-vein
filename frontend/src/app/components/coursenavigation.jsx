@@ -11,6 +11,7 @@ import {usePathname} from "next/navigation";
 export default function CourseNavigationBar({courseId}) {
   const pathname = usePathname(); // get current URL path
   const isActive = (route) => pathname === route;
+  const isActivate = (path) => pathname.startsWith(path);
 
   return (
     <div className="flex text-black dark:text-white">
@@ -30,7 +31,7 @@ export default function CourseNavigationBar({courseId}) {
               <Link
                 href={`/course/${courseId}/qanda`}
                 color="foreground"
-                className={isActive(`/course/${courseId}/qanda`) ? "text-blue-500 font-bold" : ""}
+                className={isActivate(`/course/${courseId}/qanda`) ? "text-blue-500 font-bold" : ""}
               >
                 Q&A
               </Link>
@@ -39,7 +40,7 @@ export default function CourseNavigationBar({courseId}) {
               <Link
                 href={`/course/${courseId}/note`}
                 color="foreground"
-                className={isActive(`/course/${courseId}/note`) ? "text-blue-500 font-bold" : ""}
+                className={isActivate(`/course/${courseId}/note`) ? "text-blue-500 font-bold" : ""}
               >
                 Notes
               </Link>

@@ -28,8 +28,8 @@ export default function AddReview() {
     instructor: '',
     effort: 3,
     attendance: 3,
-    scoring_criteria: '',
-    class_type: '',
+    scoring_criteria: 'work-based',
+    class_type: 'onsite',
   });
   const [hoveredEffort, setHoveredEffort] = useState(3);
   const [clickedEffort, setClickedEffort] = useState(3);
@@ -89,18 +89,17 @@ export default function AddReview() {
       academic_year,
       instructor,
       pen_name,
-      anonymous
+      scoring_criteria,
+      attendance,
+      effort,
+      class_type,
     } = postData;
 
-    if (!email || !course_id || !reviews || !academic_year || !instructor) {
+    if (!email || !course_id || !reviews || !academic_year || !instructor || !scoring_criteria || !attendance || !effort || !class_type) {
       return false;
     }
-
     return !(anonymous && !pen_name);
-
   };
-
-  // console.log("postData: ", postData);
 
   return (
     <div className="fixed bottom-4 right-4">

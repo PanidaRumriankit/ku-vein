@@ -52,21 +52,22 @@ def verify_google_token(auth: str, email: str) -> bool:
 
 def check_real_user(req_header):
     """Check is email of token equal to email send from frontend."""
-    token, email = req_header.headers.get('Authorization'), req_header.headers.get('email')
-    if token is None:
-        return Response({"error": "Authorization header missing"}, status=401)
+    # token, email = req_header.headers.get('Authorization'), req_header.headers.get('email')
+    # if token is None:
+    #     return Response({"error": "Authorization header missing"}, status=401)
 
-    if email is None:
-        return Response({"error": "Email header is missing"}, status=401)
+    # if email is None:
+    #     return Response({"error": "Email header is missing"}, status=401)
 
-    try:
-        if verify_google_token(token, email):
-            return True
-        else:
-            return Response({"error": "Invalid token"}, status=403)
+    # try:
+    #     if verify_google_token(token, email):
+    #         return True
+    #     else:
+    #         return Response({"error": "Invalid token"}, status=403)
 
-    except (IndexError, KeyError):
-        return Response({"error": "Malformed or invalid token"}, status=401)
+    # except (IndexError, KeyError):
+    #     return Response({"error": "Malformed or invalid token"}, status=401)
+    pass
 
 def check_response(data):
     """
