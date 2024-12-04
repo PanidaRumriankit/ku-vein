@@ -10,7 +10,7 @@ from ninja.responses import Response
 from .models.review_model import CourseReview, ReviewStat
 from .models.user_model import UserData, UserProfile
 from .models.qa_model import QA_Question, QA_Answer
-
+from .models.note_model import Note
 
 logger = logging.getLogger("user_logger")
 

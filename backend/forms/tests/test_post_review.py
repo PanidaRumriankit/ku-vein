@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.db.models import F
 from .set_up import course_set_up, user_set_up
 from ..db_post import ReviewPost
-from ..models import CourseReview, ReviewStat
+from ..models.review_model import CourseReview, ReviewStat
 
 
 class ReviewPostTests(TestCase):

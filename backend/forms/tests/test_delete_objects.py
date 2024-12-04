@@ -6,7 +6,9 @@ from .set_up import course_set_up, review_set_up, user_set_up, note_setup, \
     qa_setup
 from ..db_delete import CourseReviewDelete, NoteDelete, QuestionDelete, \
     AnswerDelete
-from ..models import CourseReview, ReviewStat, Note, QA_Question, QA_Answer
+from ..models.review_model import CourseReview, ReviewStat
+from ..models.note_model import Note
+from ..models.qa_model import QA_Question, QA_Answer
 
 
 class CourseReviewDeleteTests(TestCase):

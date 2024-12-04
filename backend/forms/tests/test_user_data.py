@@ -8,7 +8,7 @@ from .set_up import user_set_up
 from ..db_post import UserDataPost
 from ..db_put import UserDataPut
 from ..db_query import UserQuery
-from ..models import UserData
+from ..models.user_model import UserData
 
 
 class UserDataPostTests(TestCase):

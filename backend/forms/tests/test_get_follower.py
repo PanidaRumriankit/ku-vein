@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from .set_up import user_set_up, follower_setup
 from ..db_query import UserQuery
-from ..models import FollowData
+from ..models.user_model import FollowData
 
 
 class FollowerGetTest(TestCase):

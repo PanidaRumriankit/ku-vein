@@ -14,7 +14,7 @@ from google.cloud import storage
 from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
-from .models.course_data_model import Inter, Normal, Special
+from .models.course_data_model import CourseData, Inter, Normal, Special
 from .models.review_model import CourseReview, ReviewStat, UpvoteStat
 from .models.qa_model import QA_Question, QA_Answer
 from .models.note_model import Note
