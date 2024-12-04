@@ -13,12 +13,13 @@ from google.cloud import storage
 from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
-from .models import (CourseReview, UserData,
-                     CourseData, ReviewStat,
-                     UpvoteStat, FollowData, Note,
-                     QA_Question, QA_Answer,
-                     QA_Question_Upvote, QA_Answer_Upvote,
-                     BookMark, History, UserProfile)
+from .models.course_data_model import CourseData
+from .models.review_model import CourseReview, ReviewStat, UpvoteStat
+from .models.note_model import Note
+from .models.bookmark_history_model import BookMark, History
+from .models.user_model import UserData, FollowData, UserProfile
+from .models.qa_model import QA_Question, QA_Answer, QA_Question_Upvote, QA_Answer_Upvote
+
 
 logger = logging.getLogger("user_logger")
 
