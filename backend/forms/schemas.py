@@ -4,10 +4,10 @@ from typing import Optional
 
 from ninja import ModelSchema, Schema
 
-from .models import CourseData, UserData, CourseReview
-from .models import Inter, Normal, Special
-from .models import Note
-
+from .models.course_data_model import CourseData, Inter, Normal, Special
+from .models.user_model import UserData
+from .models.review_model import CourseReview
+from .models.note_model import Note
 
 class CourseDataSchema(ModelSchema):
     """
