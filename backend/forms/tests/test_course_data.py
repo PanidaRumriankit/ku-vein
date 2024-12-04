@@ -1,6 +1,6 @@
 """Module for test everything that relate to CourseData Table."""
 
-from ..models import Inter, Special, Normal
+from ..models.course_data_model import Inter, Special, Normal
 from ..db_query import InterQuery, NormalQuery, SpecialQuery, CourseQuery
 from .set_up import course_set_up
 from django.test import TestCase
