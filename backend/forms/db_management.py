@@ -8,8 +8,7 @@ from MySQLdb import IntegrityError
 import pymysql
 from decouple import config
 
-from .models import CourseData, Inter, Special, Normal
-
+from .models.course_data_model import CourseData, Inter, Special, Normal
 
 class MySQLConnection:
     """Class for connect to the MySQL server."""
