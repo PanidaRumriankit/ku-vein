@@ -2,7 +2,7 @@
 
 import json
 from ..db_post import FollowPost
-from ..models import FollowData
+from ..models.user_model import FollowData
 from django.db.models import F
 from .set_up import user_set_up
 from django.test import TestCase

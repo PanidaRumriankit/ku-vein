@@ -7,7 +7,7 @@ from django.test import TestCase
 from .set_up import (user_set_up, review_set_up,
                      course_set_up, note_setup)
 from ..db_post import BookMarkPost
-from ..models import BookMark
+from ..models.bookmark_history_model import BookMark
 
 
 class BookMarkPostTests(TestCase):

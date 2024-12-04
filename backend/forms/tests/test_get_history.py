@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from .set_up import course_set_up, review_set_up, user_set_up
 from ..db_query import HistoryQuery
-from ..models import History
+from ..models.bookmark_history_model import History
 
 
 class HistoryQueryTests(TestCase):

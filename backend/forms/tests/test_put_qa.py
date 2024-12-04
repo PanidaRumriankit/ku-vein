@@ -5,8 +5,10 @@ from django.test import TestCase
 
 from .set_up import qa_setup
 from ..db_put import QA_QuestionPut, QA_AnswerPut, UserDataPut
-from ..models import QA_Question, QA_Answer, UserData, CourseData
 
+from ..models.qa_model import QA_Question, QA_Answer
+from ..models.user_model import UserData
+from ..models.course_data_model import CourseData
 
 class QuestionPutTest(TestCase):
     """Testcases for PUT request to question."""

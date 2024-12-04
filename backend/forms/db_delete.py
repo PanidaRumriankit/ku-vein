@@ -5,11 +5,9 @@ from typing import Any
 
 from ninja.responses import Response
 
-from .models import (Note,
-                     CourseReview,
-                     QA_Question,
-                     QA_Answer)
-
+from .models.note_model import Note
+from .models.review_model import CourseReview
+from .models.qa_model import QA_Question, QA_Answer
 
 class DeleteStrategy(ABC):
     """Abstract base class for make the query with condition."""

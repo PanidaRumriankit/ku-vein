@@ -4,7 +4,8 @@ from django.test import TestCase
 
 from .set_up import (user_set_up, course_set_up)
 from ..db_post import ReviewPost, HistoryPost
-from ..models import History, CourseReview
+from ..models.bookmark_history_model import History
+from ..models.review_model import CourseReview
 
 
 class HistoryPostTests(TestCase):

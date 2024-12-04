@@ -7,12 +7,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 
 from ..db_post import HistoryPost
-from ..models import (CourseData, UserData,
-                      CourseReview, ReviewStat,
-                      UpvoteStat, FollowData,
-                      Note, BookMark,
-                      QA_Question, QA_Answer,
-                      QA_Question_Upvote, QA_Answer_Upvote)
+
+from ..models.note_model import Note
+from ..models.bookmark_history_model import BookMark
+from ..models.course_data_model import CourseData
+from ..models.user_model import UserData, FollowData
+from ..models.review_model import CourseReview, ReviewStat, UpvoteStat
+from ..models.qa_model import QA_Question, QA_Answer, QA_Question_Upvote, QA_Answer_Upvote
 
 
 def course_set_up():

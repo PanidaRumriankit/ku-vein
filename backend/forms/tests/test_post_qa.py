@@ -5,8 +5,8 @@ from django.test import TestCase
 
 from .set_up import qa_setup
 from ..db_post import QuestionPost, AnswerPost
-from ..models import CourseData
-from ..models import UserData
+from ..models.course_data_model import CourseData
+from ..models.user_model import UserData
 
 
 class QuestionPostTest(TestCase):

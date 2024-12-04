@@ -14,12 +14,12 @@ from google.cloud import storage
 from kuvein.settings import GOOGLE_CREDENTIAL
 from ninja.responses import Response
 
-from .models import (Inter, ReviewStat, Special,
-                     Normal, CourseData, UserData, FollowData,
-                     QA_Question, UserProfile,
-                     Note, UpvoteStat, CourseReview,
-                     BookMark, History)
-
+from .models.course_data_model import CourseData, Inter, Normal, Special
+from .models.review_model import CourseReview, ReviewStat, UpvoteStat
+from .models.qa_model import QA_Question, QA_Answer
+from .models.note_model import Note
+from .models.bookmark_history_model import BookMark, History
+from .models.user_model import UserData, FollowData, UserProfile
 
 class QueryStrategy(ABC):
     """Abstract base class for make the query."""

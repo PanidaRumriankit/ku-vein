@@ -5,7 +5,7 @@ from django.test import TestCase
 from .set_up import (user_set_up, review_set_up,
                      course_set_up)
 from ..db_query import UpvoteQuery
-from ..models import UpvoteStat
+from ..models.review_model import UpvoteStat
 
 TEST_DATA = [
 

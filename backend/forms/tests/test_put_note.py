@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from .set_up import note_setup, user_set_up, course_set_up
 from ..db_put import NotePut
-from ..models import Note
+from ..models.note_model import Note
 
 
 class QuestionPutTest(TestCase):
