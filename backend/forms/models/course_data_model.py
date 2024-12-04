@@ -1,4 +1,4 @@
-"""Models module for make query for the frontend."""
+"""Models module for collect CourseData."""
 
 from django.db import models
 
