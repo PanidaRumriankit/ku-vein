@@ -6,7 +6,7 @@ from typing import Any
 from ninja.responses import Response
 
 from .models.note_model import Note
-from .models.course_review_model import CourseReview
+from .models.review_model import CourseReview
 from .models.qa_model import QA_Question, QA_Answer
 
 class DeleteStrategy(ABC):
