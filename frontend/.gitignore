@@ -6,6 +6,26 @@
 .pnp.js
 .yarn/install-state.gz
 
+# pnpm virtual store
+.pnpm-store/
+.pnpm/
+
+# pnpm-lock file (optional, depending on team preference)
+pnpm-lock.yaml
+
+# Node.js modules
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
 # testing
 /coverage
 
