@@ -22,7 +22,7 @@ from django.contrib import admin
 from django.urls import path
 from forms.api import (CourseController, ReviewController,
                         UserController, FollowController,
-                        NoteController, UpvoteController,
+                        UpvoteController,
                         BookMarkController, HistoryController,
                         QuestionController, AnswerController,
                         BackUpController)
@@ -35,7 +35,7 @@ api = NinjaExtraAPI()
 api.register_controllers(
     CourseController, ReviewController,
     UserController, FollowController,
-    NoteController, UpvoteController,
+    UpvoteController,
     BookMarkController, HistoryController,
     QuestionController, AnswerController,
     BackUpController

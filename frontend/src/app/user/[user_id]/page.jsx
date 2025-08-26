@@ -8,11 +8,10 @@ import Popup from 'reactjs-popup';
 import GetUserData from '../../constants/getuser';
 import MakeApiRequest from "../../constants/getreview";
 import ReviewCard from "../../components/reviewcard";
-import {followURL, questionURL, noteURL} from '../../constants/backurl';
+import {followURL, questionURL} from '../../constants/backurl';
 import Image from 'next/image';
 import GetBookmarks from '../../constants/getbookmarks';
 import QuestionCard from '../../components/questioncard';
-import NoteBox from '../../components/notebox';
 
 export default function UserProfile() {
   const router = useRouter();
@@ -27,10 +26,8 @@ export default function UserProfile() {
   const [followerCount, setFollowerCount] = useState(0);
   const [reviews, setReviews] = useState([]);
   const [questions, setQuestions] = useState([]);
-  const [note, setNote] = useState([]);
   const [bookmarkQuestion, setBookmarkQuestion] = useState([]);
   const [bookmarkReview, setBookmarkReview] = useState([]);
-  const [bookmarkNote, setBookmarkNote] = useState([]);
 
   const fetchReviews = async () => {
     setReviews(await MakeApiRequest('latest'));
@@ -49,29 +46,12 @@ export default function UserProfile() {
     }
   };
 
-  const fetchNotes = async () => {
-    try {
-      const response = await fetch(noteURL + '?email=' + session.user.email);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      setNote(data);
-    } catch (error) {
-      console.error("Error fetching notes:", error);
-    }
-  };
-
   const getFilteredReviews = () => {
     return reviews.filter((review) => (review.username === userData.user_name && review.is_anonymous === false));
   };
 
   const getFilteredQuestions = () => {
     return questions.filter((question) => question.username === userData.user_name && question.anonymous === false);
-  };
-
-  const getFilteredNotes = () => {
-    return note.filter((note) => note.username === userData.user_name && note.is_anonymous === false);
   };
 
   const fetchBookmarkQuestions = async () => {
@@ -83,12 +63,6 @@ export default function UserProfile() {
   const fetchBookmarkReviews = async () => {
     const response = await GetBookmarks(session.email);
     setBookmarkReview(response.filter((bookmark) => bookmark.data_type === "review"));
-    // console.log('Received bookmarks reviews:', bookmarkReview);
-  }
-
-  const fetchBookmarkNotes = async () => {
-    const response = await GetBookmarks(session.email);
-    setBookmarkNote(response.filter((bookmark) => bookmark.data_type === "note"));
     // console.log('Received bookmarks reviews:', bookmarkReview);
   }
 
@@ -179,10 +153,8 @@ export default function UserProfile() {
     if (session) {
       fetchReviews();
       fetchQuestions();
-      fetchNotes();
       fetchBookmarkQuestions();
       fetchBookmarkReviews();
-      fetchBookmarkNotes();
     }
   }, [session]);
 
@@ -262,23 +234,6 @@ export default function UserProfile() {
             )}
           </div>
         );
-      case "notes":
-        const filteredNotes = getFilteredNotes();
-        // console.log("Filtered Notes: ", filteredNotes);
-        return (
-          <div className="flex flex-col maw-w-6xl w-full space-y-4">
-            {filteredNotes.length > 0 ? (
-              filteredNotes.map((item, index) => {
-                const isBookmarked = bookmarkNote.some(
-                  (bookmark) => bookmark.object_id == item.pdf_id
-                );
-                return <NoteBox userName={item.username} data={item} key={index}/>
-              })
-            ) : (
-              <p className="text-green-400 text-center">No Notes currently</p>
-            )}
-          </div>
-        );
       default:
         return <p>Select a section to view its content.</p>;
     }
@@ -324,7 +279,7 @@ export default function UserProfile() {
               </div>
             } modal closeOnDocumentClick>
               {close => (
-                <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+                <div className="h-96 w-96 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
                   <h2 className="text-lg font-semibold mb-4">Following</h2>
                   {userData.following.length > 0 ? (
                     <ul>
@@ -373,7 +328,7 @@ export default function UserProfile() {
               </div>
             } modal closeOnDocumentClick>
               {close => (
-                <div className="h-96 w-96 p-4 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
+                <div className="h-96 w-96 text-black modal bg-white dark:bg-black dark:text-white p-6 rounded-lg shadow-lg border border-gray-300">
                   <h2 className="text-lg font-semibold mb-4">Followers</h2>
                   {followers.length > 0 ? (
                     <ul>
@@ -444,7 +399,7 @@ export default function UserProfile() {
 
       {/* Tab Navigation */}
       <div className="flex justify-around w-3/4 mt-6 border-b-2 border-gray-200">
-        {['Reviews', 'Posts', 'Notes'].map(tab => (
+        {['Reviews', 'Posts'].map(tab => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab.toLowerCase())}
