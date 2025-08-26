@@ -17,7 +17,7 @@ export default function CourseNavigationBar({courseId}) {
     <div className="flex text-black dark:text-white">
       <Navbar isBordered position="static">
         <NavbarContent justify="start">
-          <NavbarContent className="hidden sm:flex gap-3">
+          <NavbarContent className="flex gap-3">
             <NavbarItem>
               <Link
                 href={`/course/${courseId}`}
@@ -34,15 +34,6 @@ export default function CourseNavigationBar({courseId}) {
                 className={isActivate(`/course/${courseId}/qanda`) ? "text-blue-500 font-bold" : ""}
               >
                 Q&A
-              </Link>
-            </NavbarItem>
-            <NavbarItem>
-              <Link
-                href={`/course/${courseId}/note`}
-                color="foreground"
-                className={isActivate(`/course/${courseId}/note`) ? "text-blue-500 font-bold" : ""}
-              >
-                Notes
               </Link>
             </NavbarItem>
           </NavbarContent>
