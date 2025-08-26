@@ -240,50 +240,55 @@ class UserController(ControllerBase):
         return strategy.put_data(data.model_dump())
 
 
-@api_controller("/note")
-class NoteController(ControllerBase):
-    """Controller for handling Note endpoints."""
+# ---------------------------------------------------------------------------
+# This API endpoint was removed -
+# due to financial crisis amongst the development team
+# The code will still be accesible but the API will be commented out for good.
+# ---------------------------------------------------------------------------
+# @api_controller("/note")
+# class NoteController(ControllerBase):
+#     """Controller for handling Note endpoints."""
 
-    @http_get("")
-    def get_note_data(self, request, email: str = None, course_id: str = None,
-                      faculty: str = None):
-        """Use for send the note data to the frontend"""
-        filter_key = {"email": email, "course_id": course_id,
-                      "faculty": faculty}
+#     @http_get("")
+#     def get_note_data(self, request, email: str = None, course_id: str = None,
+#                       faculty: str = None):
+#         """Use for send the note data to the frontend"""
+#         filter_key = {"email": email, "course_id": course_id,
+#                       "faculty": faculty}
 
-        try:
-            strategy = QueryFactory.get_query_strategy("note")
-            return check_response(strategy.get_data(filter_key))
+#         try:
+#             strategy = QueryFactory.get_query_strategy("note")
+#             return check_response(strategy.get_data(filter_key))
 
-        except ValueError as e:
-            return Response({"error": str(e)}, status=400)
+#         except ValueError as e:
+#             return Response({"error": str(e)}, status=400)
 
-    @http_post("", response={200: NotePostSchema})
-    def add_note(self, request, data: NotePostSchema):
-        """Use for add new Note object."""
-        correct_user = check_real_user(request)
-        if isinstance(correct_user, Response):
-            return correct_user
-        strategy = PostFactory.get_post_strategy("note")
-        return strategy.post_data(data.model_dump())
+#     @http_post("", response={200: NotePostSchema})
+#     def add_note(self, request, data: NotePostSchema):
+#         """Use for add new Note object."""
+#         correct_user = check_real_user(request)
+#         if isinstance(correct_user, Response):
+#             return correct_user
+#         strategy = PostFactory.get_post_strategy("note")
+#         return strategy.post_data(data.model_dump())
     
-    @http_put("")
-    def edit_question(self, request, data: NotePutSchema):
-        """Edit Note data."""
-        correct_user = check_real_user(request)
-        if isinstance(correct_user, Response):
-            return correct_user
-        strategy = PutFactory.get_put_strategy("note")
-        return strategy.put_data(data.model_dump())
+#     @http_put("")
+#     def edit_question(self, request, data: NotePutSchema):
+#         """Edit Note data."""
+#         correct_user = check_real_user(request)
+#         if isinstance(correct_user, Response):
+#             return correct_user
+#         strategy = PutFactory.get_put_strategy("note")
+#         return strategy.put_data(data.model_dump())
 
-    @http_delete("", response={200: NoteDeleteSchema})
-    def delete_note(self, request, data: NoteDeleteSchema):
-        """Delete the note objects."""
-        correct_user = check_real_user(request)
-        if isinstance(correct_user, Response):
-            return correct_user
-        strategy = DeleteFactory.get_delete_strategy("note")
-        return strategy.delete_data(data.model_dump())
+#     @http_delete("", response={200: NoteDeleteSchema})
+#     def delete_note(self, request, data: NoteDeleteSchema):
+#         """Delete the note objects."""
+#         correct_user = check_real_user(request)
+#         if isinstance(correct_user, Response):
+#             return correct_user
+#         strategy = DeleteFactory.get_delete_strategy("note")
+#         return strategy.delete_data(data.model_dump())
 
 
 @api_controller("/upvote")
