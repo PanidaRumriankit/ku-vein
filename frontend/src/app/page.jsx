@@ -56,7 +56,7 @@ export default function Home() {
         <p className="mt-4 text-xl text-black dark:text-white">รีวิว แบ่งปัน Q&A</p>
       </main>
 
-      <div className="mt-8 w-full max-w-6xl z-40">
+      <div className="w-full max-w-5xl z-40">
         <Search page='page'/>
       </div>
       <div className="w-full max-w-5xl">

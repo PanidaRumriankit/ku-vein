@@ -83,7 +83,7 @@ export default function Search({ onCourseSelect, page }) {
   if (!mounted) return null;
 
   return (
-    <div className="my-2 w-full max-w-5xl mx-auto">
+    <div className="mx-20 my-4 max-w-4xl">
       <AsyncSelect
         cacheOptions
         loadOptions={loadOptions}
