@@ -165,7 +165,7 @@ export default function ReviewCard({ item, page = null, bookmark = false }) {
           <p className="w-fit break-all">{item.review_text}</p>
 
           {/*tags*/}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-fit gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 my-1 w-fit gap-2">
             {chips.map((item, index) => (
               <Chip key={index} label={item} className="mt-1" color="success" />
             ))}
