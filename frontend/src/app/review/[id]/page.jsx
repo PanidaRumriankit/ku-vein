@@ -40,7 +40,7 @@ export default function ReviewPage({params}) {
   return (
     <div
       className="text-black dark:text-white flex flex-col items-center min-h-screen bg-white dark:bg-black">
-      <main className="flex flex-col items-center pt-20 mb-10">
+      <main className="flex flex-col items-center pt-20 mb-10 mx-20">
         <Image
           src="/artery.png"
           alt="Artery"
