@@ -88,7 +88,7 @@ export default function CoursePage({ params }) {
         <div className="justify-start">
           <CourseNavigationBar courseId={params.id} />
         </div>
-        <div className="my-4 justify-end">
+        <div className="my-4">
           <Sorting selectedKeys={selectedKeys} setSelectedKeys={setSelectedKeys} />
           <ReviewFilters filters={filters} setFilters={setFilters} professors={professors} />
         </div>
