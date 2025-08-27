@@ -1,17 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import Search from './components/search';
+import Search from "./components/search";
 import Sorting from "./components/sorting";
 import ReviewCard from "./components/reviewcard";
-import MakeApiRequest from "./constants/getreview"
+import MakeApiRequest from "./constants/getreview";
 import AddReviews from "./components/addreviews";
 import GetBookmarks from "./constants/getbookmarks";
-import {useState, useEffect} from "react";
-import {useSession} from "next-auth/react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
-  const {data: session} = useSession();
+  const { data: session } = useSession();
   const [selectedKeys, setSelectedKeys] = useState(new Set(["latest"]));
   const [reviews, setReviews] = useState([]);
   const [bookmarkReview, setBookmarkReview] = useState([]);
@@ -25,25 +25,27 @@ export default function Home() {
       setReviews(data);
     };
 
-    fetchReviews().then(() => {console.log("Fetch success")});
+    fetchReviews().then(() => {
+      console.log("Fetch success");
+    });
   }, [selectedKeys]);
 
   const fetchBookmarks = async () => {
     const response = await GetBookmarks(session.email);
-    setBookmarkReview(response.filter((bookmark) => bookmark.data_type === "review"));
-    console.log('Received bookmarks review:', bookmarkReview);
+    setBookmarkReview(
+      response.filter((bookmark) => bookmark.data_type === "review")
+    );
+    console.log("Received bookmarks review:", bookmarkReview);
   };
 
   useEffect(() => {
     if (session) {
       fetchBookmarks();
     }
-
   }, [session]);
 
   return (
-    <div
-      className="flex flex-col items-center min-h-screen bg-white dark:bg-black">
+    <div className="flex flex-col items-center min-h-screen bg-white dark:bg-black">
       <main className="flex flex-col items-center pt-20">
         <Image
           src="/artery.png"
@@ -52,22 +54,26 @@ export default function Home() {
           height={120}
           priority
         />
-        <h1 className="mt-4 text-3xl font-bold text-black dark:text-white">KU Vein</h1>
-        <p className="mt-4 text-xl text-black dark:text-white">รีวิว แบ่งปัน Q&A</p>
+        <h1 className="mt-4 text-3xl font-bold text-black dark:text-white">
+          KU Vein
+        </h1>
+        <p className="mt-4 text-xl text-black dark:text-white">
+          รีวิว แบ่งปัน Q&A
+        </p>
       </main>
 
-      <div className="w-full max-w-5xl z-40">
-        <Search page='page'/>
-      </div>
+      <Search page="page" />
       <div className="w-full max-w-5xl">
-        <Sorting selectedKeys={selectedKeys}
-                 setSelectedKeys={setSelectedKeys}/>
+        <Sorting
+          selectedKeys={selectedKeys}
+          setSelectedKeys={setSelectedKeys}
+        />
         {reviews.length > 0 ? (
           reviews.map((item, index) => {
             const isBookmarked = bookmarkReview.some(
               (bookmark) => bookmark.object_id === item.reviews_id
             );
-            console.log('isBookmarked:', isBookmarked);
+            console.log("isBookmarked:", isBookmarked);
             return (
               <ReviewCard
                 item={item}
@@ -82,7 +88,7 @@ export default function Home() {
         )}
       </div>
       <div className="fixed bottom-4 right-4 z-40">
-        <AddReviews/>
+        <AddReviews />
       </div>
     </div>
   );
