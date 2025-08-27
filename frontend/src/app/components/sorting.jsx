@@ -12,7 +12,7 @@ import {sortOption} from "../constants";
 export default function Sorting({selectedKeys, setSelectedKeys}) {
   return (
     <div
-      className="flex justify-end ml-20 mb-4 text-black dark:text-white">
+      className="flex justify-end mx-20 mb-4 text-black dark:text-white max-w-4xl">
       <Dropdown>
         <DropdownTrigger>
           <Button className="mx-4 focus:outline-none inline-flex"
