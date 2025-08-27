@@ -1,20 +1,23 @@
 import React, { useState } from "react";
 import { faculties } from "../constants/index";
 
+const BUDDHIST_ERA_OFFSET = 543;
 export default function ReviewFilters({
   filters,
   setFilters,
   onApplyFilters,
   professors,
 }) {
-  const [currentYear] = useState(new Date().getFullYear() + 543);
+  const [currentYear] = useState(
+    new Date().getFullYear() + BUDDHIST_ERA_OFFSET
+  );
 
   const handleChange = (field, value) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
-    <div className="flex flex-wrap gap-4 my-4 mx-20 max-w-4xl justify-start">
+    <div className="flex flex-wrap gap-4 my-4 mx-4 sm:mx-8 lg:mx-20 max-w-4xl justify-start">
       {/* คณะ */}
       <div className="w-fit">
         <label className="block text-sm font-medium">คณะ</label>
@@ -31,7 +34,6 @@ export default function ReviewFilters({
           ))}
         </select>
       </div>
-
       {/* ความพึงพอใจ */}
       <div className="w-fit">
         <label className="block text-sm font-medium">ความพึงพอใจ</label>
@@ -48,7 +50,6 @@ export default function ReviewFilters({
           ))}
         </select>
       </div>
-
       {/* ปีการศึกษา */}
       <div className="w-fit">
         <label className="block text-sm font-medium">ปีการศึกษา</label>
@@ -59,7 +60,6 @@ export default function ReviewFilters({
           className="w-fit border rounded p-2"
         />
       </div>
-
       {/* เกรด */}
       <div className="w-fit">
         <label className="block text-sm font-medium">เกรด</label>
@@ -76,7 +76,6 @@ export default function ReviewFilters({
           ))}
         </select>
       </div>
-
       {/* อาจารย์ */}
       <div className="w-fit">
         <label className="block text-sm font-medium">อาจารย์</label>
@@ -93,7 +92,6 @@ export default function ReviewFilters({
           ))}
         </select>
       </div>
-
       {/* เกณฑ์ */}
       <div className="w-fit">
         <label className="block text-sm font-medium">เกณฑ์</label>
@@ -109,7 +107,6 @@ export default function ReviewFilters({
           <option value="balance">Balance</option>
         </select>
       </div>
-
       {/* เรียนแบบ */}
       <div className="w-fit">
         <label className="block text-sm font-medium">เรียนแบบ</label>
