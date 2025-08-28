@@ -105,7 +105,7 @@ export default function Search({ onCourseSelect, page }) {
 
   return (
     <div class="mt-8 w-full max-w-5xl z-40">
-      <div className="mx-20 my-4 max-w-4xl">
+      <div className="my-4 max-w-4xl">
         <AsyncSelect
           cacheOptions
           loadOptions={loadOptions}
