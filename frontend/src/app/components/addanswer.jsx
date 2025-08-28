@@ -58,15 +58,15 @@ export default function AddAnswer() {
         body: JSON.stringify(postData),
       });
       if (!email || !idToken) {
-        console.log("ID Token or email is missing.");
+        // console.log("ID Token or email is missing.");
         return;
       }
       if (response.ok) {
         const data = await response.json();
-        console.log('Success:', data);
+        // console.log('Success:', data);
         window.location.reload();
       } else {
-        console.log('Error:', response.status, response.text());
+        // console.log('Error:', response.status, response.text());
       }
     } catch (error) {
       console.error('Error:', error);

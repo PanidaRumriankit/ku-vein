@@ -31,7 +31,7 @@ const authOptions = {
                 return token;
             }
 
-            console.log("Access token has expired. User needs to re-login.");
+            // console.log("Access token has expired. User needs to re-login.");
             return { ...token, error: "AccessTokenExpired" };
         },
         async session({ session, token }) {

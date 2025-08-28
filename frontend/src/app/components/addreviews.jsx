@@ -49,15 +49,15 @@ export default function AddReview() {
         body: JSON.stringify(postData),
       });
       if (!email || !idToken) {
-        console.log("ID Token or email is missing.");
+        // console.log("ID Token or email is missing.");
         return;
       }
       if (response.ok) {
         const rs = await response.json();
-        console.log('Success:', rs);
+        // console.log('Success:', rs);
         window.location.reload();
       } else {
-        console.log('Error:', response.status, response.text());
+        // console.log('Error:', response.status, response.text());
       }
     } catch (error) {
       console.error('Error:', error);

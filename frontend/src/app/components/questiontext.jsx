@@ -62,7 +62,7 @@ export default function QuestionText({ item, bookmark }) {
         setUpvoteCount(prevCount => isVoted ? prevCount - 1 : prevCount + 1);
         setIsVoted(!isVoted);
       } else {
-        console.log("Error upvoting:", await response.text());
+        // console.log("Error upvoting:", await response.text());
       }
     } catch (error) {
       console.error("Error upvoting review:", error);

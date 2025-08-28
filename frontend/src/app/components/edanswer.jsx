@@ -66,7 +66,7 @@ export default function EDAnswer({userName, answerId, item}) {
       }
 
       FetchData().then(() => {
-        console.log("Current User", currentUser)
+        // console.log("Current User", currentUser)
       });
     }
   }, [currentUser, session]);
@@ -101,7 +101,7 @@ export default function EDAnswer({userName, answerId, item}) {
       });
 
       if (response.ok) {
-        console.log("Success");
+        // console.log("Success");
         window.location.reload();
       } else {
         console.error("Error deleting:", await response.text());
@@ -128,7 +128,7 @@ export default function EDAnswer({userName, answerId, item}) {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Successfully updated review:", result);
+        // console.log("Successfully updated review:", result);
         window.location.reload();
       } else {
         console.error("Error editing review:", await response.text());

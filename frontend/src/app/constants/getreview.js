@@ -6,7 +6,7 @@ export default async function MakeApiRequest(sort) {
 
   if (response.ok) {
     const data = await response.json();
-    console.log("Response from backend:", data);
+    // console.log("Response from backend:", data);
     return data;
   } else {
     console.error("Failed to fetch:", response.status);

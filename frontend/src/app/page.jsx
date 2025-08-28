@@ -26,7 +26,7 @@ export default function Home() {
     };
 
     fetchReviews().then(() => {
-      console.log("Fetch success");
+      // console.log("Fetch success");
     });
   }, [selectedKeys]);
 
@@ -35,7 +35,7 @@ export default function Home() {
     setBookmarkReview(
       response.filter((bookmark) => bookmark.data_type === "review")
     );
-    console.log("Received bookmarks review:", bookmarkReview);
+    // console.log("Received bookmarks review:", bookmarkReview);
   };
 
   useEffect(() => {
@@ -73,7 +73,7 @@ export default function Home() {
             const isBookmarked = bookmarkReview.some(
               (bookmark) => bookmark.object_id === item.reviews_id
             );
-            console.log("isBookmarked:", isBookmarked);
+            // console.log("isBookmarked:", isBookmarked);
             return (
               <ReviewCard
                 item={item}

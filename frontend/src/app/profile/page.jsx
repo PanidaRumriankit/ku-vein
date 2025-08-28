@@ -151,14 +151,14 @@ export default function Profile() {
         body: JSON.stringify(putDataSubset),
       });
       if (!email || !idToken) {
-        console.log("ID Token or email is missing.");
+        // console.log("ID Token or email is missing.");
         return;
       }
       if (response.ok) {
         const data = await response.json();
-        console.log("Success:", data);
+        // console.log("Success:", data);
       } else {
-        console.log("Error:", response.status, response.text());
+        // console.log("Error:", response.status, response.text());
       }
     } catch (error) {
       console.error("Error:", error);
@@ -258,7 +258,7 @@ export default function Profile() {
           });
 
           const imgurData = await imgurResponse.json();
-          console.log("Full Imgur API response:", imgurData);
+          // console.log("Full Imgur API response:", imgurData);
 
           if (imgurResponse.ok) {
             const newProfileImage = {
@@ -268,10 +268,10 @@ export default function Profile() {
               img_delete_hash: imgurData.data.deletehash,
             };
 
-            console.log(
-              "Image uploaded successfully:",
-              newProfileImage.img_link
-            );
+            // console.log(
+            //   "Image uploaded successfully:",
+            //   newProfileImage.img_link
+            // );
 
             if (!putData.profile_link) {
               await postImage(newProfileImage);
@@ -308,9 +308,9 @@ export default function Profile() {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Profile updated successfully:", data);
+      // console.log("Profile updated successfully:", data);
     } else {
-      console.log("Error updating profile:", response.status, response.text());
+      // console.log("Error updating profile:", response.status, response.text());
     }
   }
 
@@ -327,9 +327,9 @@ export default function Profile() {
 
     if (response.ok) {
       const data = await response.json();
-      console.log("Profile posted successfully:", data);
+      // console.log("Profile posted successfully:", data);
     } else {
-      console.log("Error posting profile:", response.status, response.text());
+      // console.log("Error posting profile:", response.status, response.text());
     }
   }
 

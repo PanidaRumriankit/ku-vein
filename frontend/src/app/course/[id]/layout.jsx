@@ -56,7 +56,7 @@ export default function CourseLayout({ children, params }) {
       }
     };
 
-    fetchReviews().then(() => console.log("Fetching success"));
+    // fetchReviews().then(() => console.log("Fetching success"));
   }, [courseId, params.id]);
 
   return (

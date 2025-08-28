@@ -82,7 +82,7 @@ export default function UserProfile() {
         setPersonalData(personData);
 
         if (user_id == personData.id) {
-          console.log('Redirecting to profile page...');
+          // console.log('Redirecting to profile page...');
           router.push('/profile');
           return;
         }
@@ -137,7 +137,7 @@ export default function UserProfile() {
     if (session && userData && personalData) {
       // Check if the user is already following the target user
       setIsFollowing(userData.follower.some(follower => follower.username === personalData.username));
-      console.log('User Data:', userData);
+      // console.log('User Data:', userData);
       // console.log('Personal Data:', personalData);
       // console.log('isfollowing:', isFollowing);
     }
@@ -145,7 +145,7 @@ export default function UserProfile() {
 
   useEffect(() => {
     if (followers) {
-      console.log('Followers:', followers);
+      // console.log('Followers:', followers);
     }
   }, [followers]);
 
@@ -162,14 +162,14 @@ export default function UserProfile() {
   
   async function followUser() {
     if (!email || !idToken) {
-      console.log("ID Token or email is missing.");
+      // console.log("ID Token or email is missing.");
       return;
     }
 
-    console.log('Fetched personalData:', personalData);
+    // console.log('Fetched personalData:', personalData);
 
     if (!personalData || !personalData.id) {
-      console.log("Personal data is not loaded yet.");
+      // console.log("Personal data is not loaded yet.");
       return;
     }
 
@@ -189,10 +189,10 @@ export default function UserProfile() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('Success:', data);
+        // console.log('Success:', data);
 
         } else {
-          console.log('Error:', response.status, response.statusText);
+          // console.log('Error:', response.status, response.statusText);
         }
     }
     catch (error) {

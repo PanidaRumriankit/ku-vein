@@ -14,9 +14,9 @@ export default function ShareButton({reviewId, reviewText}) {
   // TODO fix the url
   const url = window.location.host + '/review/' + reviewId;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(url).then(() => console.log("Copied"));
-  }
+  // const handleCopy = () => {
+  //   navigator.clipboard.writeText(url).then(() => console.log("Copied"));
+  // }
 
   const shareToFacebook = () => {
     const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;

@@ -38,7 +38,7 @@ export default function CoursePage({ params }) {
 
   useEffect(() => {
     if(filteredReviews) {
-      console.log("Filters: ", filteredReviews);
+      // console.log("Filters: ", filteredReviews);
     }
   }, [filteredReviews]);
 
@@ -75,7 +75,7 @@ export default function CoursePage({ params }) {
       filtered = filtered.filter((review) => review.faculties === filters.faculties);
     }
 
-    console.log("Faculty: ", filters.faculties, reviews);
+    // console.log("Faculty: ", filters.faculties, reviews);
 
     setFilteredReviews(filtered);
   }, [filters, reviews]);

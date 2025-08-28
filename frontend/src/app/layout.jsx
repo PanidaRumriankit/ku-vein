@@ -58,7 +58,7 @@ function RootLayoutContent({ children }) {
 
         if (response.status === 409) {
           // 409 Conflict indicates the user already exists
-          console.log("User already exists.");
+          // console.log("User already exists.");
           return;
         } else if (!response.ok) {
           console.error("Error creating user:", response.statusText);

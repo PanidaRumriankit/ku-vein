@@ -26,7 +26,7 @@ export default function QuestionAndAnswerPage({params}) {
   const fetchBookmarks = async () => {
     const response = await GetBookmarks(session.email);
     setBookmarkQuestion(response.filter((bookmark) => bookmark.data_type === "qa"));
-    console.log('Received bookmarks questions:', bookmarkQuestion);
+    // console.log('Received bookmarks questions:', bookmarkQuestion);
   };
 
   const handleSelectedKeysChange = (keys) => {

@@ -76,7 +76,7 @@ export default function EditDelete({userName, reviewId, item}) {
       }
 
       FetchData().then(() => {
-        console.log("Current User", currentUser)
+        // console.log("Current User", currentUser)
       });
     }
   }, [currentUser, session]);
@@ -85,7 +85,7 @@ export default function EditDelete({userName, reviewId, item}) {
     if (!email || !idToken || currentUser !== userName) return;
 
     try {
-      console.log("reviewID", reviewId)
+      // console.log("reviewID", reviewId)
       const response = await fetch(reviewURL, {
         method: "DELETE",
         headers: {
@@ -99,7 +99,7 @@ export default function EditDelete({userName, reviewId, item}) {
       });
 
       if (response.ok) {
-        console.log("Success");
+        // console.log("Success");
         window.location.reload();
       } else {
         console.error("Error deleting:", await response.text());
@@ -113,7 +113,7 @@ export default function EditDelete({userName, reviewId, item}) {
     if (!idToken || currentUser !== userName) return;
 
     try {
-      console.log("Editing review ID", reviewId);
+      // console.log("Editing review ID", reviewId);
       const response = await fetch(reviewURL, {
         method: "PUT", // PUT for editing
         headers: {
@@ -126,7 +126,7 @@ export default function EditDelete({userName, reviewId, item}) {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("Successfully updated review:", result);
+        // console.log("Successfully updated review:", result);
         window.location.reload();
       } else {
         console.error("Error editing review:", await response.text());

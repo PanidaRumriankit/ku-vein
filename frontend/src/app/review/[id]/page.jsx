@@ -30,7 +30,7 @@ export default function ReviewPage({params}) {
         setEffort(data.efforts || 0);
         setChips([data.criteria, data.classes_type, attendant[data.attendances]]);
       }
-      console.log("Fetched review data", data);
+      // console.log("Fetched review data", data);
     };
 
     fetchReviews().then(() => {

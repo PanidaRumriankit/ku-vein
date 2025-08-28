@@ -89,7 +89,7 @@ export default function QuestionCard({item, bookmark, page=null}) {
         setUpvoteCount(prevCount => isVoted ? prevCount - 1 : prevCount + 1);
         setIsVoted(!isVoted);
       } else {
-        console.log("Error upvoting:", await response.text());
+        // console.log("Error upvoting:", await response.text());
       }
     } catch (error) {
       console.error("Error upvoting review:", error);
@@ -98,7 +98,7 @@ export default function QuestionCard({item, bookmark, page=null}) {
     }
   };
 
-  console.log("Item: ", item);
+  // console.log("Item: ", item);
 
   const handleMouseEnter = (e) => {
     const rect = e.target.getBoundingClientRect();

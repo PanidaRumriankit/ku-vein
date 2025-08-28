@@ -6,7 +6,7 @@ export default async function GetQuestion(sort, id) {
 
   if (response.ok) {
     const data = await response.json();
-    console.log("Question:", data);
+    // console.log("Question:", data);
     return data;
   } else {
     console.error("Failed to fetch:", response.status);
